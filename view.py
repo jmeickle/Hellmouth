@@ -5,6 +5,17 @@ class Component():
         self.x = x
         self.y = y
 
+    # Rectangular drawing function.
+    def rd(self, x, y, glyph):
+        self.window.addch(y, x, glyph)
+
+    # Hex drawing function.
+    def hd(self, x, y, glyph):
+        # We do two tricks to make this hex-y:
+        #     * multiply the x position by two.
+        #     * offset every other row by 1.
+        self.window.addch(y, (2*x) + y % 2, glyph)
+
 class MainMap(Component):
     def __init__(self, window, x, y):
         Component.__init__(self, window, x, y)
@@ -15,17 +26,14 @@ class MainMap(Component):
         self.actors.append(actor)
 
     def draw(self):
-        # Draw the map. We do two tricks to make this hex-y:
-        #     * offset every other row by 1.
-        #     * multiply the x position by two.
+        # Draw the map.
         for y in range(self.map.height):
             for x in range(self.map.height):
-                offset = y % 2
-                self.window.addch(y, (2*x) + offset, self.map.cells[y][x])
+                self.hd(x, y, self.map.cells[y][x])
 
         # Draw the actors
         for actor in self.actors:
-            self.window.addch(actor.y, actor.x, actor.glyph)
+            self.hd(actor.x, actor.y, actor.glyph)
 #class MiniMap(Component):
 
 #class Stats:
