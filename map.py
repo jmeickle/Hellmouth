@@ -1,14 +1,14 @@
 class Map:
     def __init__(self):
-        self.map = None
+        self.cells = None
         self.height = None
         self.width = None
 
     def loadmap(self, x, y, initial):
-        self.map = []
+        self.cells = []
         for Y in range(y):
-            self.map.append([])
+            self.cells.append([])
             for X in range(x):
-                self.map[Y].append(initial)
+                self.cells[Y].append(initial)
         self.height = Y+1
         self.width = X+1
