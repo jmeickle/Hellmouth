@@ -20,8 +20,16 @@ def gameover():
 stdscr = init()
 
 player = Player()
+map = Map()
+map.loadmap(5,5,".")
+
+mainmap = MainMap(stdscr, map.width, map.height)
+mainmap.map = map
+mainmap.add(player)
+mainmap.draw()
 
 while 1:
+    # Keyin stuff
     c = stdscr.getch()
     if c == ord('q'):
         gameover()
@@ -34,15 +42,11 @@ while 1:
         player.y -= 1
     elif c == curses.KEY_DOWN:
         player.y += 1
-#    else:
-#        stdscr.addch(c)
-    stdscr.clear()
-    player.draw(stdscr)
-    stdscr.refresh()
 
-map = Map()
-map.loadmap(5,5,"Hello")
-print map.map
+    # Clear screen and tell components to draw themselves.
+    stdscr.clear()
+    mainmap.draw()
+    stdscr.refresh()
 
 def newwin(x, y):
     win = curses.newwin(y, x, starty, startx)
