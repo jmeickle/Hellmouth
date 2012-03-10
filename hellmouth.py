@@ -1,7 +1,7 @@
 import curses
-from view import Component
-from map import Map
 from player import Player
+from map import Map
+from view import MainMap
 
 def init():
     stdscr = curses.initscr()
