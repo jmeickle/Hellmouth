@@ -10,3 +10,5 @@ class Map:
             self.map.append([])
             for X in range(x):
                 self.map[Y].append(initial)
+        self.height = Y+1
+        self.width = X+1
