@@ -19,14 +19,30 @@ def gameover():
 
 stdscr = init()
 
+player = Player()
+
 while 1:
     c = stdscr.getch()
     if c == ord('q'):
         gameover()
         break
-    else:
-        stdscr.addch(0, 0, c)
+    elif c == curses.KEY_LEFT:
+        player.x -= 1
+    elif c == curses.KEY_RIGHT:
+        player.x += 1
+    elif c == curses.KEY_UP:
+        player.y -= 1
+    elif c == curses.KEY_DOWN:
+        player.y += 1
+#    else:
+#        stdscr.addch(c)
+    stdscr.clear()
+    player.draw(stdscr)
     stdscr.refresh()
+
+map = Map()
+map.loadmap(5,5,"Hello")
+print map.map
 
 def newwin(x, y):
     win = curses.newwin(y, x, starty, startx)
