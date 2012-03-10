@@ -7,7 +7,7 @@ def init():
     stdscr.keypad(1)
     return stdscr
 
-def quit():
+def gameover():
     curses.echo()
     curses.nocbreak()
     stdscr.keypad(0)
@@ -17,7 +17,9 @@ stdscr = init()
 
 while 1:
     c = stdscr.getch()
-    if c == ord('q'): break  # Exit the while()
+    if c == ord('q'):
+        gameover()
+        break
     else:
         stdscr.addch(0, 0, c)
     stdscr.refresh()
