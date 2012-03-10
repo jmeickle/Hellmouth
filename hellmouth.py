@@ -1,10 +1,14 @@
 import curses
+from view import Component
+from map import Map
+from player import Player
 
 def init():
     stdscr = curses.initscr()
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(1)
+    curses.curs_set(0) # Make cursor invisible.
     return stdscr
 
 def gameover():
