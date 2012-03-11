@@ -30,12 +30,26 @@ class MainMap(Component):
         # Draw the map.
         for y in range(self.map.height):
             for x in range(self.map.height):
+# DEBUG:
+#                self.hd(x+1, y+1, chr(48+x))
                 self.hd(x, y, self.map.cells[y][x])
 
         # Draw the actors
         for actor in self.actors:
-            self.hd(actor.x, actor.y, actor.glyph)
+            self.hd(actor.pos[0], actor.pos[1], actor.glyph)
+
+class Stats(Component):
+    def __init__(self, window, x, y):
+        Component.__init__(self, window, x, y)
+
+    def draw(self):
+        self.rds(self.x, self.y, "HP: 5")
+        self.rds(self.x, self.y+2, "ST: 15")
+        self.rds(self.x, self.y+3, "DX: 15")
+        self.rds(self.x, self.y+4, "IQ: 15")
+        self.rds(self.x, self.y+5, "HT: 15")
+
 #class MiniMap(Component):
 
 #class Stats:
-#    def 
+#    def
