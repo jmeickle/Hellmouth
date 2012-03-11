@@ -1,6 +1,26 @@
 from lifepath import Lifepath
 viewrange = 10
 
+# Cycling selector.
+class Selector():
+    def __init__(self, parent, choices, initial=0):
+        self.parent = parent
+        self.choices = choices
+        self.choice = initial
+
+    def next(self):
+        self.choice += 1
+        if self.choice > self.choices:
+            self.choice = 0
+
+    def prev(self):
+        self.choice -= 1
+        if self.choice < 0:
+            self.choice = self.choices
+
+    def choose(self):
+        self.parent.selector = self.choice
+
 class Component():
 
     def __init__(self, window, x, y, startx, starty):
@@ -75,14 +95,15 @@ class Stats(Component):
 class Chargen(Component):
     def __init__(self, window, x, y, startx, starty):
         Component.__init__(self, window, x, y, startx, starty)
+        self.selector = Selector(self, 5)
         self.lifepath = Lifepath()
 
     def draw(self):
-        self.rds(0, 10, lifepath)
-        self.rds(0, 2, "ST: 15")
-        self.rds(0, 3, "DX: 15")
-        self.rds(0, 4, "IQ: 15")
-        self.rds(0, 5, "HT: 15")
+#        self.rds(0, 10, lifepath)
+        if hasattr(self.selector, 'parent'):
+            self.rds(0, 5, "Currently selected: %s" % self.selector.choice)
+        else:
+            self.rds(0, 5, "Final choice: %s" % self.selector)
 
 #class MiniMap(Component):
 #class Health(Component):
