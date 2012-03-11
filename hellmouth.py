@@ -28,12 +28,16 @@ stdscr = init()
 
 player = Player()
 map = Map()
-map.loadmap(5,5,".")
+map.loadmap(10, 10,".")
+
+player.map = map
 
 mainmap = MainMap(stdscr, map.width, map.height)
 mainmap.map = map
 mainmap.add(player)
 mainmap.draw()
+
+stats = Stats(stdscr, 60, 0)
 
 while 1:
     # Keyin stuff
@@ -41,18 +45,27 @@ while 1:
     if c == ord('q'):
         gameover()
         break
-    elif c == curses.KEY_LEFT:
-        player.x -= 1
-    elif c == curses.KEY_RIGHT:
-        player.x += 1
-    elif c == curses.KEY_UP:
-        player.y -= 1
-    elif c == curses.KEY_DOWN:
-        player.y += 1
+    elif c == ord('7'):
+        player.move(NW)
+    elif c == ord('4'):
+        player.move(CW)
+    elif c == ord('1'):
+        player.move(SW)
+    elif c == ord('9'):
+        player.move(NE)
+    elif c == ord('6'):
+        player.move(CE)
+    elif c == ord('3'):
+        player.move(SE)
 
     # Clear screen and tell components to draw themselves.
     stdscr.clear()
     mainmap.draw()
+    stats.draw()
+
+    # DEBUG: Print current position.
+    stdscr.addstr(12, 12, "POSITION")
+    stdscr.addstr(13, 12, '%s, %s' % player.pos)
     stdscr.refresh()
 
 def newwin(x, y):
