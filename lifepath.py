@@ -11,7 +11,10 @@ class Lifepath:
         self.initial = event
 
     def display(self):
-        self.initial.display(True)
+        self.initial.display()
+
+    def debug_display(self):
+        self.initial.debug_display(True)
 
 class LifepathEvent:
     def __init__(self, choice, parent=None):
@@ -23,7 +26,7 @@ class LifepathEvent:
         if self.parent is not None:
             self.parent.child = self
         self.child = None
-        self.events = self.data.get('choices', None)
+        self.choices = self.data.get('choices', (None, None, None))
 
         # Display information for the event.
         self.name = self.data.get('name', choice) # Defaults to the search key.
@@ -40,7 +43,11 @@ class LifepathEvent:
     def undo(self):
         self.parent.child = None
 
-    def display(self, recurse=False):
+    def display(self):
+        print "Nothing right now."
+
+    # Display variant for debug code.
+    def debug_display(self, recurse=False):
         print "==%s==" % self.name
         print "  %s\n" % self.text
         print "  GAMEPLAY EFFECTS:"
@@ -48,6 +55,10 @@ class LifepathEvent:
             print "  %s: %+d" % (k, int(v))
         print ""
         print "  This event takes %d years." % self.years
+        print ""
+        print "  After this event, you can:"
+        for choice in self.choices:
+            print choice
         print ""
         if self.parent is None and self.child is None:
             print "  This is the first, last, and therefore only event in your lifepath."
@@ -62,17 +73,20 @@ class LifepathEvent:
 
         if recurse is True and self.child is not None:
             print ""
-            self.child.display(True)
+            self.child.debug_display(True)
 
+# Lifepath test code
 def lifepath_test():
     lifepath = Lifepath()
     lifepath.start(LifepathEvent('Warriors'))
     lifepath.initial.choose('Wizards')
     lifepath.initial.child.choose('Hugs')
-    lifepath.display()
+    lifepath.debug_display()
+    print "===DELETING HUGS==="
+    print "===INSERTING DRUGS==="
     lifepath.initial.child.child.undo()
     lifepath.initial.child.choose('Drugs')
-    lifepath.display()
+    lifepath.debug_display()
 
 if __name__ == "__main__":
     lifepath_test()
