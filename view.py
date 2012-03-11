@@ -9,12 +9,16 @@ class Component():
     def rd(self, x, y, glyph):
         self.window.addch(y, x, glyph)
 
+    # Rectangular string function.
+    def rds(self, x, y, string):
+        self.window.addstr(y, x, string)
+
     # Hex drawing function.
     def hd(self, x, y, glyph):
         # We do two tricks to make this hex-y:
         #     * multiply the x position by two.
         #     * offset every other row by 1.
-        self.window.addch(y, (2*x) + y % 2, glyph)
+        self.window.addch(y, 2*x + y, glyph)
 
 class MainMap(Component):
     def __init__(self, window, x, y):
