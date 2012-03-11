@@ -13,10 +13,10 @@ SW = (-1, 1)
 CW = (-1, 0)
 
 def add_view(view):
-    components.append(view)
+    views.append(view)
 
 def remove_view(view):
-    components.remove(view)
+    views.remove(view)
 
 def switch_focus(new):
     focus = new
@@ -70,11 +70,12 @@ mainmap.draw()
 
 chargen = Chargen(stdscr, 62, 24, 0, 0)
 stats = Stats(stdscr, 20, 24, 60, 0)
-components = []
+
+views = []
 add_view(chargen)
 add_view(stats)
 add_view(mainmap)
-#components = [chargen, stats, mainmap]
+
 focus = chargen
 
 while 1:
@@ -106,10 +107,10 @@ while 1:
             chargen.selector.choose()
             remove_view(chargen)
 
-    # Clear screen and tell components to draw themselves.
+    # Clear screen and tell views to draw themselves.
     stdscr.clear()
-    for component in components:
-        component.draw()
+    for view in views:
+        view.draw()
 
     # All non-component drawing is handled below.
 

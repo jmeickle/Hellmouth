@@ -21,7 +21,7 @@ class Selector():
     def choose(self):
         self.parent.selector = self.choice
 
-class Component():
+class View():
 
     def __init__(self, window, x, y, startx, starty):
         self.window = window.subwin(y, x, starty, startx)
@@ -40,9 +40,9 @@ class Component():
     def hd(self, x, y, glyph):
         self.window.addch(y, 2*x + y, glyph)
 
-class MainMap(Component):
+class MainMap(View):
     def __init__(self, window, x, y, startx, starty):
-        Component.__init__(self, window, x, y, startx, starty)
+        View.__init__(self, window, x, y, startx, starty)
         self.map = None
         self.actors = []
         self.player = None
@@ -81,9 +81,9 @@ class MainMap(Component):
 
         self.window.refresh()
 
-class Stats(Component):
+class Stats(View):
     def __init__(self, window, x, y, startx, starty):
-        Component.__init__(self, window, x, y, startx, starty)
+        View.__init__(self, window, x, y, startx, starty)
 
     def draw(self):
         self.rds(0, 1, "HP: 5")
@@ -92,9 +92,9 @@ class Stats(Component):
         self.rds(0, 4, "IQ: 15")
         self.rds(0, 5, "HT: 15")
 
-class Chargen(Component):
+class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
-        Component.__init__(self, window, x, y, startx, starty)
+        View.__init__(self, window, x, y, startx, starty)
         self.selector = Selector(self, 5)
         self.lifepath = Lifepath()
 
@@ -105,5 +105,5 @@ class Chargen(Component):
         else:
             self.rds(0, 5, "Final choice: %s" % self.selector)
 
-#class MiniMap(Component):
-#class Health(Component):
+#class MiniMap(View):
+#class Health(View):
