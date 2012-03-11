@@ -15,9 +15,6 @@ class Component():
 
     # Hex drawing function.
     def hd(self, x, y, glyph):
-        # We do two tricks to make this hex-y:
-        #     * multiply the x position by two.
-        #     * offset every other row by 1.
         self.window.addch(y, 2*x + y, glyph)
 
 class MainMap(Component):
