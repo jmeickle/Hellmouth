@@ -2,9 +2,8 @@ from actor import Actor
 
 class Player(Actor):
     def __init__(self):
-        Actor.__init__(self)
+        Actor.__init__(self, 15, 15)
         self.hp = 1
-        self.pos = 3, 3
         self.glyph = '@'
         self.map = None
 
