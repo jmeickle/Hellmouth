@@ -1,15 +1,24 @@
 # Contains all lifepath events.
 # 'name' (str)    : Display name during character generation. Defaults to key name.
 # 'text' (str)    : Display text during character generation.
-# 'dump' (str)    : Alternate text during character dumps.
+# 'short' (str)   : Alternate short text during character dumps.
 # 'effects' (dict): Dictionary of skill/advantage changes caused by the event.
-# 'years (int)    : Number of years the event takes duirng character generation.
+# 'years' (int)   : Number of years the event takes duirng character generation.
+# 'age' (int)     : Age category the event fits into.
 
 eventdata = {
 # Start of data
 'Wizards' : {
-    'name': "~Wizards~",
-    'text' : "Your parents were mighty wizards.",},
+    'name': "Wizards",
+    'text' : "Your parents were mighty wizards.",
+    'effects' : {'HP':5, 'ST':1}
+},
+'Warriors' : {
+    'text' : "Your parents were fearsome warriors.",},
+'Hugs' : {
+    'text' : "You embraced the path of hugs.",},
+'Drugs' : {
+    'text' : "You embraced the path of drugs.",},
 'Warriors' : {
     'text' : "Your parents were fearsome warriors.",},
 # Close of data
