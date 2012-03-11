@@ -1,7 +1,9 @@
 import curses
+from actor import Actor
 from player import Player
 from map import Map
 from view import MainMap, Stats
+from hexes import dist
 
 NW = (0, -1)
 NE = (1, -1)
@@ -33,18 +35,28 @@ def newwin(window, x, y, startx, starty):
 stdscr = init()
 
 player = Player()
+dummy = Actor(10, 10)
+dummy2 = Actor(12, 12)
+dummy3 = Actor(15, 15)
+dummy4 = Actor(20, 20)
+
 map = Map()
-map.loadmap(5, 5,".")
+map.loadmap(50, 50, ".")
 
 player.map = map
 
-mainmap = MainMap(newwin(stdscr, 20, 20, 2, 2), map.width, map.height)
+mainmap = MainMap(stdscr, 62, 24, 0, 0)
 mainmap.map = map
+mainmap.player = player
 mainmap.add(player)
+mainmap.add(dummy)
+mainmap.add(dummy2)
+mainmap.add(dummy3)
+mainmap.add(dummy4)
 #mainmap.window.overlay(stdscr)
 mainmap.draw()
 
-stats = Stats(stdscr, 60, 0)
+stats = Stats(stdscr, 20, 24, 60, 0)
 
 while 1:
     # Keyin stuff
@@ -71,6 +83,15 @@ while 1:
     stats.draw()
 
     # DEBUG: Print current position.
-    stdscr.addstr(12, 12, "POSITION")
-    stdscr.addstr(13, 12, '%s, %s' % player.pos)
+    stdscr.addstr(22, 59, "POSITION")
+    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
+
+    # DEBUG: Print distance from starting point.
+    stdscr.addstr(20, 59, "DIST")
+    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
+
+    # DEBUG: Print current key.
+    stdscr.addstr(22, 69, "KEYIN")
+    stdscr.addch(23, 69, chr(c))
+
     stdscr.refresh()
