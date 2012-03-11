@@ -1,3 +1,4 @@
+from lifepath import Lifepath
 viewrange = 10
 
 class Component():
@@ -71,7 +72,17 @@ class Stats(Component):
         self.rds(0, 4, "IQ: 15")
         self.rds(0, 5, "HT: 15")
 
-#class MiniMap(Component):
+class Chargen(Component):
+    def __init__(self, window, x, y, startx, starty):
+        Component.__init__(self, window, x, y, startx, starty)
+        self.lifepath = Lifepath()
 
-#class Stats:
-#    def
+    def draw(self):
+        self.rds(0, 10, lifepath)
+        self.rds(0, 2, "ST: 15")
+        self.rds(0, 3, "DX: 15")
+        self.rds(0, 4, "IQ: 15")
+        self.rds(0, 5, "HT: 15")
+
+#class MiniMap(Component):
+#class Health(Component):
