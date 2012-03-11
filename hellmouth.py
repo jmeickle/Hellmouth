@@ -1,7 +1,14 @@
 import curses
 from player import Player
 from map import Map
-from view import MainMap
+from view import MainMap, Stats
+
+NW = (0, -1)
+NE = (1, -1)
+CE = (1, 0)
+SE = (0, 1)
+SW = (-1, 1)
+CW = (-1, 0)
 
 def init():
     stdscr = curses.initscr()
