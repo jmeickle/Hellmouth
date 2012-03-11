@@ -12,29 +12,36 @@ CW = (-1, 0)
 
 def init():
     stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(1)
+    curses.start_color() # Permit colors.
+    curses.noecho() # Don't display typed keys.
+    curses.cbreak()  # Don't wait for enter.
+    stdscr.keypad(1) # Turn on keypad mode.
     curses.curs_set(0) # Make cursor invisible.
     return stdscr
 
+# For exiting cleanly.
 def gameover():
     curses.echo()
     curses.nocbreak()
     stdscr.keypad(0)
     curses.endwin()
 
+def newwin(window, x, y, startx, starty):
+    win = window.subwin(y, x, starty, startx)
+    return win
+
 stdscr = init()
 
 player = Player()
 map = Map()
-map.loadmap(10, 10,".")
+map.loadmap(5, 5,".")
 
 player.map = map
 
-mainmap = MainMap(stdscr, map.width, map.height)
+mainmap = MainMap(newwin(stdscr, 20, 20, 2, 2), map.width, map.height)
 mainmap.map = map
 mainmap.add(player)
+#mainmap.window.overlay(stdscr)
 mainmap.draw()
 
 stats = Stats(stdscr, 60, 0)
@@ -67,7 +74,3 @@ while 1:
     stdscr.addstr(12, 12, "POSITION")
     stdscr.addstr(13, 12, '%s, %s' % player.pos)
     stdscr.refresh()
-
-def newwin(x, y):
-    win = curses.newwin(y, x, starty, startx)
-    return win
