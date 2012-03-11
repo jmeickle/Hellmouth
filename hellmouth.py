@@ -2,7 +2,7 @@ import curses
 from actor import Actor
 from player import Player
 from map import Map
-from view import MainMap, Stats
+from view import MainMap, Stats, Chargen
 from hexes import dist
 
 NW = (0, -1)
@@ -11,6 +11,10 @@ CE = (1, 0)
 SE = (0, 1)
 SW = (-1, 1)
 CW = (-1, 0)
+
+def switch_focus(new):
+    focus = new
+    stdscr.addstr(10, 59, "SWITCHED FOCUS")
 
 def init():
     stdscr = curses.initscr()
@@ -34,17 +38,19 @@ def newwin(window, x, y, startx, starty):
 
 stdscr = init()
 
+# Very basic map init
+map = Map()
+map.loadmap(50, 50, ".")
+
 player = Player()
+player.map = map
+
 dummy = Actor(10, 10)
 dummy2 = Actor(12, 12)
 dummy3 = Actor(15, 15)
 dummy4 = Actor(20, 20)
 
-map = Map()
-map.loadmap(50, 50, ".")
-
-player.map = map
-
+# Map screen init
 mainmap = MainMap(stdscr, 62, 24, 0, 0)
 mainmap.map = map
 mainmap.player = player
@@ -56,7 +62,11 @@ mainmap.add(dummy4)
 #mainmap.window.overlay(stdscr)
 mainmap.draw()
 
+chargen = Chargen(stdscr, 62, 24, 0, 0)
 stats = Stats(stdscr, 20, 24, 60, 0)
+
+components = [chargen, stats, mainmap]
+focus = chargen
 
 while 1:
     # Keyin stuff
@@ -64,6 +74,8 @@ while 1:
     if c == ord('q'):
         gameover()
         break
+    if c == 27: # Escape key
+        switch_focus(mainmap)
     elif c == ord('7'):
         player.move(NW)
     elif c == ord('4'):
@@ -76,22 +88,33 @@ while 1:
         player.move(CE)
     elif c == ord('3'):
         player.move(SE)
+    elif hasattr(chargen.selector, 'parent') is True:
+        if c == curses.KEY_RIGHT:
+            chargen.selector.next()
+        elif c == curses.KEY_LEFT:
+            chargen.selector.prev()
+        elif c == curses.KEY_ENTER or c == ord('\n'):
+            chargen.selector.choose()
 
     # Clear screen and tell components to draw themselves.
     stdscr.clear()
-    mainmap.draw()
-    stats.draw()
+    for component in components:
+        component.draw()
+
+    # All non-component drawing is handled below.
 
     # DEBUG: Print current position.
     stdscr.addstr(22, 59, "POSITION")
-    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
+#    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
 
     # DEBUG: Print distance from starting point.
     stdscr.addstr(20, 59, "DIST")
-    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
+#    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
 
     # DEBUG: Print current key.
     stdscr.addstr(22, 69, "KEYIN")
-    stdscr.addch(23, 69, chr(c))
+    if c < 256 and c > 31: # i.e., ASCII glyphs
+        stdscr.addch(23, 69, chr(c))
 
+    # Refresh the display.
     stdscr.refresh()
