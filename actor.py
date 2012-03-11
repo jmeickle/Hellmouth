@@ -1,6 +1,7 @@
 class Actor:
-    def __init__(self):
+    def __init__(self, x, y):
         self.glyph = 'x'
+        self.pos = (x, y)
 
     def move(self, dir):
         pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
