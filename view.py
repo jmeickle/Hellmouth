@@ -37,6 +37,7 @@ class MainMap(Component):
         # Draw the actors
         for actor in self.actors:
             self.hd(actor.pos[0], actor.pos[1], actor.glyph)
+        self.window.refresh()
 
 class Stats(Component):
     def __init__(self, window, x, y):
