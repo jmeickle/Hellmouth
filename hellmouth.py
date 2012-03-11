@@ -12,6 +12,12 @@ SE = (0, 1)
 SW = (-1, 1)
 CW = (-1, 0)
 
+def add_view(view):
+    components.append(view)
+
+def remove_view(view):
+    components.remove(view)
+
 def switch_focus(new):
     focus = new
     stdscr.addstr(10, 59, "SWITCHED FOCUS")
@@ -64,8 +70,11 @@ mainmap.draw()
 
 chargen = Chargen(stdscr, 62, 24, 0, 0)
 stats = Stats(stdscr, 20, 24, 60, 0)
-
-components = [chargen, stats, mainmap]
+components = []
+add_view(chargen)
+add_view(stats)
+add_view(mainmap)
+#components = [chargen, stats, mainmap]
 focus = chargen
 
 while 1:
@@ -95,6 +104,7 @@ while 1:
             chargen.selector.prev()
         elif c == curses.KEY_ENTER or c == ord('\n'):
             chargen.selector.choose()
+            remove_view(chargen)
 
     # Clear screen and tell components to draw themselves.
     stdscr.clear()
@@ -105,11 +115,11 @@ while 1:
 
     # DEBUG: Print current position.
     stdscr.addstr(22, 59, "POSITION")
-#    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
+    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
 
     # DEBUG: Print distance from starting point.
     stdscr.addstr(20, 59, "DIST")
-#    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
+    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
 
     # DEBUG: Print current key.
     stdscr.addstr(22, 69, "KEYIN")
