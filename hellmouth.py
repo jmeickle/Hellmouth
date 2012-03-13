@@ -108,14 +108,14 @@ while 1:
         player.move(CE)
     elif c == ord('3'):
         player.move(SE)
-    elif hasattr(chargen.selector, 'parent') is True:
-        if c == curses.KEY_RIGHT:
-            chargen.selector.next()
-        elif c == curses.KEY_LEFT:
-            chargen.selector.prev()
-        elif c == curses.KEY_ENTER or c == ord('\n'):
-            chargen.selector.choose()
-            remove_view(chargen)
+#    elif hasattr(chargen.selector, 'parent') is True:
+#        if c == curses.KEY_RIGHT:
+#            chargen.selector.next()
+#        elif c == curses.KEY_LEFT:
+#            chargen.selector.prev()
+#        elif c == curses.KEY_ENTER or c == ord('\n'):
+#            chargen.selector.choose()
+#            remove_view(chargen)
 
     # Clear screen and tell views to draw themselves.
     stdscr.clear()
