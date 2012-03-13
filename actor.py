@@ -1,7 +1,7 @@
 class Actor:
     def __init__(self, x, y, glyph='x'):
         self.glyph = glyph
-        self.pos = (x, y)
+        self.pos = [x, y]
 
         self.stats = {}
         self.traits = {}
