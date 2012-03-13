@@ -1,3 +1,4 @@
+import random
 from random import randint
 
 class Map:
@@ -7,12 +8,13 @@ class Map:
         self.width = None
 
     def loadmap(self, x, y):
-        content = ("~", ".", ",")
+        random.seed("TEST")
+        content = ("~", ".", ",", "!", "?")
 
         self.cells = []
         for Y in range(y):
             self.cells.append([])
             for X in range(x):
-                self.cells[Y].append(content[randint(0, 2)])
+                self.cells[Y].append(content[randint(0, 4)])
         self.height = Y+1
         self.width = X+1
