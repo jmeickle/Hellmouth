@@ -3,7 +3,7 @@ from actor import Actor
 from player import Player
 from map import Map
 from view import MainMap, Stats, Chargen
-from hexes import dist
+import hex
 
 NW = (0, -1)
 NE = (1, -1)
@@ -120,7 +120,7 @@ while 1:
 
     # DEBUG: Print distance from starting point.
     stdscr.addstr(13, 59, "DIST FROM (15, 15)")
-    stdscr.addstr(14, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
+    stdscr.addstr(14, 59, "[%d]" % hex.dist(player.pos[0], player.pos[1], 15, 15))
 
     # DEBUG: Print current key.
     stdscr.addstr(16, 59, "KEYIN")
