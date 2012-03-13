@@ -102,21 +102,48 @@ class Stats(View):
         self.y_acc = 0
 
     def draw(self):
+        # Col 1
         self.x_acc = 0
         self.y_acc = 0
 
-        self.line("HP: 5")
-        self.line("")
-        self.line("HP: 5")
-        self.line("HP: 5")
-        self.line("HP: 5")
-        self.line("HP: 5")
-        self.x_acc += 10
+        self.line("-"*12)
+        for x in range(10):
+            self.line("-"+" "*10+"-")
+        self.line("-"*12)
+
+        # Col 2
+        self.x_acc += 12
         self.y_acc = 0
-        self.line("HP: 5")
-        self.line("HP: 5")
-        self.line("HP: 5")
-        self.line("HP: 5")
+
+        self.line("HP: %+3d/%2d" % (-50, 10))
+        self.line("FP: %2d/%2d" % (10, 12))
+        self.line("MP: 5")
+        self.line("")
+        self.line("Block: 5")
+        self.line("Dodge: 5")
+        self.line("Parry: 5")
+
+        # Col 3
+        self.x_acc += 12
+        self.y_acc = 0
+
+        self.line("ST: 5")
+        self.line("DX: 5")
+        self.line("IQ: 5")
+        self.line("HT: 5")
+        self.line("")
+        self.line("Will: 5")
+        self.line("Perc.: 5")
+        self.line("")
+        self.line("Move: 5")
+        self.line("Speed: 5")
+
+        # Combat Log
+        self.x_acc = 0
+        self.y_acc += 2
+
+        for x in range(10):
+            self.line("Sample combat log text, line %d" % x)
 
     def line(self, str):
         self.rds(0+self.x_acc, 0+self.y_acc, str)
