@@ -27,6 +27,8 @@ class View():
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
         self.y = starty
+        self.x_acc = 0
+        self.y_acc = 0
 
     # Rectangular character function.
     def rd(self, x, y, glyph):
@@ -35,6 +37,11 @@ class View():
     # Rectangular string function.
     def rds(self, x, y, string):
         self.window.addstr(y, x, string)
+
+    # Draw a line; only relevant for text-y views.
+    def line(self, str):
+        self.rds(0+self.x_acc, 0+self.y_acc, str)
+        self.y_acc += 1
 
 class MainMap(View):
     def __init__(self, window, x, y, startx, starty):
@@ -98,8 +105,6 @@ class MainMap(View):
 class Stats(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
-        self.x_acc = 0
-        self.y_acc = 0
 
     def draw(self):
         # Col 1
@@ -145,10 +150,6 @@ class Stats(View):
         for x in range(10):
             self.line("Sample combat log text, line %d" % x)
 
-    def line(self, str):
-        self.rds(0+self.x_acc, 0+self.y_acc, str)
-        self.y_acc += 1
-
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
@@ -164,3 +165,11 @@ class Chargen(View):
 
 #class MiniMap(View):
 #class Health(View):
+
+class Status(View):
+    def __init__(self, window, x, y, startx, starty):
+        View.__init__(self, window, x, y, startx, starty)
+
+    def draw(self):
+        self.line("Pain")
+        self.line("Shock")
