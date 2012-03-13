@@ -48,24 +48,19 @@ class MainMap(View):
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
-        self.center = self.player.pos
+        return
 
     # Hex character function, for maps only.
     def hd(self, x, y, glyph):
         # X/Y are offsets from the map center
-        X = x - self.center[0]
-        Y = y - self.center[1]
-        print X, Y, glyph
+        X = x - self.player.pos[0]
+        Y = y - self.player.pos[1]
         self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph)
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, x, y):
-        # DEBUG:
-        # x = min(self.map.height-1, x+self.center[0])
-        # y = min(self.map.height-1, y+self.center[1])
-        # return chr(48 + x % 10)
-        x += self.center[0]
-        y += self.center[1]
+#        x += self.player.pos[0]
+#        y += self.player.pos[1]
         return self.map.cells[min(self.map.height-1, y)]\
                              [min(self.map.width-1, x)]
 
@@ -74,15 +69,28 @@ class MainMap(View):
 
     def draw(self):
         hexes = []
-        hex.iterator(hexes, self.center[0], self.center[1], self.viewrange)
+        hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.viewrange)
+
+        minX = 0
+        maxX = len(self.map.cells[0])
+        minY = 0
+        maxY = len(self.map.cells)
+
+#        print hexes
+#        exit()
 
         for h in hexes:
-            self.hd(h[0], h[1], self.get_glyph(h[0], h[1]))
+            if h[0] < minX or h[0] > maxX or h[1] < minY or h[1] > maxY:
+                glyph = 'X'
+            else:
+                glyph = self.get_glyph(h[0], h[1])
+
+            self.hd(h[0], h[1], glyph)
 
         # Draw the actors
 #        for actor in self.actors:
-#            self.hd(self.viewrange+1+actor.pos[0]-self.center[0],\
-#                    self.viewrange+1+actor.pos[1]-self.center[1],\
+#            self.hd(self.viewrange+1+actor.pos[0]-self.player.pos[0],\
+#                    self.viewrange+1+actor.pos[1]-self.player.pos[1],\
 #                    actor.glyph)
 
         self.window.refresh()
