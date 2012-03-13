@@ -16,7 +16,7 @@ def dist(x1, y1, x2, y2):
 
     return dist
 
-def hex_iterator(map, x, y, rank, debug=False, curr=0):
+def iterator(map, x, y, rank, debug=False, curr=0):
     if debug is True:
         print "Rank %d Hexagon:" % curr,
     for Y in range(-curr, curr+1):
