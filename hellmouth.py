@@ -53,7 +53,7 @@ player.map = map
 
 dummy = Actor(10, 10)
 dummy2 = Actor(12, 12)
-dummy3 = Actor(15, 15)
+dummy3 = Actor(15, 15, 'O')
 dummy4 = Actor(20, 20)
 
 # Map screen init
@@ -115,17 +115,17 @@ while 1:
     # All non-component drawing is handled below.
 
     # DEBUG: Print current position.
-    stdscr.addstr(22, 59, "POSITION")
-    stdscr.addstr(23, 59, '(%s, %s)' % player.pos)
+    stdscr.addstr(10, 59, "POSITION")
+    stdscr.addstr(11, 59, '(%s, %s)' % player.pos)
 
     # DEBUG: Print distance from starting point.
-    stdscr.addstr(20, 59, "DIST")
-    stdscr.addstr(21, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
+    stdscr.addstr(13, 59, "DIST FROM (15, 15)")
+    stdscr.addstr(14, 59, "[%d]" % dist(player.pos[0], player.pos[1], 15, 15))
 
     # DEBUG: Print current key.
-    stdscr.addstr(22, 69, "KEYIN")
+    stdscr.addstr(16, 59, "KEYIN")
     if c < 256 and c > 31: # i.e., ASCII glyphs
-        stdscr.addch(23, 69, chr(c))
+        stdscr.addch(17, 59, chr(c))
 
     # Refresh the display.
     stdscr.refresh()
