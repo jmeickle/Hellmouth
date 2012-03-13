@@ -133,14 +133,14 @@ class Stats(View):
         self.line("HT: 5")
         self.line("")
         self.line("Will: 5")
-        self.line("Perc.: 5")
+        self.line("Per.: 5")
         self.line("")
         self.line("Move: 5")
-        self.line("Speed: 5")
+        self.line("Spd.: 5")
 
         # Combat Log
         self.x_acc = 0
-        self.y_acc += 2
+        self.y_acc += 4
 
         for x in range(10):
             self.line("Sample combat log text, line %d" % x)
