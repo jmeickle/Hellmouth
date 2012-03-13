@@ -46,7 +46,7 @@ stdscr = init()
 
 # Very basic map init
 map = Map()
-map.loadmap(50, 50, ".")
+map.loadmap(50, 50)
 
 player = Player()
 player.map = map
