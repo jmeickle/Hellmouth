@@ -1,3 +1,5 @@
+from random import randint
+
 class Map:
     def __init__(self):
         self.cells = None
@@ -11,6 +13,6 @@ class Map:
         for Y in range(y):
             self.cells.append([])
             for X in range(x):
-                self.cells[Y].append(content[X%3])
+                self.cells[Y].append(content[randint(0, 2)])
         self.height = Y+1
         self.width = X+1
