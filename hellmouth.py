@@ -125,17 +125,17 @@ while 1:
     # All non-component drawing is handled below.
 
     # DEBUG: Print current position.
-    stdscr.addstr(10, 59, "POSITION")
-    stdscr.addstr(11, 59, '(%s, %s)' % player.pos)
+    #stdscr.addstr(10, 59, "POSITION")
+    #stdscr.addstr(11, 59, '(%s, %s)' % player.pos)
 
     # DEBUG: Print distance from starting point.
-    stdscr.addstr(13, 59, "DIST FROM (15, 15)")
-    stdscr.addstr(14, 59, "[%d]" % hex.dist(player.pos[0], player.pos[1], 15, 15))
+    #stdscr.addstr(13, 59, "DIST FROM (15, 15)")
+    #stdscr.addstr(14, 59, "[%d]" % hex.dist(player.pos[0], player.pos[1], 15, 15))
 
     # DEBUG: Print current key.
-    stdscr.addstr(16, 59, "KEYIN")
-    if c < 256 and c > 31: # i.e., ASCII glyphs
-        stdscr.addch(17, 59, chr(c))
+    #stdscr.addstr(16, 59, "KEYIN")
+    #if c < 256 and c > 31: # i.e., ASCII glyphs
+    #    stdscr.addch(17, 59, chr(c))
 
     # Refresh the display.
     stdscr.refresh()
