@@ -31,11 +31,13 @@ def iterator(map, x, y, rank, debug=False, curr=0):
             if dist(x, y, x+X, y+Y) == curr:
                 if debug is True:
                     print "(%2d,%2d)" % (X, Y),
-                map[x+X][y+Y] = curr
+                    map[x+X][y+Y] = curr
+                else:
+                    map.append((x+X, y+Y))
     if debug is True:
         print "\n"
     if curr < rank:
-        hex_iterator(map, x, y, rank, debug, curr+1)
+        iterator(map, x, y, rank, debug, curr+1)
 
 # Simple tool to test hex code.
 # Takes a center point, hex size, and map size.
@@ -51,7 +53,7 @@ def hex_tester(x, y, rank, height, width):
             map[Y].append(".")
 
     print "Array coordinates:"
-    hex_iterator(map,x,y,rank,debug=True)
+    iterator(map,x,y,rank,debug=True)
 
     print "Distance in array representation:"
     for Y in range(0,height):
