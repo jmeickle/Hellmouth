@@ -66,6 +66,7 @@ mainmap.add(dummy2)
 mainmap.add(dummy3)
 mainmap.add(dummy4)
 #mainmap.window.overlay(stdscr)
+mainmap.ready()
 mainmap.draw()
 
 chargen = Chargen(stdscr, 62, 24, 0, 0)
