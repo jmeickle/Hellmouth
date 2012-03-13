@@ -1,3 +1,4 @@
+import math
 import hex
 from lifepath import Lifepath
 
@@ -41,8 +42,9 @@ class MainMap(View):
         self.map = None
         self.actors = []
         self.player = None
-        self.viewport = (11, 11)
-        self.viewrange = 7
+        # -1 to account for 0,0 start
+        self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
+        self.viewrange = 11
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
