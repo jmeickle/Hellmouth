@@ -70,8 +70,10 @@ class MainMap(View):
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, x, y):
-#        x += self.player.pos[0]
-#        y += self.player.pos[1]
+        # HACK:
+        if x is self.player.pos[0] and y is self.player.pos[1]:
+            return "@"
+
         return self.map.cells[min(self.map.height-1, y)]\
                              [min(self.map.width-1, x)]
 
