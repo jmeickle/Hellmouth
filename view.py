@@ -86,7 +86,7 @@ class Stats(View):
         View.__init__(self, window, x, y, startx, starty)
 
     def draw(self):
-        self.rds(0, 1, "HP: 5")
+        self.rds(0, 0, "HP: 5")
         self.rds(0, 2, "ST: 15")
         self.rds(0, 3, "DX: 15")
         self.rds(0, 4, "IQ: 15")
@@ -101,9 +101,9 @@ class Chargen(View):
     def draw(self):
 #        self.rds(0, 10, lifepath)
         if hasattr(self.selector, 'parent'):
-            self.rds(0, 5, "Currently selected: %s" % self.selector.choice)
+            self.rds(0, 23, "Currently selected option: %s" % self.selector.choice)
         else:
-            self.rds(0, 5, "Final choice: %s" % self.selector)
+            self.rds(0, 23, "Final option was: %s" % self.selector)
 
 #class MiniMap(View):
 #class Health(View):
