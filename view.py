@@ -27,6 +27,7 @@ class View():
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
         self.y = starty
+        self.redraw = True
 
     # Rectangular character function.
     def rd(self, x, y, glyph):
@@ -98,13 +99,30 @@ class MainMap(View):
 class Stats(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
+        self.x_acc = 0
+        self.y_acc = 0
 
     def draw(self):
-        self.rds(0, 0, "HP: 5")
-        self.rds(0, 2, "ST: 15")
-        self.rds(0, 3, "DX: 15")
-        self.rds(0, 4, "IQ: 15")
-        self.rds(0, 5, "HT: 15")
+        self.x_acc = 0
+        self.y_acc = 0
+
+        self.line("HP: 5")
+        self.line("")
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.x_acc += 10
+        self.y_acc = 0
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.line("HP: 5")
+        self.redraw = False
+
+    def line(self, str):
+        self.rds(0+self.x_acc, 0+self.y_acc, str)
+        self.y_acc += 1
 
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
