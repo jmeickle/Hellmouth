@@ -27,7 +27,6 @@ class View():
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
         self.y = starty
-        self.redraw = True
 
     # Rectangular character function.
     def rd(self, x, y, glyph):
@@ -118,7 +117,6 @@ class Stats(View):
         self.line("HP: 5")
         self.line("HP: 5")
         self.line("HP: 5")
-        self.redraw = False
 
     def line(self, str):
         self.rds(0+self.x_acc, 0+self.y_acc, str)
