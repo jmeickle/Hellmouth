@@ -42,6 +42,10 @@ def newwin(window, x, y, startx, starty):
     win = window.subwin(y, x, starty, startx)
     return win
 
+# HACK:
+term_x = 80
+term_y = 24
+
 stdscr = init()
 
 # Very basic map init
@@ -56,8 +60,11 @@ dummy2 = Actor(12, 12)
 dummy3 = Actor(15, 15, 'O')
 dummy4 = Actor(20, 20)
 
+# HACK:
+mainmap_width = 45
+
 # Map screen init
-mainmap = MainMap(stdscr, 62, 24, 0, 0)
+mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
 mainmap.map = map
 mainmap.player = player
 mainmap.add(player)
@@ -69,15 +76,17 @@ mainmap.add(dummy4)
 mainmap.ready()
 mainmap.draw()
 
-chargen = Chargen(stdscr, 62, 24, 0, 0)
-stats = Stats(stdscr, 20, 24, 60, 0)
+#chargen = Chargen(stdscr, 62, term_y, 0, 0)
+# HACK:
+spacing = 2
+stats = Stats(stdscr, 80-mainmap_width-spacing, term_y, mainmap_width+spacing, 0)
 
 views = []
-add_view(chargen)
+#add_view(chargen)
 add_view(stats)
 add_view(mainmap)
 
-focus = chargen
+#focus = chargen
 
 while 1:
     # Keyin stuff
