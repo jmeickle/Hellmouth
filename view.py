@@ -43,6 +43,10 @@ class View():
         self.rds(0+self.x_acc, 0+self.y_acc, str)
         self.y_acc += 1
 
+    def reset(self):
+        self.x_acc = 0
+        self.y_acc = 0
+
 class MainMap(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
@@ -108,8 +112,7 @@ class Stats(View):
 
     def draw(self):
         # Col 1
-        self.x_acc = 0
-        self.y_acc = 0
+        self.reset()
 
         self.line("-"*12)
         for x in range(10):
@@ -120,9 +123,9 @@ class Stats(View):
         self.x_acc += 12
         self.y_acc = 0
 
-        self.line("HP: %+3d/%2d" % (-50, 10))
-        self.line("FP: %2d/%2d" % (10, 12))
-        self.line("MP: 5")
+        self.line("HP: %3d/%2d" % (-50, 10))
+        self.line("FP: %3d/%2d" % (10, 12))
+        self.line("MP: %3d/%2d" % (8, 15))
         self.line("")
         self.line("Block: 5")
         self.line("Dodge: 5")
@@ -171,5 +174,8 @@ class Status(View):
         View.__init__(self, window, x, y, startx, starty)
 
     def draw(self):
+        self.reset()
+        self.line("")
+        self.line("")
         self.line("Pain")
         self.line("Shock")
