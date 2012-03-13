@@ -2,7 +2,7 @@ import curses
 from actor import Actor
 from player import Player
 from map import Map
-from view import MainMap, Stats, Chargen
+from view import MainMap, Stats, Chargen, Status
 import hex
 
 NW = (0, -1)
@@ -81,11 +81,14 @@ mainmap.draw()
 spacing = 2
 stats = Stats(stdscr, 80-mainmap_width-spacing, term_y, mainmap_width+spacing, 0)
 
-views = []
-#add_view(chargen)
-add_view(stats)
-add_view(mainmap)
+status_size = 5
+status = Status(stdscr, 80-mainmap_width-status_size, term_y, mainmap_width-status_size, 0)
 
+views = []
+add_view(mainmap)
+add_view(stats)
+add_view(status)
+#add_view(chargen)
 #focus = chargen
 
 while 1:
