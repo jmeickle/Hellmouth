@@ -1,5 +1,6 @@
+import hex
 from lifepath import Lifepath
-viewrange = 10
+viewrange = 4
 
 # Cycling selector.
 class Selector():
@@ -68,10 +69,12 @@ class MainMap(View):
         self.actors.append(actor)
 
     def draw(self):
-        # The +1 is so that @ = 0, 0 in viewrange.
-        for y in range(-viewrange, viewrange+1):
-            for x in range(-viewrange, viewrange+1):
-                self.hd(viewrange+x, viewrange+y, self.get_glyph(x, y))
+        hexes = []
+        hex.iterator(hexes, self.center_x(), self.center_y(), viewrange)
+
+        for h in hexes:
+            self.hd(h[0], h[1],\
+                    self.get_glyph(h[0], h[1]))
 
         # Draw the actors
         for actor in self.actors:
