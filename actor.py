@@ -108,12 +108,18 @@ class BodyPlan:
 
     # Build a body from the class information.
     def build(self):
-        for part, parent, sublocation in self.parts:
-            self.locs[part] = HitLoc(part)
+        for partname, parent, sublocation, rolls in self.parts:
+            part = HitLoc(partname)
+            self.locs[partname] = part
             if parent is not None:
-                print "Parent:", self.locs[parent].type
-                print "This:", self.locs[part].type
-                HitLoc.add_child(self.locs[parent], self.locs[part])
+               # print "Parent:", self.locs[parent].type
+               # print "This:", self.locs[partname].type
+                HitLoc.add_child(self.locs[parent], part)
+            for roll in rolls:
+                self.table[roll] = part
+#print rolls
+#for roll in rolls:
+#                self.table[roll] = part
 #                self.locs[part].parent(self.locs[parent])
 #            if sublocation is not None:
 #                self.locs[parent][2].append(part)#sublocation(part)
@@ -121,19 +127,42 @@ class BodyPlan:
 # = (self.locs[parent], part)
 
 class Humanoid(BodyPlan):
-    # Part name : (Parent part, what it's a sublocation of)
+    # These tuples represent:
+    # 1: Part name.
+    # 2: Parent part. Only list parts that have already been listed.
+    # 3: True if it's a sublocation rather than a real one.
+    # 4: Tuple representing what 3d6 rolls hit that spot.
     parts = (
-             ('Torso', None, None),
-             ('Groin', 'Torso', None),
-             ('Head', 'Torso', None),
-             ('RArm', 'Torso', None),
-             ('LArm', 'Torso', None),
-             ('RHand', 'RArm', None),
-             ('LHand', 'LArm', None),
-             ('RLeg', 'Groin', None),
-             ('LLeg', 'Groin', None),
-             ('RFoot', 'RLeg', None),
-             ('LFoot', 'LLeg', None),
+             ('Torso', None, False, [9, 10]),
+             ('Groin', 'Torso', False, [11]),
+             ('Neck', 'Torso', False, [17, 18]),
+             ('Head', 'Neck', False, [3, 4, 5]),
+             ('RArm', 'Torso', False, [8]),
+             ('LArm', 'Torso', False, [12]),
+             ('RHand', 'RArm', False, [15]),
+             ('LHand', 'LArm', False, [15],),
+             ('RLeg', 'Groin', False, [6, 7]),
+             ('LLeg', 'Groin', False, [13, 14]),
+             ('RFoot', 'RLeg', False, [16]),
+             ('LFoot', 'LLeg', False, [16]),
+    )
+
+    def __init__(self, parent):
+        BodyPlan.__init__(self, parent)
+        self.build()
+
+class Octopod(BodyPlan):
+    # See Humanoid for a description.
+    parts = (
+             ('Mantle', None, None),
+             ('Arm1', 'Mantle', None),
+             ('Arm2', 'Mantle', None),
+             ('Arm3', 'Mantle', None),
+             ('Arm4', 'Mantle', None),
+             ('Arm5', 'Mantle', None),
+             ('Arm6', 'Mantle', None),
+             ('Arm7', 'Mantle', None),
+             ('Arm8', 'Mantle', None),
     )
 
     def __init__(self, parent):
@@ -194,3 +223,15 @@ if __name__ == "__main__":
     while curr.parent is not None:
         print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
         curr = curr.parent
+
+    print "To-hit chart:"
+    print "\n".join("%s - %s" % (x[0], x[1].type) for x in sorted(testactor.body.table.items()))
+
+    #print "Connectivity test (Octo):"
+    #testactor.body = Octopod(testactor)
+    #start = "Arm1"
+    #curr = testactor.body.locs.get(start)
+    #while curr.parent is not None:
+    #    print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
+    #    curr = curr.parent
+
