@@ -28,8 +28,12 @@ class Map:
 
     # Place an object on the map.
     def put(self, obj, pos):
+        cell = self.cell(pos)
+        if cell.blocked() is True:
+            return False
+
         # Update the map
-        self.cells[pos[0]][pos[1]].add(obj)
+        cell.add(obj)
         self.queue.append(obj)
 
         # Update the object
