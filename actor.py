@@ -39,6 +39,8 @@ class Actor:
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
+        if self.map.valid(pos) is False:
+            return False
         if self.map.cell(pos).occupied() is True:
             self.attack(self.map.actor(pos))
         else:
@@ -56,8 +58,7 @@ class Actor:
     # Check move validity.
     def valid_move(self, pos):
         # Map border checking:
-        if pos[0] < 0 or pos[0] >= self.map.width \
-        or pos[1] < 0 or pos[1] >= self.map.height:
+        if self.map.valid(pos) is False:
             return False
 
         # Cell content checking:
