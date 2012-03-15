@@ -156,8 +156,8 @@ while 1:
     #if c < 256 and c > 31: # i.e., ASCII glyphs
     #    stdscr.addch(17, 59, chr(c))
 
-    # DEBUG: Print current wounds.
-    stdscr.addstr(16, 59, "WOUNDS")
+    # DEBUG: Print current torso wounds.
+    stdscr.addstr(16, 59, "TORSO WOUNDS")
     stdscr.addstr(17, 59, "%s" % player.body.locs.get("Torso").wounds)
 
     # Refresh the display.
