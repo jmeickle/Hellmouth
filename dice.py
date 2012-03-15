@@ -21,7 +21,7 @@ def roll(func, n, per=0):
 def sc(skill, mod):
     roll = _3d6()
     margin = skill + mod - roll
-    if margin > 0
+    if margin > 0:
         return SUCC, margin
     else:
         return FAIL, margin
