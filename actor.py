@@ -77,10 +77,13 @@ class Actor:
 
     # If it wasn't found in self.stats, it must need to be calculated.
     def calc_stat(self, stat):
-        func = getattr(Actor, stat)
+        func = getattr(Actor, stat.replace(' ', ''))
         return func(self)
 
     # Calculated stats:
+    def HitPoints(self):       return 33
+    def ManaPoints(self):       return 33
+    def FatiguePoints(self):       return 33
     def Will(self):       return 33
     def Perception(self): return 33
     def Move(self):       return 33
