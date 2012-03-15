@@ -74,7 +74,6 @@ class Actor:
             return self.calc_stat(stat)
         else:
             return val
-#self.calc_stat(stat))
 
     # If it wasn't found in self.stats, it must need to be calculated.
     def calc_stat(self, stat):
