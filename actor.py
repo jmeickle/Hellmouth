@@ -109,10 +109,12 @@ class BodyPlan:
     # Build a body from the class information.
     def build(self):
         for part, parent, sublocation in self.parts:
-            self.locs[part] = (part, [], [])
+            self.locs[part] = HitLoc(part)
             if parent is not None:
-                self.locs[parent][1].append(part)#child(part)
-                self.locs[part][2].append(parent)#child(part)
+                print "Parent:", self.locs[parent].type
+                print "This:", self.locs[part].type
+                HitLoc.add_child(self.locs[parent], self.locs[part])
+#                self.locs[part].parent(self.locs[parent])
 #            if sublocation is not None:
 #                self.locs[parent][2].append(part)#sublocation(part)
 
@@ -139,23 +141,56 @@ class Humanoid(BodyPlan):
         self.build()
 
 class HitLoc:
-    def __init__(self, parent, type):
-        self.name = None
-        self.HP = None
+    def __init__(self, type):
+        self.type = type
 
+        # Combat stats
+        self.HP = 0
+        self.DR = 0
+        self.wounds = []
+
+        # Connectivity
+        self.parent = None
+        self.children = []
+        self.sublocations = []
+
+        # Item-related
+        self.worn = []
+        self.held = []
+
+    # Stub: return the healthiness of the limb
+    def status(self):
+        return True
+
+    # Add a parent of this part.
+    def parent(self, part):
+        self.parent = part
+
+    # Add a child of this part.
+    def child(self, part):
+        self.children.append(part)
+
+    def sublocation(self, part):
+        self.sublocations.append(part)
+
+    def add_child(parent, child):
+        parent.children.append(child)
+        child.parent = parent
+
+# Test code
 if __name__ == "__main__":
     testactor = Actor()
     print "Stats:", testactor.stats
+
     print "Random movement choice:", choice(dirs)
+
     print "Actor's parts:"
     for index, part in testactor.body.locs.iteritems():
-#        print part
-        print "Part: %s - Children: %s - Parents:%s" % part
+        print "Part: %s - Children: %s - Parent:%s" % (part.type, part.children, part.parent)
 
+    print "Connectivity test:"
     start = "RFoot"
     curr = testactor.body.locs.get(start)
-    while curr is not None:
-        print "%s bone's connected to the %s bone..." % (curr[0], curr[2][0])
-        curr = testactor.body.locs.get(curr[2][0], None)
-        if not curr[2]:
-            curr = None
+    while curr.parent is not None:
+        print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
+        curr = curr.parent
