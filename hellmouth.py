@@ -65,6 +65,7 @@ mainmap.draw()
 # HACK:
 spacing = 2
 stats = Stats(stdscr, 80-mainmap_width-spacing, term_y, mainmap_width+spacing, 0)
+stats.player = player
 
 status_size = 5
 status = Status(stdscr, 80-mainmap_width-status_size, term_y, mainmap_width-status_size, 0)
@@ -75,6 +76,12 @@ add_view(stats)
 add_view(status)
 #add_view(chargen)
 #focus = chargen
+
+# HACK: Show the map.
+stdscr.clear()
+for view in views:
+    view.draw()
+stdscr.refresh()
 
 while 1:
     # Queue stuff
