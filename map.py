@@ -1,5 +1,5 @@
 from collections import deque
-from random import randint
+#from random import randint
 
 class Map:
     def __init__(self):
@@ -15,13 +15,14 @@ class Map:
         self.acting = None
 
     def loadmap(self, x, y):
-        content = ("~", ".", ",", "!", "?")
+#        content = ("~", ".", ",", "!", "?")
 
         self.cells = []
         for X in range(x):
             self.cells.append([])
             for Y in range(y):
-                self.cells[X].append(Cell(content[randint(0, 4)]))
+                self.cells[X].append(Cell())
+#content[randint(0, 4)]))
         self.width = X+1
         self.height = Y+1
 
@@ -37,11 +38,8 @@ class Map:
         return obj
 
 class Cell:
-    def __init__(self, glyph):
-        if glyph is None:
-            self.glyph = 'X'
-        else:
-            self.glyph = glyph
+    def __init__(self, glyph='.'):
+        self.glyph = glyph
         self.monster = None
 
     # Add a monster to a cell.
