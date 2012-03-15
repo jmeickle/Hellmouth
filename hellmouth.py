@@ -51,15 +51,12 @@ from define import Color
 
 # Very basic map init
 map = Map()
-map.loadmap(50, 50)
+map.loadmap(20, 20)
 
 player = map.put(Player(), (15, 15))
 player.map = map
 
-dummy = map.put(Actor(), (5, 5))
-dummy2 = map.put(Actor(), (8, 3))
-dummy3 = map.put(Actor(), (2, 1))
-dummy4 = map.put(Actor(), (3, 4))
+dummy = map.put(Actor(), (0, 3))
 
 # HACK:
 mainmap_width = 45
