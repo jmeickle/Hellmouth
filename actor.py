@@ -112,8 +112,9 @@ class BodyPlan:
             self.locs[part] = (part, [], [])
             if parent is not None:
                 self.locs[parent][1].append(part)#child(part)
-            if sublocation is not None:
-                self.locs[parent][2].append(part)#sublocation(part)
+                self.locs[part][2].append(parent)#child(part)
+#            if sublocation is not None:
+#                self.locs[parent][2].append(part)#sublocation(part)
 
 # = (self.locs[parent], part)
 
@@ -149,4 +150,12 @@ if __name__ == "__main__":
     print "Actor's parts:"
     for index, part in testactor.body.locs.iteritems():
 #        print part
-        print "Part: %s\nChildren: %s\nSublocations:%s" % part
+        print "Part: %s - Children: %s - Parents:%s" % part
+
+    start = "RFoot"
+    curr = testactor.body.locs.get(start)
+    while curr is not None:
+        print "%s bone's connected to the %s bone..." % (curr[0], curr[2][0])
+        curr = testactor.body.locs.get(curr[2][0], None)
+        if not curr[2]:
+            curr = None
