@@ -56,10 +56,10 @@ map.loadmap(50, 50)
 player = map.put(Player(), (15, 15))
 player.map = map
 
-dummy = map.put(Actor(), (5, 5)
-dummy = map.put(Actor(), (8, 3)
-dummy = map.put(Actor(), (2, 1)
-dummy = map.put(Actor(), (3, 4)
+dummy = map.put(Actor(), (5, 5))
+dummy2 = map.put(Actor(), (8, 3))
+dummy3 = map.put(Actor(), (2, 1))
+dummy4 = map.put(Actor(), (3, 4))
 
 # HACK:
 mainmap_width = 45
@@ -68,11 +68,6 @@ mainmap_width = 45
 mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
 mainmap.map = map
 mainmap.player = player
-mainmap.add(player)
-mainmap.add(dummy)
-mainmap.add(dummy2)
-mainmap.add(dummy3)
-mainmap.add(dummy4)
 #mainmap.window.overlay(stdscr)
 mainmap.ready()
 mainmap.draw()

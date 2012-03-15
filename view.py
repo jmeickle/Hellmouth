@@ -51,7 +51,6 @@ class MainMap(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
         self.map = None
-        self.actors = []
         self.player = None
         # -1 to account for 0,0 start
         self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
@@ -76,9 +75,6 @@ class MainMap(View):
 
         return self.map.cells[min(self.map.height-1, y)]\
                              [min(self.map.width-1, x)]
-
-    def add(self, actor):
-        self.actors.append(actor)
 
     def draw(self):
         hexes = []
