@@ -169,7 +169,10 @@ class Stats(View):
 #        self.line("MP: %3d/%2d" % (8, 15))
 
         short = Stats.short.get(stat, stat)
-        self.line("%s: %s" % (short, self.stat(stat)))
+        if short in ["HP", "FP", "MP"]:
+            self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
+        else:
+            self.line("%s: %s" % (short, self.stat(stat)))
 
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):

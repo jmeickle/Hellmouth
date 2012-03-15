@@ -82,8 +82,11 @@ class Actor:
 
     # Calculated stats:
     def HitPoints(self):       return 33
+    def MaxHitPoints(self):       return 33
     def ManaPoints(self):       return 33
+    def MaxManaPoints(self):       return 33
     def FatiguePoints(self):       return 33
+    def MaxFatiguePoints(self):       return 33
     def Will(self):       return 33
     def Perception(self): return 33
     def Move(self):       return 33
