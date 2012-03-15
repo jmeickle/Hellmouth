@@ -48,7 +48,8 @@ map = Map()
 map.loadmap(20, 20)
 
 player = map.put(Player(), (15, 15))
-dummy = map.put(Actor(), (0, 3))
+for x in range(15):
+    map.put(Actor(), (x, 0))
 
 # HACK:
 mainmap_width = 45
