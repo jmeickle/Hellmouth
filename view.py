@@ -80,9 +80,9 @@ class MainMap(View):
         hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.viewrange)
 
         minX = 0
-        maxX = len(self.map.cells[0])
+        maxX = self.map.width-1
         minY = 0
-        maxY = len(self.map.cells)
+        maxY = self.map.height-1
 
 #        print hexes
 #        exit()
