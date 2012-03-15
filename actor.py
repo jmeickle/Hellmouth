@@ -106,24 +106,36 @@ class BodyPlan:
         # Body parts by 3d6 roll
         self.table = {}
 
+    # Build a body from the class information.
+    def build(self):
+        for part, parent, sublocation in self.parts:
+            self.locs[part] = (part, [], [])
+            if parent is not None:
+                self.locs[parent][1].append(part)#child(part)
+            if sublocation is not None:
+                self.locs[parent][2].append(part)#sublocation(part)
+
+# = (self.locs[parent], part)
+
 class Humanoid(BodyPlan):
-    # Part name : (Parent part, list of sublocations)
-    parts = {
-             'Torso'     : (None, None),
-             'Groin'     : ('Torso', None),
-             'Head'      : ('Torso', None),
-             'RArm'      : ('Torso', None),
-             'LArm'      : ('Torso', None),
-             'RHand'     : ('RArm', None),
-             'LHand'     : ('LArm', None),
-             'RLeg'      : ('Groin', None),
-             'LLeg'      : ('Groin', None),
-             'RFoot'     : ('RLeg', None),
-             'LFoot'     : ('LLeg', None),
-    }
+    # Part name : (Parent part, what it's a sublocation of)
+    parts = (
+             ('Torso', None, None),
+             ('Groin', 'Torso', None),
+             ('Head', 'Torso', None),
+             ('RArm', 'Torso', None),
+             ('LArm', 'Torso', None),
+             ('RHand', 'RArm', None),
+             ('LHand', 'LArm', None),
+             ('RLeg', 'Groin', None),
+             ('LLeg', 'Groin', None),
+             ('RFoot', 'RLeg', None),
+             ('LFoot', 'LLeg', None),
+    )
 
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
+        self.build()
 
 class HitLoc:
     def __init__(self, parent, type):
