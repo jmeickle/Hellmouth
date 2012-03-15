@@ -128,10 +128,13 @@ class Stats(View):
         # Col 1
         self.reset()
 
-        self.line("-"*12)
-        for x in range(10):
-            self.line("-"+" "*10+"-")
-        self.line("-"*12)
+        self.line("Wounds:")
+        for loc in sorted(self.player.body.locs.items()):
+            self.line("%6s: %s" % (loc[0], loc[1].wounds))
+#        self.line("-"*12)
+#        for x in range(10):
+#            self.line("-"+" "*10+"-")
+#        self.line("-"*12)
 
         # Col 2
         self.x_acc += 12
