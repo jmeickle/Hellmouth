@@ -79,12 +79,24 @@ add_view(status)
 #focus = chargen
 
 while 1:
+    # Queue stuff
     if map.acting is None:
         map.acting = map.queue.popleft()
+
+    # DEBUG: Print currently acting.
+    # Has to be here for it to work properly.
+    stdscr.addstr(19, 59, "QUEUE")
+    if map.acting is not None:
+        stdscr.addstr(20, 59, "Curr: %s" % map.acting.name)
+    else:
+        stdscr.addstr(20, 59, "Curr: NONE")
+    stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
+
     if map.acting is not player:
         map.acting.act()
         continue
-    # Keyin stuff
+
+    # Keyin stuff for player actions
     c = stdscr.getch()
     if c == ord('q'):
         gameover()
