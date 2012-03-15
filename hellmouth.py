@@ -5,6 +5,7 @@ from player import Player
 from map import Map
 from view import MainMap, Stats, Chargen, Status
 import hex
+from random import randint
 
 def add_view(view):
     views.append(view)
@@ -45,11 +46,14 @@ from define import Color
 
 # Very basic map init
 map = Map()
-map.loadmap(20, 20)
+map.loadmap(10, 10)
 
-player = map.put(Player(), (15, 15))
+center_x = map.width/2 - 1
+center_y = map.height/2 - 1
+
+player = map.put(Player(), (center_x, center_y))
 for x in range(15):
-    map.put(Actor(), (x, 0))
+    map.put(Actor(), (center_x + randint(1, 4), center_y + randint(1,4)))
 
 # HACK:
 mainmap_width = 45
