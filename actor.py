@@ -1,4 +1,5 @@
 from define import *
+from dice import _3d6
 from random import choice
 
 class Actor:
