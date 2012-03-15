@@ -77,9 +77,10 @@ class Actor:
     # Do a basic attack.
     def attack(self, target, loc=None):
         if _3d6() > 11:
-            amt = 5
+            amt = _3d6()
             target.hit(amt)
             #target.randomloc())
+        self.over()
 
     # You were hit by something.
     def hit(self, amt):
