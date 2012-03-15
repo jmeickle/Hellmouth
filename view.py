@@ -1,3 +1,4 @@
+import curses
 import math
 import hex
 from lifepath import Lifepath
@@ -65,7 +66,15 @@ class MainMap(View):
         # X/Y are offsets from the map center
         X = x - self.player.pos[0]
         Y = y - self.player.pos[1]
-        self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph)
+        # TERRIBLE HACK
+        if glyph == '"':
+            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_DIM)
+        elif glyph == '@':
+            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
+        elif glyph == 'A':
+            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
+        else: 
+            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph)
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, x, y):
@@ -85,7 +94,7 @@ class MainMap(View):
 
         for h in hexes:
             if h[0] < minX or h[0] > maxX or h[1] < minY or h[1] > maxY:
-                glyph = 'X'
+                glyph = '"'
             else:
                 glyph = self.get_glyph(h[0], h[1])
 
