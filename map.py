@@ -18,3 +18,9 @@ class Map:
                 self.cells[Y].append(content[randint(0, 4)])
         self.height = Y+1
         self.width = X+1
+
+    # Place an object on the map.
+    def put(self, obj, coord):
+        obj.pos = coord
+        obj.map = self
+        return obj
