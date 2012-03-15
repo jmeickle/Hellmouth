@@ -146,4 +146,7 @@ if __name__ == "__main__":
     testactor = Actor()
     print "Stats:", testactor.stats
     print "Random movement choice:", choice(dirs)
-    print "Limbs:", Humanoid.parts
+    print "Actor's parts:"
+    for index, part in testactor.body.locs.iteritems():
+#        print part
+        print "Part: %s\nChildren: %s\nSublocations:%s" % part
