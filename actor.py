@@ -78,6 +78,8 @@ class HitLoc:
         self.HP = None
 
 if __name__ == "__main__":
-    testactor = Actor(5, 5)
+    testactor = Actor()
     testactor.stats["ST"] = 5
     print testactor.stats
+    print "Random movement:",
+    print choice(dirs)
