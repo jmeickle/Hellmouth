@@ -144,11 +144,11 @@ class Stats(View):
         self.line("Spd.: 5")
 
         # Combat Log
-        self.x_acc = 0
-        self.y_acc += 4
+        #self.x_acc = 0
+        #self.y_acc += 4
 
-        for x in range(10):
-            self.line("Sample combat log text, line %d" % x)
+        #for x in range(10):
+        #    self.line("Sample combat log text, line %d" % x)
 
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
