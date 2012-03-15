@@ -37,33 +37,53 @@ class Map:
         obj.map = self
         return obj
 
+    # Return a cell at a pos tuple.
+    def cell(self, pos):
+        return self.cells[pos[0]][pos[1]]
+
+    # Return an actor at a pos tuple.
+    def actor(self, pos):
+        return self.cell(pos).actor
+    # Decides whether a position exists.
+    def valid(self, pos):
+        if pos[0] < 0 or pos[0] >= self.width \
+        or pos[1] < 0 or pos[1] >= self.height:
+            return False
+        else:
+            return True
+
 class Cell:
     def __init__(self, glyph='.'):
         self.glyph = glyph
-        self.monster = None
+        self.actor = None
 
-    # Add a monster to a cell.
+    # Add a actor to a cell.
     def add(self, obj):
-        if self.monster is None:
-            self.monster = obj
+        if self.actor is None:
+            self.actor = obj
         else:
             return False
 
     # Stub, for eventually handling multiple things
     def remove(self, obj):
-        self.monster = None
+        self.actor = None
 
     # Return a glyph to display for this cell.
     # Later, this will be a better function.
     def draw(self):
-        if self.monster is not None:
-            return self.monster.glyph
+        if self.actor is not None:
+            return self.actor.glyph
         else:
             return self.glyph
 
+    # Return whether the cell has a creature in it.
+    def occupied(self):
+        if self.actor is not None:
+            return True
+
     # Return whether the cell is passable
     def blocked(self):
-        if self.monster is not None:
+        if self.occupied is True:
             return True
 
 if __name__ == '__main__':
@@ -75,4 +95,4 @@ if __name__ == '__main__':
     # More advanced: add an actor   
     from actor import Actor
     map.put(Actor(), (0, 0))
-    print map.cells[0][0].monster.name
+    print map.cells[0][0].actor.name
