@@ -74,7 +74,7 @@ class MainMap(View):
             return "@"
 
         return self.map.cells[min(self.map.height-1, y)]\
-                             [min(self.map.width-1, x)]
+                             [min(self.map.width-1, x)].draw()
 
     def draw(self):
         hexes = []
