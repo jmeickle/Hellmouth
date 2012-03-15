@@ -10,7 +10,7 @@ class Actor:
         self.description = 'This is the description'
 
         # More 'permanent' game info: stats, skills, etc.
-        self.body = BodyPlan(self, 'humanoid')
+        self.body = Humanoid(self)
         self.stats = {"Strength" : 0,
                       "Dexterity" : 0,
                       "Intelligence" : 0,
@@ -96,14 +96,34 @@ class Actor:
     def Parry(self):      return 31
 
 class BodyPlan:
-    def __init__(self, parent, type):
-        self.hitlocs = {}
+    def __init__(self, parent):
+        # Size (+0 for a human)
+        self.size = None
+        # Shape (tall, long, or full)
+        self.shape = None
+        # Body parts by key
+        self.locs = {}
+        # Body parts by 3d6 roll
+        self.table = {}
 
 class Humanoid(BodyPlan):
-    def __init__(self, parent, type):
-        BodyPlan.__init__(self, parent, type)
+    # Part name : (Parent part, list of sublocations)
+    parts = {
+             'Torso'     : (None, None),
+             'Groin'     : ('Torso', None),
+             'Head'      : ('Torso', None),
+             'RArm'      : ('Torso', None),
+             'LArm'      : ('Torso', None),
+             'RHand'     : ('RArm', None),
+             'LHand'     : ('LArm', None),
+             'RLeg'      : ('Groin', None),
+             'LLeg'      : ('Groin', None),
+             'RFoot'     : ('RLeg', None),
+             'LFoot'     : ('LLeg', None),
+    }
 
-        self.hitlocs["RArm"] = HitLoc(self, "RArm")
+    def __init__(self, parent):
+        BodyPlan.__init__(self, parent)
 
 class HitLoc:
     def __init__(self, parent, type):
@@ -112,7 +132,6 @@ class HitLoc:
 
 if __name__ == "__main__":
     testactor = Actor()
-    testactor.stats["ST"] = 5
-    print testactor.stats
-    print "Random movement:",
-    print choice(dirs)
+    print "Stats:", testactor.stats
+    print "Random movement choice:", choice(dirs)
+    print "Limbs:", Humanoid.parts
