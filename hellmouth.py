@@ -6,8 +6,6 @@ from map import Map
 from view import MainMap, Stats, Chargen, Status
 import hex
 
-from collections import deque
-
 def add_view(view):
     views.append(view)
 
