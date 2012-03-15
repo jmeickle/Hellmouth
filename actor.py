@@ -36,9 +36,16 @@ class Actor:
         self.pos = pos
         self.map.cells[self.pos[0]][self.pos[1]].add(self)
 
-    # Try to move based on an input direction. Return whether it worked.
-    def move(self, dir):
+    # Do something in a dir - this could be an attack or a move.
+    def do(self, dir):
         pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
+        if self.map.cell(pos).occupied() is True:
+            self.attack(self.map.actor(pos))
+        else:
+            self.move(pos)
+
+    # Try to move based on an input direction. Return whether it worked.
+    def move(self, pos):
         if self.valid_move(pos):
             self.go(pos)
             self.over()
@@ -54,14 +61,29 @@ class Actor:
             return False
 
         # Cell content checking:
-        if self.map.cells[pos[0]][pos[1]].blocked() is True:
+        if self.map.cell(pos).blocked() is True:
             return False
 
         return True
 
     # Currently: move in a random direction.
     def act(self):
-        self.move(choice(dirs))
+        self.do(choice(dirs))
+
+    def randomloc(self):
+        return self.body.table[_3d6()]
+
+    # Do a basic attack.
+    def attack(self, target, loc=None):
+        if _3d6() > 11:
+            amt = 5
+            target.hit(amt)
+            #target.randomloc())
+
+    # You were hit by something.
+    def hit(self, amt):
+        loc = self.randomloc()
+        loc.hurt(amt)
 
     # Mark self as done acting.
     def over(self):
@@ -192,20 +214,18 @@ class HitLoc:
     def status(self):
         return True
 
-    # Add a parent of this part.
-    def parent(self, part):
-        self.parent = part
-
-    # Add a child of this part.
-    def child(self, part):
-        self.children.append(part)
-
-    def sublocation(self, part):
-        self.sublocations.append(part)
-
+    # Set up a parent/child relationship.
     def add_child(parent, child):
         parent.children.append(child)
         child.parent = parent
+
+    # Add a sublocation of this part.
+    def sublocation(self, part):
+        self.sublocations.append(part)
+
+    # Increase the wounds on the location.
+    def hurt(self, amt):
+        self.wounds.append(amt)
 
 # Test code
 if __name__ == "__main__":
