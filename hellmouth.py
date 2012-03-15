@@ -47,18 +47,19 @@ term_x = 80
 term_y = 24
 
 stdscr = init()
+from define import Color
 
 # Very basic map init
 map = Map()
 map.loadmap(50, 50)
 
-player = Player()
+player = map.put(Player(), (15, 15))
 player.map = map
 
-dummy = Actor(10, 10)
-dummy2 = Actor(12, 12)
-dummy3 = Actor(15, 15, 'O')
-dummy4 = Actor(20, 20)
+dummy = map.put(Actor(), (5, 5)
+dummy = map.put(Actor(), (8, 3)
+dummy = map.put(Actor(), (2, 1)
+dummy = map.put(Actor(), (3, 4)
 
 # HACK:
 mainmap_width = 45
@@ -128,8 +129,8 @@ while 1:
     # All non-component drawing is handled below.
 
     # DEBUG: Print current position.
-    #stdscr.addstr(10, 59, "POSITION")
-    #stdscr.addstr(11, 59, '(%s, %s)' % player.pos)
+    #stdscr.addstr(10, 59, "POSITION", curses.color_pair(1))
+    #stdscr.addstr(11, 59, '(%s, %s)' % player.pos, curses.A_REVERSE)
 
     # DEBUG: Print distance from starting point.
     #stdscr.addstr(13, 59, "DIST FROM (15, 15)")
