@@ -33,9 +33,16 @@ class Actor:
 
     # Check move validity.
     def valid_move(self, pos):
-        if pos[0] >= 0 and pos[0] < self.map.width:
-            if pos[1] >= 0 and pos[1] < self.map.height:
-                return True
+        # Map border checking:
+        if pos[0] < 0 or pos[0] >= self.map.width \
+        or pos[1] < 0 or pos[1] >= self.map.height:
+            return False
+
+        # Cell content checking:
+        if self.map.cells[pos[0]][pos[1]].blocked() is True:
+            return False
+
+        return True
 
     # Retrieve actor stats.
     def stat(stat):

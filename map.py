@@ -56,6 +56,11 @@ class Cell:
         else:
             return self.glyph
 
+    # Return whether the cell is passable
+    def blocked(self):
+        if self.monster is not None:
+            return True
+
 if __name__ == '__main__':
     # Basic test: make a map and print it
     map = Map()
