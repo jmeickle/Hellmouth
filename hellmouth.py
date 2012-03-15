@@ -1,3 +1,4 @@
+from define import *
 import curses
 from actor import Actor
 from player import Player
@@ -5,12 +6,7 @@ from map import Map
 from view import MainMap, Stats, Chargen, Status
 import hex
 
-NW = (0, -1)
-NE = (1, -1)
-CE = (1, 0)
-SE = (0, 1)
-SW = (-1, 1)
-CW = (-1, 0)
+from collections import deque
 
 def add_view(view):
     views.append(view)
@@ -54,8 +50,6 @@ map = Map()
 map.loadmap(20, 20)
 
 player = map.put(Player(), (15, 15))
-player.map = map
-
 dummy = map.put(Actor(), (0, 3))
 
 # HACK:
@@ -85,6 +79,11 @@ add_view(status)
 #focus = chargen
 
 while 1:
+    if map.acting is None:
+        map.acting = map.queue.popleft()
+    if map.acting is not player:
+        map.acting.act()
+        continue
     # Keyin stuff
     c = stdscr.getch()
     if c == ord('q'):
@@ -104,6 +103,8 @@ while 1:
         player.move(CE)
     elif c == ord('3'):
         player.move(SE)
+    elif c == ord('5'):
+        player.over()
 #    elif hasattr(chargen.selector, 'parent') is True:
 #        if c == curses.KEY_RIGHT:
 #            chargen.selector.next()

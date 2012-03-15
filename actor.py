@@ -1,3 +1,6 @@
+from define import *
+from random import choice
+
 class Actor:
     def __init__(self):
         # Descriptive information
@@ -18,15 +21,18 @@ class Actor:
         self.inventory = {}
         self.effects = {}
 
-    # Change actor coords.
+    # Change actor coords and update the relevant cells.
     def go(self, pos):
+        self.map.cells[self.pos[0]][self.pos[1]].remove(self)
         self.pos = pos
+        self.map.cells[self.pos[0]][self.pos[1]].add(self)
 
-    # Try to move and return whether it worked.
+    # Try to move based on an input direction. Return whether it worked.
     def move(self, dir):
         pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
         if self.valid_move(pos):
             self.go(pos)
+            self.over()
             return True
         else:
             return False
@@ -44,9 +50,17 @@ class Actor:
 
         return True
 
+    # Currently: move in a random direction.
+    def act(self):
+        self.move(choice(dirs))
+
     # Retrieve actor stats.
     def stat(stat):
         stats.get(stat)
+
+    def over(self):
+        self.map.acting = None
+        self.map.queue.append(self)
 
 class BodyPlan:
     def __init__(self, parent, type):

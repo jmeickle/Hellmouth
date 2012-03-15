@@ -1,14 +1,20 @@
-import random
+from collections import deque
 from random import randint
 
 class Map:
     def __init__(self):
-        self.cells = None
+        # X / Y height (remember off by ones!)
         self.height = None
         self.width = None
 
+        # List of cell objects
+        self.cells = None
+
+        # Action queue and current actor
+        self.queue = deque()
+        self.acting = None
+
     def loadmap(self, x, y):
-        random.seed("TEST")
         content = ("~", ".", ",", "!", "?")
 
         self.cells = []
@@ -23,6 +29,7 @@ class Map:
     def put(self, obj, pos):
         # Update the map
         self.cells[pos[0]][pos[1]].add(obj)
+        self.queue.append(obj)
 
         # Update the object
         obj.pos = pos
@@ -45,7 +52,7 @@ class Cell:
             return False
 
     # Stub, for eventually handling multiple things
-    def rem(self, obj):
+    def remove(self, obj):
         self.monster = None
 
     # Return a glyph to display for this cell.
