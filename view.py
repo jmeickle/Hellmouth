@@ -73,8 +73,7 @@ class MainMap(View):
         if x is self.player.pos[0] and y is self.player.pos[1]:
             return "@"
 
-        return self.map.cells[min(self.map.height-1, y)]\
-                             [min(self.map.width-1, x)].draw()
+        return self.map.cells[min(self.map.width-1, x)][min(self.map.height-1, y)].draw()
 
     def draw(self):
         hexes = []

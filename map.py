@@ -12,12 +12,12 @@ class Map:
         content = ("~", ".", ",", "!", "?")
 
         self.cells = []
-        for Y in range(y):
+        for X in range(x):
             self.cells.append([])
-            for X in range(x):
-                self.cells[Y].append(Cell(content[randint(0, 4)]))
-        self.height = Y+1
+            for Y in range(y):
+                self.cells[X].append(Cell(content[randint(0, 4)]))
         self.width = X+1
+        self.height = Y+1
 
     # Place an object on the map.
     def put(self, obj, pos):
