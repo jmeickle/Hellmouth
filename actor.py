@@ -13,12 +13,13 @@ class Actor:
         self.skills = {}
 
         # More 'volatile' information: inventory, effects, etc.
+        self.map = None
         self.pos = None
         self.inventory = {}
         self.effects = {}
 
     # Change actor coords.
-    def go(pos):
+    def go(self, pos):
         self.pos = pos
 
     # Try to move and return whether it worked.
