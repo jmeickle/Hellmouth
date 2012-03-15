@@ -95,12 +95,12 @@ while 1:
 
     # DEBUG: Print currently acting.
     # Has to be here for it to work properly.
-    stdscr.addstr(19, 59, "QUEUE")
-    if map.acting is not None:
-        stdscr.addstr(20, 59, "Curr: %s" % map.acting.name)
-    else:
-        stdscr.addstr(20, 59, "Curr: NONE")
-    stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
+    #stdscr.addstr(19, 59, "QUEUE")
+    #if map.acting is not None:
+    #    stdscr.addstr(20, 59, "Curr: %s" % map.acting.name)
+    #else:
+    #    stdscr.addstr(20, 59, "Curr: NONE")
+    #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
 
     if map.acting is not player:
         map.acting.act()
@@ -157,8 +157,8 @@ while 1:
     #    stdscr.addch(17, 59, chr(c))
 
     # DEBUG: Print current torso wounds.
-    stdscr.addstr(16, 59, "TORSO WOUNDS")
-    stdscr.addstr(17, 59, "%s" % player.body.locs.get("Torso").wounds)
+    #stdscr.addstr(16, 59, "TORSO WOUNDS")
+    #stdscr.addstr(17, 59, "%s" % player.body.locs.get("Torso").wounds)
 
     # Refresh the display.
     stdscr.refresh()
