@@ -102,6 +102,7 @@ class MainMap(View):
 class Stats(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
+        self.player = None
 
     def draw(self):
         # Col 1
@@ -138,6 +139,7 @@ class Stats(View):
         self.line("")
         self.line("Move: 5")
         self.line("Spd.: 5")
+        self.line("%s" % self.player.name)
 
         # Combat Log
         #self.x_acc = 0
