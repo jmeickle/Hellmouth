@@ -5,7 +5,7 @@ from random import choice
 class Actor:
     def __init__(self):
         # Descriptive information
-        self.glyph = 'x'
+        self.glyph = 'A'
         self.color = 'red'
         self.name = 'Buggy monster'
         self.description = 'This is the description'
