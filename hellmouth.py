@@ -109,17 +109,17 @@ while 1:
     if c == 27: # Escape key
         switch_focus(mainmap)
     elif c == ord('7'):
-        player.move(NW)
+        player.do(NW)
     elif c == ord('4'):
-        player.move(CW)
+        player.do(CW)
     elif c == ord('1'):
-        player.move(SW)
+        player.do(SW)
     elif c == ord('9'):
-        player.move(NE)
+        player.do(NE)
     elif c == ord('6'):
-        player.move(CE)
+        player.do(CE)
     elif c == ord('3'):
-        player.move(SE)
+        player.do(SE)
     elif c == ord('5'):
         player.over()
 #    elif hasattr(chargen.selector, 'parent') is True:
@@ -150,6 +150,10 @@ while 1:
     #stdscr.addstr(16, 59, "KEYIN")
     #if c < 256 and c > 31: # i.e., ASCII glyphs
     #    stdscr.addch(17, 59, chr(c))
+
+    # DEBUG: Print current wounds.
+    stdscr.addstr(16, 59, "WOUNDS")
+    stdscr.addstr(17, 59, "%s" % player.body.locs.get("Torso").wounds)
 
     # Refresh the display.
     stdscr.refresh()
