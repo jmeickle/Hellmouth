@@ -100,6 +100,14 @@ class MainMap(View):
         self.window.refresh()
 
 class Stats(View):
+    short = { "Speed" : "Spd.",
+              "Perception" : "Per.",
+              "Strength" : "ST",
+              "Dexterity" : "DX",
+              "Intelligence" : "IQ",
+              "Health" : "HT"
+}
+
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
         self.player = None
@@ -121,25 +129,24 @@ class Stats(View):
         self.line("FP: %3d/%2d" % (10, 12))
         self.line("MP: %3d/%2d" % (8, 15))
         self.line("")
-        self.line("Block: 5")
-        self.line("Dodge: 5")
-        self.line("Parry: 5")
+        self.statline('Block')
+        self.statline('Dodge')
+        self.statline('Parry')
 
         # Col 3
         self.x_acc += 12
         self.y_acc = 0
 
-        self.line("ST: 5")
-        self.line("DX: 5")
-        self.line("IQ: 5")
-        self.line("HT: 5")
+        self.statline("Strength")
+        self.statline("Dexterity")
+        self.statline("Intelligence")
+        self.statline("Health")
         self.line("")
-        self.line("Will: 5")
-        self.line("Per.: 5")
+        self.statline("Will")
+        self.statline("Perception")
         self.line("")
-        self.line("Move: 5")
-        self.line("Spd.: 5")
-        self.line("%s" % self.player.name)
+        self.statline("Move")
+        self.statline("Speed")
 
         # Combat Log
         #self.x_acc = 0
@@ -147,6 +154,15 @@ class Stats(View):
 
         #for x in range(10):
         #    self.line("Sample combat log text, line %d" % x)
+
+    # Retrieve stat
+    def stat(self, stat):
+        return self.player.stat(stat)
+
+    # Print a line like 'Dodge: 15' using stat()
+    def statline(self, stat):
+        short = Stats.short.get(stat, stat)
+        self.line("%s: %s" % (short, self.stat(stat)))
 
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):

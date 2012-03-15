@@ -11,7 +11,15 @@ class Actor:
 
         # More 'permanent' game info: stats, skills, etc.
         self.body = BodyPlan(self, 'humanoid')
-        self.stats = {}
+        self.stats = {"Strength" : 0,
+                      "Dexterity" : 0,
+                      "Intelligence" : 0,
+                      "Health" : 0,
+                      "" : 0,
+                      "" : 0,
+                      "" : 0,
+                      "" : 0,
+                      "" : 0}
         self.traits = {}
         self.skills = {}
 
@@ -54,13 +62,33 @@ class Actor:
     def act(self):
         self.move(choice(dirs))
 
-    # Retrieve actor stats.
-    def stat(stat):
-        stats.get(stat)
-
+    # Mark self as done acting.
     def over(self):
         self.map.acting = None
         self.map.queue.append(self)
+
+    # Retrieve actor stat.
+    def stat(self, stat):
+        val = self.stats.get(stat)
+        if val is None:
+            return self.calc_stat(stat)
+        else:
+            return val
+#self.calc_stat(stat))
+
+    # If it wasn't found in self.stats, it must need to be calculated.
+    def calc_stat(self, stat):
+        func = getattr(Actor, stat)
+        return func(self)
+
+    # Calculated stats:
+    def Will(self):       return 33
+    def Perception(self): return 33
+    def Move(self):       return 33
+    def Speed(self):      return 33
+    def Dodge(self):      return 33
+    def Block(self):      return 32
+    def Parry(self):      return 31
 
 class BodyPlan:
     def __init__(self, parent, type):
