@@ -105,7 +105,10 @@ class Stats(View):
               "Strength" : "ST",
               "Dexterity" : "DX",
               "Intelligence" : "IQ",
-              "Health" : "HT"
+              "Health" : "HT",
+              "Hit Points" : "HP",
+              "Fatigue Points" : "FP",
+              "Mana Points" : "MP",
 }
 
     def __init__(self, window, x, y, startx, starty):
@@ -125,9 +128,9 @@ class Stats(View):
         self.x_acc += 12
         self.y_acc = 0
 
-        self.line("HP: %3d/%2d" % (-50, 10))
-        self.line("FP: %3d/%2d" % (10, 12))
-        self.line("MP: %3d/%2d" % (8, 15))
+        self.statline('Hit Points')
+        self.statline('Mana Points')
+        self.statline('Fatigue Points')
         self.line("")
         self.statline('Block')
         self.statline('Dodge')
@@ -161,6 +164,10 @@ class Stats(View):
 
     # Print a line like 'Dodge: 15' using stat()
     def statline(self, stat):
+#        self.line("HP: %3d/%2d" % (-50, 10))
+#        self.line("FP: %3d/%2d" % (10, 12))
+#        self.line("MP: %3d/%2d" % (8, 15))
+
         short = Stats.short.get(stat, stat)
         self.line("%s: %s" % (short, self.stat(stat)))
 
