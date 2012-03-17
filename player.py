@@ -5,4 +5,4 @@ class Player(Actor):
         Actor.__init__(self)
         self.glyph = '@'
         self.name = 'Player'
-        self.color = 'cyan-white'
+        self.color = 'cyan-black'
