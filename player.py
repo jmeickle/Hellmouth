@@ -7,6 +7,7 @@ class Player(Actor):
         self.name = 'Player'
         self.color = 'cyan-black'
         self.hp = 100
+        self.damage = 6
 
 # NOT THE PLAYER BUT GOES IN HERE ANYWAYS
 
@@ -17,6 +18,7 @@ class MeatSlave(Actor):
         self.name = 'meat slave'
         self.color = 'yellow-black'
         self.hp = 1
+        self.damage = 1
 
 class MeatGolem(Actor):
     def __init__(self):
@@ -25,6 +27,7 @@ class MeatGolem(Actor):
         self.name = 'meat golem'
         self.color = 'blue-black'
         self.hp = 50
+        self.damage = 1
 
 class MeatWorm(Actor):
     def __init__(self):
@@ -33,6 +36,7 @@ class MeatWorm(Actor):
         self.name = 'meat worm'
         self.color = 'magenta-black'
         self.hp = 20
+        self.damage = 3
 
 class MeatHydra(Actor):
     def __init__(self):
@@ -41,3 +45,4 @@ class MeatHydra(Actor):
         self.name = 'meat hydra'
         self.color = 'magenta-black'
         self.hp = 80
+        self.damage = 1
