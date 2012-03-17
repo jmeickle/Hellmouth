@@ -1,3 +1,4 @@
+from define import Color
 import curses
 import math
 import hex
@@ -31,17 +32,48 @@ class View():
         self.x_acc = 0
         self.y_acc = 0
 
+    # Utility functions shared by all views
+
+    # Set up curses attributes on a string
+    # TODO: Handle anything but color
+    def attr(self, col, attr):
+        color = 0
+        if col is not None:
+            color += Color.pair[col]
+        return curses.color_pair(color)
+
+#        exit("%s"%Color.pair)]
+        #col="red-black"
+#        exit("%s"%col)
+#"red-black"]
+#        exit("COLOR: %s"%col)
+#curses.color_pair(Color.pair[col])
+#curses.color_pair(Color.pair[col]))
+#self.attr(col, attr))
+
+ #       ret = 0
+  #      if col is not None:
+#            exit("TEST: %s"%curses.color_pair(Color.pair[col]))
+#            exit("TEST: %s" % Color.pair[col])
+#            print Color.pair[col]
+#            exit()
+#            exit("PAIR: %s" % curses.color_pair(Color.pair[col]))
+   #     if attr is not None:
+    #        ret | 0
+#attr
+        return curses.color_pair(Color.pair[col])
+
     # Rectangular character function.
-    def rd(self, x, y, glyph):
-        self.window.addch(y, x, glyph)
+    def rd(self, x, y, glyph, col=0, attr=None):
+        self.window.addch(y, x, glyph, self.attr(col, attr))
 
     # Rectangular string function.
-    def rds(self, x, y, string):
-        self.window.addstr(y, x, string)
+    def rds(self, x, y, string, col=0, attr=None):
+        self.window.addstr(y, x, string, self.attr(col, attr))
 
     # Draw a line; only relevant for text-y views.
-    def line(self, str):
-        self.rds(0+self.x_acc, 0+self.y_acc, str)
+    def line(self, str, col=None, attr=None):
+        self.rds(0+self.x_acc, 0+self.y_acc, str, col, attr)
         self.y_acc += 1
 
     def reset(self):

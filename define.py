@@ -9,39 +9,35 @@ CW = (-1, 0)
 dirs = [NW, NE, CE, SE, SW, CW]
 
 class Color:
-#    red = curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    # Basic color names and definitions.
     colors = [
         ('black', curses.COLOR_BLACK),
+        ('white', curses.COLOR_WHITE),
         ('blue', curses.COLOR_BLUE),
         ('cyan', curses.COLOR_CYAN),
         ('green', curses.COLOR_GREEN),
         ('magenta', curses.COLOR_MAGENTA),
         ('red', curses.COLOR_RED),
-        ('white', curses.COLOR_WHITE),
         ('yellow', curses.COLOR_YELLOW),
     ]
 
-#    $i = 0
-#    while $i < 20:
-#        curses.init_pair($i % 8, $i % 8 % 8)
-#        $i += 1
+    #fg-bg colornames : curses colorpair
+    pair = {}
+    if __name__ == '__main__':
+        curses.initscr()
+        curses.start_color()
 
-#    for index, color in enumerate(names):
-#        print index
-#        print color
-#        curses.init_pair(index, color, names["black"])
+    # Set up all colorpairs
+    for i in range(8):
+        for j in range(8):
+            fg = colors[i%8]
+            bg = colors[j%8]
+            if i == 0 and j == 0 or fg[1] == 'white' and bg[2] == 'black':
+                continue;
+            curses.init_pair(i*8+j, fg[1], bg[1])
+            pair["%s-%s" % (fg[0], bg[0])] = i*8 + j
 
-#    curses.init_pair($i, curses.COLOR_RED
-#    print curses.COLORS
-#    print curses.COLOR_PAIRS
-#    colors = {'red' : ("5", "2")}
-#("5", "2"),
-#    for color, value in colors.iteritems():
-#        print color
-#        print value
-#curses.init_pair(value, curses.COLOR_
-
-#return 
-#def color(col):
-#    if 
-#    return col
+# Print colors.
+if __name__ == '__main__':
+    print Color.pair
+    print curses.A_BLINK
