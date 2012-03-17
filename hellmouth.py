@@ -1,4 +1,5 @@
 import curses
+import random
 
 #def init():
 #    stdscr = curses.initscr()
@@ -7,6 +8,12 @@ import curses
     #curses.cbreak()  # Don't wait for enter.
     #stdscr.keypad(1) # Turn on keypad mode.
 #    return stdscr
+# Simple coinflip
+def flip():
+    if random.randint(0, 1) == 1:
+        return 1
+    else: return -1
+
 
 # For exiting cleanly.
 def gameover():
@@ -32,7 +39,6 @@ def main(stdscr):
     from map import Map, Terrain
     from view import MainMap, Stats, Chargen, Status, Log, View
     import hex
-    import random
     from random import randint
 
     # HACK: INTRO SCREEN
@@ -45,15 +51,15 @@ def main(stdscr):
     intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
     intro.line('BASED ROGUELIKE "MEAT ARENA", WITH FABULOUS FEATURES:')
     intro.line("")
+    intro.line("  * A MEAT ARENA")
+    intro.line("")
     intro.line("  * A MEAT PLAYER")
     intro.line("")
     intro.line("  * SIX DIRECTIONS OF MOVEMENT")
     intro.line("")
     intro.line("  * UP TO FOUR KINDS OF MEAT ENEMIES")
     intro.line("")
-    intro.line("  * MEAT HEALING")
-    intro.line("")
-    intro.line("  * MEAT ARENA")
+    intro.line("  * A MEAT ARENA")
     intro.line("")
     intro.line("")
     intro.line("")
@@ -75,26 +81,32 @@ def main(stdscr):
     center_y = map.height/2 - 1
 
     # Mega hack to draw a hexagonal map
-    hex_max = 20
-    hex_start = 10
+    hex_max = 25
+    hex_start = 15
 
     walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
     #exit("%s" % walls)
-    terrain = Terrain()
+#    terrain = Terrain()
 #    exit("%s" % terrain	)
     for pos in walls:
 #        print "%s,%s"%pos
         terrain = map.put(Terrain(), pos, True)
 #    exit()
+    for x in range(10):
+        colsize = random.randint(1, 3)
+        pos = (center_x + flip()*randint(4, hex_start)-colsize, center_y + flip() * randint(4,hex_start)-colsize)
+        col = hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
+        for loc in col:
+            map.put(Terrain(), loc, True)       
 
     # A friendly @
     player = map.put(Player(), (center_x, center_y))
     map.player = player
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
     # Spawn enemies for it to fight
-    for x in range(60):
+    for x in range(100):
         monster = random.choice(monsters)
-        map.put(monster(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
+        map.put(monster(), (center_x + flip()*randint(1, hex_start), center_y + flip() * randint(1,hex_start)))
 
     # HACK:
     mainmap_width = 45
@@ -249,7 +261,7 @@ def main(stdscr):
     while 1:
         c = stdscr.getch()
         if c == ord(' '):
-            break;
+            exit("VICTORY IS YOURS.")
         if c == 27:
             exit("VICTORY IS YOURS.")
 
