@@ -5,9 +5,9 @@ from random import choice
 class Actor:
     def __init__(self):
         # Descriptive information
-        self.glyph = 'A'
+        self.glyph = '@'
         self.color = 'magenta-black'
-        self.name = 'Buggy monster'
+        self.name = 'Default monster'
         self.description = 'This is the description'
 
         # More 'permanent' game info: stats, skills, etc.
