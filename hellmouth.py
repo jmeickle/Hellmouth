@@ -231,6 +231,8 @@ def main(stdscr):
         stdscr.refresh()
 
     # HACK: WIN SCREEN
+    stdscr.clear()
+
     intro = View(stdscr, term_x, term_y, 0, 0)
     intro.x_acc = 15
     intro.line("")
@@ -245,9 +247,10 @@ def main(stdscr):
         intro.line("")
         intro.line("CONGRATULATIONS!")
     intro.line("")
+    intro.line("")
     intro.line("THANKS FOR PLAYING AND MAKE SURE TO FOLLOW HELLMOUTH ON GITHUB:")
     intro.line("")
-    intro.line("        https://github.com/Eronarn/Hellmouth"
+    intro.line("        https://github.com/Eronarn/Hellmouth")
     intro.line("")
     intro.line("THE REAL GAME WILL BE MUCH BETTER, I PROMISE")
     intro.line("")
@@ -260,6 +263,9 @@ def main(stdscr):
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
     else:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")
+
+    stdscr.refresh()
+
     while 1:
         c = stdscr.getch()
         if c == ord(' '):
