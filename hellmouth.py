@@ -43,7 +43,7 @@ def main(stdscr):
 
     # HACK: INTRO SCREEN
     intro = View(stdscr, term_x, term_y, 0, 0)
-    intro.x_acc = 15
+    intro.x_acc = 10
     intro.line("")
     intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
     intro.line('BASED ROGUELIKE "MEAT ARENA", WITH FABULOUS FEATURES:')
@@ -160,6 +160,8 @@ def main(stdscr):
             map.acting = map.queue.popleft()
             if len(map.queue) == 0:
                 break;
+            if player.hp <= 0:
+                break;
 
         # DEBUG: Print currently acting.
         # Has to be here for it to work properly.
@@ -234,10 +236,12 @@ def main(stdscr):
     stdscr.clear()
 
     intro = View(stdscr, term_x, term_y, 0, 0)
-    intro.x_acc = 15
+    intro.x_acc = 10
     intro.line("")
     if player.hp > 0:
         intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
+        intro.line("")
+        intro.line("YOU ARE HUNGRY AFTER YOUR BATTLE AND MANAGE TO EAT YOUR WAY OUT")
         intro.line("")
         intro.line("CONGRATULATIONS!")
     else:
@@ -246,6 +250,7 @@ def main(stdscr):
         intro.line("YOU ARE USED TO FURTHER FORTIFY ITS MEAT WALLS!")
         intro.line("")
         intro.line("CONGRATULATIONS!")
+    intro.line("")
     intro.line("")
     intro.line("")
     intro.line("THANKS FOR PLAYING AND MAKE SURE TO FOLLOW HELLMOUTH ON GITHUB:")
@@ -259,12 +264,14 @@ def main(stdscr):
     intro.line("HUGS & KISSES,")
     intro.line("")
     intro.line("    -ERONARN")
+    intro.line("")
+    intro.line("")
     if player.hp > 0:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
     else:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")
 
-    stdscr.refresh()
+    #intro.window.refresh()
 
     while 1:
         c = stdscr.getch()
