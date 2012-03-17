@@ -39,7 +39,7 @@ class View():
     # TODO: Handle anything but color
     def attr(self, col, attr):
         color = 0
-        if col is not None:
+        if col is not None and col is not 0:
             color += Color.pair[col]
         return curses.color_pair(color)
 
@@ -114,19 +114,19 @@ class MainMap(View):
         return
 
     # Hex character function, for maps only.
-    def hd(self, x, y, glyph):
+    def hd(self, x, y, glyph, col=0, attr=None):
         # X/Y are offsets from the map center
         X = x - self.player.pos[0]
         Y = y - self.player.pos[1]
         # TERRIBLE HACK
-        if glyph == '"':
-            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_DIM)
-        elif glyph == '@':
-            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
-        elif glyph == 'A':
-            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
-        else: 
-            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph)
+#        if glyph == '"':
+#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_DIM)
+#        elif glyph == '@':
+#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
+#        elif glyph == 'A':
+#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
+#       else: 
+        self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, x, y):
@@ -146,11 +146,12 @@ class MainMap(View):
 
         for h in hexes:
             if h[0] < minX or h[0] > maxX or h[1] < minY or h[1] > maxY:
-                glyph = '"'
+                glyph = 'X'
+                col = "red-black"
             else:
-                glyph = self.get_glyph(h[0], h[1])
+                glyph, col = self.get_glyph(h[0], h[1])
 
-            self.hd(h[0], h[1], glyph)
+            self.hd(h[0], h[1], glyph, col)
 
         # Draw the actors
 #        for actor in self.actors:
