@@ -139,8 +139,8 @@ def main(stdscr):
         #stdscr.addstr(11, 59, '(%s, %s)' % player.pos, curses.A_REVERSE)
 
         # DEBUG: Print distance from starting point.
-        stdscr.addstr(13, 59, "DIST FROM (%s, %s)" % (center_x, center_y))
-        stdscr.addstr(14, 59, "[%d]" % hex.dist(player.pos[0], player.pos[1], center_x, center_y))
+        #stdscr.addstr(13, 59, "DIST FROM (%s, %s)" % (center_x, center_y))
+        #stdscr.addstr(14, 59, "[%d]" % hex.dist(player.pos[0], player.pos[1], center_x, center_y))
 
         # DEBUG: Print current key.
         #stdscr.addstr(16, 59, "KEYIN")
