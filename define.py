@@ -21,6 +21,9 @@ class Color:
         ('yellow', curses.COLOR_YELLOW),
     ]
 
+    # Color names
+    names = [x[0] for x in colors]
+
     #fg-bg colornames : curses colorpair
     pair = {}
     if __name__ == '__main__':
