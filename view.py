@@ -179,15 +179,17 @@ class Stats(View):
     def draw(self):
         # Col 1: Skeleton/Paperdoll
         self.reset()
+        # Brevity!
+        p = self.player
 
-        self.cline('    <%s>[</>%s<%s>]</>   ' % (self.player.loccol('Head'), self.player.wound('Head'), self.player.loccol('Head')))
-        self.cline('  <%s>.--</><%s>T</><%s>--.</> ' % (self.player.loccol('LArm'), self.player.loccol('Torso'), self.player.loccol('RArm')))
-        self.cline('  | =%s= | ' % self.player.wound('Torso'))
-        self.cline('<magenta-red>%s</>  . -|- .<yellow-green>%s</> ' % (1, 8))
-        self.cline('   .-|-.   ')
-        self.cline('   |   |<red-cyan>%s</>  ' % 4)
-        self.cline('   |   |  ')
-        self.cline('  --   --<yellow-blue>%s</> ' % 5)
+        self.cline('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.wound('Head'), p.loccol('Head')))
+        self.cline('  <%s>.--</><%s>T</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
+        self.cline(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.wound('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.wound('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.wound('RArm')))
+        self.cline(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.wound('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.wound('RHand')))
+        self.cline('   <%s>.-</><%s>|</><%s>-.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
+        self.cline('  %s<%s>|</>   <%s>|</>%s  ' % (p.wound('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.wound('RLeg')))
+        self.cline('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
+        self.cline(' %s<%s>--</>   <%s>--</>%s ' % (p.wound('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.wound('RFoot')))
 #        self.line("-"*12)
 #        for x in range(10):
 #            self.line("-"+" "*10+"-")
