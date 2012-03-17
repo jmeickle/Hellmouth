@@ -195,7 +195,7 @@ class Stats(View):
         # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0
-
+        self.line("Remaining HP: %s" % p.hp)
 #        self.statline('Hit Points')
 #        self.statline('Mana Points')
 #        self.statline('Fatigue Points')
@@ -286,6 +286,7 @@ class Log(View):
 
     def draw(self, index=None):
         self.reset()
+
         if index is None:
             index = len(self.events) - 10
 
@@ -297,6 +298,9 @@ class Log(View):
                 continue
             if lines >= self.height:
                 break
+            self.line(x)
+            continue
+
             if len(x) > self.width:
                 substrs = self.logline(x)
                 for substr in substrs:
