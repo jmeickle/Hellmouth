@@ -42,7 +42,19 @@ def main(stdscr):
     center_x = map.width/2 - 1
     center_y = map.height/2 - 1
 
+    # Mega hack to draw a hexagonal map
+    radius = 9
+    walls = hex.iterator(map, center_x, center_y, radius, True, False, False, radius)
+#    for pos in walls:
+#        print "%s,%s"%pos
+#        map.put(Terrain(), pos, True)
+#    exit()
+#exit("%s" % walls)
+
+    # A friendly @
     player = map.put(Player(), (center_x, center_y))
+
+    # Spawn enemies for it to fight
     for x in range(60):
         map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
 
