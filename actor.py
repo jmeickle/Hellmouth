@@ -133,6 +133,12 @@ class Actor:
                 return "<%s-black>%s</>" % (loc.color(), wounds)
             else:
                 return wounds
+    def loccol(self, loc):
+        loc = self.body.locs.get(loc, None)
+        if loc is None:
+            return "white-black"
+        else:
+            return "%s-black" % loc.color()
 
 class BodyPlan:
     def __init__(self, parent):
