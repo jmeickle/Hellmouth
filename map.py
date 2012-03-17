@@ -27,18 +27,32 @@ class Map:
         self.height = Y+1
 
     # Place an object on the map.
-    def put(self, obj, pos):
+    def put(self, obj, pos, terrain=False):
+        if self.valid(pos) is False:
+            return False
+
         cell = self.cell(pos)
+
+        # TODO: Prevent this from ever happening...
+        if cell is None:
+            return False
+
         if cell.blocked() is True:
             return False
 
-        # Update the map
-        cell.add(obj)
-        self.queue.append(obj)
+        if terrain is False:
+            # Update the map
+            cell.add(obj)
+            self.queue.append(obj)
 
-        # Update the object
-        obj.pos = pos
-        obj.map = self
+            # Update the actor
+            obj.pos = pos
+            obj.map = self
+
+        else:
+            # Update the map
+            cell.terrain(obj)
+
         return obj
 
     # Return a cell at a pos tuple.
