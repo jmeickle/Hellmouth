@@ -14,6 +14,9 @@ class Map:
         self.queue = deque()
         self.acting = None
 
+        # Event log
+        self.log = None
+
     def loadmap(self, x, y):
 #        content = ("~", ".", ",", "!", "?")
 
