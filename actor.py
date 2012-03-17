@@ -81,13 +81,13 @@ class Actor:
         def_name = target.name
         verb = "s"
         if self == self.map.player:
-            att_name = "You"
+            att_name = "you"
             verb = ""
         if target == self.map.player:
             def_name = "you"
 
         if _3d6() > 8:
-            str = "%s hit%s the %s" % (att_name, verb, def_name)
+            str = "%s hit%s %s" % (att_name, verb, def_name)
             amt = sum(roll(_d6, self.damage))
             target.hit(amt)
 
@@ -106,8 +106,8 @@ class Actor:
 
     def check_dead(self):
         if self.hp <= 0:
-            if hex.dist(self.map.player.pos, self.pos) <= 3:
-                self.map.log.add("%s has been slain!")
+            if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
+                self.map.log.add("%s has been slain!" % self.name)
             self.map.queue.remove(self)
             self.map.cell(self.pos).remove(self)
 
