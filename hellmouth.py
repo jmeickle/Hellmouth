@@ -14,7 +14,6 @@ from random import randint
     #curses.noecho() # Don't display typed keys.
     #curses.cbreak()  # Don't wait for enter.
     #stdscr.keypad(1) # Turn on keypad mode.
-    #curses.curs_set(0) # Make cursor invisible.
 #    return stdscr
 
 # For exiting cleanly.
@@ -32,6 +31,7 @@ def main(stdscr):
     # HACK:
     term_x = 80
     term_y = 24
+    curses.curs_set(0) # Make cursor invisible.
 
 #    stdscr = init()
     from define import Color
