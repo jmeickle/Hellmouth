@@ -43,8 +43,8 @@ def main(stdscr):
     center_y = map.height/2 - 1
 
     player = map.put(Player(), (center_x, center_y))
-    for x in range(15):
-        map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 4), center_y + randint(-1,1) * randint(1,4)))
+    for x in range(60):
+        map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
 
     # HACK:
     mainmap_width = 45
