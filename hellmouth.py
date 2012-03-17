@@ -30,10 +30,40 @@ def main(stdscr):
     from actor import Actor
     from player import Player
     from map import Map, Terrain
-    from view import MainMap, Stats, Chargen, Status, Log
+    from view import MainMap, Stats, Chargen, Status, Log, View
     import hex
     import random
     from random import randint
+
+    # HACK: INTRO SCREEN
+    intro = View(stdscr, term_x, term_y, 0, 0)
+    intro.x_acc = 15
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
+    intro.line('BASED ROGUELIKE "MEAT ARENA", WITH FABULOUS FEATURES:')
+    intro.line("")
+    intro.line("  * MEAT PLAYER")
+    intro.line("")
+    intro.line("  * MEAT ENEMIES")
+    intro.line("")
+    intro.line("  * MEAT HEALING")
+    intro.line("")
+    intro.line("  * MEAT ARENA")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("PRESS SPACE TO ENTER THE MEAT ARENA")
+    intro.line("")
+    intro.line("PRESS ESC TO COWARDLY LEAVE")
+    while 1:
+        c = stdscr.getch()
+        if c == ord(' '):
+            break;
+        if c == 27:
+            exit("COWARD.")
 
     # Very basic map init
     map = Map()
@@ -128,10 +158,9 @@ def main(stdscr):
         # Keyin stuff for player actions
         c = stdscr.getch()
         if c == ord('q'):
-            gameover()
-            break
+            exit("MEGACOWARD")
         if c == 27: # Escape key
-            continue; #switch_focus(mainmap)
+            exit("MEGACOWARD")
         elif c == ord('7'):
             player.do(NW)
         elif c == ord('4'):
@@ -181,6 +210,33 @@ def main(stdscr):
 
         # Refresh the display.
         stdscr.refresh()
+
+    # HACK: WIN SCREEN
+    intro = View(stdscr, term_x, term_y, 0, 0)
+    intro.x_acc = 15
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
+    intro.line("")
+    intro.line("CONGRATULATIONS!")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("")
+    intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
+    while 1:
+        c = stdscr.getch()
+        if c == ord(' '):
+            break;
+        if c == 27:
+            exit("VICTORY IS YOURS.")
 
 # Curses wrapper.
 curses.wrapper(main)
