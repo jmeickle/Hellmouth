@@ -105,6 +105,13 @@ class Actor:
     def hit(self, amt):
         loc = self.randomloc()
         loc.hurt(amt)
+        self.check_dead()
+
+    def check_dead(self):
+        if self.HP <= 0:
+            if hex.dist(self.map.player.pos, target.pos) <= 3:
+                self.map.log.add("%s has been slain!")
+            self.map.queue.remove(self)
 
     # Mark self as done acting.
     def over(self):
