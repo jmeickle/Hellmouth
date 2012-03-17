@@ -1,6 +1,7 @@
 from define import *
 from dice import _3d6
 from random import choice
+import hex
 
 class Actor:
     def __init__(self):
@@ -78,19 +79,26 @@ class Actor:
     def attack(self, target, loc=None):
         att_name = self.name
         def_name = target.name
+        verb = "s"
         if self == self.map.player:
             att_name = "You"
+            verb = ""
         if target == self.map.player:
             def_name = "you"
 
-        str = "%s attacks the %s" % (att_name, def_name)
+        str = "%s attack%s the %s" % (att_name, verb, def_name)
+
         if _3d6() > 11:
             str += " and hits!"
             amt = _3d6()
             target.hit(amt)
         else:
             str += "."
-        self.map.log.add(str)
+
+        # Mute non-nearby messages
+        if hex.dist(self.map.player.pos, target.pos) <= 3:
+            self.map.log.add(str)
+
         self.over()
 
     # You were hit by something.
