@@ -180,14 +180,14 @@ class Stats(View):
         # Col 1
         self.reset()
 
-        self.line('    [%s]   ' % 2, "red-black")
-        self.line('  .--T--. ')
-        self.line('  | =|= | ')
-        self.line('  . -|- .%s ' % 1)
-        self.line('   .-|-.   ')
-        self.line('   |   |%s  ' % 4)
-        self.line('   |   |  ')
-        self.line('  --   --%s ' % 5)
+        self.cline('    [%s]   ' % 2, "red-black")
+        self.cline('  .--T--. ')
+        self.cline('  | =|= | ')
+        self.cline('  . -|- .%s ' % 1)
+        self.cline('   .-|-.   ')
+        self.cline('   |   |%s  ' % 4)
+        self.cline('   |   |  ')
+        self.cline('  --   --%s ' % 5)
 #        self.line("-"*12)
 #        for x in range(10):
 #            self.line("-"+" "*10+"-")
