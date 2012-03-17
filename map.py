@@ -26,23 +26,24 @@ class Map:
         self.width = X+1
         self.height = Y+1
 
+    # TODO: FIGURE OUT THIS SECTION, WHAT THE FUCK
     # Place an object on the map.
     def put(self, obj, pos, terrain=False):
-        if self.valid(pos) is False:
-            return False
+        #if self.valid(pos) is False:
+        #    return False
 
         cell = self.cell(pos)
 
         # TODO: Prevent this from ever happening...
-        if cell is None:
-            return False
+        #if cell is None:
+        #    return False
 
         if cell.blocked() is True:
             return False
 
         if terrain is False:
             # Update the map
-            cell.add(obj)
+            cell.add(obj, terrain)
             self.queue.append(obj)
 
             # Update the actor
@@ -51,7 +52,7 @@ class Map:
 
         else:
             # Update the map
-            cell.terrain(obj)
+            cell.add(obj, terrain)
 
         return obj
 
@@ -86,15 +87,22 @@ class Cell:
         self.terrain = None
 
     # Add a actor to a cell.
-    def add(self, obj):
-        if self.actor is None:
-            self.actor = obj
-        else:
-            return False
+    def add(self, obj, terrain=False):
+        if obj is None:
+            exit("Tried to place a non-object")
 
-    # Stub, will eventually handle other stuff
-    def terrain(self, obj):
-        self.terrain = obj
+        if terrain is False:
+            if self.actor is None:
+                self.actor = obj
+            else:
+                return false
+        else:
+            if self.terrain is None:
+                self.terrain = obj
+                if self.terrain is None:
+                   exit("No terrain after placement")
+            else:
+                return false
 
     # Stub, for eventually handling multiple things
     def remove(self, obj):
@@ -103,10 +111,10 @@ class Cell:
     # Return a glyph to display for this cell.
     # Later, this will be a better function.
     def draw(self):
-        if self.actor is not None:
-            return self.actor.glyph, self.actor.color
-        elif self.terrain is not None:
+        if self.terrain is not None:
             return self.terrain.glyph, self.terrain.color
+        elif self.actor is not None:
+            return self.actor.glyph, self.actor.color
         else:
             return self.glyph, self.color
 
@@ -126,7 +134,7 @@ class Cell:
         if self.occupied() is True or self.impassable() is True:
             return True
 
-def Terrain():
+class Terrain():
     def __init__(self, glyph="X", color="red-black", blocking=True):
         self.glyph = glyph
         self.color = color
