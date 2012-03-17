@@ -196,28 +196,28 @@ class Stats(View):
         self.x_acc += 12
         self.y_acc = 0
 
-        self.statline('Hit Points')
-        self.statline('Mana Points')
-        self.statline('Fatigue Points')
-        self.line("")
-        self.statline('Block')
-        self.statline('Dodge')
-        self.statline('Parry')
+#        self.statline('Hit Points')
+#        self.statline('Mana Points')
+#        self.statline('Fatigue Points')
+#        self.line("")
+#        self.statline('Block')
+#        self.statline('Dodge')
+#        self.statline('Parry')
 
         # Col 3: Stats
         self.x_acc += 12
         self.y_acc = 0
 
-        self.statline("Strength")
-        self.statline("Dexterity")
-        self.statline("Intelligence")
-        self.statline("Health")
-        self.line("")
-        self.statline("Will")
-        self.statline("Perception")
-        self.line("")
-        self.statline("Move")
-        self.statline("Speed")
+#        self.statline("Strength")
+#        self.statline("Dexterity")
+#        self.statline("Intelligence")
+#        self.statline("Health")
+#        self.line("")
+#        self.statline("Will")
+#        self.statline("Perception")
+#        self.line("")
+#        self.statline("Move")
+#        self.statline("Speed")
 
         # Combat Log
         self.x_acc = 0
