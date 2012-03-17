@@ -37,19 +37,23 @@ def main(stdscr):
 
     # Very basic map init
     map = Map()
-    map.loadmap(20, 20)
+    map.loadmap(50, 50)
 
     center_x = map.width/2 - 1
     center_y = map.height/2 - 1
 
     # Mega hack to draw a hexagonal map
-    radius = 9
-    walls = hex.iterator(map, center_x, center_y, radius, True, False, False, radius)
-#    for pos in walls:
+    hex_max = 20
+    hex_start = 10
+
+    walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
+    #exit("%s" % walls)
+    terrain = Terrain()
+#    exit("%s" % terrain	)
+    for pos in walls:
 #        print "%s,%s"%pos
-#        map.put(Terrain(), pos, True)
+        terrain = map.put(Terrain(), pos, True)
 #    exit()
-#exit("%s" % walls)
 
     # A friendly @
     player = map.put(Player(), (center_x, center_y))
