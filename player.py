@@ -45,4 +45,4 @@ class MeatHydra(Actor):
         self.name = 'meat hydra'
         self.color = 'magenta-black'
         self.hp = 80
-        self.damage = 1
+        self.damage = 5
