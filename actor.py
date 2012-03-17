@@ -252,8 +252,9 @@ class HitLoc:
     # Return a color for the limb status.
     def color(self):
         amt = sum(self.wounds)
-        if amt > 5: return "yellow"
-        elif amt > 10: return "red"
+        if amt >= 10: return "magenta"
+        elif amt > 5: return "red"
+        elif amt > 1: return "yellow"
         else: return "white"
 
 # Test code
