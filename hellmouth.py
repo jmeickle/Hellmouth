@@ -28,7 +28,7 @@ def main(stdscr):
 #    stdscr = init()
     from define import NW, NE, CE, SE, SW, CW
     from actor import Actor
-    from player import Player
+    from player import *
     from map import Map, Terrain
     from view import MainMap, Stats, Chargen, Status, Log, View
     import hex
@@ -90,10 +90,11 @@ def main(stdscr):
     # A friendly @
     player = map.put(Player(), (center_x, center_y))
     map.player = player
-
+    monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
     # Spawn enemies for it to fight
-#    for x in range(60):
-#        map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
+    for x in range(60):
+        monster = random.choice(monsters)
+        map.put(monster(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
 
     # HACK:
     mainmap_width = 45
