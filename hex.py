@@ -16,7 +16,12 @@ def dist(x1, y1, x2, y2):
 
     return dist
 
-def iterator(map, x, y, rank, debug=False, curr=0):
+# TODO: Clean this the fuck up.
+# TODO: Make function iteration actually work.
+# By default, this takes a map[][] and puts the current range in each cell.
+def iterator(map, x, y, rank, list=False, iterate=True, debug=False, curr=0):
+    if list is True:
+        ret = []
     if debug is True:
         print "Rank %d Hexagon:" % curr,
     for Y in range(-curr, curr+1):
@@ -32,12 +37,18 @@ def iterator(map, x, y, rank, debug=False, curr=0):
                 if debug is True:
                     print "(%2d,%2d)" % (X, Y),
                     map[x+X][y+Y] = curr
-                else:
+                elif list is False:
                     map.append((x+X, y+Y))
+                else:
+                    ret.append((x+X, y+Y))
     if debug is True:
         print "\n"
-    if curr < rank:
-        iterator(map, x, y, rank, debug, curr+1)
+
+    if iterate is True:
+        if curr < rank:
+            iterator(map, x, y, rank, list, iterate, debug, curr+1)
+
+    if list is True: return ret
 
 # Simple tool to test hex code.
 # Takes a center point, hex size, and map size.
