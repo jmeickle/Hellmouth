@@ -234,9 +234,6 @@ def main(stdscr):
     intro = View(stdscr, term_x, term_y, 0, 0)
     intro.x_acc = 15
     intro.line("")
-    intro.line("")
-    intro.line("")
-    intro.line("")
     if player.hp > 0:
         intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
         intro.line("")
@@ -248,14 +245,17 @@ def main(stdscr):
         intro.line("")
         intro.line("CONGRATULATIONS!")
     intro.line("")
+    intro.line("THANKS FOR PLAYING AND MAKE SURE TO FOLLOW HELLMOUTH ON GITHUB:")
+    intro.line("")
+    intro.line("        https://github.com/Eronarn/Hellmouth"
+    intro.line("")
+    intro.line("THE REAL GAME WILL BE MUCH BETTER, I PROMISE")
     intro.line("")
     intro.line("")
     intro.line("")
+    intro.line("HUGS & KISSES,")
     intro.line("")
-    intro.line("")
-    intro.line("")
-    intro.line("")
-    intro.line("")
+    intro.line("    -ERONARN")
     if player.hp > 0:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
     else:
