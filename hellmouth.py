@@ -1,12 +1,4 @@
-from define import *
 import curses
-from actor import Actor
-from player import Player
-from map import Map
-from view import MainMap, Stats, Chargen, Status
-import hex
-import random
-from random import randint
 
 #def init():
 #    stdscr = curses.initscr()
@@ -34,7 +26,14 @@ def main(stdscr):
     curses.curs_set(0) # Make cursor invisible.
 
 #    stdscr = init()
-    from define import Color
+    from define import NW, NE, CE, SE, SW, CW
+    from actor import Actor
+    from player import Player
+    from map import Map
+    from view import MainMap, Stats, Chargen, Status
+    import hex
+    import random
+    from random import randint
 
     # Very basic map init
     map = Map()
