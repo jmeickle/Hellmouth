@@ -76,10 +76,21 @@ class Actor:
 
     # Do a basic attack.
     def attack(self, target, loc=None):
+        att_name = self.name
+        def_name = target.name
+        if self == self.map.player:
+            att_name = "You"
+        if target == self.map.player:
+            def_name = "you"
+
+        str = "%s attacks the %s" % (att_name, def_name)
         if _3d6() > 11:
+            str += " and hits!"
             amt = _3d6()
             target.hit(amt)
-            #target.randomloc())
+        else:
+            str += "."
+        self.map.log.add(str)
         self.over()
 
     # You were hit by something.
