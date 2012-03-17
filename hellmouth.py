@@ -90,8 +90,8 @@ def main(stdscr):
     map.player = player
 
     # Spawn enemies for it to fight
-    for x in range(60):
-        map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
+#    for x in range(60):
+#        map.put(Actor(), (center_x + randint(-1, 1)*randint(1, 8), center_y + randint(-1,1) * randint(1,8)))
 
     # HACK:
     mainmap_width = 45
@@ -141,6 +141,8 @@ def main(stdscr):
         # Queue stuff
         if map.acting is None:
             map.acting = map.queue.popleft()
+            if len(map.queue) == 0:
+                break;
 
         # DEBUG: Print currently acting.
         # Has to be here for it to work properly.
