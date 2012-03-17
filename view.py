@@ -3,6 +3,7 @@ import curses
 import math
 import hex
 from lifepath import Lifepath
+import re
 
 # Cycling selector.
 class Selector():
@@ -79,6 +80,25 @@ class View():
     def reset(self):
         self.x_acc = 0
         self.y_acc = 0
+
+    # Print a line with multiple colors
+    # TODO: Handle other attributes.
+    def cline(self, str, col=None, attr=None):
+        strlen = 0
+        curr_col = col
+        substrs = re.split('<(/*\w*-?\w*)>',str)
+        for substr in substrs:
+            if substr == '':
+                continue;
+            if substr == '/':
+                curr_col = col
+            elif Color.pair.get(substr, None) is not None:
+                curr_col = substr
+            else:
+                self.rds(0+self.x_acc+strlen, 0+self.y_acc, substr, curr_col, attr)
+                strlen += len(substr)
+        # Only increment y at the end of the line.
+        self.y_acc += 1
 
 class MainMap(View):
     def __init__(self, window, x, y, startx, starty):
@@ -222,6 +242,7 @@ class Stats(View):
 #        self.line("MP: %3d/%2d" % (8, 15))
 
         short = Stats.short.get(stat, stat)
+        # Alternate draw for these stats.
         if short in ["HP", "FP", "MP"]:
             self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
         else:
