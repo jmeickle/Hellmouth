@@ -224,9 +224,9 @@ class Stats(View):
         self.x_acc = 0
         self.y_acc += 1
 
-        self.line("Wounds:")
-        for loc in sorted(self.player.body.locs.items()):
-            self.line("%6s: %s" % (loc[0], loc[1].wounds))
+        #self.line("Wounds:")
+        #for loc in sorted(self.player.body.locs.items()):
+        #    self.line("%6s: %s" % (loc[0], loc[1].wounds))
 
         #for x in range(10):
         #    self.line("Sample combat log text, line %d" % x)
