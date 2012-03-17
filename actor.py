@@ -86,18 +86,14 @@ class Actor:
         if target == self.map.player:
             def_name = "you"
 
-        str = "%s hit%s the %s" % (att_name, verb, def_name)
-
         if _3d6() > 8:
-            str += " and hits!"
+            str = "%s hit%s the %s" % (att_name, verb, def_name)
             amt = sum(roll(_d6, self.damage))
             target.hit(amt)
-        else:
-            str += "."
 
-        # Mute non-nearby messages
-        if hex.dist(self.map.player.pos, target.pos) <= 3:
-            self.map.log.add(str)
+            # Mute non-nearby messages
+            if str is not None and hex.dist(self.map.player.pos, target.pos) <= 3:
+                self.map.log.add(str)
 
         self.over()
 
@@ -105,13 +101,15 @@ class Actor:
     def hit(self, amt):
         loc = self.randomloc()
         loc.hurt(amt)
+        self.hp -= amt
         self.check_dead()
 
     def check_dead(self):
         if self.hp <= 0:
-            if hex.dist(self.map.player.pos, target.pos) <= 3:
+            if hex.dist(self.map.player.pos, self.pos) <= 3:
                 self.map.log.add("%s has been slain!")
             self.map.queue.remove(self)
+            self.map.cell(self.pos).remove(self)
 
     # Mark self as done acting.
     def over(self):
