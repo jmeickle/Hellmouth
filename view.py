@@ -177,23 +177,23 @@ class Stats(View):
         self.player = None
 
     def draw(self):
-        # Col 1
+        # Col 1: Skeleton/Paperdoll
         self.reset()
 
-        self.cline('    [%s]   ' % 2, "red-black")
+        self.cline('    [<red-black>%s</>]   ' % 2, "white-black")
         self.cline('  .--T--. ')
-        self.cline('  | =|= | ')
-        self.cline('  . -|- .%s ' % 1)
+        self.cline('  | =%s= | ' % self.player.wound('Torso'))
+        self.cline('<magenta-red>%s</>  . -|- .<yellow-green>%s</> ' % (1, 8))
         self.cline('   .-|-.   ')
-        self.cline('   |   |%s  ' % 4)
+        self.cline('   |   |<red-cyan>%s</>  ' % 4)
         self.cline('   |   |  ')
-        self.cline('  --   --%s ' % 5)
+        self.cline('  --   --<yellow-blue>%s</> ' % 5)
 #        self.line("-"*12)
 #        for x in range(10):
 #            self.line("-"+" "*10+"-")
 #        self.line("-"*12)
 
-        # Col 2
+        # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0
 
@@ -205,7 +205,7 @@ class Stats(View):
         self.statline('Dodge')
         self.statline('Parry')
 
-        # Col 3
+        # Col 3: Stats
         self.x_acc += 12
         self.y_acc = 0
 
