@@ -57,8 +57,12 @@ class Map:
             return True
 
 class Cell:
-    def __init__(self, glyph='.'):
+    def __init__(self, glyph='.', color=None):
+        # Basic cell details
         self.glyph = glyph
+        self.color = color
+
+        # Stuff inside the cell
         self.actor = None
 
     # Add a actor to a cell.
@@ -76,9 +80,9 @@ class Cell:
     # Later, this will be a better function.
     def draw(self):
         if self.actor is not None:
-            return self.actor.glyph
+            return self.actor.glyph, self.actor.color
         else:
-            return self.glyph
+            return self.glyph, self.color
 
     # Return whether the cell has a creature in it.
     def occupied(self):
