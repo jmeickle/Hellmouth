@@ -4,6 +4,7 @@ import math
 import hex
 from lifepath import Lifepath
 import re
+from collections import deque
 
 # Cycling selector.
 class Selector():
@@ -277,3 +278,31 @@ class Status(View):
         self.line("")
         self.line("Pain", "red-black")
         self.line("Shock", "magenta-black")
+
+# Very hackish right now: events added through map...
+class Log(View):
+    def __init__(self, window, x, y, startx, starty):
+        View.__init__(self, window, x, y, startx, starty)
+        self.events = deque()
+
+    def add(self, event):
+        self.events.append(event)
+
+    def draw(self, index=None):
+        self.reset()
+        if index is None:
+            index = len(self.events) - 10
+
+        count = 0
+        lines = 0
+        for x in self.events:
+            count += 1
+            if count < index:
+                continue
+            if lines >= self.height:
+                break
+            self.line(x)
+            lines += 1
+
+    def tail(self):
+        return

@@ -30,7 +30,7 @@ def main(stdscr):
     from actor import Actor
     from player import Player
     from map import Map, Terrain
-    from view import MainMap, Stats, Chargen, Status
+    from view import MainMap, Stats, Chargen, Status, Log
     import hex
     import random
     from random import randint
@@ -73,19 +73,30 @@ def main(stdscr):
     mainmap.ready()
     mainmap.draw()
 
+    status_size = 5
+    status = Status(stdscr, 80-mainmap_width-status_size, status_size, mainmap_width-status_size, 0)
+
     #chargen = Chargen(stdscr, 62, term_y, 0, 0)
     # HACK:
     spacing = 2
-    stats = Stats(stdscr, 80-mainmap_width-spacing, term_y, mainmap_width+spacing, 0)
+    stat_height = 11
+    stats = Stats(stdscr, 80-mainmap_width-spacing, stat_height, mainmap_width+spacing, 0)
     stats.player = player
 
-    status_size = 5
-    status = Status(stdscr, 80-mainmap_width-status_size, term_y, mainmap_width-status_size, 0)
+    log = Log(stdscr, 80-mainmap_width-status_size, term_y-stat_height, mainmap_width+spacing, stat_height)
+    map.log = log
+
+    map.log.add("WELCOME TO THE ARENA OF MEAT")
+
+    # DEBUG: Fill p with log entries
+    for x in range(50):
+        map.log.add("Log Entry %s" % x)
 
     views = []
     views.append(mainmap)
     views.append(stats)
     views.append(status)
+    views.append(log)
     #views.append(chargen)
     #focus = chargen
 
