@@ -180,8 +180,8 @@ class Stats(View):
         # Col 1: Skeleton/Paperdoll
         self.reset()
 
-        self.cline('    [<red-black>%s</>]   ' % 2, "white-black")
-        self.cline('  .--T--. ')
+        self.cline('    <%s>[</>%s<%s>]</>   ' % (self.player.loccol('Head'), self.player.wound('Head'), self.player.loccol('Head')))
+        self.cline('  <%s>.--</><%s>T</><%s>--.</> ' % (self.player.loccol('LArm'), self.player.loccol('Torso'), self.player.loccol('RArm')))
         self.cline('  | =%s= | ' % self.player.wound('Torso'))
         self.cline('<magenta-red>%s</>  . -|- .<yellow-green>%s</> ' % (1, 8))
         self.cline('   .-|-.   ')
