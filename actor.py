@@ -6,7 +6,7 @@ class Actor:
     def __init__(self):
         # Descriptive information
         self.glyph = 'A'
-        self.color = 'red'
+        self.color = 'magenta-black'
         self.name = 'Buggy monster'
         self.description = 'This is the description'
 
