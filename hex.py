@@ -6,15 +6,18 @@ def signum(int):
     else:
         return 1
 
-def dist(x1, y1, x2, y2):
+def dist(pos1, pos2):
+    return distance(pos1[0], pos1[1], pos2[0], pos2[1])
+
+def distance(x1, y1, x2, y2):
     dx = x1 - x2
     dy = y1 - y2
     if signum(dx) != signum(dy):
-        dist = max(abs(dx), abs(dy))
+        distance = max(abs(dx), abs(dy))
     else:
-        dist = abs(dx) + abs(dy)
+        distance = abs(dx) + abs(dy)
 
-    return dist
+    return distance
 
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
@@ -29,11 +32,11 @@ def iterator(map, x, y, rank, list=False, iterate=True, debug=False, curr=0):
             print ""
         for X in range(-curr, curr+1):
             if debug is True:
-                if dist(x, y, x+X, y+Y) < curr:
+                if distance(x, y, x+X, y+Y) < curr:
                     print "   -   ",
-                elif dist(x, y, x+X, y+Y) > curr:
+                elif distance(x, y, x+X, y+Y) > curr:
                     print "   +   ",
-            if dist(x, y, x+X, y+Y) == curr:
+            if distance(x, y, x+X, y+Y) == curr:
                 if debug is True:
                     print "(%2d,%2d)" % (X, Y),
                     map[x+X][y+Y] = curr
