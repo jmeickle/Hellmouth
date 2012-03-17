@@ -123,8 +123,8 @@ def main(stdscr):
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
     # DEBUG: Fill p with log entries
-    for x in range(50):
-        map.log.add("Log Entry %s" % x)
+    #for x in range(50):
+    #    map.log.add("Log Entry %s" % x)
 
     views = []
     views.append(mainmap)
