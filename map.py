@@ -48,6 +48,11 @@ class Map:
     # Return an actor at a pos tuple.
     def actor(self, pos):
         return self.cell(pos).actor
+
+    # Return terrain at a pos tuple.
+    def terrain(self, pos):
+        return self.cell(pos).terrain
+
     # Decides whether a position exists.
     def valid(self, pos):
         if pos[0] < 0 or pos[0] >= self.width \
@@ -64,6 +69,7 @@ class Cell:
 
         # Stuff inside the cell
         self.actor = None
+        self.terrain = None
 
     # Add a actor to a cell.
     def add(self, obj):
@@ -71,6 +77,10 @@ class Cell:
             self.actor = obj
         else:
             return False
+
+    # Stub, will eventually handle other stuff
+    def terrain(self, obj):
+        self.terrain = obj
 
     # Stub, for eventually handling multiple things
     def remove(self, obj):
@@ -81,6 +91,8 @@ class Cell:
     def draw(self):
         if self.actor is not None:
             return self.actor.glyph, self.actor.color
+        elif self.terrain is not None:
+            return self.terrain.glyph, self.terrain.color
         else:
             return self.glyph, self.color
 
@@ -89,10 +101,22 @@ class Cell:
         if self.actor is not None:
             return True
 
+    # Return whether the cell has blocking terrain in it.
+    def impassable(self):
+        if self.terrain is not None:
+            if self.terrain.blocking is True:
+                return True
+
     # Return whether the cell is passable
     def blocked(self):
-        if self.occupied is True:
+        if self.occupied() is True or self.impassable() is True:
             return True
+
+def Terrain():
+    def __init__(self, glyph="X", color="red-black", blocking=True):
+        self.glyph = glyph
+        self.color = color
+        self.blocking = blocking
 
 if __name__ == '__main__':
     # Basic test: make a map and print it
