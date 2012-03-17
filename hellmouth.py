@@ -29,7 +29,7 @@ def main(stdscr):
     from define import NW, NE, CE, SE, SW, CW
     from actor import Actor
     from player import Player
-    from map import Map
+    from map import Map, Terrain
     from view import MainMap, Stats, Chargen, Status
     import hex
     import random
