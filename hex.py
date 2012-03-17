@@ -46,7 +46,10 @@ def iterator(map, x, y, rank, list=False, iterate=True, debug=False, curr=0):
 
     if iterate is True:
         if curr < rank:
-            iterator(map, x, y, rank, list, iterate, debug, curr+1)
+            if list is False:
+                iterator(map, x, y, rank, list, iterate, debug, curr+1)
+            else:
+                ret.extend(iterator(map, x, y, rank, list, iterate, debug, curr+1))
 
     if list is True: return ret
 
