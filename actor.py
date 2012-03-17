@@ -1,5 +1,5 @@
 from define import *
-from dice import _3d6
+from dice import _3d6, _d6, roll
 from random import choice
 import hex
 
@@ -86,11 +86,11 @@ class Actor:
         if target == self.map.player:
             def_name = "you"
 
-        str = "%s attack%s the %s" % (att_name, verb, def_name)
+        str = "%s hit%s the %s" % (att_name, verb, def_name)
 
-        if _3d6() > 11:
+        if _3d6() > 8:
             str += " and hits!"
-            amt = _3d6()
+            amt = sum(roll(_d6, self.damage))
             target.hit(amt)
         else:
             str += "."
@@ -108,7 +108,7 @@ class Actor:
         self.check_dead()
 
     def check_dead(self):
-        if self.HP <= 0:
+        if self.hp <= 0:
             if hex.dist(self.map.player.pos, target.pos) <= 3:
                 self.map.log.add("%s has been slain!")
             self.map.queue.remove(self)
