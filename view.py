@@ -272,5 +272,5 @@ class Status(View):
         self.reset()
         self.line("")
         self.line("")
-        self.line("Pain")
-        self.line("Shock")
+        self.line("Pain", "red-black")
+        self.line("Shock", "magenta-black")
