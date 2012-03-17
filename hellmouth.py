@@ -57,6 +57,7 @@ def main(stdscr):
 
     # A friendly @
     player = map.put(Player(), (center_x, center_y))
+    map.player = player
 
     # Spawn enemies for it to fight
     for x in range(60):

@@ -17,6 +17,9 @@ class Map:
         # Event log
         self.log = None
 
+        # Player
+        self.player = None
+
     def loadmap(self, x, y):
 #        content = ("~", ".", ",", "!", "?")
 
