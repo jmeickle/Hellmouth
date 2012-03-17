@@ -274,6 +274,7 @@ class Status(View):
 #        self.line("Pain", "red-black")
 #        self.line("Shock", "magenta-black")
 
+# TODO: Make this actually work
 # Very hackish right now: events added through map...
 class Log(View):
     def __init__(self, window, x, y, startx, starty):
@@ -296,8 +297,32 @@ class Log(View):
                 continue
             if lines >= self.height:
                 break
-            self.line(x)
-            lines += 1
+            if len(x) > self.width:
+                substrs = self.logline(x)
+                for substr in substrs:
+                    self.line(substr)
+                    lines += 1
 
     def tail(self):
         return
+
+    def logline(self, str, x=None):
+        if x is None:
+            x = self.width
+
+        ret = []
+        line = ""
+        count = 0
+        lines = 0
+
+        for char in str:
+            count += 1
+            line += char
+            if count >= x:
+                count = 0
+                if lines > 0:
+                    line = "  %s" % line
+                ret.append(line)
+                lines += 1
+
+        return ret
