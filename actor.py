@@ -127,12 +127,16 @@ class Actor:
             return 0
         else:
             wounds = sum(loc.wounds)
-            if wounds >= 10:
+            col = loc.color()
+            if loc.status() == SEVERED:
+                wounds = 'X'
+            elif wounds >= 10:
                 wounds = '*'
             if col is True:
-                return "<%s-black>%s</>" % (loc.color(), wounds)
+                return "<%s-black>%s</>" % (col, wounds)
             else:
                 return wounds
+
     def loccol(self, loc):
         loc = self.body.locs.get(loc, None)
         if loc is None:
@@ -234,7 +238,11 @@ class HitLoc:
 
     # Stub: return the healthiness of the limb
     def status(self):
-        return True
+        if sum(self.wounds) > 15:    return SEVERED
+        elif sum(self.wounds) >= 10: return CRIPPLED
+        elif sum(self.wounds) > 4:   return INJURED
+        elif sum(self.wounds) > 1:   return SCRATCHED
+        else:                        return UNHURT
 
     # Set up a parent/child relationship.
     def add_child(parent, child):
@@ -251,11 +259,11 @@ class HitLoc:
 
     # Return a color for the limb status.
     def color(self):
-        amt = sum(self.wounds)
-        if amt >= 10: return "magenta"
-        elif amt > 5: return "red"
-        elif amt > 1: return "yellow"
-        else: return "white"
+        if self.status() == SEVERED:     return "cyan"
+        elif self.status() == CRIPPLED:  return "magenta"
+        elif self.status() == INJURED:   return "red"
+        elif self.status() == SCRATCHED: return "yellow"
+        else:                            return "white"
 
 # Test code
 if __name__ == "__main__":
