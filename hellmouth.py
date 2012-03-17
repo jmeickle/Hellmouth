@@ -222,9 +222,17 @@ def main(stdscr):
     intro.line("")
     intro.line("")
     intro.line("")
-    intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
+    if player.hp > 0:
+        intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
+        intro.line("")
+        intro.line("CONGRATULATIONS!")
+    else:
+        intro.line('YOU HAVE BEEN SLAIN IN THE MEAT BASED ROGUELIKE "MEAT ARENA"')
+        intro.line("")
+        intro.line("YOU ARE USED TO FURTHER FORTIFY ITS MEAT WALLS!")
+        intro.line("")
+        intro.line("CONGRATULATIONS!")
     intro.line("")
-    intro.line("CONGRATULATIONS!")
     intro.line("")
     intro.line("")
     intro.line("")
@@ -233,8 +241,10 @@ def main(stdscr):
     intro.line("")
     intro.line("")
     intro.line("")
-    intro.line("")
-    intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
+    if player.hp > 0:
+        intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
+    else:
+        intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")
     while 1:
         c = stdscr.getch()
         if c == ord(' '):
