@@ -288,7 +288,7 @@ class Log(View):
         self.reset()
 
         if index is None:
-            index = len(self.events) - 10
+            index = max(0, len(self.events) - 10)
 
         count = 0
         lines = 0
