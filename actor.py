@@ -120,6 +120,20 @@ class Actor:
     def Block(self):      return 32
     def Parry(self):      return 31
 
+    # Return how many points of wounds a location has
+    def wound(self, loc, col=True):
+        loc = self.body.locs.get(loc, None)
+        if loc is None:
+            return 0
+        else:
+            wounds = sum(loc.wounds)
+            if wounds >= 10:
+                wounds = '*'
+            if col is True:
+                return "<%s-black>%s</>" % (loc.color(), wounds)
+            else:
+                return wounds
+
 class BodyPlan:
     def __init__(self, parent):
         # Size (+0 for a human)
@@ -228,6 +242,13 @@ class HitLoc:
     # Increase the wounds on the location.
     def hurt(self, amt):
         self.wounds.append(amt)
+
+    # Return a color for the limb status.
+    def color(self):
+        amt = sum(self.wounds)
+        if amt > 5: return "yellow"
+        elif amt > 10: return "red"
+        else: return "white"
 
 # Test code
 if __name__ == "__main__":
