@@ -31,6 +31,8 @@ class View():
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
         self.y = starty
+        self.width = x
+        self.height = y
         self.x_acc = 0
         self.y_acc = 0
 
