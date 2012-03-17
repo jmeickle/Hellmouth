@@ -110,7 +110,6 @@ class MainMap(View):
         self.player = None
         # -1 to account for 0,0 start
         self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
-        self.viewrange = 11
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
@@ -137,7 +136,7 @@ class MainMap(View):
 
     def draw(self):
         hexes = []
-        hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.viewrange)
+        hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.map.viewrange)
 
         minX = 0
         maxX = self.map.width-1

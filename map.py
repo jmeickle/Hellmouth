@@ -20,6 +20,9 @@ class Map:
         # Player
         self.player = None
 
+        # View range for the map
+        self.viewrange = 11
+
     def loadmap(self, x, y):
 #        content = ("~", ".", ",", "!", "?")
 
