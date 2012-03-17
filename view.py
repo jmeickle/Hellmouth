@@ -155,12 +155,6 @@ class MainMap(View):
 
             self.hd(h[0], h[1], glyph, col)
 
-        # Draw the actors
-#        for actor in self.actors:
-#            self.hd(self.viewrange+1+actor.pos[0]-self.player.pos[0],\
-#                    self.viewrange+1+actor.pos[1]-self.player.pos[1],\
-#                    actor.glyph)
-
         self.window.refresh()
 
 class Stats(View):
@@ -275,10 +269,10 @@ class Status(View):
 
     def draw(self):
         self.reset()
-        self.line("")
-        self.line("")
-        self.line("Pain", "red-black")
-        self.line("Shock", "magenta-black")
+#        self.line("")
+#        self.line("")
+#        self.line("Pain", "red-black")
+#        self.line("Shock", "magenta-black")
 
 # Very hackish right now: events added through map...
 class Log(View):
