@@ -7,7 +7,7 @@ class Player(Actor):
         self.name = 'Player'
         self.color = 'cyan-black'
         self.hp = 100
-        self.damage = 6
+        self.damage = 1
 
 # NOT THE PLAYER BUT GOES IN HERE ANYWAYS
 
