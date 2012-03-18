@@ -8,13 +8,21 @@
 # 'choices' (tuple) : Tuple of choices for progression from this lifepath.
 eventdata = {
 # Start of data
+'Start' : {
+    'age'     : 0,
+    'text'    : "Starting point of character generation, before any details are determined.",
+    'effects' : {},
+    'years'   : 1,
+    'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
+#    'choices' : ('Mundane Parents', 'Mundane Infant', 'Mundane Young Child', 'Mundane Child', 'Mundane Young Adult', 'Mundane Adult'),
+},
 # Age 0: Parents (~-9 months old)
 'Mundane Parents' : {
     'age'     : 0,
     'text'    : "My parents were regular people like yourself.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Infant', '', '', '', '', ''),
 },
 # Age 1: Infant (0 years old)
 'Mundane Infant' : {
@@ -22,7 +30,7 @@ eventdata = {
     'text'    : "My birth was exciting for my parents, but few others.",
     'effects' : {},
     'years'   : 2,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Young Child', '', '', '', '', ''),
 },
 'Dark Omen' : {
     'age'     : 1,
@@ -57,7 +65,7 @@ eventdata = {
     'text'    : "I was given up right after birth - unwanted by my own mother.",
     'effects' : {},
     'years'   : 2,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Church Young Child', '', '', '', '', ''),
 },
 # FORK: Who raised you? ('Immediate Adoption')
 'Church Young Child' : {
@@ -73,7 +81,7 @@ eventdata = {
     'text'    : "My early years were uneventful.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Child', '', '', '', '', ''),
 },
 'Rich Young Child' : {
     'age'     : 2,
@@ -177,7 +185,7 @@ eventdata = {
     'text'    : "I had an uneventful childhood.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Teen', '', '', '', '', ''),
 },
 'Rich Child' : {
     'age'     : 3,
@@ -224,7 +232,7 @@ eventdata = {
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Young Adult', '', '', '', '', ''),
 },
 'Dedicated Teen' : {
     'age'     : 4,
@@ -271,7 +279,7 @@ eventdata = {
     'text'    : "My life was quiet as I grew into adulthood.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Mundane Adult', '', '', '', '', ''),
 },
 'Rich Young Adult' : {
     'age'     : 5,
@@ -318,7 +326,7 @@ eventdata = {
     'text'    :  "As an adult, little troubled me.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Demonslayer', '', '', '', '', ''),
 },
 'Rich Adult' : {
     'age'     : 6,
@@ -360,44 +368,59 @@ eventdata = {
 # FORK: How were you odd? ('Odd Adult')
 
 # FORK: How did you get into demon-slaying?
-'Reluctant Demonslayer' : {
+'Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "In time, though, I was forced into a life on the road, slaying demons wherever I went.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('Reluctant Demonslayer', 'Vengeful Demonslayer', 'Zealous Demonslayer', 'Violent Demonslayer', 'Curious Demonslayer', 'Corrupt Demonslayer'),
+},
+'Reluctant Demonslayer' : {
+    'age'     : 6,
+    'text'    :  "I did not want to, but against the forces of darkness, what choice did I have?",
+    'effects' : {},
+    'years'   : 1,
+    'choices' : ('End', '', '', '', '', ''),
 },
 'Vengeful Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "I have seen too much bloodshed. I need to destroy the fiends before they hurt anyone else.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('End', '', '', '', '', ''),
 },
 'Zealous Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "I don't regret leaving my life behind me. God himself called me to this task, and I will listen and obey.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('End', '', '', '', '', ''),
 },
 'Violent Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "I plan to slay every one of those abominations. Even if they won't stay dead, I'll kill them until they get the picture.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('End', '', '', '', '', ''),
 },
 'Curious Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "I didn't truly believe they existed - not at first - but now I have to learn more about them.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : ('End', '', '', '', '', ''),
 },
 'Corrupt Demonslayer' : {
     'age'     : 6,
-    'text'    :  "As an adult, little troubled me.",
+    'text'    :  "The forces of darkness have vast... vast power. Power you wouldn't believe. It has to be studied.",
+    'effects' : {},
+    'years'   : 1,
+    'choices' : ('End', '', '', '', '', ''),
+},
+# End character generation.
+'End' : {
+    'age'     : -1,
+    'text'    :  "Your character is ready to go.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('', '', '', '', '', ''),
