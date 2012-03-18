@@ -88,12 +88,13 @@ class Actor:
 
         if _3d6() > 8:
             str = "%s hit%s %s" % (att_name, verb, def_name)
-            amt = sum(roll(_d6, self.damage))
-            target.hit(amt)
 
             # Mute non-nearby messages
             if str is not None and hex.dist(self.map.player.pos, target.pos) <= 3:
                 self.map.log.add(str)
+
+            amt = sum(roll(_d6, self.damage))
+            target.hit(amt)
 
         self.over()
 
