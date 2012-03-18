@@ -73,7 +73,12 @@ class Actor:
         self.do(choice(dirs))
 
     def randomloc(self):
-        return self.body.table[_3d6()]
+        roll = _3d6()
+        loc = self.body.table.get(roll, None)
+        if loc is None:
+            subroll = _d6()
+            loc = self.body.table[("%s-%s" % (roll, subroll))]
+        return loc
 
     # Do a basic attack.
     def attack(self, target, loc=None):
@@ -109,7 +114,8 @@ class Actor:
         if self.hp <= 0:
             if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
                 self.map.log.add("%s has been slain!" % self.name)
-            self.map.queue.remove(self)
+            if self != self.map.acting:
+                self.map.queue.remove(self)
             self.map.cell(self.pos).remove(self)
 
     # Mark self as done acting.
@@ -190,7 +196,20 @@ class BodyPlan:
                # print "This:", self.locs[partname].type
                 HitLoc.add_child(self.locs[parent], part)
             for roll in rolls:
-                self.table[roll] = part
+                if isinstance(roll, list) is True:
+#                    exit("%s %s" % (partname, roll))
+                    base = roll[0]
+                    for x in range(len(roll)):
+                        if x == 0:
+                            continue;
+                        subroll = roll[x]
+                        self.table["%s-%s" % (base, subroll)] = part
+
+#                         exit("%s %s" % (partname, self.table))
+               # if isinstance(roll, list) is False:
+                else:
+                    self.table[roll] = part
+#                else:
 #print rolls
 #for roll in rolls:
 #                self.table[roll] = part
@@ -205,7 +224,9 @@ class Humanoid(BodyPlan):
     # 1: Part name.
     # 2: Parent part. Only list parts that have already been listed.
     # 3: True if it's a sublocation rather than a real one.
-    # 4: Tuple representing what 3d6 rolls hit that spot.
+    # 4: List representing what 3d6 rolls hit that spot.
+    #    If a further d6 roll is required, use a list like:
+    #        [[16, 1, 2, 3], 14]
     parts = (
              ('Torso', None, False, [9, 10]),
              ('Groin', 'Torso', False, [11]),
@@ -217,13 +238,14 @@ class Humanoid(BodyPlan):
              ('LHand', 'LArm', False, [15],),
              ('RLeg', 'Groin', False, [6, 7]),
              ('LLeg', 'Groin', False, [13, 14]),
-             ('RFoot', 'RLeg', False, [16]),
-             ('LFoot', 'LLeg', False, [16]),
+             ('RFoot', 'RLeg', False, [[16, 1, 2, 3]]),
+             ('LFoot', 'LLeg', False, [[16, 4, 5, 6]]),
     )
 
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build()
+        #exit("%s"%self.table)
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.
