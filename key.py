@@ -5,9 +5,7 @@ from define import *
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
-        if c == ord('q'):
-            exit("MEGACOWARD")
-        if c == 27: # Escape key
+        if c == ord('q') or if c == 27: # Escape key
             exit("MEGACOWARD")
         elif c == ord('7'):
             views[0].player.do(NW)
