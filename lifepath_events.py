@@ -430,6 +430,30 @@ eventdata = {
 # Close of data
 }
 
+def recurse(tree, eventname, depth):
+    event = tree.get(eventname)
+#    print "%s%s:" % (depth * 3 * " ", eventname),
+#    print "%s%s" % ((depth+2) * 2 * " ", event["text"])
+    print "%s%s:" % (depth * 3 * " ", eventname),
+    print event["text"]
+
+    for choice in event["choices"]:
+        if choice != '':
+            recurse(tree, choice, depth+1)
+
+    # Print the last 
+#    if more is False:
+#            print "%s%s:" % (depth * 3 * " ", eventname),
+#            print event["text"]
+
+    if depth == 1:
+        print "\n",
+
 if __name__ == "__main__":
-    for k, v in eventdata.iteritems():
-        print k
+
+# Print all event names
+#    for k, v in eventdata.iteritems():
+#        print k
+
+# Print a tree
+    recurse(eventdata, "Start", 0)
