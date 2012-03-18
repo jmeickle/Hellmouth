@@ -23,6 +23,8 @@ def keyin(stdscr, views):
             views[0].player.do(SE)
         elif c == ord('5'):
             views[0].player.over()
+
+# TODO: Convert this into the multiple menu code
 #        elif hasattr(chargen.selector, 'parent') is True:
 #            if c == curses.KEY_RIGHT:
 #                chargen.selector.next()
