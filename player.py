@@ -6,7 +6,7 @@ class Player(Actor):
         self.glyph = '@'
         self.name = 'Player'
         self.color = 'cyan-black'
-        self.hp = 100
+        self.hp = 1000
         self.damage = 1
 
 # NOT THE PLAYER BUT GOES IN HERE ANYWAYS
