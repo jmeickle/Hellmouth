@@ -159,6 +159,8 @@ def main(stdscr):
         # Queue stuff
         if map.acting is None:
             map.acting = map.queue.popleft()
+
+            # End the game.
             if len(map.queue) == 0:
                 break;
             if player.hp <= 0:
@@ -172,17 +174,18 @@ def main(stdscr):
         #else:
         #    stdscr.addstr(20, 59, "Curr: NONE")
         #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
+
+        # NPCs act until the player's turn.
+        if map.acting is not player:
+            map.acting.act()
+            continue
     
-        # Clear screen and tell views to draw themselves.
+        # Before player turn, clear screen and tell views to draw themselves.
         stdscr.clear()
         for view in views:
             view.draw()
 
-        if map.acting is not player:
-            map.acting.act()
-            continue
-
-        # Handle all keyboard input
+        # Handle all player keyboard input
         keyin(stdscr, views)
 
         # All non-component drawing is handled below.
