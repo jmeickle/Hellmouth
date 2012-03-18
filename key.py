@@ -5,7 +5,7 @@ from define import *
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
-        if c == ord('q') or if c == 27: # Escape key
+        if c == ord('q') or c == 27: # Escape key
             exit("MEGACOWARD")
         elif c == ord('7'):
             views[0].player.do(NW)
@@ -21,6 +21,8 @@ def keyin(stdscr, views):
             views[0].player.do(SE)
         elif c == ord('5'):
             views[0].player.over()
+        elif c == ord('P'):
+            views[0].player.attack(views[0].player)
 
 # TODO: Convert this into the multiple menu code
 #        elif hasattr(chargen.selector, 'parent') is True:
