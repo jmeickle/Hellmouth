@@ -172,6 +172,11 @@ def main(stdscr):
         #    stdscr.addstr(20, 59, "Curr: NONE")
         #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
     
+        # Clear screen and tell views to draw themselves.
+        stdscr.clear()
+        for view in views:
+            view.draw()
+
         if map.acting is not player:
             map.acting.act()
             continue
@@ -204,11 +209,6 @@ def main(stdscr):
 #            elif c == curses.KEY_ENTER or c == ord('\n'):
 #                chargen.selector.choose()
 #                views.remove(chargen)
-
-        # Clear screen and tell views to draw themselves.
-        stdscr.clear()
-        for view in views:
-            view.draw()
 
     # All non-component drawing is handled below.
 
