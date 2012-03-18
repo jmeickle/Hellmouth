@@ -40,6 +40,7 @@ def main(stdscr):
     from view import MainMap, Stats, Chargen, Status, Log, View
     import hex
     from random import randint
+    from key import keyin
 
     # HACK: INTRO SCREEN
     intro = View(stdscr, term_x, term_y, 0, 0)
@@ -181,36 +182,10 @@ def main(stdscr):
             map.acting.act()
             continue
 
-        # Keyin stuff for player actions
-        c = stdscr.getch()
-        if c == ord('q'):
-            exit("MEGACOWARD")
-        if c == 27: # Escape key
-            exit("MEGACOWARD")
-        elif c == ord('7'):
-            player.do(NW)
-        elif c == ord('4'):
-            player.do(CW)
-        elif c == ord('1'):
-            player.do(SW)
-        elif c == ord('9'):
-            player.do(NE)
-        elif c == ord('6'):
-            player.do(CE)
-        elif c == ord('3'):
-            player.do(SE)
-        elif c == ord('5'):
-            player.over()
-#        elif hasattr(chargen.selector, 'parent') is True:
-#            if c == curses.KEY_RIGHT:
-#                chargen.selector.next()
-#            elif c == curses.KEY_LEFT:
-#                chargen.selector.prev()
-#            elif c == curses.KEY_ENTER or c == ord('\n'):
-#                chargen.selector.choose()
-#                views.remove(chargen)
+        # Handle all keyboard input
+        keyin(stdscr, views)
 
-    # All non-component drawing is handled below.
+        # All non-component drawing is handled below.
 
         # DEBUG: Print current position.
         #stdscr.addstr(10, 59, "POSITION", curses.color_pair(1))
