@@ -1,6 +1,7 @@
 from define import *
 from dice import _3d6, _d6, roll
 from random import choice
+from describe import d
 import hex
 
 class Actor:
@@ -92,11 +93,11 @@ class Actor:
             def_name = "you"
 
         if _3d6() > 8:
-            str = "%s hit%s %s" % (att_name, verb, def_name)
+            str = "%s @dmg@%s %s" % (att_name, verb, def_name)
 
             # Mute non-nearby messages
             if str is not None and hex.dist(self.map.player.pos, target.pos) <= 3:
-                self.map.log.add(str)
+                self.map.log.add(d(str))
 
             amt = sum(roll(_d6, self.damage))
             target.hit(amt)
@@ -113,7 +114,7 @@ class Actor:
     def check_dead(self):
         if self.hp <= 0:
             if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
-                self.map.log.add("%s has been slain!" % self.name)
+                self.map.log.add(d("%s has been slain!" % self.name))
             if self != self.map.acting:
                 self.map.queue.remove(self)
             self.map.cell(self.pos).remove(self)
