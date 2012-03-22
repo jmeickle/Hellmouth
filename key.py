@@ -1,12 +1,12 @@
 from define import *
-
+from describe import Descriptions
 # Define dict of keys/actions
 
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
         if c == ord('q') or c == 27: # Escape key
-            exit("MEGACOWARD")
+            exit(Descriptions.fail)
         elif c == ord('7'):
             views[0].player.do(NW)
         elif c == ord('4'):
