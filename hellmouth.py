@@ -1,6 +1,6 @@
 import curses
 import random
-
+from describe import Descriptions
 #def init():
 #    stdscr = curses.initscr()
     #curses.start_color() # Permit colors.
@@ -13,14 +13,6 @@ def flip():
     if random.randint(0, 1) == 1:
         return 1
     else: return -1
-
-
-# For exiting cleanly.
-def gameover():
-    #curses.echo()
-    #curses.nocbreak()
-    #stdscr.keypad(0)
-    curses.endwin()
 
 def newwin(window, x, y, startx, starty):
     win = window.subwin(y, x, starty, startx)
