@@ -16,6 +16,15 @@ INJURED = 2
 CRIPPLED = 3
 SEVERED = -1
 
+# Damage types
+types = {
+"cr"  : ("crush", "crushing"),
+"cut" : ("cut", "cutting"),
+"imp" : ("impale", "impaling"),
+"thr" : ("thrust", "thrusting"),
+"sw"  : ( "swing", "swinging"),
+}
+
 class Color:
     # Basic color names and definitions.
     colors = [
