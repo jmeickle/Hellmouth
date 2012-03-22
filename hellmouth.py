@@ -1,29 +1,25 @@
-import curses
-import random
-import dice 
-from describe import Descriptions
-
-def newwin(window, x, y, startx, starty):
-    win = window.subwin(y, x, starty, startx)
-    return win
-
 def main(stdscr):
-    # HACK:
+
+    # HACK: Define termsize rather than figuring it out.
     term_x = 80
     term_y = 24
-    curses.curs_set(0) # Make cursor invisible.
 
-#    stdscr = init()
+    # Make the cursor invisible.
+    curses.curs_set(0)
+
+    # Handle game-related imports.
+    import random
+    import dice 
+    import hex
+    from describe import Descriptions
     from define import NW, NE, CE, SE, SW, CW
     from actor import Actor
     from player import *
     from map import Map, Terrain
     from view import MainMap, Stats, Chargen, Status, Log, View
-    import hex
-    from random import randint
     from key import keyin
 
-    # HACK: INTRO SCREEN
+    # HACK: Display an intro screen.
     intro = View(stdscr, term_x, term_y, 0, 0)
     intro.x_acc = 10
     intro.line("")
@@ -50,6 +46,7 @@ def main(stdscr):
     intro.line("PRESS SPACE TO ENTER THE MEAT ARENA")
     intro.line("")
     intro.line("PRESS ESC TO COWARDLY LEAVE")
+    # Wait for player input.
     while 1:
         c = stdscr.getch()
         if c == ord(' '):
@@ -57,40 +54,44 @@ def main(stdscr):
         if c == 27:
             exit("COWARD.")
 
-    # Very basic map init
+    # Very basic map init - 50x50.
     map = Map()
     map.loadmap(50, 50)
 
+    # Define the map center.
     center_x = map.width/2 - 1
     center_y = map.height/2 - 1
 
-    # Mega hack to draw a hexagonal map
+    # Mega hack to draw a hexagonal map: draw a hex from hex_start to hex_max.
     hex_max = 25
     hex_start = 15
 
+    # Arena walls
     walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
-    #exit("%s" % walls)
-#    terrain = Terrain()
-#    exit("%s" % terrain	)
     for pos in walls:
-#        print "%s,%s"%pos
         terrain = map.put(Terrain(), pos, True)
-#    exit()
-    for x in range(10):
+
+    # Randomly placed columns
+    colnum = 10
+    for x in range(colnum):
         colsize = random.randint(1, 3)
-        pos = (center_x + dice.flip()*randint(4, hex_start)-colsize, center_y + dice.flip() * randint(4,hex_start)-colsize)
+        pos = (center_x + dice.flip()*random.randint(4, hex_start)-colsize, center_y + dice.flip() * random.randint(4,hex_start)-colsize)
         col = hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
         for loc in col:
             map.put(Terrain(), loc, True)       
 
-    # A friendly @
+    # Place our friendly @
     player = map.put(Player(), (center_x, center_y))
     map.player = player
+
+    # Define monsters to be placed
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
-    # Spawn enemies for it to fight
-    for x in range(100):
+
+    # Place monsters
+    num_mons = 100
+    for x in range(num_mons):
         monster = random.choice(monsters)
-        map.put(monster(), (center_x + dice.flip()*randint(1, hex_start), center_y + dice.flip() * randint(1,hex_start)))
+        map.put(monster(), (center_x + dice.flip()*random.randint(1, hex_start), center_y + dice.flip() * random.randint(1,hex_start)))
 
     # HACK:
     mainmap_width = 45
@@ -99,55 +100,59 @@ def main(stdscr):
     mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
     mainmap.map = map
     mainmap.player = player
-    #mainmap.window.overlay(stdscr)
     mainmap.ready()
     mainmap.draw()
 
+    # Status window init
     status_size = 5
     status = Status(stdscr, 80-mainmap_width-status_size, status_size, mainmap_width-status_size, 0)
 
+    # Chargen window init
     #chargen = Chargen(stdscr, 62, term_y, 0, 0)
+
+    # Stats window init
     # HACK:
     spacing = 2
     stat_height = 11
     stats = Stats(stdscr, 80-mainmap_width-spacing, stat_height, mainmap_width+spacing, 0)
     stats.player = player
 
+    # Log window init
     log = Log(stdscr, 80-mainmap_width-status_size, term_y-stat_height, mainmap_width+spacing, stat_height)
     map.log = log
-
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
     # DEBUG: Fill p with log entries
     #for x in range(50):
     #    map.log.add("Log Entry %s" % x)
 
+    # Initialize views and append the current windows.
     views = []
     views.append(mainmap)
     views.append(stats)
     views.append(status)
     views.append(log)
     #views.append(chargen)
-    #focus = chargen
 
-    # HACK: Show the map.
+    # HACK: Show the map for the first time.
     stdscr.clear()
     for view in views:
         view.draw()
     stdscr.refresh()
 
+    # Main game loop
     while 1:
-        # Queue stuff
+        # If nobody is acting, let the first in the queue act.
         if map.acting is None:
             map.acting = map.queue.popleft()
 
-            # End the game.
+            # End the game if there is nobody else left to act, or if the player is dead.
             if len(map.queue) == 0:
                 break;
             if player.hp <= 0:
                 break;
 
-        # DEBUG: Print currently acting.
+        # DEBUG: Print currently acting actor name.
         # Has to be here for it to work properly.
         #stdscr.addstr(19, 59, "QUEUE")
         #if map.acting is not None:
@@ -156,12 +161,12 @@ def main(stdscr):
         #    stdscr.addstr(20, 59, "Curr: NONE")
         #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
 
-        # NPCs act until the player's turn.
+        # NPCs act until the player's turn comes up.
         if map.acting is not player:
             map.acting.act()
             continue
     
-        # Before player turn, clear screen and tell views to draw themselves.
+        # Before the player's turn, clear the screen and tell views to redraw themselves.
         stdscr.clear()
         for view in views:
             view.draw()
@@ -169,7 +174,7 @@ def main(stdscr):
         # Handle all player keyboard input
         keyin(stdscr, views)
 
-        # All non-component drawing is handled below.
+        # All non-component (i.e., debug) drawing is handled below.
 
         # DEBUG: Print current position.
         #stdscr.addstr(10, 59, "POSITION", curses.color_pair(1))
@@ -191,7 +196,7 @@ def main(stdscr):
         # Refresh the display.
         stdscr.refresh()
 
-    # HACK: WIN SCREEN
+    # HACK: If we get here, we're displaying the win screen.
     stdscr.clear()
 
     intro = View(stdscr, term_x, term_y, 0, 0)
@@ -230,14 +235,14 @@ def main(stdscr):
     else:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")
 
-    #intro.window.refresh()
-
+    # Wait for the player to quit.
     while 1:
         c = stdscr.getch()
-        if c == ord(' '):
-            exit("VICTORY IS YOURS.")
-        if c == 27:
-            exit("VICTORY IS YOURS.")
+        if c == ord(' ') or c == 27:
+            exit("THANKS FOR PLAYING!")
 
-# Curses wrapper.
+# Curses import.
+import curses
+
+# Initialize the curses wrapper, which calls the main function after setting up curses.
 curses.wrapper(main)
