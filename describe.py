@@ -62,9 +62,26 @@ def g(str):
 
 # Get whether the string failed already
 def f(str):
-    return Descriptions.fail.get(str, False)
+    return Descriptions.fail.get(str, None)
+
+# Logs number of failures to match. Mostly for debugging.
+def fail(str):
+    if Descriptions.fail.get(str, None) is None:
+        Descriptions.fail[str] = 1
+    else:
+        Descriptions.fail[str] += 1
 
 def describe(str):
+    ret = ""
+    for substr in re.split('([@~]\S*[@~])', str):
+        if re.search('[@~]', substr) is not None:
+            # TODO: Keep @/~ and update the db to include them?
+            ret += replace(re.sub('[@~]', '', substr))
+        else:
+            ret += substr
+    return ret
+
+def replace(str):
     exact = g(str)
     if exact is not None:
         return exact
@@ -85,10 +102,11 @@ def indexed_remove(terms, n, ret):
         copy = terms[:]
         copy[x]=""
         string = build(copy)
-        if f(string) is False:
+        # DEBUG: Change this to 'is None' and it'll stop checking already-failed.
+        if f(string) is not False:
             query = g(string)
             if query is None:
-                Descriptions.fail[string] = True
+                fail(string)
             else:
                 ret = query
                 return ret
@@ -98,21 +116,6 @@ def indexed_remove(terms, n, ret):
 
     return ret
 
-
-#        if n > 1:
-#            for j in range(1, len(terms)):
-#                indexed_remove(terms, j)
-
-#        print "%s," % x,
-#        if terms[x] == "":
-#            continue;
-#        else:
-#            terms[x] = ""
-#    g(terms)
-#    print "/",
-
-#    if n > 1:
-#        indexed_remove(terms, n-1)
 def dict(name, dict):
     print "--%s--" % name
     for k,v in dict.iteritems():
@@ -123,8 +126,25 @@ if __name__ == '__main__':
     dict("Text Database", Descriptions.dict)
 
     print "\nResults:"
-    strs = ['dmg-sever-cut-neck-crit', 'dmg-nonsense-herp-derp', 'dmg-cut-crit',
-            'dmg-cripple-neck', 'dmg-cripple-cut-neck', "dmg-sever-cut-neck"]
+
+    strs = ['You @dmg-sever-cut-neck-crit@ the opponent.',
+            '@dmg-nonsense-herp-derp@',
+            '@dmg-cut-crit@',
+            '@dmg-cripple-neck@',
+            '@dmg-cripple-cut-neck@',
+            "@dmg-sever-cut-neck@",
+            '@dmg-nonsense-herp-derp@',
+            '@dmg-cut-crit@',
+            '@dmg-cripple-neck@',
+            '@dmg-cripple-cut-neck@',
+            "@dmg-sever-cut-neck@",
+            '@dmg-nonsense-herp-derp@',
+            '@dmg-cut-crit@',
+            '@dmg-cripple-neck@',
+            '@dmg-cripple-cut-neck@',
+            "@dmg-sever-cut-neck@",
+           ]
+
     for str in strs:
         print "%s => %s" % (str, describe(str))
 
