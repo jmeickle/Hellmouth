@@ -71,6 +71,9 @@ def fail(str):
     else:
         Descriptions.fail[str] += 1
 
+def d(str):
+    return describe(str)
+
 def describe(str):
     ret = ""
     for substr in re.split('([@~]\S*[@~])', str):
