@@ -1,18 +1,7 @@
 import curses
 import random
+import dice 
 from describe import Descriptions
-#def init():
-#    stdscr = curses.initscr()
-    #curses.start_color() # Permit colors.
-    #curses.noecho() # Don't display typed keys.
-    #curses.cbreak()  # Don't wait for enter.
-    #stdscr.keypad(1) # Turn on keypad mode.
-#    return stdscr
-# Simple coinflip
-def flip():
-    if random.randint(0, 1) == 1:
-        return 1
-    else: return -1
 
 def newwin(window, x, y, startx, starty):
     win = window.subwin(y, x, starty, startx)
@@ -89,7 +78,7 @@ def main(stdscr):
 #    exit()
     for x in range(10):
         colsize = random.randint(1, 3)
-        pos = (center_x + flip()*randint(4, hex_start)-colsize, center_y + flip() * randint(4,hex_start)-colsize)
+        pos = (center_x + dice.flip()*randint(4, hex_start)-colsize, center_y + dice.flip() * randint(4,hex_start)-colsize)
         col = hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
         for loc in col:
             map.put(Terrain(), loc, True)       
@@ -101,7 +90,7 @@ def main(stdscr):
     # Spawn enemies for it to fight
     for x in range(100):
         monster = random.choice(monsters)
-        map.put(monster(), (center_x + flip()*randint(1, hex_start), center_y + flip() * randint(1,hex_start)))
+        map.put(monster(), (center_x + dice.flip()*randint(1, hex_start), center_y + dice.flip() * randint(1,hex_start)))
 
     # HACK:
     mainmap_width = 45

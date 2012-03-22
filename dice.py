@@ -4,6 +4,13 @@ SUCC = 1
 TIE = 0
 FAIL = -1
 
+# Basic coinflip
+def flip():
+    if random.randint(0, 1) == 1:
+        return SUCC
+    else:
+        return FAIL
+
 # Basic d6 roll
 def _d6():
     return random.randint(1, 6)
