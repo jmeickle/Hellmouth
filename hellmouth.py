@@ -153,7 +153,9 @@ def main(stdscr):
                     break
 
             # Handle all player keyboard input
-            keyin(stdscr, views)
+            if keyin(stdscr, views) is True:
+            # HACK PART 2: Done with chargen.
+                gameplay = True
 
         # If nobody is acting, let the first in the queue act.
         if map.acting is None:

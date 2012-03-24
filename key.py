@@ -22,8 +22,9 @@ def keyin(stdscr, views):
             # Kill views that are done
             if view.done is True:
                 views.remove(view)
-                return False
-                
+                # HACK PART 1: Done with chargen.
+                return True
+
         # 'Global' keypresses that work anywhere
         # TODO: Move these!
         if c == ord('7'):
