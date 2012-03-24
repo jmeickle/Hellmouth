@@ -149,14 +149,15 @@ def indexed_remove(keys, n, ret):
 
     return ret
 
-def dict(name, dict):
+# DEBUG: Print dictionaries a bit more nicely.
+def print_dict(name, dict):
     print "--%s--" % name
     for k,v in dict.iteritems():
         print "| %s: %s" % (k,v)
     print "--%s--" % ("-" * len(name))
 
 if __name__ == '__main__':
-    dict("Text Database", Descriptions.dict)
+    print_dict("Text Database", Descriptions.dict)
 
     print "\nResults:"
 
@@ -165,23 +166,12 @@ if __name__ == '__main__':
             '@dmg-cut-crit@',
             '@dmg-cripple-neck@',
             '@dmg-cripple-cut-neck@',
-            "@dmg-sever-cut-neck@",
-            '@dmg-nonsense-herp-derp@',
-            '@dmg-cut-crit@',
-            '@dmg-cripple-neck@',
-            '@dmg-cripple-cut-neck@',
-            "@dmg-sever-cut-neck@",
-            '@dmg-nonsense-herp-derp@',
-            '@dmg-cut-crit@',
-            '@dmg-cripple-neck@',
-            '@dmg-cripple-cut-neck@',
-            "@dmg-sever-cut-neck@",
            ]
 
     for str in strs:
         print "%s => %s" % (str, describe(str))
 
     print ""
-    dict("DB Hits", Descriptions.hits)
+    print_dict("DB Hits", Descriptions.hits)
     print ""
-    dict("DB Misses", Descriptions.fail)
+    print_dict("DB Misses", Descriptions.fail)
