@@ -121,7 +121,7 @@ class MainMap(View):
         if self.cursor is None:
             if c == ord('v'):
                 self.cursor = Cursor(self, self.player.pos)
-                self.child = Examine(self.screen, 20, 1, 10, 23)
+                self.child = Examine(self.screen, self.width, 1, 0, 23)
                 self.child.parent = self
                 self.cursor.child = self.child
                 return False
