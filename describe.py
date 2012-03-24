@@ -16,7 +16,7 @@ import random
 
 class Descriptions():
     dict = {
-    "dmg" : ("hit", "strike"),
+    "dmg" : ("hit with a @weapon@", "strike with your @weapon@"),
     "dmg-crit" : ("skillfully", "gracefully"),
     "dmg-burn" : "burn",
     "dmg-cut" : "cut",
@@ -116,7 +116,7 @@ def replace(key):
     if exact is not None:
         return exact
     else:
-        ret = key
+        ret = "!!!"+key+"!!!"
         keys = re.split('-',key)
         for i in range(len(keys)):
             ret = indexed_remove(keys, i, ret)
@@ -127,7 +127,8 @@ def replace(key):
 #
 # "one-two-three-four" -> "one-two-three", "one-two-four", "one-three-four", "one-two", "one"
 #
-# If no match for any of those permutations is found, the original string is used.
+# If no match for any of those permutations is found, the original key passed into
+# indexed_remove by replace() is used; it's overwritten in replace(), though.
 def indexed_remove(keys, n, ret):
     # The indices to be possibly removed in this pass:
     for x in reversed(range(len(keys)-n, len(keys))):
@@ -162,10 +163,10 @@ if __name__ == '__main__':
     print "\nResults:"
 
     strs = ['You @dmg-sever-cut-neck-crit@ the opponent.',
-            '@dmg-nonsense-herp-derp@',
-            '@dmg-cut-crit@',
-            '@dmg-cripple-neck@',
-            '@dmg-cripple-cut-neck@',
+            'You don\'t manage to @dmg-nonsense-herp-derp@ the opponent.',
+            'You @dmg-cut-crit@ and @dmg-crush-crit@ your enemies!',
+            'You\'ve been @dmg-cripple-neck@ in combat.',
+            'You should @dmg-cripple-cut-neck@ your @enemies@.',
            ]
 
     for str in strs:
