@@ -1,4 +1,5 @@
 from define import Color
+from define import NW, NE, CE, SE, SW, CW
 import curses
 import math
 import hex
@@ -30,9 +31,11 @@ class Cursor():
     def __init__(self, parent, pos):
         self.parent = parent
         self.pos = pos
-        self.style = ">"
-#    def draw():
-#    def color():
+        self.style = ("{","}")
+
+    # Move the cursor (hexagonally).
+    def scroll(self, dir):
+        self.pos = (self.pos[0] + dir[0], self.pos[1] + dir[1])
 
 class View():
     def __init__(self, window, x, y, startx, starty):
@@ -107,6 +110,30 @@ class MainMap(View):
     def ready(self):
         return
 
+    def keyin(self, c):
+        if self.cursor is None:
+            if c == ord('v'):
+                self.cursor = Cursor(self, self.player.pos)
+                return False
+        else:
+            # Return true if no keyin was used; otherwise, false.
+            if c == ord(' '):
+                self.cursor = None
+            elif c == ord('7'):
+                self.cursor.scroll(NW)
+            elif c == ord('4'):
+                self.cursor.scroll(CW)
+            elif c == ord('1'):
+                self.cursor.scroll(SW)
+            elif c == ord('9'):
+                self.cursor.scroll(NE)
+            elif c == ord('6'):
+                self.cursor.scroll(CE)
+            elif c == ord('3'):
+                self.cursor.scroll(SE)
+            else: return True
+            return False
+
     # Hex character function, for maps only.
     def hd(self, x, y, glyph, col=0, attr=None):
         # X/Y are offsets from the map center
@@ -114,6 +141,14 @@ class MainMap(View):
         Y = y - self.player.pos[1]
 
         self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, self.attr(col, attr))
+
+    # Offset hexes.
+    def offset_hd(self, x, y, glyph, col=0, attr=None, dir=(0,0)):
+        # X/Y are offsets from the map center
+        X = x - self.player.pos[0]
+        Y = y - self.player.pos[1]
+
+        self.window.addch(self.viewport[1]+Y+dir[0], 2*(self.viewport[0]+X)+Y+dir[1], glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, x, y):
@@ -136,6 +171,11 @@ class MainMap(View):
                 glyph, col = self.get_glyph(h[0], h[1])
 
             self.hd(h[0], h[1], glyph, col)
+
+        if self.cursor is not None:
+            c = self.cursor
+            self.offset_hd(c.pos[0], c.pos[1], c.style[0], 'yellow-black', None, (0,-1))
+            self.offset_hd(c.pos[0], c.pos[1], c.style[1], 'yellow-black', None, (0,1))
 
         self.window.refresh()
 
