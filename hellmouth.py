@@ -102,15 +102,15 @@ def main(stdscr):
     mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
     mainmap.map = map
     mainmap.player = player
+    # Just a hook. Does nothing now.
     mainmap.ready()
-    mainmap.draw()
 
     # Status window init
     status_size = 5
     status = Status(stdscr, 80-mainmap_width-status_size, status_size, mainmap_width-status_size, 0)
 
     # Chargen window init
-    #chargen = Chargen(stdscr, 62, term_y, 0, 0)
+    chargen = Chargen(stdscr, term_x, term_y, 0, 0)
 
     # Stats window init
     # HACK:
@@ -124,26 +124,37 @@ def main(stdscr):
     map.log = log
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
-    # DEBUG: Fill p with log entries
+    # DEBUG: Generate log entries
     #for x in range(50):
     #    map.log.add("Log Entry %s" % x)
 
     # Initialize views and append the current windows.
     views = []
-    views.append(mainmap)
+    # TODO: Move these into a function.
+    views.append(chargen)
     views.append(stats)
-    views.append(status)
     views.append(log)
-    #views.append(chargen)
+    # TODO: Make status a child of mainmap.
+    views.append(status)
+    views.append(mainmap)
 
-    # HACK: Show the map for the first time.
-    stdscr.clear()
-    for view in views:
-        view.draw()
-    stdscr.refresh()
+    gameplay = False
 
     # Main game loop
     while 1:
+
+        # Chargen, between-map screens, etc.
+        while gameplay is False:
+            # TODO: Turn this into a function since it's used elsewhere.
+            # Before the player's turn, clear the screen and tell views to redraw themselves.
+            stdscr.clear()
+            for view in views:
+                if view.draw() is False:
+                    break
+
+            # Handle all player keyboard input
+            keyin(stdscr, views)
+
         # If nobody is acting, let the first in the queue act.
         if map.acting is None:
             map.acting = map.queue.popleft()
@@ -171,7 +182,8 @@ def main(stdscr):
         # Before the player's turn, clear the screen and tell views to redraw themselves.
         stdscr.clear()
         for view in views:
-            view.draw()
+            if view.draw() is False:
+                break
 
         # Handle all player keyboard input
         keyin(stdscr, views)
