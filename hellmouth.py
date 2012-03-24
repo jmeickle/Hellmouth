@@ -6,6 +6,8 @@ def main(stdscr):
 
     # Make the cursor invisible.
     curses.curs_set(0)
+    # Use raw input.
+    curses.raw()
 
     # Handle game-related imports.
     import random
