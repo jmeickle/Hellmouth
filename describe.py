@@ -12,7 +12,7 @@ import random
 # (SKILL): Margin of success. low, med, high, crit
 # (LOC): For specialcasing messages (e.g., decapitation)
 
-# If a tuple is provided. Tuples can be nested.
+# If a tuple is provided, a random choice will be made with equal weight. Tuples can be nested.
 
 class Descriptions():
     dict = {
