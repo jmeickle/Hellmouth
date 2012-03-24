@@ -37,8 +37,14 @@ class Cursor():
     def scroll(self, dir):
         self.pos = (self.pos[0] + dir[0], self.pos[1] + dir[1])
 
+    # This is a function so that the cursor color can change in response to
+    # the hex that it's targeting.
+    def color(self):
+        return "magenta-black"
+
 class View():
     def __init__(self, window, x, y, startx, starty):
+        self.screen = window
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
         self.y = starty
@@ -105,6 +111,7 @@ class MainMap(View):
         # -1 to account for 0,0 start
         self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
         self.cursor = None
+        self.child = None
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
@@ -114,11 +121,15 @@ class MainMap(View):
         if self.cursor is None:
             if c == ord('v'):
                 self.cursor = Cursor(self, self.player.pos)
+                self.child = Examine(self.screen, 20, 1, 10, 23)
+                self.child.parent = self
+                self.cursor.child = self.child
                 return False
         else:
             # Return true if no keyin was used; otherwise, false.
             if c == ord(' '):
                 self.cursor = None
+                self.child = None
             elif c == ord('7'):
                 self.cursor.scroll(NW)
             elif c == ord('4'):
@@ -172,14 +183,36 @@ class MainMap(View):
 
             self.hd(h[0], h[1], glyph, col)
 
+        # Draw the map cursor if it's present.
         if self.cursor is not None:
             c = self.cursor
-            self.offset_hd(c.pos[0], c.pos[1], c.style[0], 'yellow-black', None, (0,-1))
-            self.offset_hd(c.pos[0], c.pos[1], c.style[1], 'yellow-black', None, (0,1))
+            self.offset_hd(c.pos[0], c.pos[1], c.style[0], c.color(), None, (0,-1))
+            self.offset_hd(c.pos[0], c.pos[1], c.style[1], c.color(), None, (0,1))
+
+        if self.child is not None:
+            self.child.draw()
 
         self.window.refresh()
 
+# TODO: Update for FOV
+class Examine(View):
+    def __init__(self, window, x, y, startx, starty):
+        View.__init__(self, window, x, y, startx, starty)
+        self.parent = None
+
+    def draw(self):
+        self.reset()
+        pos = self.parent.cursor.pos
+        map = self.parent.map
+        str = ""
+        if map.actor(pos) is not None:
+            str += "Actor: %s " % map.actor(pos).name
+        if map.terrain(pos) is not None:
+            str += "Terrain: %s" % map.terrain(pos).name
+        self.line(str)
+
 class Stats(View):
+    # TODO: Move this out of here, it really doesn't belong.
     short = { "Speed" : "Spd.",
               "Perception" : "Per.",
               "Strength" : "ST",
