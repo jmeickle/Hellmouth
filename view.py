@@ -52,6 +52,7 @@ class View():
         self.height = y
         self.x_acc = 0
         self.y_acc = 0
+        self.done = False
 
     # Utility functions shared by all views
 
@@ -380,9 +381,7 @@ class Chargen(View):
             return False
         else:
             if c == curses.KEY_ENTER or c == ord('\n'):
-                return True
-            # TODO: Make this exit chargen.
-            
+                self.done = True
 
 # TODO: Add a minimap and a health screen.
 #class MiniMap(View):
