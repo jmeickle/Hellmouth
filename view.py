@@ -55,6 +55,10 @@ class View():
 
     # Utility functions shared by all views
 
+    # Draw self.
+    def draw(self):
+        return True
+
     # Handle keyin.
     def keyin(self, c):
         return True
@@ -188,11 +192,10 @@ class MainMap(View):
             c = self.cursor
             self.offset_hd(c.pos[0], c.pos[1], c.style[0], c.color(), None, (0,-1))
             self.offset_hd(c.pos[0], c.pos[1], c.style[1], c.color(), None, (0,1))
-
-        if self.child is not None:
             self.child.draw()
+            return False
 
-        self.window.refresh()
+        #self.window.refresh()
 
 # TODO: Update for FOV
 class Examine(View):
