@@ -5,6 +5,12 @@ from describe import Descriptions
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
+
+        # Offer keyin to each view, and continue if any of them returns false
+        for view in views:
+            if view.keyin(c) is False:
+                return False
+
         if c == ord('q') or c == 27: # Escape key
             exit(Descriptions.fail)
         elif c == ord('7'):

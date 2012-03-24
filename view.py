@@ -46,6 +46,10 @@ class View():
 
     # Utility functions shared by all views
 
+    # Handle keyin.
+    def keyin(self, c):
+        return True
+
     # Set up curses attributes on a string
     # TODO: Handle anything but color
     def attr(self, col, attr):
