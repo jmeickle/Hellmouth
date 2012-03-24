@@ -299,41 +299,59 @@ class Status(View):
 #        self.line("Pain", "red-black")
 #        self.line("Shock", "magenta-black")
 
-# TODO: Make this actually work
 # Very hackish right now: events added through map...
 class Log(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
         self.events = deque()
+        self.index = 0
 
-    def add(self, event):
+    # Scrolling the log up and down.
+    def keyin(self, c):
+        if c == curses.KEY_UP: self.scroll(-1)
+        elif c == curses.KEY_DOWN: self.scroll(1)
+        else: return True
+        return False
+
+    # Add an event to the history. Autoscrolls unless this has been turned off.
+    def add(self, event, scroll=True):
         self.events.append(event)
+        if scroll is True:
+            self.scroll(1)
 
-    def draw(self, index=None):
+    def scroll(self, amt):
+        self.index += amt
+        # Prevent an index below zero.
+        if self.index < 0:
+            self.index = 0
+
+        # Prevent scrolling if there's no more entries to see.
+        max = len(self.events) - 1 - self.height
+        if self.index >= max:
+            self.index = max
+
+    def draw(self):
         self.reset()
-
-        if index is None:
-            index = max(0, len(self.events) - 10)
 
         count = 0
         lines = 0
         for x in self.events:
             count += 1
-            if count < index:
+            if count < self.index:
                 continue
-            if lines >= self.height:
+            # TODO: Fix multiline and get rid of that -1.
+            if lines >= self.height-1:
                 break
             self.line(x)
+            lines += 1
             continue
 
+    # TODO: Multi-line log entries
             if len(x) > self.width:
                 substrs = self.logline(x)
                 for substr in substrs:
                     self.line(substr)
                     lines += 1
-
-    def tail(self):
-        return
 
     def logline(self, str, x=None):
         if x is None:
