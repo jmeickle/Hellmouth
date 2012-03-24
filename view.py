@@ -310,14 +310,79 @@ class Stats(View):
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
-        self.selector = Selector(self, 5)
         self.lifepath = Lifepath()
+        self.current = self.lifepath.initial
+        self.selected = 0
+
+    def scroll(self, amt):
+        self.selected += amt
+
+        if self.selected < 0:
+            self.selected = 0
+
+        max = len(self.current.choices)-1
+        if self.selected >= max:
+            self.selected = max
+
+    def next(self):
+        self.current.choose(self.current.choices[self.selected])
+        self.current = self.current.child
+        self.selected = 0
+
+    def prev(self):
+        if self.current.parent is not None:
+            # Get previous selection.
+            prev_sel = 0
+            for x in range(len(self.current.parent.choices)):
+                if self.current.parent.choices[x] == self.current.name:
+                    prev_sel = x
+
+            # Set self to the old one.
+            self.current.undo()
+            self.current = self.current.parent
+            return False
 
     def draw(self):
-        if hasattr(self.selector, 'parent'):
-            self.rds(0, 23, "Currently selected option: %s" % self.selector.choice)
+        self.reset()
+        from dialogue import chargen
+
+        if self.current.age is not None:
+            self.cline(chargen["age-%s" % (self.current.age+1)])
         else:
-            self.rds(0, 23, "Final option was: %s" % self.selector)
+            self.cline("No age-based text")
+
+        self.y_acc += 10
+
+        # Print a list of choices.
+        if self.current.choices is not None:
+            for choice in self.current.choices:
+                if self.current.choices[self.selected] == choice:
+                    self.cline("<green-black>* %s</>" % choice)
+                else:
+                    self.line("* %s" % choice)
+        else:
+            self.cline("<red-black>Really start the game?</>")
+
+        # Don't draw anything else.
+        return False
+
+    def keyin(self, c):
+        if self.current.choices is not None:
+            if c == curses.KEY_ENTER or c == ord('\n'):
+                self.next()
+            elif c == ord(' '):
+                self.prev()
+            elif c == curses.KEY_UP:
+                self.scroll(-1)
+            elif c == curses.KEY_DOWN:
+                self.scroll(1)
+            else: return True
+            return False
+        else:
+            if c == curses.KEY_ENTER or c == ord('\n'):
+                return True
+            # TODO: Make this exit chargen.
+            
 
 # TODO: Add a minimap and a health screen.
 #class MiniMap(View):
