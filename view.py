@@ -270,6 +270,7 @@ class Stats(View):
         else:
             self.line("%s: %s" % (short, self.stat(stat)))
 
+# TODO: Chargen screen.
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
@@ -277,15 +278,16 @@ class Chargen(View):
         self.lifepath = Lifepath()
 
     def draw(self):
-#        self.rds(0, 10, lifepath)
         if hasattr(self.selector, 'parent'):
             self.rds(0, 23, "Currently selected option: %s" % self.selector.choice)
         else:
             self.rds(0, 23, "Final option was: %s" % self.selector)
 
+# TODO: Add a minimap and a health screen.
 #class MiniMap(View):
 #class Health(View):
 
+# TODO: Implement this
 class Status(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
