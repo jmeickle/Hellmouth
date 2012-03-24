@@ -10,17 +10,18 @@ def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
 
+        # Always allow quitting.
+        if c == ctrl('q'):
+            exit(Descriptions.fail)
+
         # Offer keyin to each view, and continue if any of them returns false
         for view in views:
             if view.keyin(c) is False:
                 return False
 
-
-
         # 'Global' keypresses that work anywhere
-        if c == ctrl('q'):
-            exit(Descriptions.fail)
-        elif c == ord('7'):
+        # TODO: Move these!
+        if c == ord('7'):
             views[0].player.do(NW)
         elif c == ord('4'):
             views[0].player.do(CW)
