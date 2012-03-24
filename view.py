@@ -26,6 +26,14 @@ class Selector():
     def choose(self):
         self.parent.selector = self.choice
 
+class Cursor():
+    def __init__(self, parent, pos):
+        self.parent = parent
+        self.pos = pos
+        self.style = ">" 
+#    def draw():
+#    def color():
+
 class View():
     def __init__(self, window, x, y, startx, starty):
         self.window = window.subwin(y, x, starty, startx)
@@ -110,6 +118,7 @@ class MainMap(View):
         self.player = None
         # -1 to account for 0,0 start
         self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
+        self.cursor = None
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
