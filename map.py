@@ -145,6 +145,7 @@ class Cell:
 
 class Terrain():
     def __init__(self, glyph="X", color="red-black", blocking=True):
+        self.name = "Meat Wall"
         self.glyph = glyph
         self.color = color
         self.blocking = blocking
