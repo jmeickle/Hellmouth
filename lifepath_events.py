@@ -9,11 +9,10 @@
 eventdata = {
 # Start of data
 'Start' : {
-    'age'     : 0,
     'text'    : "Starting point of character generation, before any details are determined.",
     'short'   : "the start of the game",
     'effects' : {},
-    'years'   : 1,
+    'years'   : 0,
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 #    'choices' : ('Mundane Parents', 'Mundane Infant', 'Mundane Young Child', 'Mundane Child', 'Mundane Young Adult', 'Mundane Adult'),
 },
@@ -385,49 +384,43 @@ eventdata = {
 
 # FORK: How did you get into demon-slaying?
 'Demonslayer' : {
-    'age'     : 6,
+    'age'     : 7,
     'text'    :  "In time, though, I was forced into a life on the road, slaying demons wherever I went.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('Reluctant Demonslayer', 'Vengeful Demonslayer', 'Zealous Demonslayer', 'Violent Demonslayer', 'Curious Demonslayer', 'Corrupt Demonslayer'),
 },
 'Reluctant Demonslayer' : {
-    'age'     : 6,
     'text'    :  "I did not want to, but against the forces of darkness, what choice did I have?",
     'effects' : {},
     'years'   : 1,
     'choices' : ('End', '', '', '', '', ''),
 },
 'Vengeful Demonslayer' : {
-    'age'     : 6,
     'text'    :  "I have seen too much bloodshed. I need to destroy the fiends before they hurt anyone else.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('End', '', '', '', '', ''),
 },
 'Zealous Demonslayer' : {
-    'age'     : 6,
     'text'    :  "I don't regret leaving my life behind me. God himself called me to this task, and I will listen and obey.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('End', '', '', '', '', ''),
 },
 'Violent Demonslayer' : {
-    'age'     : 6,
     'text'    :  "I plan to slay every one of those abominations. Even if they won't stay dead, I'll kill them until they get the picture.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('End', '', '', '', '', ''),
 },
 'Curious Demonslayer' : {
-    'age'     : 6,
     'text'    :  "I didn't truly believe they existed - not at first - but now I have to learn more about them.",
     'effects' : {},
     'years'   : 1,
     'choices' : ('End', '', '', '', '', ''),
 },
 'Corrupt Demonslayer' : {
-    'age'     : 6,
     'text'    :  "The forces of darkness have vast... vast power. Power you wouldn't believe. It has to be studied.",
     'effects' : {},
     'years'   : 1,
@@ -435,11 +428,10 @@ eventdata = {
 },
 # End character generation.
 'End' : {
-    'age'     : -1,
     'text'    :  "Your character is ready to go.",
     'effects' : {},
     'years'   : 1,
-    'choices' : ('', '', '', '', '', ''),
+    'choices' : None,
 },
 # Not supported at this time:
 # Age 7: Middle Age (>40 years old)
