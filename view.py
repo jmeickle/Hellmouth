@@ -326,7 +326,7 @@ class Log(View):
             self.index = 0
 
         # Prevent scrolling if there's no more entries to see.
-        max = len(self.events) - 1 - self.height
+        max = len(self.events) - self.height
         if self.index >= max:
             self.index = max
 
@@ -337,7 +337,7 @@ class Log(View):
         lines = 0
         for x in self.events:
             count += 1
-            if count < self.index:
+            if count <= self.index:
                 continue
             # TODO: Fix multiline and get rid of that -1.
             if lines >= self.height-1:
