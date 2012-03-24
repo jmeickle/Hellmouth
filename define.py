@@ -18,11 +18,18 @@ SEVERED = -1
 
 # Damage types
 types = {
-"cr"  : ("crush", "crushing"),
-"cut" : ("cut", "cutting"),
-"imp" : ("impale", "impaling"),
-"thr" : ("thrust", "thrusting"),
-"sw"  : ( "swing", "swinging"),
+"aff"  : ("affliction", "affliction"),
+"burn" : ("burn", "burning"),
+"cor"  : ("corrosion", "corrosion"),
+"cr"   : ("crush", "crushing"),
+"cut"  : ("cut", "cutting"),
+"fat"  : ("fatigue", "fatigue"),
+"imp"  : ("impale", "impaling"),
+"pi"   : ("pierce", "piercing"),
+"tox"  : ("toxic", "toxic"),
+# Not really damage, but.
+"thr"  : ("thrust", "thrusting"),
+"sw"   : ( "swing", "swinging"),
 }
 
 class Color:
