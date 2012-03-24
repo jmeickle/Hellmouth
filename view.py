@@ -30,7 +30,7 @@ class Cursor():
     def __init__(self, parent, pos):
         self.parent = parent
         self.pos = pos
-        self.style = ">" 
+        self.style = ">"
 #    def draw():
 #    def color():
 
@@ -53,27 +53,6 @@ class View():
         if col is not None and col is not 0:
             color += Color.pair[col]
         return curses.color_pair(color)
-
-#        exit("%s"%Color.pair)]
-        #col="red-black"
-#        exit("%s"%col)
-#"red-black"]
-#        exit("COLOR: %s"%col)
-#curses.color_pair(Color.pair[col])
-#curses.color_pair(Color.pair[col]))
-#self.attr(col, attr))
-
- #       ret = 0
-  #      if col is not None:
-#            exit("TEST: %s"%curses.color_pair(Color.pair[col]))
-#            exit("TEST: %s" % Color.pair[col])
-#            print Color.pair[col]
-#            exit()
-#            exit("PAIR: %s" % curses.color_pair(Color.pair[col]))
-   #     if attr is not None:
-    #        ret | 0
-#attr
-        return curses.color_pair(Color.pair[col])
 
     # Rectangular character function.
     def rd(self, x, y, glyph, col=0, attr=None):
@@ -129,14 +108,7 @@ class MainMap(View):
         # X/Y are offsets from the map center
         X = x - self.player.pos[0]
         Y = y - self.player.pos[1]
-        # TERRIBLE HACK
-#        if glyph == '"':
-#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_DIM)
-#        elif glyph == '@':
-#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
-#        elif glyph == 'A':
-#            self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, curses.A_STANDOUT)
-#       else: 
+
         self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
@@ -151,9 +123,6 @@ class MainMap(View):
         maxX = self.map.width-1
         minY = 0
         maxY = self.map.height-1
-
-#        print hexes
-#        exit()
 
         for h in hexes:
             if h[0] < minX or h[0] > maxX or h[1] < minY or h[1] > maxY:
@@ -232,6 +201,7 @@ class Stats(View):
         self.x_acc = 0
         self.y_acc += 1
 
+        # Don't delete! Probably will reuse this for a 'health' screen.
         #self.line("Wounds:")
         #for loc in sorted(self.player.body.locs.items()):
         #    self.line("%6s: %s" % (loc[0], loc[1].wounds))
