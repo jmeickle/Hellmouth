@@ -2,6 +2,10 @@ from define import *
 from describe import Descriptions
 # Define dict of keys/actions
 
+# Return the corresponding control-modified key.
+def ctrl(c):
+    return ord(c) - 96
+
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
@@ -11,7 +15,10 @@ def keyin(stdscr, views):
             if view.keyin(c) is False:
                 return False
 
-        if c == ord('q') or c == 27: # Escape key
+
+
+        # 'Global' keypresses that work anywhere
+        if c == ctrl('q'):
             exit(Descriptions.fail)
         elif c == ord('7'):
             views[0].player.do(NW)
