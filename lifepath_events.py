@@ -11,6 +11,7 @@ eventdata = {
 'Start' : {
     'age'     : 0,
     'text'    : "Starting point of character generation, before any details are determined.",
+    'short'   : "the start of the game",
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
@@ -20,6 +21,7 @@ eventdata = {
 'Mundane Parents' : {
     'age'     : 0,
     'text'    : "My parents were regular people like yourself.",
+    'short'   : "a normal family",
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Infant', '', '', '', '', ''),
@@ -28,6 +30,7 @@ eventdata = {
 'Mundane Infant' : {
     'age'     : 1,
     'text'    : "My birth was exciting for my parents, but few others.",
+    'short'   : "a normal birth",
     'effects' : {},
     'years'   : 2,
     'choices' : ('Mundane Young Child', '', '', '', '', ''),
@@ -35,6 +38,7 @@ eventdata = {
 'Dark Omen' : {
     'age'     : 1,
     'text'    : "Dark omens troubled the day of my birth.",
+    'short'   : 'dark omens on the day of your birth',
     'effects' : {},
     'years'   : 2,
     'choices' : ('', '', '', '', '', ''),
@@ -42,6 +46,7 @@ eventdata = {
 'Strange Omen' : {
     'age'     : 1,
     'text'    : "Eerie signs were seen on the day of my birth.",
+    'short'   : 'strange omens on the day of your birth',
     'effects' : {},
     'years'   : 2,
     'choices' : ('', '', '', '', '', ''),
@@ -49,6 +54,7 @@ eventdata = {
 'Holy Day' : {
     'age'     : 1,
     'text'    : "I was born on a holy day.",
+    'short'   : 'your blessed birth on a holy day',
     'effects' : {},
     'years'   : 2,
     'choices' : ('', '', '', '', '', ''),
@@ -56,6 +62,7 @@ eventdata = {
 'Bloody Birth' : {
     'age'     : 1,
     'text'    : "I was born on the battlefield.",
+    'short'   : 'your birth on the chaos of the battlefield',
     'effects' : {},
     'years'   : 2,
     'choices' : ('', '', '', '', '', ''),
@@ -63,6 +70,7 @@ eventdata = {
 'Immediate Adoption' : {
     'age'     : 1,
     'text'    : "I was given up right after birth - unwanted by my own mother.",
+    'short'   : 'your parents giving you up',
     'effects' : {},
     'years'   : 2,
     'choices' : ('Church Young Child', '', '', '', '', ''),
@@ -71,6 +79,7 @@ eventdata = {
 'Church Young Child' : {
     'age'     : 2,
     'text'    : "My early years were uneventful.",
+    'short'   : 'being raised by the church',
     'effects' : {},
     'years'   : 1,
     'choices' : ('', '', '', '', '', ''),
@@ -79,6 +88,7 @@ eventdata = {
 'Mundane Young Child' : {
     'age'     : 2,
     'text'    : "My early years were uneventful.",
+    'short'   : 'an uneventful young childhood',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Child', '', '', '', '', ''),
@@ -86,6 +96,7 @@ eventdata = {
 'Rich Young Child' : {
     'age'     : 2,
     'text'    : "I spent my early years swaddled in cloth-of-gold.",
+    'short'   : 'a young childhood in a wealthy family',
     'effects' : {},
     'years'   : 1,
     'choices' : ('', '', '', '', '', ''),
@@ -93,6 +104,7 @@ eventdata = {
 'Poor Young Child' : {
     'age'     : 2,
     'text'    : "Even as an infant, I was deprived of what I needed in life.",
+    'short'   : 'a young childhood spent in poverty',
     'effects' : {},
     'years'   : 1,
     'choices' : ('', '', '', '', '', ''),
@@ -100,6 +112,7 @@ eventdata = {
 'Stolen Young Child' : {
     'age'     : 2,
     'text'    : "I was stolen away from my parents.",
+    'short'   : 'theft from your parents',
     'effects' : {},
     'years'   : 1,
     'choices' : ('', '', '', '', '', ''),
@@ -183,6 +196,7 @@ eventdata = {
 'Mundane Child' : {
     'age'     : 3,
     'text'    : "I had an uneventful childhood.",
+    'short'   : 'an uneventful childhood',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Teen', '', '', '', '', ''),
@@ -230,6 +244,7 @@ eventdata = {
 'Mundane Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'uninteresting teenage years',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Young Adult', '', '', '', '', ''),
@@ -277,6 +292,7 @@ eventdata = {
 'Mundane Young Adult' : {
     'age'     : 5,
     'text'    : "My life was quiet as I grew into adulthood.",
+    'short'   : 'a quiet first few years of adulthood',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Adult', '', '', '', '', ''),
