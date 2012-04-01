@@ -153,9 +153,19 @@ def main(stdscr):
                     break
 
             # Handle all player keyboard input
-            if keyin(stdscr, views) is True:
-            # HACK PART 2: Done with chargen.
-                gameplay = True
+            keyin(stdscr, views)
+
+            # Remove all dead views
+            for view in views:
+                if view.alive is False:
+                    views.remove(view)
+
+        # END NON-GAMEPLAY LOOP
+
+        # Remove all dead views
+        for view in views:
+            if view.alive is False:
+                views.remove(view)
 
         # If nobody is acting, let the first in the queue act.
         if map.acting is None:

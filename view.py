@@ -53,7 +53,7 @@ class View():
         self.height = y
         self.x_acc = 0
         self.y_acc = 0
-        self.done = False
+        self.alive = True
 
     # Utility functions shared by all views
 
@@ -330,7 +330,10 @@ class Chargen(View):
         self.current.choose(self.current.choices[self.selected])
         self.current = self.current.child
         self.selected = 0
-        self.max = len(self.current.choices)-1
+        if self.current.choices is not None:
+            self.max = len(self.current.choices)-1
+        else:
+            self.max = 0 # Irrelevant, but whatever.
 
     def prev(self):
         if self.current.parent is not None:
@@ -410,7 +413,8 @@ class Chargen(View):
             return False
         else:
             if c == curses.KEY_ENTER or c == ord('\n'):
-                self.done = True
+                self.alive = False
+                return False
 
 # TODO: Add a minimap and a health screen.
 #class MiniMap(View):
