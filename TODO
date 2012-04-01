@@ -4,3 +4,4 @@ Global todo:
 - Convert colors to default to a black background.
 - Make all pos functions accept tuple args consistently.
 - Write a wrapper so that curses never, ever tries to print something offscreen.
+- Clean up the game loop
