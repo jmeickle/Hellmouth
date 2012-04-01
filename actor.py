@@ -196,6 +196,25 @@ class Actor:
             else:
                 return wounds
 
+    # INVENTORY
+
+    # Needed functions:
+
+    # add
+    # remove
+    # can drop
+    # drop
+    # can get
+    # get
+    # equip
+    # unequip
+    # is worn
+    # wear
+    # unwear
+    # is wielded
+    # wield
+    # unwield
+
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
     def __init__(self, parent):
