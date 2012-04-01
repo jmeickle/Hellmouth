@@ -4,6 +4,7 @@ from random import choice
 from describe import d
 import hex
 
+# Players, monsters, etc.
 class Actor:
     def __init__(self):
         # Descriptive information
@@ -32,11 +33,11 @@ class Actor:
         self.inventory = {}
         self.effects = {}
 
-    # Change actor coords and update the relevant cells.
-    def go(self, pos):
-        self.map.cells[self.pos[0]][self.pos[1]].remove(self)
-        self.pos = pos
-        self.map.cells[self.pos[0]][self.pos[1]].add(self)
+    # UTILITY
+
+    # AI actions. Currently: move in a random direction.
+    def act(self):
+        self.do(choice(dirs))
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
@@ -47,6 +48,19 @@ class Actor:
             self.attack(self.map.actor(pos))
         else:
             self.move(pos)
+
+    # Mark self as done acting.
+    def over(self):
+        self.map.acting = None
+        self.map.queue.append(self)
+
+    # MOVEMENT
+
+    # Change actor coords directly and update the relevant cells.
+    def go(self, pos):
+        self.map.cells[self.pos[0]][self.pos[1]].remove(self)
+        self.pos = pos
+        self.map.cells[self.pos[0]][self.pos[1]].add(self)
 
     # Try to move based on an input direction. Return whether it worked.
     def move(self, pos):
@@ -69,17 +83,7 @@ class Actor:
 
         return True
 
-    # Currently: move in a random direction.
-    def act(self):
-        self.do(choice(dirs))
-
-    def randomloc(self):
-        roll = _3d6()
-        loc = self.body.table.get(roll, None)
-        if loc is None:
-            subroll = _d6()
-            loc = self.body.table[("%s-%s" % (roll, subroll))]
-        return loc
+    # COMBAT
 
     # Do a basic attack.
     def attack(self, target, loc=None):
@@ -104,25 +108,28 @@ class Actor:
 
         self.over()
 
-    # You were hit by something.
+    # Process damage when you are hit by something.
     def hit(self, amt):
         loc = self.randomloc()
         loc.hurt(amt)
         self.hp -= amt
-        self.check_dead()
+        if self.check_dead() is True:
+            self.remove()
 
+    # Check whether you are dead.
     def check_dead(self):
         if self.hp <= 0:
+            return True
+
+    # Remove self from the map and the queue
+    def remove(self):
             if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
                 self.map.log.add(d("%s has been slain!" % self.name))
             if self != self.map.acting:
                 self.map.queue.remove(self)
             self.map.cell(self.pos).remove(self)
 
-    # Mark self as done acting.
-    def over(self):
-        self.map.acting = None
-        self.map.queue.append(self)
+    # STATS
 
     # Retrieve actor stat.
     def stat(self, stat):
@@ -137,7 +144,7 @@ class Actor:
         func = getattr(Actor, stat.replace(' ', ''))
         return func(self)
 
-    # Calculated stats:
+    # Formulas for calculated stats.
     def HitPoints(self):       return 33
     def MaxHitPoints(self):       return 33
     def ManaPoints(self):       return 33
@@ -152,7 +159,27 @@ class Actor:
     def Block(self):      return 32
     def Parry(self):      return 31
 
-    # Return how many points of wounds a location has
+    # INJURY / HIT LOCATIONS
+
+    # Choose a random hit location
+    def randomloc(self):
+        roll = _3d6()
+        loc = self.body.table.get(roll, None)
+        if loc is None:
+            subroll = _d6()
+            loc = self.body.table[("%s-%s" % (roll, subroll))]
+        return loc
+
+    # Choose the color for a hit location.
+    def loccol(self, loc):
+        loc = self.body.locs.get(loc, None)
+        if loc is None:
+            return "white-black"
+        else:
+            return "%s-black" % loc.color()
+
+    # Return how many points of wounds a location has. Optional parameter: wrap that
+    # string in a color tag.
     def wound(self, loc, col=True):
         loc = self.body.locs.get(loc, None)
         if loc is None:
@@ -169,22 +196,16 @@ class Actor:
             else:
                 return wounds
 
-    def loccol(self, loc):
-        loc = self.body.locs.get(loc, None)
-        if loc is None:
-            return "white-black"
-        else:
-            return "%s-black" % loc.color()
-
+# Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
     def __init__(self, parent):
-        # Size (+0 for a human)
+        # Size (0 for a human)
         self.size = None
         # Shape (tall, long, or full)
         self.shape = None
-        # Body parts by key
+        # Body parts indexed by key
         self.locs = {}
-        # Body parts by 3d6 roll
+        # Body parts indexed by 3d6 roll
         self.table = {}
 
     # Build a body from the class information.
@@ -193,32 +214,17 @@ class BodyPlan:
             part = HitLoc(partname)
             self.locs[partname] = part
             if parent is not None:
-               # print "Parent:", self.locs[parent].type
-               # print "This:", self.locs[partname].type
                 HitLoc.add_child(self.locs[parent], part)
             for roll in rolls:
                 if isinstance(roll, list) is True:
-#                    exit("%s %s" % (partname, roll))
                     base = roll[0]
                     for x in range(len(roll)):
                         if x == 0:
                             continue;
                         subroll = roll[x]
                         self.table["%s-%s" % (base, subroll)] = part
-
-#                         exit("%s %s" % (partname, self.table))
-               # if isinstance(roll, list) is False:
                 else:
                     self.table[roll] = part
-#                else:
-#print rolls
-#for roll in rolls:
-#                self.table[roll] = part
-#                self.locs[part].parent(self.locs[parent])
-#            if sublocation is not None:
-#                self.locs[parent][2].append(part)#sublocation(part)
-
-# = (self.locs[parent], part)
 
 class Humanoid(BodyPlan):
     # These tuples represent:
@@ -227,7 +233,7 @@ class Humanoid(BodyPlan):
     # 3: True if it's a sublocation rather than a real one.
     # 4: List representing what 3d6 rolls hit that spot.
     #    If a further d6 roll is required, use a list like:
-    #        [[16, 1, 2, 3], 14]
+    #        [15, [16, 1, 2, 3], 17]
     parts = (
              ('Torso', None, False, [9, 10]),
              ('Groin', 'Torso', False, [11]),
@@ -246,7 +252,6 @@ class Humanoid(BodyPlan):
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build()
-        #exit("%s"%self.table)
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.
@@ -266,9 +271,11 @@ class Octopod(BodyPlan):
         BodyPlan.__init__(self, parent)
         self.build()
 
+# Hit location
 class HitLoc:
     def __init__(self, type):
         self.type = type
+        self.owner = None
 
         # Combat stats
         self.HP = 0
@@ -284,7 +291,8 @@ class HitLoc:
         self.worn = []
         self.held = []
 
-    # Stub: return the healthiness of the limb
+    # Return the healthiness of the limb
+    # TODO: Base these values on self.owner
     def status(self):
         if sum(self.wounds) > 15:    return SEVERED
         elif sum(self.wounds) >= 10: return CRIPPLED
@@ -301,7 +309,7 @@ class HitLoc:
     def sublocation(self, part):
         self.sublocations.append(part)
 
-    # Increase the wounds on the location.
+    # Add a wound to this location.
     def hurt(self, amt):
         self.wounds.append(amt)
 
@@ -313,7 +321,9 @@ class HitLoc:
         elif self.status() == SCRATCHED: return "yellow"
         else:                            return "white"
 
-# Test code
+    # TODO: Move the limb glyph code here.
+
+# Actor test code
 if __name__ == "__main__":
     testactor = Actor()
     print "Stats:", testactor.stats
@@ -341,4 +351,3 @@ if __name__ == "__main__":
     #while curr.parent is not None:
     #    print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
     #    curr = curr.parent
-
