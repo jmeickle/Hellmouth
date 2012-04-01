@@ -1,4 +1,5 @@
 chargen = {
+    "initial" : "Tell me of why you're in this place.",
     "age-0" : "Tell me, what of your parents?",
     "age-1" : "And your birth?",
     "age-2" : "What of your early childhood?",

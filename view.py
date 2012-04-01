@@ -1,5 +1,6 @@
 from define import Color
 from define import NW, NE, CE, SE, SW, CW
+from dialogue import chargen
 import curses
 import math
 import hex
@@ -311,8 +312,9 @@ class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
         self.lifepath = Lifepath()
-        self.current = self.lifepath.initial
+        self.current = None
         self.selected = 0
+        self.max = len(self.lifepath.initial)-1
 
     def scroll(self, amt):
         self.selected += amt
@@ -320,14 +322,14 @@ class Chargen(View):
         if self.selected < 0:
             self.selected = 0
 
-        max = len(self.current.choices)-1
-        if self.selected >= max:
-            self.selected = max
+        if self.selected >= self.max:
+            self.selected = self.max
 
     def next(self):
         self.current.choose(self.current.choices[self.selected])
         self.current = self.current.child
         self.selected = 0
+        self.max = len(self.current.choices)-1
 
     def prev(self):
         if self.current.parent is not None:
@@ -344,17 +346,28 @@ class Chargen(View):
 
     def draw(self):
         self.reset()
-        from dialogue import chargen
 
-        if self.current.age is not None:
+        # Triggers if we haven't started down a lifepath yet.
+        if self.current is None:
+            self.cline(chargen["initial"])
+        # Triggers if we're going through a lifepath at a certain age.
+        elif self.current.age is not None:
             self.cline(chargen["age-%s" % (self.current.age+1)])
+        # Triggers if we have a choice without an associated age (i.e., a final one.)
         else:
             self.cline("No age-based text")
 
         self.y_acc += 10
 
         # Print a list of choices.
-        if self.current.choices is not None:
+        if self.current is None:
+            for x in range(len(self.lifepath.initial)):
+                if x == self.selected:
+                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][1])
+                else:
+                    self.line("* %s" % self.lifepath.initial[x][1])
+
+        elif self.current.choices is not None:
             for choice in self.current.choices:
                 if self.current.choices[self.selected] == choice:
                     self.cline("<green-black>* %s</>" % choice)
@@ -367,6 +380,22 @@ class Chargen(View):
         return False
 
     def keyin(self, c):
+        if self.current is None:
+            if c == curses.KEY_ENTER or c == ord('\n'):
+                skip = self.lifepath.initial
+                self.lifepath.start('Start')
+                self.current = self.lifepath.initial
+                for x in range(self.selected):
+                    self.current.choose(skip[x][1])
+                    self.current = self.current.child
+                self.selected = 0
+            elif c == curses.KEY_UP:
+                self.scroll(-1)
+            elif c == curses.KEY_DOWN:
+                self.scroll(1)
+            else: return True
+            return False
+
         if self.current.choices is not None:
             if c == curses.KEY_ENTER or c == ord('\n'):
                 self.next()

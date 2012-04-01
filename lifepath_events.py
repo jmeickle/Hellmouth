@@ -1,3 +1,14 @@
+# String to show for skipping to a point and what point to skip to.
+# Mainly serves to prevent me from having to create dummy entries in the data.
+
+skip = (('Not until after my birth.', 'Mundane Parents'),
+        ('Not until I was a young child.', 'Mundane Infant'),
+        ('Not until I was a child.', 'Mundane Young Child'),
+        ('Not until I was a teenager.', 'Mundane Child'),
+        ('Not until I was a young adult.', 'Mundane Teen'),
+        ('Not until I was an adult.', 'Mundane Young Adult'),
+       )
+
 # Contains all lifepath events.
 # 'age' (int)       : Age category the event fits into. Also broken up by comments.
 # 'name' (str)      : Display name during character generation. Defaults to key name.
@@ -9,12 +20,11 @@
 eventdata = {
 # Start of data
 'Start' : {
-    'text'    : "Starting point of character generation, before any details are determined.",
+    'text'    : "Starting point of character generation, before any details are determined. TODO: Only 'parent' choices here, flavor of being starting from 'the beginning'",
     'short'   : "the start of the game",
     'effects' : {},
     'years'   : 0,
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
-#    'choices' : ('Mundane Parents', 'Mundane Infant', 'Mundane Young Child', 'Mundane Child', 'Mundane Young Adult', 'Mundane Adult'),
 },
 # Age 0: Parents (~-9 months old)
 'Mundane Parents' : {

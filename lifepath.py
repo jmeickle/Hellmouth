@@ -1,4 +1,4 @@
-from lifepath_events import eventdata
+from lifepath_events import eventdata, skip
 import random
 
 # A lifepath is the sum of your choices during character generation. It is
@@ -6,8 +6,7 @@ import random
 
 class Lifepath:
     def __init__(self):
-        self.initial = None
-        self.start('Start')
+        self.initial = skip
 
     # Add the initial event.
     def start(self, event):
