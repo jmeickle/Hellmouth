@@ -357,10 +357,17 @@ class Chargen(View):
     def draw(self):
         self.reset()
 
+        # Top half of the screen:
+
         # Triggers if we haven't started down a lifepath yet.
+        # Prints initial text.
         if self.current is None:
             self.cline(chargen["initial"])
-        # Triggers if we're going through a lifepath at a certain age.
+        # STUB: Triggers if an event brings a prompt with it.
+        # Prints the prompt text.
+        #elif self.current.prompt is not None:
+        # Triggers if we're at a certain age in the lifepath.
+        # Prints the text asking about the NEXT age category.
         elif self.current.age is not None:
             self.cline(chargen["age-%s" % (self.current.age+1)])
         # Triggers if we have a choice without an associated age (i.e., a final one.)
@@ -376,20 +383,23 @@ class Chargen(View):
 
         self.y_acc += 10
 
+        # Bottom half of the screen:
+
         # Print a list of choices.
         if self.current is None:
             for x in range(len(self.lifepath.initial)):
                 if x == self.selected:
-                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][1])
+                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][0])
                 else:
-                    self.line("* %s" % self.lifepath.initial[x][1])
-
+                    self.line("* %s" % self.lifepath.initial[x][0])
+        # Prints a list of choices.
         elif self.current.choices is not None:
             for choice in self.current.choices:
                 if self.current.choices[self.selected] == choice:
                     self.cline("<green-black>* %s</>" % choice)
                 else:
                     self.line("* %s" % choice)
+        # Confirms whether to start.
         else:
             self.cline("<red-black>Really start the game?</>")
 
