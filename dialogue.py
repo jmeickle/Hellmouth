@@ -1,6 +1,6 @@
 chargen = {
-    "initial" : "Tell me of why you're in this place.",
-    "age-0" : "Tell me, what of your parents?",
+    "initial" : "First of all, and most of all, I wish to know what brings you here. Tell me, demonslayer: when did your life begin to veer off from the course set for most of us? When did God's call first alter your path through life?",
+    "age-0" : "Tell me, then, what of your parents?",
     "age-1" : "And your birth?",
     "age-2" : "What of your early childhood?",
     "age-3" : "Later in childhood, how did you fare?",
