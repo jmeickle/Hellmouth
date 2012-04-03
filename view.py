@@ -430,7 +430,7 @@ class Chargen(View):
                 self.lifepath.start('Start')
                 self.current = self.lifepath.initial
                 for x in range(self.selected):
-                    self.current.choose(skip[x][1])
+                    self.current.choose(skip[x+1][1])
                     self.current = self.current.child
                 self.selected = 0
             elif c == curses.KEY_UP:
