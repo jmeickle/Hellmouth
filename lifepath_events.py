@@ -3,8 +3,9 @@
 # String to show for skipping to a point and what point to skip to.
 # Mainly serves to prevent me from having to create dummy entries in the data.
 
-skip = (('Not until after my birth.', 'Mundane Parents'),
-        ('Not until I was a young child.', 'Mundane Infant'),
+skip = (('I can only believe that God chose me even before my birth.', 'Start'),
+        ('It was from the moment of my birth that God saw fit to change my life.', 'Mundane Parents'),
+        ('I didn\'t feel the Hand of God upon my fate until I was a young child.', 'Mundane Infant'),
         ('Not until I was a child.', 'Mundane Young Child'),
         ('Not until I was a teenager.', 'Mundane Child'),
         ('Not until I was a young adult.', 'Mundane Teen'),
@@ -22,10 +23,11 @@ skip = (('Not until after my birth.', 'Mundane Parents'),
 eventdata = {
 # Start of data
 'Start' : {
-    'text'    : "Starting point of character generation, before any details are determined. TODO: Only 'parent' choices here, flavor of being starting from 'the beginning'",
+    'age'     : -1,
+    'text'    : "Starting point of character generation, before any details are determined.",
     'effects' : {},
     'years'   : 0,
-    'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
+    'choices' : ('Mundane Parents', 'Warrior Parents', 'Wizard Parents', 'Mysterious Parents'),
 },
 # Age 0: Parents (~-9 months old)
 'Mundane Parents' : {
