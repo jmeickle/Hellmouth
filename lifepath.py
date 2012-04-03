@@ -7,10 +7,12 @@ import random
 class Lifepath:
     def __init__(self):
         self.initial = skip
+        self.events = []
 
     # Add the initial event.
     def start(self, event):
         self.initial = LifepathEvent(event)
+        self.events.append(self.initial)
 
     def display(self):
         self.initial.display()
@@ -34,12 +36,12 @@ class LifepathEvent:
         # Display information for the event.
         self.age = self.data.get('age', None)
         self.name = self.data.get('name', choice) # Defaults to the search key.
-        self.text = self.data.get('text', 'DEBUG: no long desc.')
-        self.short = self.data.get('short', 'DEBUG: no short desc.')
+        self.text = self.data.get('text', '<DEBUG: NO LONG DESC>')
+        self.short = self.data.get('short', None)
 
         # Actual gameplay effects.
-        self.effects = self.data.get('effects', {'Bug':'99'})
-        self.years = self.data.get('years', 99)
+        self.effects = self.data.get('effects', {})
+        self.years = self.data.get('years', None)
 
     def choose(self, event):
         self.child = LifepathEvent(event, self)

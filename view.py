@@ -329,6 +329,9 @@ class Chargen(View):
     def next(self):
         self.current.choose(self.current.choices[self.selected])
         self.current = self.current.child
+        self.lifepath.events.append(self.current)
+
+        # Reset choice:
         self.selected = 0
         if self.current.choices is not None:
             self.max = len(self.current.choices)-1
@@ -336,16 +339,19 @@ class Chargen(View):
             self.max = 0 # Irrelevant, but whatever.
 
     def prev(self):
+        # TODO: Fix this, it's buggy.
         if self.current.parent is not None:
             # Get previous selection.
-            prev_sel = 0
-            for x in range(len(self.current.parent.choices)):
-                if self.current.parent.choices[x] == self.current.name:
-                    prev_sel = x
+#            prev_sel = 0
+#            for x in range(len(self.current.parent.choices)):
+#                if self.current.parent.choices[x] == self.current.name:
+#                    prev_sel = x
 
             # Set self to the old one.
             self.current.undo()
             self.current = self.current.parent
+            self.lifepath.events.pop()
+            self.selection = 0 #prev_sel
             return False
 
     def draw(self):
@@ -358,8 +364,15 @@ class Chargen(View):
         elif self.current.age is not None:
             self.cline(chargen["age-%s" % (self.current.age+1)])
         # Triggers if we have a choice without an associated age (i.e., a final one.)
+        # Prints a list of events in your lifepath.
         else:
-            self.cline("No age-based text")
+            for event in self.lifepath.events:
+                # We only want events with short descriptions. If they take a certain number of years, list that.
+                if event.short is not None:
+                    str = "%s: %s" % (event.name, event.short)
+                    if event.years is not None:
+                        str += " (for %s years)" % event.years
+                    self.cline(str)
 
         self.y_acc += 10
 
