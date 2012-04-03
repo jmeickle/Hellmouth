@@ -7,6 +7,7 @@ import hex
 from lifepath import Lifepath
 import re
 from collections import deque
+from lifepath_events import eventdata
 
 # Cycling selector.
 class Selector():
@@ -82,6 +83,7 @@ class View():
         self.window.addstr(y, x, string, self.attr(col, attr))
 
     # Draw a line; only relevant for text-y views.
+    # TODO: Handle multi-line strings!
     def line(self, str, col=None, attr=None):
         self.rds(0+self.x_acc, 0+self.y_acc, str, col, attr)
         self.y_acc += 1
@@ -91,6 +93,7 @@ class View():
         self.y_acc = 0
 
     # Print a line with multiple colors
+    # TODO: Handle multi-line strings!
     # TODO: Handle other attributes.
     def cline(self, str, col=None, attr=None):
         strlen = 0
@@ -351,7 +354,7 @@ class Chargen(View):
             self.current.undo()
             self.current = self.current.parent
             self.lifepath.events.pop()
-            self.selection = 0 #prev_sel
+            self.selected = 0 #prev_sel
             return False
 
     def draw(self):
