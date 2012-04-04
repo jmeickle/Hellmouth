@@ -111,6 +111,7 @@ def main(stdscr):
 
     # Chargen window init
     chargen = Chargen(stdscr, term_x, term_y, 0, 0)
+    chargen.player = player
 
     # Stats window init
     # HACK:

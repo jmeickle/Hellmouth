@@ -311,6 +311,7 @@ class Stats(View):
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
+        self.player = None
         self.lifepath = Lifepath()
         self.current = None
         self.selected = 0
