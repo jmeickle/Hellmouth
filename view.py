@@ -356,6 +356,7 @@ class Chargen(View):
             self.current = self.current.parent
             self.lifepath.events.pop()
             self.selected = 0 #prev_sel
+            self.max = len(self.current.choices)-1
             return False
 
     def draw(self):
@@ -394,7 +395,7 @@ class Chargen(View):
         # Bottom half of the screen:
         # Print the text from the currently highlighted event.
         if self.current is None:
-            a = 1
+            self.line(self.lifepath.initial[self.selected][1])
         else:
             if self.current.choices is not None:
                self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
@@ -431,7 +432,7 @@ class Chargen(View):
                 self.lifepath.start('Start')
                 self.current = self.lifepath.initial
                 for x in range(self.selected):
-                    self.current.choose(skip[x+1][1])
+                    self.current.choose(skip[x+1][2])
                     self.current = self.current.child
                 self.selected = 0
             elif c == curses.KEY_UP:
