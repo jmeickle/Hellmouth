@@ -14,10 +14,11 @@ class Actor:
 
         # More 'permanent' game info: stats, skills, etc.
         self.body = Humanoid(self)
-        self.stats = {"Strength" : 0,
-                      "Dexterity" : 0,
-                      "Intelligence" : 0,
-                      "Health" : 0,
+        self.stats = {
+                      "Strength" : 10,
+                      "Dexterity" : 10,
+                      "Intelligence" : 10,
+                      "Health" : 10,
                      }
         self.traits = {}
         self.skills = {}
