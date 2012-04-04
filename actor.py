@@ -138,6 +138,7 @@ class Actor:
         return func(self)
 
     # Calculated stats:
+    # STUB: Insert formulas
     def HitPoints(self):       return 33
     def MaxHitPoints(self):       return 33
     def ManaPoints(self):       return 33
@@ -193,32 +194,17 @@ class BodyPlan:
             part = HitLoc(partname)
             self.locs[partname] = part
             if parent is not None:
-               # print "Parent:", self.locs[parent].type
-               # print "This:", self.locs[partname].type
                 HitLoc.add_child(self.locs[parent], part)
             for roll in rolls:
                 if isinstance(roll, list) is True:
-#                    exit("%s %s" % (partname, roll))
                     base = roll[0]
                     for x in range(len(roll)):
                         if x == 0:
                             continue;
                         subroll = roll[x]
                         self.table["%s-%s" % (base, subroll)] = part
-
-#                         exit("%s %s" % (partname, self.table))
-               # if isinstance(roll, list) is False:
                 else:
                     self.table[roll] = part
-#                else:
-#print rolls
-#for roll in rolls:
-#                self.table[roll] = part
-#                self.locs[part].parent(self.locs[parent])
-#            if sublocation is not None:
-#                self.locs[parent][2].append(part)#sublocation(part)
-
-# = (self.locs[parent], part)
 
 class Humanoid(BodyPlan):
     # These tuples represent:
@@ -246,7 +232,6 @@ class Humanoid(BodyPlan):
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build()
-        #exit("%s"%self.table)
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.
