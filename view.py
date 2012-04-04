@@ -377,6 +377,7 @@ class Chargen(View):
         else:
             self.cline(chargen["final"])
             self.y_acc += 2
+            level = self.y_acc
             self.cline("What you've told the stranger:")
             self.y_acc += 1
             for event in self.lifepath.events:
@@ -386,10 +387,18 @@ class Chargen(View):
                     if event.years is not None:
                         str += " (for %s years)" % event.years
                     self.cline(str)
-
-        self.y_acc += 5
+            old = self.y_acc
+            self.y_acc = level
+            self.x_acc = 60
+            self.cline("Your character:")
+            for stat, value in self.player.stats.iteritems():
+                self.cline("%s: %s" % (stat, value))#: %s" % (stat, value))
+            self.y_acc = old
+            self.x_acc = 0
 
         # Bottom half of the screen:
+        self.y_acc += 5
+
         # Print the text from the currently highlighted event.
         if self.current is None:
             self.line(self.lifepath.initial[self.selected][1])
