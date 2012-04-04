@@ -18,11 +18,7 @@ class Actor:
                       "Dexterity" : 0,
                       "Intelligence" : 0,
                       "Health" : 0,
-                      "" : 0,
-                      "" : 0,
-                      "" : 0,
-                      "" : 0,
-                      "" : 0}
+                     }
         self.traits = {}
         self.skills = {}
 
