@@ -311,7 +311,7 @@ class Stats(View):
         else:
             self.line("%s: %s" % (short, self.stat(stat)))
 
-# TODO: Chargen screen.
+# TODO: Chargen actually affects stats.
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
@@ -332,6 +332,7 @@ class Chargen(View):
     def next(self):
         self.current.choose(self.current.choices[self.selected])
         self.current = self.current.child
+        # TODO: Handle appending inside of choose()
         self.lifepath.events.append(self.current)
 
         # Reset choice:
