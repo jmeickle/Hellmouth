@@ -383,13 +383,16 @@ class Chargen(View):
             for event in self.lifepath.events:
                 # We only want events with short descriptions. If they take a certain number of years, list that.
                 if event.short is not None:
-                    str = "%s: %s" % (event.name, event.short)
+                    str = "You had %s" % event.short
                     if event.years is not None:
-                        str += " (for %s years)" % event.years
+                        str += " "
+                        str += "(for %s years)" % event.years
                     self.cline(str)
             old = self.y_acc
             self.y_acc = level
             self.x_acc = 60
+            # TODO: Don't calculate this each time, jeez!
+            self.player.stats = self.lifepath.effects()
             self.cline("Your character:")
             for stat, value in self.player.stats.iteritems():
                 self.cline("%s: %s" % (stat, value))#: %s" % (stat, value))

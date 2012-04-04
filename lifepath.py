@@ -20,6 +20,9 @@ class Lifepath:
     def debug_display(self):
         self.initial.debug_display(True)
 
+    def effects(self):
+        return self.initial.sum_effects()
+
 class LifepathEvent:
     def __init__(self, choice, parent=None):
         # Grab the dict for the chosen event.
@@ -43,6 +46,7 @@ class LifepathEvent:
         self.effects = self.data.get('effects', {})
         self.years = self.data.get('years', None)
 
+    # Choose a child lifepath.
     def choose(self, event):
         self.child = LifepathEvent(event, self)
 
@@ -59,6 +63,20 @@ class LifepathEvent:
 
     def display(self):
         print "Nothing right now."
+
+    # Recursively returns lifepath effects.
+    # TODO: Merge in a better way.
+    def sum_effects(self):
+        if self.child is not None:
+            ret = self.child.sum_effects()
+        else:
+            ret = {}
+        for k,v in self.effects.iteritems():
+            if ret.get(k, None) is not None:
+                ret[k] += v
+            else:
+                ret[k] = v
+        return ret
 
     # Display variant for debug code.
     def debug_display(self, recurse=False):
