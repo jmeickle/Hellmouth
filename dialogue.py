@@ -7,7 +7,7 @@ chargen = {
     "age-4" : "How about your teenage years?",
     "age-5" : "What of your years as a young adult?",
     "age-6" : "How did life find you as an adult?",
-    "age-7" : "What changed?",
+    "age-7" : "Surely you could have led a safe life. What changed that made you wander so?",
     "age-8" : "Why did you choose to become a demonslayer?",
-    "final" : 'The stranger nods and thinks for a few moments before speaking again. "Is this all truthful, what you\'ve told me? It sounds unbelievable, to be honest."' ,
+    "final" : "The stranger nods and thinks for a few moments before speaking again. \"Is this all truthful, what you've told me? It sounds unbelievable, to be honest.\"" ,
 }
