@@ -1,5 +1,11 @@
+# The map, cells in the map, and terrain.
 from collections import deque
-#from random import randint
+import random
+
+# TODO: REMOVE THIS
+class Item:
+    def __init__(self):
+        return None
 
 class Map:
     def __init__(self):
@@ -24,14 +30,14 @@ class Map:
         self.viewrange = 11
 
     def loadmap(self, x, y):
-#        content = ("~", ".", ",", "!", "?")
-
         self.cells = []
         for X in range(x):
             self.cells.append([])
             for Y in range(y):
-                self.cells[X].append(Cell())
-#content[randint(0, 4)]))
+                cell = Cell()
+                # TODO: REMOVE TEST CODE
+                cell.items['key'] = Item()
+                self.cells[X].append(cell)
         self.width = X+1
         self.height = Y+1
 
@@ -94,6 +100,60 @@ class Cell:
         # Stuff inside the cell
         self.actor = None
         self.terrain = None
+        self.items = {}
+
+    # Return a glyph to display for this cell.
+    # TODO: improve this function greatly
+    def draw(self):
+        if self.actor is not None:
+            return self.actor.glyph, self.actor.color
+        elif self.terrain is not None:
+            return self.terrain.glyph, self.terrain.color
+        elif len(self.items) > 0:
+            return '!', 'magenta-black'
+        else:
+            return self.glyph, self.color
+
+    # ITEMS
+
+    # 'Forcibly' put an item into a cell.
+    def put(self, item):
+        list = self.items.get(item.appearance, None)
+        if list is None:
+            self.items[item.appearance] = [item]
+        else:
+            list.append(item)
+
+    # 'Forcibly' remove a specific item from a cell.
+    # Fails if the item is not in the list.
+    # Returns false if there's no item matching the appearance.
+    def remove(self, item):
+        list = self.items.get(item.appearance, None)
+        if list is not None:
+            list.remove(item)
+        else:
+            return False
+
+    # Returns how many items of a given appearance are in the cell.
+    def count(self, appearance):
+        list = self.items.get(item.appearance, None)
+        if list is None:
+            return 0
+        else:
+            return len(list)
+
+    # Gets an item based on its appearance string.
+    # Returns false if there's no item by that appearance.
+    def get(self, appearance):
+        list = self.items.get(item.appearance, None)
+        if list is None:
+            return False
+        else:
+            item = random.choice(list)
+            list.remove(item)
+            return item
+
+    # ACTORS
 
     # Add a actor to a cell.
     def add(self, obj, terrain=False):
@@ -117,15 +177,7 @@ class Cell:
     def remove(self, obj):
         self.actor = None
 
-    # Return a glyph to display for this cell.
-    # Later, this will be a better function.
-    def draw(self):
-        if self.terrain is not None:
-            return self.terrain.glyph, self.terrain.color
-        elif self.actor is not None:
-            return self.actor.glyph, self.actor.color
-        else:
-            return self.glyph, self.color
+    # MOVEMENT
 
     # Return whether the cell has a creature in it.
     def occupied(self):
