@@ -212,11 +212,7 @@ class Examine(View):
         self.reset()
         pos = self.parent.cursor.pos
         map = self.parent.map
-        str = ""
-        if map.actor(pos) is not None:
-            str += "Actor: %s " % map.actor(pos).name
-        if map.terrain(pos) is not None:
-            str += "Terrain: %s" % map.terrain(pos).name
+        str = map.cell(pos).describe()
         self.line(str)
 
 class Stats(View):

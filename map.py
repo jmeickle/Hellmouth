@@ -1,5 +1,6 @@
 # The map, cells in the map, and terrain.
 from collections import deque
+from describe import commas
 import random
 
 # TODO: REMOVE THIS
@@ -113,6 +114,18 @@ class Cell:
             return '!', 'magenta-black'
         else:
             return self.glyph, self.color
+
+    # TODO: Options for what to list.
+    def describe(self):
+        str = "You see here"
+        list = []
+        if self.actor is not None:
+            list.append("a %s" % self.actor.name)
+        if self.terrain is not None:
+            list.append("a %s" % self.terrain.name)
+        if len(self.items) > 0:
+            list.append("some items")
+        return commas(str, list)
 
     # ITEMS
 

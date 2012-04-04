@@ -43,6 +43,22 @@ class Descriptions():
     hits = {}
     fail = {}
 
+# Append a list of substrings to a string with appropriate punctuation.
+def commas(str, list):
+    if len(list) == 0:
+        str += " "
+        str += "nothing of interest"
+    for x in range(len(list)):
+        if len(list) > 2 and x > 0:
+            str += ","
+        if len(list) > 1 and x == len(list)-1:
+            str += " "
+            str += "and"
+        str += " "
+        str += list[x]
+    str += "."
+    return str
+
 def base_stat(value):
     if value > 20: return "godly"
     elif value > 14: return "amazing"
