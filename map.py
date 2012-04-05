@@ -1,12 +1,8 @@
 # The map, cells in the map, and terrain.
 from collections import deque
 from describe import commas
+from item import Item
 import random
-
-# TODO: REMOVE THIS
-class Item:
-    def __init__(self):
-        return None
 
 class Map:
     def __init__(self):
