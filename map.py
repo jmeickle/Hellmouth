@@ -33,7 +33,7 @@ class Map:
             for Y in range(y):
                 cell = Cell()
                 # TODO: REMOVE TEST CODE
-                cell.items['key'] = Item()
+                cell.items['item appearance'] = [Item()]
                 self.cells[X].append(cell)
         self.width = X+1
         self.height = Y+1
@@ -158,6 +158,14 @@ class Cell:
             return list.remove(random.choice(list))
         else:
             return False
+
+    # Take an appearance and a list, and tack it onto the cell contents.
+    def _merge(self, appearance, list):
+        current = self.items.get(appearance, None)
+        if current is not None:
+            return current.extend(list)
+        else:
+            self.items[appearance] = list
 
     # Boolean: whether you can get items from a cell
     # STUB: Add real checks here.
