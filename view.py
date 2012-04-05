@@ -45,7 +45,7 @@ class Cursor():
         return "magenta-black"
 
 class View():
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         self.screen = window
         self.window = window.subwin(y, x, starty, startx)
         self.x = startx
@@ -113,7 +113,7 @@ class View():
         self.y_acc += 1
 
 class MainMap(View):
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.map = None
         self.player = None
@@ -204,7 +204,7 @@ class MainMap(View):
 
 # TODO: Update for FOV
 class Examine(View):
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.parent = None
 
@@ -228,7 +228,7 @@ class Stats(View):
               "Mana Points" : "MP",
 }
 
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.player = None
 
@@ -309,7 +309,7 @@ class Stats(View):
 
 # TODO: Chargen actually affects stats.
 class Chargen(View):
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.player = None
         self.lifepath = Lifepath()
@@ -476,7 +476,7 @@ class Chargen(View):
 
 # TODO: Implement this
 class Status(View):
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
 
     def draw(self):
@@ -488,7 +488,7 @@ class Status(View):
 
 # Very hackish right now: events added through map...
 class Log(View):
-    def __init__(self, window, x, y, startx, starty):
+    def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.events = deque()
         self.index = 0
