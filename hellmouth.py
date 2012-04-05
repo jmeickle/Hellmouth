@@ -139,29 +139,16 @@ def main(stdscr):
     views.append(status)
     views.append(mainmap)
 
-    gameplay = False
+    gameplay = True
 
     # Main game loop
     while 1:
 
-        # Chargen, between-map screens, etc.
-        while gameplay is False:
-            # TODO: Turn this into a function since it's used elsewhere.
-            # Before the player's turn, clear the screen and tell views to redraw themselves.
-            stdscr.clear()
-            for view in views:
-                if view.draw() is False:
-                    break
-
-            # Handle all player keyboard input
-            keyin(stdscr, views)
-
-            # Remove all dead views
-            for view in views:
-                if view.alive is False:
-                    views.remove(view)
-
-        # END NON-GAMEPLAY LOOP
+        # End the game if there is nobody else left to act, or if the player is dead.
+        if len(map.queue) == 0:
+            break;
+        if player.hp <= 0:
+            break;
 
         # Remove all dead views
         for view in views:
@@ -171,12 +158,6 @@ def main(stdscr):
         # If nobody is acting, let the first in the queue act.
         if map.acting is None:
             map.acting = map.queue.popleft()
-
-            # End the game if there is nobody else left to act, or if the player is dead.
-            if len(map.queue) == 0:
-                break;
-            if player.hp <= 0:
-                break;
 
         # DEBUG: Print currently acting actor name.
         # Has to be here for it to work properly.
@@ -198,9 +179,6 @@ def main(stdscr):
             if view.draw() is False:
                 break
 
-        # Handle all player keyboard input
-        keyin(stdscr, views)
-
         # All non-component (i.e., debug) drawing is handled below.
 
         # DEBUG: Print current position.
@@ -216,12 +194,22 @@ def main(stdscr):
         #if c < 256 and c > 31: # i.e., ASCII glyphs
         #    stdscr.addch(17, 59, chr(c))
 
+        # DEBUG: Print current inventory.
+        stdscr.addstr(16, 59, "INVENTORY")
+        i = 0
+        for appearance, item in player.inventory.iteritems():
+            stdscr.addstr(17+i, 59, "%s (%s)" % (appearance, len(item)))
+            i += 1
+ 
         # DEBUG: Print current torso wounds.
         #stdscr.addstr(16, 59, "TORSO WOUNDS")
         #stdscr.addstr(17, 59, "%s" % player.body.locs.get("Torso").wounds)
 
         # Refresh the display.
         stdscr.refresh()
+
+        # Handle all player keyboard input
+        keyin(stdscr, views)
 
     # HACK: If we get here, we're displaying the win screen.
     stdscr.clear()
