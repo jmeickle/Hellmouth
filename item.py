@@ -1,8 +1,10 @@
+import random
+
 # Items.
 class Item:
     def __init__(self):
         # Flavor
-        self.name = "Debug item name"
+        self.name = "debugger"
         self.description = "Debug description"
 
         # Basic characteristics
@@ -14,7 +16,11 @@ class Item:
         # Construction
         self.size = None
         self.quality = None
-        self.material = None
+        self.material = random.choice(("iron", "gold", "copper", "steel"))
+
+    # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
+    def appearance(self):
+        return "%s %s" % (self.material, self.name)
 
     # STUB: Hit an item.
     def hit(self):

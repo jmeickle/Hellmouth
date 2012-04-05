@@ -33,7 +33,7 @@ class Map:
             for Y in range(y):
                 cell = Cell()
                 # TODO: REMOVE TEST CODE
-                cell.items['item appearance'] = [Item()]
+                cell.put(Item())
                 self.cells[X].append(cell)
         self.width = X+1
         self.height = Y+1
