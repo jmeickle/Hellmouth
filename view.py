@@ -7,6 +7,7 @@ import hex
 from lifepath import Lifepath
 import re
 from collections import deque
+from lifepath_events import eventdata
 
 # Cycling selector.
 class Selector():
@@ -82,6 +83,7 @@ class View():
         self.window.addstr(y, x, string, self.attr(col, attr))
 
     # Draw a line; only relevant for text-y views.
+    # TODO: Handle multi-line strings!
     def line(self, str, col=None, attr=None):
         self.rds(0+self.x_acc, 0+self.y_acc, str, col, attr)
         self.y_acc += 1
@@ -91,6 +93,7 @@ class View():
         self.y_acc = 0
 
     # Print a line with multiple colors
+    # TODO: Handle multi-line strings!
     # TODO: Handle other attributes.
     def cline(self, str, col=None, attr=None):
         strlen = 0
@@ -209,11 +212,7 @@ class Examine(View):
         self.reset()
         pos = self.parent.cursor.pos
         map = self.parent.map
-        str = ""
-        if map.actor(pos) is not None:
-            str += "Actor: %s " % map.actor(pos).name
-        if map.terrain(pos) is not None:
-            str += "Terrain: %s" % map.terrain(pos).name
+        str = map.cell(pos).describe()
         self.line(str)
 
 class Stats(View):
@@ -308,7 +307,7 @@ class Stats(View):
         else:
             self.line("%s: %s" % (short, self.stat(stat)))
 
-# TODO: Chargen screen.
+# TODO: Chargen actually affects stats.
 class Chargen(View):
     def __init__(self, window, x, y, startx, starty):
         View.__init__(self, window, x, y, startx, starty)
@@ -329,6 +328,10 @@ class Chargen(View):
     def next(self):
         self.current.choose(self.current.choices[self.selected])
         self.current = self.current.child
+        # TODO: Handle appending inside of choose()
+        self.lifepath.events.append(self.current)
+
+        # Reset choice:
         self.selected = 0
         if self.current.choices is not None:
             self.max = len(self.current.choices)-1
@@ -336,61 +339,96 @@ class Chargen(View):
             self.max = 0 # Irrelevant, but whatever.
 
     def prev(self):
+        # TODO: Fix this, it's buggy.
         if self.current.parent is not None:
             # Get previous selection.
-            prev_sel = 0
-            for x in range(len(self.current.parent.choices)):
-                if self.current.parent.choices[x] == self.current.name:
-                    prev_sel = x
+#            prev_sel = 0
+#            for x in range(len(self.current.parent.choices)):
+#                if self.current.parent.choices[x] == self.current.name:
+#                    prev_sel = x
 
             # Set self to the old one.
             self.current.undo()
             self.current = self.current.parent
+            self.lifepath.events.pop()
+            self.selected = 0 #prev_sel
+            self.max = len(self.current.choices)-1
             return False
 
     def draw(self):
         self.reset()
 
+        # Top half of the screen:
+
         # Triggers if we haven't started down a lifepath yet.
+        # Prints initial text.
         if self.current is None:
             self.cline(chargen["initial"])
-        # Triggers if we're going through a lifepath at a certain age.
+        # STUB: Triggers if an event brings a prompt with it.
+        # Prints the prompt text.
+        #elif self.current.prompt is not None:
+        # Triggers if we're at a certain age in the lifepath.
+        # Prints the text asking about the NEXT age category.
         elif self.current.age is not None:
             self.cline(chargen["age-%s" % (self.current.age+1)])
         # Triggers if we have a choice without an associated age (i.e., a final one.)
+        # Prints a list of events in your lifepath.
         else:
-            self.cline("No age-based text")
+            self.cline(chargen["final"])
+            self.y_acc += 2
+            self.cline("What you've told the stranger:")
+            self.y_acc += 1
+            for event in self.lifepath.events:
+                # We only want events with short descriptions. If they take a certain number of years, list that.
+                if event.short is not None:
+                    str = "%s: %s" % (event.name, event.short)
+                    if event.years is not None:
+                        str += " (for %s years)" % event.years
+                    self.cline(str)
 
-        self.y_acc += 10
+        self.y_acc += 5
 
-        # Print a list of choices.
+        # Bottom half of the screen:
+        # Print the text from the currently highlighted event.
+        if self.current is None:
+            self.line(self.lifepath.initial[self.selected][1])
+        else:
+            if self.current.choices is not None:
+               self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
+
+        self.y_acc += 1
+ 
+        # Print a list of choices for the initial skip.
         if self.current is None:
             for x in range(len(self.lifepath.initial)):
                 if x == self.selected:
-                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][1])
+                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][0])
                 else:
-                    self.line("* %s" % self.lifepath.initial[x][1])
-
+                    self.line("* %s" % self.lifepath.initial[x][0])
+        # Prints a list of choices for the current event.
         elif self.current.choices is not None:
             for choice in self.current.choices:
                 if self.current.choices[self.selected] == choice:
                     self.cline("<green-black>* %s</>" % choice)
                 else:
                     self.line("* %s" % choice)
+        # Confirms whether to start.
         else:
-            self.cline("<red-black>Really start the game?</>")
+            self.cline("<red-black>Really use this lifepath? You can't change it once you've started the game.</>")
 
         # Don't draw anything else.
         return False
 
     def keyin(self, c):
+        # Make the first choice, which uses a different system to
+        # skip ahead several steps in the chargen system.
         if self.current is None:
             if c == curses.KEY_ENTER or c == ord('\n'):
                 skip = self.lifepath.initial
                 self.lifepath.start('Start')
                 self.current = self.lifepath.initial
                 for x in range(self.selected):
-                    self.current.choose(skip[x][1])
+                    self.current.choose(skip[x+1][2])
                     self.current = self.current.child
                 self.selected = 0
             elif c == curses.KEY_UP:
@@ -399,7 +437,7 @@ class Chargen(View):
                 self.scroll(1)
             else: return True
             return False
-
+        # Choicely choosing the next choice from choices
         if self.current.choices is not None:
             if c == curses.KEY_ENTER or c == ord('\n'):
                 self.next()
@@ -411,9 +449,12 @@ class Chargen(View):
                 self.scroll(1)
             else: return True
             return False
+        # Last stage: choosing whether to start the game or not.
         else:
             if c == curses.KEY_ENTER or c == ord('\n'):
                 self.alive = False
+            elif c == ord(' '):
+                self.prev()
                 return False
 
 # TODO: Add a minimap and a health screen.

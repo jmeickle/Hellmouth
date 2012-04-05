@@ -4,7 +4,7 @@ class Player(Actor):
     def __init__(self):
         Actor.__init__(self)
         self.glyph = '@'
-        self.name = 'Player'
+        self.name = 'player character'
         self.color = 'cyan-black'
         self.hp = 1000
         self.damage = 1
