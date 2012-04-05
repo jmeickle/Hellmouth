@@ -113,7 +113,7 @@ class Cell:
 
     # TODO: Options for what to list.
     def describe(self):
-        str = "You see here"
+        str = ""#You see here"
         list = []
         if self.actor is not None:
             list.append("a %s" % self.actor.name)
