@@ -126,22 +126,48 @@ class Cell:
     # ITEMS
 
     # 'Forcibly' put an item into a cell.
-    def put(self, item):
-        list = self.items.get(item.appearance, None)
+    def _put(self, item):
+        list = self.items.get(item.appearance(), None)
         if list is None:
-            self.items[item.appearance] = [item]
+            self.items[item.appearance()] = [item]
         else:
             list.append(item)
 
+    # Put an item into a cell.
+    # TODO: Sanity checks that _put doesn't have.
+    def put(self, item):
+        self._put(item)
+
     # 'Forcibly' remove a specific item from a cell.
-    # Fails if the item is not in the list.
-    # Returns false if there's no item matching the appearance.
-    def remove(self, item):
+    # Returns the item if it's successfully removed.
+    # Returns false if there are no items matching that appearance.
+    # Errors if the item is not in the list.
+    def _get(self, item):
         list = self.items.get(item.appearance, None)
         if list is not None:
-            list.remove(item)
+            return list.remove(item)
         else:
             return False
+
+    # Remove a random item of a given appearance from a cell.
+    # Returns the item if it's successfully removed.
+    # Returns false if there are no items matching the appearance.
+    def get(self, appearance):
+        list = self.items.get(appearance, None)
+        if list is not None:
+            return list.remove(random.choice(list))
+        else:
+            return False
+
+    # Boolean: whether you can get items from a cell
+    # STUB: Add real checks here.
+    def can_get(self):
+        return True
+
+    # Boolean: whether you can put items into a cell
+    # STUB: Add real checks here.
+    def can_put(self):
+        return True
 
     # Returns how many items of a given appearance are in the cell.
     def count(self, appearance):
@@ -150,17 +176,6 @@ class Cell:
             return 0
         else:
             return len(list)
-
-    # Gets an item based on its appearance string.
-    # Returns false if there's no item by that appearance.
-    def get(self, appearance):
-        list = self.items.get(item.appearance, None)
-        if list is None:
-            return False
-        else:
-            item = random.choice(list)
-            list.remove(item)
-            return item
 
     # ACTORS
 

@@ -27,6 +27,7 @@ class Actor:
         # More 'volatile' information: inventory, effects, etc.
         self.map = None
         self.pos = None
+        self.letters = {}
         self.inventory = {}
         self.effects = {}
 
@@ -51,13 +52,17 @@ class Actor:
         self.map.acting = None
         self.map.queue.append(self)
 
+    # Return your own cell
+    def cell(self):
+        return self.map.cell(self.pos)
+
     # MOVEMENT
 
     # Change actor coords directly and update the relevant cells.
     def go(self, pos):
-        self.map.cells[self.pos[0]][self.pos[1]].remove(self)
+        self.cell().remove(self)
         self.pos = pos
-        self.map.cells[self.pos[0]][self.pos[1]].add(self)
+        self.cell().add(self)
 
     # Try to move based on an input direction. Return whether it worked.
     def move(self, pos):
@@ -111,7 +116,7 @@ class Actor:
         loc.hurt(amt)
         self.hp -= amt
         if self.check_dead() is True:
-            self.remove()
+            self.die()
 
     # Check whether you are dead.
     def check_dead(self):
@@ -119,12 +124,12 @@ class Actor:
             return True
 
     # Remove self from the map and the queue
-    def remove(self):
+    def die(self):
             if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
                 self.map.log.add(d("%s has been slain!" % self.name))
             if self != self.map.acting:
                 self.map.queue.remove(self)
-            self.map.cell(self.pos).remove(self)
+            self.cell().remove(self)
 
     # STATS
 
@@ -196,14 +201,99 @@ class Actor:
 
     # INVENTORY
 
-    # Needed functions:
+    # STUB: Needed functions:
+    # TODO: Everything with inventory lettering
+    # recalculate letters
+    # swap letters
 
-    # add
-    # remove
-    # can drop
-    # drop
-    # can get
-    # get
+    # 'Forcibly' add an inventory item
+    def _add(self, item):
+        list = self.inventory.get(item.appearance(), None)
+        if list is not None:
+            list.append(item)
+        else:
+            self.inventory[item.appearance()] = [item]
+
+    # STUB: This should perform sanity checks that _add doesn't.
+    def add(self, item):
+        self._add(item)
+
+    # 'Forcibly' remove a specific inventory item (and return it).
+    # Returns false if the list doesn't exist or is empty.
+    def _remove(self, item):
+        list = self.inventory[item.appearance()]
+        if list is not None:
+            return list.remove(item)
+        else:
+            return False
+
+    # Remove a single item (randomly chosen) based on its appearance (and return it).
+    # Returns false if the list doesn't exist or is empty.
+    def remove(self, appearance, num=1):
+        list = self.inventory.get(appearance, None)
+        if list is not None:
+            return list.remove(random.choice(list))
+        else:
+            return False
+
+    # TODO: Support dropping to any cell
+    # 'Forcibly' drop a specific inventory item.
+    # Returns false if the item wasn't found in the player's inventory.
+    def _drop(self, item):
+        i = self._remove(item)
+        if i is not False:
+            self.cell().put(i)
+        else:
+            return False
+
+    # TODO: Support dropping to any cell
+    # Take item(s) with the same appearance from the inventory and put them on the ground.
+    def drop(self, appearance, num=1):
+        cell = self.cell()
+        for x in range(num):
+            item = self.remove(appearance)
+            if item is not False:
+                cell.put(item)
+
+    # TODO: Support getting from any cell
+    # Get item(s) with an appearance from a cell and put them in inventory.
+    def get(self, appearance, num=1):
+        cell = self.cell()
+        for x in range(num):
+            item = cell.get(appearance)
+            if item is not False:
+                self.add(item)
+ 
+    # STUB: Turn a letter into an item appearance
+    def item(self, letter):
+        return self.letters.get(letter, None)
+
+    # TODO: Input a list of possible drop/get cells, then call cell class to check them.
+
+    # TRY_DROP, general process:
+    # See if you can drop into that cell.
+    # Accept a letter. Get the appearance from the letter. Get an item from the appearance.
+    # See if you can drop that item.
+    # Only then, drop the item.
+
+    # TRY_GET, general process:
+    # See if you can get from that cell.
+    # Accept a letter. Get the appearance from the get view's letter index.
+    # Get an item from the appearance. See if you can get that item.
+    # Only then, get the item.
+
+    def _can_drop(self):
+        return self.cell().can_drop()
+
+    def can_drop(self):
+        return _can_drop(self)
+
+    def _can_get(self, item):
+        return self.cell().can_get()
+
+    def can_get(self):
+        return _can_get(self)
+
     # equip
     # unequip
     # is worn
