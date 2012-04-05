@@ -28,7 +28,7 @@ class Actor:
         self.map = None
         self.pos = None
         self.letters = {}
-        self.inventory = {}
+        self.inventory = {'Key' : ['Value']}
         self.effects = {}
 
     # UTILITY
@@ -263,7 +263,29 @@ class Actor:
             item = cell.get(appearance)
             if item is not False:
                 self.add(item)
- 
+
+    # Get everything from the current cell.
+    def get_all(self): 
+        cell = self.cell()
+        while len(cell.items) > 0:
+            appearance, list = cell.items.popitem()
+            self._merge(appearance, list)
+
+    # Drop everything to the current cell.
+    def drop_all(self): 
+        cell = self.cell()
+        while len(self.inventory) > 0:
+            appearance, list = self.inventory.popitem()
+            cell._merge(appearance, list)
+
+    # Tack an appearance and associated list of items from a cell into your own inventory.
+    def _merge(self, appearance, list):
+        current = self.inventory.get(appearance, None)
+        if current is not None:
+            return current.extend(list)
+        else:
+            self.inventory[appearance] = list
+
     # STUB: Turn a letter into an item appearance
     def item(self, letter):
         return self.letters.get(letter, None)
