@@ -66,6 +66,11 @@ class View():
     def keyin(self, c):
         return True
 
+    # Spawn children.
+    def spawn(self, child):
+        self.child = child
+        self.child.parent = self
+
     # Set up curses attributes on a string
     # TODO: Handle anything but color
     def attr(self, col, attr):
@@ -127,15 +132,17 @@ class MainMap(View):
         return
 
     def keyin(self, c):
-        if self.cursor is None:
-            if c == ord('v'):
+        # TODO: Fix spacing here.
+        # Return true if no keyin was used; otherwise, false.
+        if c == ord('v'):
+            if self.cursor is None:
                 self.cursor = Cursor(self, self.player.pos)
-                self.child = Examine(self.screen, self.width, 1, 0, 23)
-                self.child.parent = self
+                self.spawn(Examine(self.screen, self.width, 1, 0, 23))
                 self.cursor.child = self.child
                 return False
         else:
-            # Return true if no keyin was used; otherwise, false.
+            if c == ord('i'):
+                self.spawn(Inventory(self.screen, self.width, self.height))
             if c == ord(' '):
                 self.cursor = None
                 self.child = None
