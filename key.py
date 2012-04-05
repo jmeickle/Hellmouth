@@ -37,6 +37,10 @@ def keyin(stdscr, views):
             views[0].player.over()
         elif c == ord('P'):
             views[0].player.attack(views[0].player)
+        elif c == ord('g'):
+            views[0].player.get_all()
+        elif c == ord('d'):
+            views[0].player.drop_all()
 
 # TODO: Convert this into the multiple menu code
 #        elif hasattr(chargen.selector, 'parent') is True:
