@@ -588,3 +588,22 @@ class Log(View):
                 lines += 1
 
         return ret
+
+class Inventory(View):
+    def __init__(self, window, x, y, startx=0, starty=0):
+        View.__init__(self, window, x, y, startx, starty)
+
+    def draw(self):
+        self.reset()
+        self.window.bkgd('X')
+        self.x_acc += 10
+        self.cline("Inventory")
+        self.y_acc += 3
+        for appearance, item in self.map.player.inventory.iteritems():
+            self.cline("%s (%s)" % (appearance, len(item)))
+
+    def keyin(self, c):
+        if c == ord(' '):
+            self.parent.children.remove(self)
+        else: return True
+        return False
