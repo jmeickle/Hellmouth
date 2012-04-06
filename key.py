@@ -16,7 +16,7 @@ def keyin(stdscr, views):
 
         # Offer keyin to each view, and continue if any of them returns false
         for view in views:
-            if view.keyin(c) is False:
+            if view._keyin(c) is False:
                 return False
 
         # 'Global' keypresses that work anywhere

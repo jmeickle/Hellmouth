@@ -55,21 +55,41 @@ class View():
         self.x_acc = 0
         self.y_acc = 0
         self.alive = True
+        self.children = []
 
     # Utility functions shared by all views
 
-    # Draw self.
+    # Draw self. Abstract.
     def draw(self):
         return True
 
-    # Handle keyin.
+    # Draw yourself, then recurse through your children to draw them.
+    def _draw(self):
+        if self.draw() is not False:
+            for child in self.children:
+                if child._draw() is False:
+                    return False
+            return True
+        else:
+            return False
+
+    # Handle keyin. Abstract.
     def keyin(self, c):
         return True
 
-    # Spawn children.
+    # Recurse through children trying their keyin functions,
+    # until you've done your own.
+    def _keyin(self, c):
+        for child in self.children:
+            if child._keyin(c) is False:
+                return False
+        return self.keyin(c)
+
+    # Spawn child and return it.
     def spawn(self, child):
-        self.child = child
-        self.child.parent = self
+        self.children.append(child)
+        child.parent = self
+        return child
 
     # Set up curses attributes on a string
     # TODO: Handle anything but color
@@ -125,7 +145,6 @@ class MainMap(View):
         # -1 to account for 0,0 start
         self.viewport = (math.floor(y/2)-1, math.floor(y/2)-1)
         self.cursor = None
-        self.child = None
 
     # Called before the map is rendered, but after it's ready to go.
     def ready(self):
@@ -134,16 +153,18 @@ class MainMap(View):
     def keyin(self, c):
         # TODO: Fix spacing here.
         # Return true if no keyin was used; otherwise, false.
-        if c == ord('v'):
+        if c == ord('I'):
+            child = self.spawn(Inventory(self.screen, self.width, self.height))
+            child.map = self.map
+
+        # TODO: Move this elsewhere, it doesn't belong.
+        elif c == ord('v'):
             if self.cursor is None:
                 self.cursor = Cursor(self, self.player.pos)
-                self.spawn(Examine(self.screen, self.width, 1, 0, 23))
-                self.cursor.child = self.child
+                child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
+                self.cursor.child = child
                 return False
-        else:
-            if c == ord('i'):
-                self.spawn(Inventory(self.screen, self.width, self.height))
-            if c == ord(' '):
+            elif c == ord(' '):
                 self.cursor = None
                 self.child = None
             elif c == ord('7'):
@@ -204,7 +225,6 @@ class MainMap(View):
             c = self.cursor
             self.offset_hd(c.pos[0], c.pos[1], c.style[0], c.color(), None, (0,-1))
             self.offset_hd(c.pos[0], c.pos[1], c.style[1], c.color(), None, (0,1))
-            self.child.draw()
             return False
 
         #self.window.refresh()
@@ -475,7 +495,8 @@ class Chargen(View):
                 self.alive = False
             elif c == ord(' '):
                 self.prev()
-                return False
+            else: return True
+            return False
 
 # TODO: Add a minimap and a health screen.
 #class MiniMap(View):

@@ -176,7 +176,7 @@ def main(stdscr):
         # Before the player's turn, clear the screen and tell views to redraw themselves.
         stdscr.clear()
         for view in views:
-            if view.draw() is False:
+            if view._draw() is False:
                 break
 
         # All non-component (i.e., debug) drawing is handled below.
