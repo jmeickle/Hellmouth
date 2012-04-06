@@ -201,11 +201,6 @@ class Actor:
 
     # INVENTORY
 
-    # STUB: Needed functions:
-    # TODO: Everything with inventory lettering
-    # recalculate letters
-    # swap letters
-
     # 'Forcibly' add an inventory item
     def _add(self, item):
         list = self.inventory.get(item.appearance(), None)
@@ -286,9 +281,21 @@ class Actor:
         else:
             self.inventory[appearance] = list
 
-    # STUB: Turn a letter into an item appearance
+    # STUB: Needed functions:
+    # TODO: Everything with inventory lettering
+    # recalculate letters
+    # swap letters
+
+    # reassign letter
+    # find appropriate letter
+
+    # Turn a letter into an item appearance.
+    # Returns false if there is no appearance associated with the letter.
+    def l2i(self, letter):
+        return self.letters.get(letter, False)
+
     def item(self, letter):
-        return self.letters.get(letter, None)
+        return l2i(letter)
 
     # TODO: Input a list of possible drop/get cells, then call cell class to check them.
 
