@@ -195,11 +195,11 @@ def main(stdscr):
         #    stdscr.addch(17, 59, chr(c))
 
         # DEBUG: Print current inventory.
-        stdscr.addstr(16, 59, "INVENTORY")
-        i = 0
-        for appearance, item in player.inventory.iteritems():
-            stdscr.addstr(17+i, 59, "%s (%s)" % (appearance, len(item)))
-            i += 1
+        #stdscr.addstr(16, 59, "INVENTORY")
+        #i = 0
+        #for appearance, item in player.inventory.iteritems():
+        #    stdscr.addstr(17+i, 59, "%s (%s)" % (appearance, len(item)))
+        #    i += 1
  
         # DEBUG: Print current torso wounds.
         #stdscr.addstr(16, 59, "TORSO WOUNDS")
