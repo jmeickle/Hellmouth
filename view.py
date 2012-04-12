@@ -156,12 +156,13 @@ class MainMap(View):
         if c == ord('I'):
             child = self.spawn(Inventory(self.screen, self.width, self.height))
             child.map = self.map
+            child.reset()
 
         # TODO: Move this elsewhere, it doesn't belong.
         elif c == ord('v'):
             if self.cursor is None:
-                self.cursor = Cursor(self, self.player.pos)
                 child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
+                self.cursor = Cursor(self, self.player.pos)
                 self.cursor.child = child
                 return False
             elif c == ord(' '):
@@ -592,18 +593,47 @@ class Log(View):
 class Inventory(View):
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
+        self.map = None # So it can access, e.g., items on the ground
+        self.player = None
+        self.items = None
+        self.selector = None
+
+    # Just so this doesn't have to be passed in.
+    def reset(self):
+        self.x_acc = 0
+        self.y_acc = 0
+        self.player = self.map.player
+        self.items = self.player.items()
+        if self.selector is None:
+            self.selector = Selector(self, len(self.items))
+        else:
+            self.selector.choices = len(self.items)
+            self.selector.choice = min(self.selector.choice, self.selector.choices)
 
     def draw(self):
         self.reset()
-        self.window.bkgd('X')
         self.x_acc += 10
         self.cline("Inventory")
         self.y_acc += 3
-        for appearance, item in self.map.player.inventory.iteritems():
-            self.cline("%s (%s)" % (appearance, len(item)))
+        if len(self.items) > 0:
+            for index, appearance, item in self.items:
+                if self.selector.choice == index:
+                    self.cline("<green-black>%s - %s (%s)</>" % (index, appearance, len(item)))
+                else:
+                    self.cline("%s - %s (%s)" % (index, appearance, len(item)))
+        else:
+            self.cline("No items")
 
     def keyin(self, c):
         if c == ord(' '):
             self.parent.children.remove(self)
+        elif c == ord('+'):
+            self.selector.next()
+        elif c == ord('-'):
+            self.selector.prev()
+        elif c == curses.KEY_ENTER or c == ord('\n'):
+            if len(self.items) > 0:
+                index, appearance, item = self.items[self.selector.choice]
+                self.player.drop(appearance)
         else: return True
         return False
