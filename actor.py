@@ -28,7 +28,7 @@ class Actor:
         self.map = None
         self.pos = None
         self.letters = {}
-        self.inventory = {'Key' : ['Value']}
+        self.inventory = {}
         self.effects = {}
 
     # UTILITY
@@ -200,6 +200,14 @@ class Actor:
                 return wounds
 
     # INVENTORY
+    # STUB: Return a sorted section of the inventory, or ground items, based on args
+    def items(self):
+        items = []
+        index = 0
+        for appearance, item in self.inventory.iteritems():
+            items.append((index, appearance, item))
+            index += 1
+        return items
 
     # 'Forcibly' add an inventory item
     def _add(self, item):
@@ -218,16 +226,22 @@ class Actor:
     def _remove(self, item):
         list = self.inventory[item.appearance()]
         if list is not None:
-            return list.remove(item)
+            list.remove(item)
+            if len(list) == 0:
+                del self.inventory[appearance]
         else:
             return False
 
     # Remove a single item (randomly chosen) based on its appearance (and return it).
     # Returns false if the list doesn't exist or is empty.
-    def remove(self, appearance, num=1):
+    def remove(self, appearance):
         list = self.inventory.get(appearance, None)
         if list is not None:
-            return list.remove(random.choice(list))
+            item = choice(list)
+            list.remove(item)
+            if len(list) == 0:
+                del self.inventory[appearance]
+            return item
         else:
             return False
 
@@ -311,26 +325,61 @@ class Actor:
     # Get an item from the appearance. See if you can get that item.
     # Only then, get the item.
 
+    # Can stuff be dropped into a pos?
     def _can_drop(self):
         return self.cell().can_drop()
 
+    # TODO: Sanity checks not handled above
     def can_drop(self):
         return _can_drop(self)
 
+    # Can stuff be gotten from a pos?
     def _can_get(self, item):
         return self.cell().can_get()
 
+    # TODO: Sanity checks not handled above
     def can_get(self):
         return _can_get(self)
 
-    # equip
-    # unequip
-    # is worn
-    # wear
-    # unwear
-    # is wielded
-    # wield
-    # unwield
+    # Either hold or wear the item as appropriate.
+    def equip(self, loc, item, hold=False):
+        if item.wielded() is True or hold is True:
+            loc.hold(item)
+        else:
+            loc.wear(item)
+
+    # Unhold and/or unwear the item as appropriate.
+    def unequip(self, item):
+        if item.is_held() is True:
+            locs = item.held
+            for loc in locs:
+                if loc.owner == self:
+                    loc.unhold(item)
+
+        if item.is_worn() is True:
+            locs = item.worn
+            for loc in locs:
+                if loc.owner == self:
+                    loc.unwear(item)
+
+    # Returns true if the item is held by (at least) you.
+    def held(self, item):
+        locs = item.held
+        for loc in locs:
+            if loc.owner == self:
+                return True
+
+    # Returns true if the item is worn by (at least) you.
+    def worn(self, item):
+        locs = item.worn
+        for loc in locs:
+            if loc.owner == self:
+                return True
+
+    # Returns true if the item is held or worn by you.
+    def equipped(self, item):
+        if self.held(item) is True or self.worn(item) is True:
+            return True
 
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
@@ -444,6 +493,25 @@ class HitLoc:
     # Add a sublocation of this part.
     def sublocation(self, part):
         self.sublocations.append(part)
+
+    # ITEMS
+    def wear(self, item):
+        self.worn.append(item)
+        item.worn.append(self)
+
+    def hold(self, item):
+        self.held.append(item)
+        item.held.append(self)
+
+    def unwear(self, item):
+        self.worn.remove(item)
+        item.worn.remove(self)
+
+    def unhold(self, item):
+        self.held.remove(item)
+        item.held.remove(self)
+
+    # COMBAT
 
     # Add a wound to this location.
     def hurt(self, amt):
