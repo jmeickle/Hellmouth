@@ -16,15 +16,15 @@ class Selector():
         self.choices = choices
         self.choice = initial
 
-    def next(self):
-        self.choice += 1
-        if self.choice > self.choices:
+    def next(self, amt=1):
+        self.choice += amt
+        if self.choice >= self.choices:
             self.choice = 0
 
-    def prev(self):
-        self.choice -= 1
+    def prev(self, amt=1):
+        self.choice -= amt
         if self.choice < 0:
-            self.choice = self.choices
+            self.choice = self.choices-1
 
     def choose(self):
         self.parent.selector = self.choice
