@@ -245,6 +245,15 @@ class Actor:
         else:
             return False
 
+    # Just get an item, returning it.
+    def get(self, appearance):
+        list = self.inventory.get(appearance, None)
+        if list is not None:
+            item = choice(list)
+            return item
+        else:
+            return False
+
     # TODO: Support dropping to any cell
     # 'Forcibly' drop a specific inventory item.
     # Returns false if the item wasn't found in the player's inventory.
@@ -342,14 +351,14 @@ class Actor:
         return _can_get(self)
 
     # Either hold or wear the item as appropriate.
-    def equip(self, loc, item, hold=False):
+    def _equip(self, loc, item, hold=False):
         if item.wielded() is True or hold is True:
             loc.hold(item)
         else:
             loc.wear(item)
 
     # Unhold and/or unwear the item as appropriate.
-    def unequip(self, item):
+    def _unequip(self, item):
         if item.is_held() is True:
             locs = item.held
             for loc in locs:
