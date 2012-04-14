@@ -647,6 +647,20 @@ class Inventory(View):
         else:
             self.cline("No items")
 
+        self.y_acc = 0
+        self.x_acc += 20
+
+        self.cline("Equipped")
+        for loc in sorted(self.player.body.locs.items()):
+            equipped = ""
+            for held in loc[1].held:
+                equipped += "%s (held)" % held.appearance()
+            for worn in loc[1].worn:
+                equipped += "%s (worn)" % worn.appearance()
+            if len(equipped) == 0:
+                equipped = "Nothing"
+            self.cline("%6s: %s" % (loc[0], equipped))
+
     def keyin(self, c):
         if c == ord(' '):
             self.parent.children.remove(self)
