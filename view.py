@@ -8,6 +8,7 @@ from lifepath import Lifepath
 import re
 from collections import deque
 from lifepath_events import eventdata
+from random import choice
 
 # Cycling selector.
 class Selector():
@@ -653,11 +654,11 @@ class Inventory(View):
         self.cline("Inventory")
         self.y_acc += 3
         if len(self.items) > 0:
-            for index, appearance, item in self.items:
+            for index, appearance, itemlist in self.items:
                 if self.selector.choice == index:
-                    self.cline("<green-black>%s - %s (%s)</>" % (index, appearance, len(item)))
+                    self.cline("<green-black>%s - %s (%s)</>" % (index, appearance, len(itemlist)))
                 else:
-                    self.cline("%s - %s (%s)" % (index, appearance, len(item)))
+                    self.cline("%s - %s (%s)" % (index, appearance, len(itemlist)))
         else:
             self.cline("No items")
 
@@ -688,14 +689,14 @@ class Inventory(View):
         elif c == ord('-'):
             self.selector.prev()
         elif c == ord('d'):
-            self.selector.toggle(self.player.drop, "Drop item")
+            self.selector.toggle(self.player._drop, "Drop item")
         elif c == ord('e'):
-            self.selector.toggle(self.player.equip, "Equip item")
+            self.selector.toggle(self.player._equip, "Equip item")
         elif c == ord('u'):
-            self.selector.toggle(self.player.unequip, "Unequip item")
+            self.selector.toggle(self.player._unequip, "Unequip item")
         elif c == curses.KEY_ENTER or c == ord('\n'):
             if len(self.items) > 0:
-                index, appearance, item = self.items[self.selector.choice]
-                self.selector.fire(appearance)
+                index, appearance, itemlist = self.items[self.selector.choice]
+                self.selector.fire(choice(itemlist))
         else: return True
         return False
