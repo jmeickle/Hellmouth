@@ -630,7 +630,7 @@ class Inventory(View):
             self.selector = Selector(self, len(self.items))
         else:
             self.selector.choices = len(self.items)
-            self.selector.choice = min(self.selector.choice, self.selector.choices)
+            self.selector.choice = min(self.selector.choice, self.selector.choices-1)
 
     def draw(self):
         self.reset()
