@@ -15,6 +15,8 @@ class Selector():
         self.parent = parent
         self.choices = choices
         self.choice = initial
+        self.action = None
+        self.text = None
 
     def next(self, amt=1):
         self.choice += amt
@@ -29,6 +31,18 @@ class Selector():
     # TODO: Make this take a function and call it
     def choose(self):
         self.parent.selector = self.choice
+
+    def fire(self, arg):
+        if self.action is not None:
+            self.action(arg)
+
+    def toggle(self, action, text):
+        if self.action == action:
+            self.action = None
+            self.text = None
+        else:
+            self.action = action
+            self.text = text
 
 class Cursor():
     def __init__(self, parent, pos):
@@ -661,6 +675,11 @@ class Inventory(View):
                 equipped = "Nothing"
             self.cline("%6s: %s" % (loc[0], equipped))
 
+        if self.selector.text is not None:
+            self.cline(self.selector.text)
+        else:
+            self.cline("d/e/u")
+
     def keyin(self, c):
         if c == ord(' '):
             self.parent.children.remove(self)
@@ -668,9 +687,15 @@ class Inventory(View):
             self.selector.next()
         elif c == ord('-'):
             self.selector.prev()
+        elif c == ord('d'):
+            self.selector.toggle(self.player.drop, "Drop item")
+        elif c == ord('e'):
+            self.selector.toggle(self.player.equip, "Equip item")
+        elif c == ord('u'):
+            self.selector.toggle(self.player.unequip, "Unequip item")
         elif c == curses.KEY_ENTER or c == ord('\n'):
             if len(self.items) > 0:
                 index, appearance, item = self.items[self.selector.choice]
-                self.player.drop(appearance)
+                self.selector.fire(appearance)
         else: return True
         return False
