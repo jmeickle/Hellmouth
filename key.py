@@ -20,22 +20,7 @@ def keyin(stdscr, views):
                 return False
 
         # 'Global' keypresses that work anywhere
-        # TODO: Move these!
-        if c == ord('7'):
-            views[0].player.do(NW)
-        elif c == ord('4'):
-            views[0].player.do(CW)
-        elif c == ord('1'):
-            views[0].player.do(SW)
-        elif c == ord('9'):
-            views[0].player.do(NE)
-        elif c == ord('6'):
-            views[0].player.do(CE)
-        elif c == ord('3'):
-            views[0].player.do(SE)
-        elif c == ord('5'):
-            views[0].player.over()
-        elif c == ord('P'):
+        if c == ord('P'):
             views[0].player.attack(views[0].player)
         elif c == ord('g'):
             views[0].player.get_all()

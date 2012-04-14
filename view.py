@@ -157,15 +157,18 @@ class MainMap(View):
             child = self.spawn(Inventory(self.screen, self.width, self.height))
             child.map = self.map
             child.reset()
+            return False
 
-        # TODO: Move this elsewhere, it doesn't belong.
         elif c == ord('v'):
             if self.cursor is None:
                 child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
                 self.cursor = Cursor(self, self.player.pos)
                 self.cursor.child = child
                 return False
-            elif c == ord(' '):
+
+        # TODO: Move this elsewhere, it doesn't belong.
+        if self.cursor is not None:
+            if c == ord(' '):
                 self.cursor = None
                 self.child = None
             elif c == ord('7'):
@@ -180,6 +183,25 @@ class MainMap(View):
                 self.cursor.scroll(CE)
             elif c == ord('3'):
                 self.cursor.scroll(SE)
+            else: return True
+            return False
+
+        else:
+        # TODO: Move these!
+            if c == ord('7'):
+                self.map.player.do(NW)
+            elif c == ord('4'):
+                self.map.player.do(CW)
+            elif c == ord('1'):
+                self.map.player.do(SW)
+            elif c == ord('9'):
+                self.map.player.do(NE)
+            elif c == ord('6'):
+                self.map.player.do(CE)
+            elif c == ord('3'):
+                self.map.player.do(SE)
+            elif c == ord('5'):
+                self.map.player.over()
             else: return True
             return False
 
