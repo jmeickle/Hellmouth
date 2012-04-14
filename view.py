@@ -26,6 +26,7 @@ class Selector():
         if self.choice < 0:
             self.choice = self.choices-1
 
+    # TODO: Make this take a function and call it
     def choose(self):
         self.parent.selector = self.choice
 
