@@ -1,7 +1,14 @@
 Global todo:
 
-- Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
+DISPLAY:
+- Support attributes
 - Convert colors to default to a black background.
+- Support 256 colors.
+
+UTILITY:
+- Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
 - Make all pos functions accept tuple args consistently.
 - Write a wrapper so that curses never, ever tries to print something offscreen.
+
+STRUCTURE:
 - Clean up the game loop
