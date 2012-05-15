@@ -26,8 +26,8 @@ class Item:
     def appearance(self):
         return "%s %s" % (self.material, self.name)
 
-    # STUB: Find an appropriate slot based on the intersection of the item and actor.
-    def find_slot(self, actor):
+    # STUB: Preferred slot for this kind of item.
+    def preferred_slot(self):
         return 'RHand'
 
     # STUB: Hit an item.

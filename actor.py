@@ -228,7 +228,8 @@ class Actor:
         if list is not None:
             list.remove(item)
             if len(list) == 0:
-                del self.inventory[appearance]
+                del self.inventory[item.appearance()]
+            return item
         else:
             return False
 
@@ -351,14 +352,17 @@ class Actor:
         return _can_get(self)
 
     # Either hold or wear the item as appropriate.
-    def _equip(self, loc, item, hold=False):
+    def _equip(self, item, loc=None, hold=False):
+        if loc is None:
+            slot = item.preferred_slot()
+            loc = self.body.locs.get(slot, self.body.primary_slot)
         if item.wielded() is True or hold is True:
             loc.hold(item)
         else:
             loc.wear(item)
 
     # Unhold and/or unwear the item as appropriate.
-    def _unequip(self, item):
+    def _unequip(self, item, loc=None, hold=False):
         if item.is_held() is True:
             locs = item.held
             for loc in locs:
@@ -401,11 +405,13 @@ class BodyPlan:
         self.locs = {}
         # Body parts indexed by 3d6 roll
         self.table = {}
+        # Primary slot
+        self.primary_slot = None
 
     # Build a body from the class information.
-    def build(self):
+    def build(self, owner):
         for partname, parent, sublocation, rolls in self.parts:
-            part = HitLoc(partname)
+            part = HitLoc(partname, owner)
             self.locs[partname] = part
             if parent is not None:
                 HitLoc.add_child(self.locs[parent], part)
@@ -443,9 +449,11 @@ class Humanoid(BodyPlan):
              ('LFoot', 'LLeg', False, [[16, 4, 5, 6]]),
     )
 
+    primary_slot = 'RHand'
+
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
-        self.build()
+        self.build(parent)
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.
@@ -461,15 +469,17 @@ class Octopod(BodyPlan):
              ('Arm8', 'Mantle', None),
     )
 
+    primary_slot = 'Arm1'
+
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
-        self.build()
+        self.build(parent)
 
 # Hit location
 class HitLoc:
-    def __init__(self, type):
+    def __init__(self, type, owner):
         self.type = type
-        self.owner = None
+        self.owner = owner
 
         # Combat stats
         self.HP = 0
