@@ -12,3 +12,4 @@ UTILITY:
 
 STRUCTURE:
 - Clean up the game loop
+- Move color stuff out of define.py
