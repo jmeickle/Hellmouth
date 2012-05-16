@@ -286,18 +286,6 @@ class Examine(View):
         self.line(str)
 
 class Stats(View):
-    # TODO: Move this out of here, it really doesn't belong.
-    short = { "Speed" : "Spd.",
-              "Perception" : "Per.",
-              "Strength" : "ST",
-              "Dexterity" : "DX",
-              "Intelligence" : "IQ",
-              "Health" : "HT",
-              "Hit Points" : "HP",
-              "Fatigue Points" : "FP",
-              "Mana Points" : "MP",
-}
-
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
         self.player = None
@@ -370,7 +358,7 @@ class Stats(View):
 #        self.line("FP: %3d/%2d" % (10, 12))
 #        self.line("MP: %3d/%2d" % (8, 15))
 
-        short = Stats.short.get(stat, stat)
+        short = abbreviations.get(stat, stat)
         # Alternate draw for these stats.
         if short in ["HP", "FP", "MP"]:
             self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
