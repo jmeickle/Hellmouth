@@ -20,6 +20,7 @@ class Item:
 
         # References
         self.held = []
+        self.readied = []
         self.worn = []
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
@@ -38,11 +39,23 @@ class Item:
     def damage(self, amt):
         return False
 
-    # STUB: Return true/false, based on whether it's a wielded item (weapon, torch, tool, etc.)
-    def wielded(self):
+    # Whether the item is intended to be used as a weapon. Note that
+    # some objects, like torches or shields, fit into this category
+    # despite not being 'weapon' objects.
+    def can_be_weapon(self):
+        return True
+
+    # Whether this particular weapon needs to be held to be used. True for almost everything.
+    def must_be_held(self):
+        return True
+	
+    # Whether the item is intended to be worn. Note that some objects,
+    # like bags, might be perfectly serviceable wearables without being
+    # armor or clothing.
+    def can_be_worn(self):
         return False
 
-    # Return true if the item is being held, or with optional item parameter,
+    # Return true if the item is held, or with optional loc parameter,
     # if the item is held by a specific location.
     def is_held(self, loc=None):
         if loc is None:
@@ -53,7 +66,18 @@ class Item:
                 return True
         return False
 
-    # Return true if the item is being worn, or with optional item parameter,
+    # Return true if the item is being readied, or with optional loc parameter,
+    # if the item is readied by a specific location.
+    def is_readied(self, loc=None):
+        if loc is None:
+            if len(self.readied) > 0:
+                return True
+        else:
+            if readied.count(loc) > 0:
+                return True
+        return False
+
+    # Return true if the item is being worn, or with optional loc parameter,
     # if the item is worn by a specific location.
     def is_worn(self, loc=None):
         if loc is None:
@@ -71,6 +95,3 @@ class Weapon(Item):
         # Combat-only stats
         self.skill = None # Primary skill, for descriptions - there can be others.
         self.attackline = {} # Min ST in attackline
-
-    def wielded(self):
-        return True
