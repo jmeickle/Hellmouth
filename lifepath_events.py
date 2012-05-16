@@ -40,14 +40,14 @@ eventdata = {
 'Warrior Parents' : {
     'age'     : 0,
     'text'    : "My parents were skilled warriors.",
-    'short'   : "were heir to martial prowess from your warrior parents",
+    'short'   : "were heir to martial prowess",
     'effects' : {'HP' : 1},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
 'Wizard Parents' : {
     'age'     : 0,
     'text'    : "Both of my parents were powerful mages.",
-    'short'   : "were heir to magical power from your wizard parents",
+    'short'   : "were heir to magical power",
     'effects' : {'MP' : 1},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
@@ -154,7 +154,6 @@ eventdata = {
     'text'    : "Soon after my birth I began to exhibit odd behaviors.",
     'short'   : 'exhibited odd behaviors soon after birth',
     'effects' : {},
-    'years'   : 6,
     'choices' : ('Magical Young Child', 'Bookish Young Child'),
 },
 # Raised by someone else
