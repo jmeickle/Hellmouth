@@ -1,19 +1,5 @@
-# TODO: Move this out of here, it REALLY doesn't belong. Bleah.
-abbreviations = {
-"Dexterity" : "DX",
-"Strength" : "ST",
-"Easy" : "E",
-"Average" : "A",
-"Hard" : "H",
-"Very Hard" : "VH",
-}
+from define import *
 
-difficulties = {
-"Easy" : 0,
-"Average" : -1,
-"Hard" : -2,
-"Very Hard" : -3
-}
 # Fields for skills:
 # 'name' (str): More friendly display name.
 # 'attribute' (str): What the skill is based on.
