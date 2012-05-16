@@ -449,7 +449,7 @@ class Chargen(View):
             for event in self.lifepath.events:
                 # We only want events with short descriptions. If they take a certain number of years, list that.
                 if event.short is not None:
-                    str = "You had %s" % event.short
+                    str = "You %s." % event.short
                     if event.years is not None:
                         str += " "
                         str += "(for %s years)" % event.years
@@ -459,7 +459,7 @@ class Chargen(View):
             self.x_acc = 60
             # TODO: Don't calculate this each time, jeez!
             self.player.stats = self.lifepath.effects()
-            self.cline("Your character:")
+            self.cline("Your character sheet so far:")
             for stat, value in self.player.stats.iteritems():
                 self.cline("%s: %s" % (stat, value))#: %s" % (stat, value))
             self.y_acc = old
@@ -503,12 +503,18 @@ class Chargen(View):
         # skip ahead several steps in the chargen system.
         if self.current is None:
             if c == curses.KEY_ENTER or c == ord('\n'):
+                # Indirectly loads the 'skip' variable from lifepath_events.py
                 skip = self.lifepath.initial
+                # Everyone starts at Start.
                 self.lifepath.start('Start')
                 self.current = self.lifepath.initial
-                for x in range(self.selected):
-                    self.current.choose(skip[x+1][2])
+                # Each particular skip choice comes with a predetermined list of choices to make.
+                choices = skip[self.selected][2]
+                for choice in choices:
+                    self.current.choose(choice)
                     self.current = self.current.child
+                    self.lifepath.events.append(self.current)
+                # Reset selection to 0.
                 self.selected = 0
             elif c == curses.KEY_UP:
                 self.scroll(-1)
