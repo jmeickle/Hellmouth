@@ -7,29 +7,47 @@ import hex
 # Players, monsters, etc.
 class Actor:
     def __init__(self):
-        # Descriptive information
-        self.glyph = '@'
-        self.color = 'magenta-black'
+        # Text information (cosmetic)
         self.name = 'Default monster'
         self.description = 'This is the description'
 
-        # More 'permanent' game info: stats, skills, etc.
+        # Appearance (cosmetic)
+        self.glyph = '@'
+        self.color = 'magenta-black'
+
+        # Highly mutable actor state
         self.body = Humanoid(self)
-        self.stats = {
+        self.effects = {}
+        self.inventory = {}
+        self.base_skills = {}
+
+        # Positioning information
+        self.map = None
+        self.pos = None
+
+        # More static information: points spent on your character
+        self.points = {
+            "Attributes" : {},
+            "Skills" : {},
+            "Techniques" : {},
+            "Traits" : {},
+        }
+
+        # The 'character sheet': derived from points spent in the above
+        # categories, and changing only when they do.
+        self.attributes = {
                       "Strength" : 10,
                       "Dexterity" : 10,
                       "Intelligence" : 10,
                       "Health" : 10,
                      }
-        self.traits = {}
-        self.skills = {}
 
-        # More 'volatile' information: inventory, effects, etc.
-        self.map = None
-        self.pos = None
+        self.skills = {}
+        self.techniques = {}
+        self.traits = {}
+
+        # Purely interface nicety
         self.letters = {}
-        self.inventory = {}
-        self.effects = {}
 
     # UTILITY
 
