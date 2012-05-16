@@ -6,22 +6,23 @@ import random
 
 class Lifepath:
     def __init__(self):
-        self.initial = skip
+        self.skip = skip
+        self.first = skip
         self.events = []
 
-    # Add the initial event.
+    # Add the first event.
     def start(self, event):
-        self.initial = LifepathEvent(event)
-        self.events.append(self.initial)
+        self.first = LifepathEvent(event)
+        self.events.append(self.first)
 
     def display(self):
-        self.initial.display()
+        self.first.display()
 
     def debug_display(self):
-        self.initial.debug_display(True)
+        self.first.debug_display(True)
 
     def effects(self):
-        return self.initial.sum_effects()
+        return self.first.sum_effects()
 
 class LifepathEvent:
     def __init__(self, choice, parent=None):
@@ -59,7 +60,8 @@ class LifepathEvent:
         return choice
 
     def undo(self):
-        self.parent.child = None
+        if self.parent is not None:
+            self.parent.child = None
 
     def display(self):
         print "Nothing right now."
@@ -114,16 +116,16 @@ class LifepathEvent:
 def lifepath_test():
     lifepath = Lifepath()
     lifepath.start(LifepathEvent('Start'))
-    lifepath.initial.choose('Mundane Infant')
-    lifepath.initial.child.choose('Mundane Young Child')
-    lifepath.initial.child.child.choose('Mundane Child')
-    lifepath.initial.child.child.child.choose('Mundane Teen')
-    lifepath.initial.child.child.child.child.choose('Mundane Young Adult')
+    lifepath.first.choose('Mundane Infant')
+    lifepath.first.child.choose('Mundane Young Child')
+    lifepath.first.child.child.choose('Mundane Child')
+    lifepath.first.child.child.child.choose('Mundane Teen')
+    lifepath.first.child.child.child.child.choose('Mundane Young Adult')
     lifepath.debug_display()
     #print "===UNDO==="
-    #lifepath.initial.child.child.undo()
-    #random = lifepath.initial.child.pick()
-    #lifepath.initial.child.choose(random)
+    #lifepath.first.child.child.undo()
+    #random = lifepath.first.child.pick()
+    #lifepath.first.child.choose(random)
     #lifepath.debug_display()
 
 if __name__ == "__main__":

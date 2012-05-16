@@ -322,8 +322,10 @@ class Chargen(View):
         self.player = None
         self.lifepath = Lifepath()
         self.current = None
+        self.toggle_events = False
         self.selected = 0
-        self.max = len(self.lifepath.initial)-1
+        self.selections = []
+        self.max = len(self.lifepath.first)-1
 
     def scroll(self, amt):
         self.selected += amt
@@ -334,40 +336,66 @@ class Chargen(View):
         if self.selected >= self.max:
             self.selected = self.max
 
-    def next(self):
-        self.current.choose(self.current.choices[self.selected])
-        self.current = self.current.child
-        # TODO: Handle appending inside of choose()
-        self.lifepath.events.append(self.current)
+    def next(self, choice=None):
+        if choice is None:
+            choice = self.current.choices[self.selected]
 
-        # Reset choice:
-        self.selected = 0
-        if self.current.choices is not None:
-            self.max = len(self.current.choices)-1
+        if self.current is not None:
+            self.current.choose(choice)
+            self.current = self.current.child
+            self.lifepath.events.append(self.current)
         else:
-            self.max = 0 # Irrelevant, but whatever.
+            self.lifepath.start(choice)
+            self.current = self.lifepath.first
+        # TODO: Handle appending inside of choose()
+        self.reset_choices()
+
 
     def prev(self):
-        # TODO: Fix this, it's buggy.
         if self.current.parent is not None:
-            # Get previous selection.
-#            prev_sel = 0
-#            for x in range(len(self.current.parent.choices)):
-#                if self.current.parent.choices[x] == self.current.name:
-#                    prev_sel = x
-
-            # Set self to the old one.
             self.current.undo()
             self.current = self.current.parent
             self.lifepath.events.pop()
-            self.selected = 0 #prev_sel
-            self.max = len(self.current.choices)-1
-            return False
+            self.reset_choices(True)
+        else:
+            self.current.undo()
+            self.current = None
+            self.lifepath.events.pop()
+            self.lifepath.first = self.lifepath.skip
+            self.reset_choices(True)
+
+    def reset_choices(self, restore=False):
+        # Reset selection:
+        if restore is False:
+            self.selections.append(self.selected)
+            self.selected = 0
+        else:
+            self.selected = self.selections.pop()
+
+        # Reset number of choices:
+        if self.current is not None:
+            if self.current.choices is not None:
+                self.max = len(self.current.choices)-1
+        else:
+            self.max = len(self.lifepath.skip)-1
 
     def draw(self):
         self.reset()
 
-        # Top half of the screen:
+        # Character pane:
+        self.x_acc = 60
+        self.y_acc = 4
+
+        # TODO: Don't calculate this each time, jeez!
+        self.cline("Your character:")
+        if self.current is not None:
+            self.player.character = self.lifepath.effects()
+            for key, value in self.player.character.iteritems():
+                self.cline("%s: %s" % (key, value))#: %s" % (stat, value))
+
+        # Top part of the screen:
+        self.x_acc = 0
+        self.y_acc = 0
 
         # Triggers if we haven't started down a lifepath yet.
         # Prints initial text.
@@ -386,46 +414,36 @@ class Chargen(View):
             self.cline(chargen["final"])
             self.y_acc += 2
             level = self.y_acc
-            self.cline("What you've told the stranger:")
+            self.cline("What you've told\n the stranger:")
             self.y_acc += 1
+            # TODO: Duplicated code.
             for event in self.lifepath.events:
                 # We only want events with short descriptions. If they take a certain number of years, list that.
                 if event.short is not None:
-                    str = "You %s." % event.short
+                    str = "You %s" % event.short
                     if event.years is not None:
                         str += " "
-                        str += "(for %s years)" % event.years
-                    self.cline(str)
+                        if event.years == 1:
+                            str += "(%s year)" % event.years
+                        else:
+                            str += "(%s years)" % event.years
+                    self.cline(str+".")
             old = self.y_acc
             self.y_acc = level
-            self.x_acc = 60
-            # TODO: Don't calculate this each time, jeez!
-            self.player.stats = self.lifepath.effects()
-            self.cline("Your character sheet so far:")
-            for stat, value in self.player.stats.iteritems():
-                self.cline("%s: %s" % (stat, value))#: %s" % (stat, value))
-            self.y_acc = old
-            self.x_acc = 0
 
-        # Bottom half of the screen:
-        self.y_acc += 5
 
-        # Print the text from the currently highlighted event.
-        if self.current is None:
-            self.line(self.lifepath.initial[self.selected][1])
-        else:
-            if self.current.choices is not None:
-               self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
+        # Bottom part of the screen:
+        self.y_acc = self.height - 8
+        y_save = self.y_acc
 
-        self.y_acc += 1
- 
         # Print a list of choices for the initial skip.
         if self.current is None:
-            for x in range(len(self.lifepath.initial)):
+            # Start with just enough room to list everything and save where we started.
+            for x in range(len(self.lifepath.skip)):
                 if x == self.selected:
-                    self.cline("<green-black>* %s</>" % self.lifepath.initial[x][0])
+                    self.cline("<green-black>* %s</>" % self.lifepath.skip[x][0])
                 else:
-                    self.line("* %s" % self.lifepath.initial[x][0])
+                    self.line("* %s" % self.lifepath.skip[x][0])
         # Prints a list of choices for the current event.
         elif self.current.choices is not None:
             for choice in self.current.choices:
@@ -433,31 +451,69 @@ class Chargen(View):
                     self.cline("<green-black>* %s</>" % choice)
                 else:
                     self.line("* %s" % choice)
-        # Confirms whether to start.
+        # Prints the final choice: whether to start.
         else:
+            self.y_acc = self.height
             self.cline("<red-black>Really use this lifepath? You can't change it once you've started the game.</>")
+
+        # Go back up to where we started, but this time, to the right.
+        self.y_acc = y_save
+        self.x_acc = 20
+
+        # Print the text from the currently highlighted event.
+        if self.current is None:
+            self.line(self.lifepath.first[self.selected][1])
+        else:
+            if self.current.choices is not None:
+               self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
+
+        if self.toggle_events is True:
+            self.x_acc = 0
+            self.y_acc = self.height / 3
+            self.cline("%s" % "-"*self.width)
+            self.cline("Your life so far:")
+            self.cline("")
+            line = ""
+            for event in self.lifepath.events:
+                # We only want events with short descriptions. If they take a certain number of years, list that.
+                if event.short is not None:
+                    str = "%s" % event.short
+                    if event.years is not None:
+                        str += " "
+                        if event.years == 1:
+                            str += "(%s year)" % event.years
+                        else:
+                            str += "(%s years)" % event.years
+                    line += str+" -> "
+            line += "?\n"
+            self.cline(line)
+            self.y_acc += 4
+            self.cline("%s" % "-"*self.width)
 
         # Don't draw anything else.
         return False
 
+    # TODO: Duplicated code.
     def keyin(self, c):
+        # Show a list of events so far.
+        if c == ord('?'):
+            if self.toggle_events is True:
+                self.toggle_events = False
+            else:
+                self.toggle_events = True
+            return False
         # Make the first choice, which uses a different system to
         # skip ahead several steps in the chargen system.
         if self.current is None:
             if c == curses.KEY_ENTER or c == ord('\n'):
-                # Indirectly loads the 'skip' variable from lifepath_events.py
-                skip = self.lifepath.initial
-                # Everyone starts at Start.
-                self.lifepath.start('Start')
-                self.current = self.lifepath.initial
+                # TODO: Move this into lifepath code!
                 # Each particular skip choice comes with a predetermined list of choices to make.
-                choices = skip[self.selected][2]
+                choices = self.lifepath.skip[self.selected][2]
+                # Everyone starts at Start.
+                self.next('Start')
+                # After that, follow the choices.
                 for choice in choices:
-                    self.current.choose(choice)
-                    self.current = self.current.child
-                    self.lifepath.events.append(self.current)
-                # Reset selection to 0.
-                self.selected = 0
+                    self.next(choice)
             elif c == curses.KEY_UP:
                 self.scroll(-1)
             elif c == curses.KEY_DOWN:
