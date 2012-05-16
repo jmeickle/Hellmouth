@@ -607,14 +607,22 @@ def recurse(tree, eventname, depth):
     if depth == 1:
         print "\n",
 
-def dot(tree, eventname):
+def full_dot(tree, eventname):
     event = tree.get(eventname, None)
     if event is not None:
         if event.get("choices", None) != None:
             for choice in event["choices"]:
                 if choice != '':
                     print "%s -> %s" % (eventname.replace(' ', ''), choice.replace(' ', ''))
-                    dot(tree, choice)
+                    full_dot(tree, choice)
+
+def dot(tree):
+        for name, event in tree.iteritems():
+            choices = event.get("choices", None)
+            if choices is not None:
+                for choice in choices:
+                    if choice != '':
+                        print "%s -> %s" % (name.replace(' ', ''), choice.replace(' ', ''))
 
 if __name__ == "__main__":
 
@@ -627,5 +635,6 @@ if __name__ == "__main__":
 
 # Print DOT language text
     print "digraph Hellmouth {"
-    dot(eventdata, "Start")
+    dot(eventdata)
+    #full_dot(eventdata, "Start")
     print "}"
