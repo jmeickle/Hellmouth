@@ -1,14 +1,18 @@
-from define import Color
-from define import NW, NE, CE, SE, SW, CW
-from dialogue import chargen
+from color import Color
+from define import *
+
 import curses
 import math
 import hex
-from lifepath import Lifepath
 import re
+
 from collections import deque
-from lifepath_events import eventdata
 from random import choice
+
+# TODO: Move these only where needed?
+from dialogue import chargen
+from lifepath import Lifepath
+from lifepath_events import eventdata
 
 # Cycling selector.
 class Selector():
