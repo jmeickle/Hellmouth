@@ -209,6 +209,15 @@ class Actor:
             index += 1
         return items
 
+    # Convert an item appearance to an item (randomly). False if nothing by that appearance.
+    def item(self, appearance):
+        list = self.inventory.get(appearance, None)
+        if list is not None:
+            item = choice(list)
+            return item
+        else:
+            return False
+
     # 'Forcibly' add an inventory item
     def _add(self, item):
         list = self.inventory.get(item.appearance(), None)
@@ -246,34 +255,6 @@ class Actor:
         else:
             return False
 
-    # Just get an item, returning it.
-    def get(self, appearance):
-        list = self.inventory.get(appearance, None)
-        if list is not None:
-            item = choice(list)
-            return item
-        else:
-            return False
-
-    # TODO: Support dropping to any cell
-    # 'Forcibly' drop a specific inventory item.
-    # Returns false if the item wasn't found in the player's inventory.
-    def _drop(self, item):
-        i = self._remove(item)
-        if i is not False:
-            self.cell().put(i)
-        else:
-            return False
-
-    # TODO: Support dropping to any cell
-    # Take item(s) with the same appearance from the inventory and put them on the ground.
-    def drop(self, appearance, num=1):
-        cell = self.cell()
-        for x in range(num):
-            item = self.remove(appearance)
-            if item is not False:
-                cell.put(item)
-
     # TODO: Support getting from any cell
     # Get item(s) with an appearance from a cell and put them in inventory.
     def get(self, appearance, num=1):
@@ -290,6 +271,29 @@ class Actor:
             appearance, list = cell.items.popitem()
             self._merge(appearance, list)
 
+    # TODO: Support dropping to any cell
+    # 'Forcibly' drop a specific inventory item.
+    # Returns false if the item wasn't found in the player's inventory.
+    def _drop(self, item):
+        if self.can_drop_item(item) is True:
+            drop = self._remove(item)
+            if drop is not False:
+                self.cell().put(drop)
+            else:
+                die("Lost an item: it was removed, but not returned.")
+        return False
+
+    # TODO: Support dropping to any cell
+    # Take item(s) with the same appearance from the inventory and put them on the ground.
+    def drop(self, appearance, num=1):
+        cell = self.cell()
+        for x in range(num):
+            item = self._drop(self.item(appearance))
+            if item is not False:
+                cell.put(item)
+            else:
+                return False
+
     # Drop everything to the current cell.
     def drop_all(self): 
         cell = self.cell()
@@ -305,6 +309,33 @@ class Actor:
         else:
             self.inventory[appearance] = list
 
+    # Misc. map-item checking functions
+
+    # Can stuff be gotten from a pos?
+    def _can_get(self, item):
+        return self.cell().can_get()
+
+    # TODO: Sanity checks not handled above
+    def can_get(self):
+        return _can_get(self)
+
+    # Can stuff be dropped into a pos?
+    def _can_drop(self):
+        return self.cell().can_drop()
+
+    # TODO: Sanity checks not handled above
+    def can_drop(self):
+        return _can_drop(self)
+
+    # Can this specific item be dropped?
+    def can_drop_item(self, item):
+        # Worn (as opposed to held) items cannot be dropped.
+        if self.worn(item):
+            return False
+        return True
+
+    # INVENTORY
+
     # STUB: Needed functions:
     # TODO: Everything with inventory lettering
     # recalculate letters
@@ -315,11 +346,11 @@ class Actor:
 
     # Turn a letter into an item appearance.
     # Returns false if there is no appearance associated with the letter.
-    def l2i(self, letter):
-        return self.letters.get(letter, False)
+    #def l2i(self, letter):
+    #    return self.letters.get(letter, False)
 
-    def item(self, letter):
-        return l2i(letter)
+    #def i2l(self, letter):
+    #    return l2i(letter)
 
     # TODO: Input a list of possible drop/get cells, then call cell class to check them.
 
@@ -335,39 +366,60 @@ class Actor:
     # Get an item from the appearance. See if you can get that item.
     # Only then, get the item.
 
-    # Can stuff be dropped into a pos?
-    def _can_drop(self):
-        return self.cell().can_drop()
-
-    # TODO: Sanity checks not handled above
-    def can_drop(self):
-        return _can_drop(self)
-
-    # Can stuff be gotten from a pos?
-    def _can_get(self, item):
-        return self.cell().can_get()
-
-    # TODO: Sanity checks not handled above
-    def can_get(self):
-        return _can_get(self)
-
     # Either hold or wear the item as appropriate.
-    def _equip(self, item, loc=None, hold=False):
+    # Return false if nothing could be equipped.
+    def _equip(self, item, loc, worn, weapon):
         if loc is None:
             slot = item.preferred_slot()
             loc = self.body.locs.get(slot, self.body.primary_slot)
-        if item.wielded() is True or hold is True:
-            loc.hold(item)
-        else:
-            loc.wear(item)
 
-    # Unhold and/or unwear the item as appropriate.
-    def _unequip(self, item, loc=None, hold=False):
+        # If worn T/F is not provided, ask the item whether it's to be worn.
+        if worn is None:
+            worn = item.can_be_worn()
+
+        # If weapon T/F is not provided, ask the item whether it's a weapon.
+        if weapon is None:
+            weapon = item.can_be_weapon()
+
+        # Try to wear the item, if possible and if it's not already worn.
+        if worn is True and self.worn(item) is False:
+            loc.wear(item)
+            return True
+
+        # Can't wear it? Ready it as a weapon, if applicable and not already readied.
+        elif weapon is True and self.readied(item) is False:
+            # Hold the weapon, if it needs it.
+            if item.must_be_held() is True:
+                loc.hold(item)
+            # Then ready it.
+            loc.ready(item)
+
+        # The only remaining option is to just hold the item.
+        elif self.held(item) is False:
+            loc.hold(item)
+
+        # Otherwise, we fail.
+        else:
+            return False
+
+    # TODO: Sanity checks not handled above.
+    # Return false if nothing could be equipped.
+    def equip(self, appearance, loc=None, worn=None, weapon=None):
+        return self._equip(self.item(appearance), loc, worn, weapon)
+
+    # Unhold or unwear the item in all appropriate ways.
+    def _unequip(self, item):
         if item.is_held() is True:
             locs = item.held
             for loc in locs:
                 if loc.owner == self:
                     loc.unhold(item)
+
+        if item.is_readied() is True:
+            locs = item.readied
+            for loc in locs:
+                if loc.owner == self:
+                    loc.unready(item)
 
         if item.is_worn() is True:
             locs = item.worn
@@ -375,12 +427,27 @@ class Actor:
                 if loc.owner == self:
                     loc.unwear(item)
 
+    # TODO: Sanity checks not handled above.
+    def unequip(self, appearance):
+        self._unequip(self.item(appearance))
+
+    # Misc. inventory checking functions
+
     # Returns true if the item is held by (at least) you.
     def held(self, item):
         locs = item.held
         for loc in locs:
             if loc.owner == self:
                 return True
+        return False
+
+    # Returns true if the item is readied by (at least) you.
+    def readied(self, item):
+        locs = item.readied
+        for loc in locs:
+            if loc.owner == self:
+                return True
+        return False
 
     # Returns true if the item is worn by (at least) you.
     def worn(self, item):
@@ -388,11 +455,13 @@ class Actor:
         for loc in locs:
             if loc.owner == self:
                 return True
+        return False
 
     # Returns true if the item is held or worn by you.
     def equipped(self, item):
         if self.held(item) is True or self.worn(item) is True:
             return True
+        return False
 
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
@@ -492,8 +561,9 @@ class HitLoc:
         self.sublocations = []
 
         # Item-related
-        self.worn = []
         self.held = []
+        self.readied = []
+        self.worn = []
 
     # Return the healthiness of the limb
     # TODO: Base these values on self.owner
@@ -514,21 +584,29 @@ class HitLoc:
         self.sublocations.append(part)
 
     # ITEMS
-    def wear(self, item):
-        self.worn.append(item)
-        item.worn.append(self)
-
     def hold(self, item):
         self.held.append(item)
         item.held.append(self)
 
-    def unwear(self, item):
-        self.worn.remove(item)
-        item.worn.remove(self)
+    def ready(self, item):
+        self.readied.append(item)
+        item.readied.append(self)
+
+    def wear(self, item):
+        self.worn.append(item)
+        item.worn.append(self)
 
     def unhold(self, item):
         self.held.remove(item)
         item.held.remove(self)
+
+    def unready(self, item):
+        self.readied.remove(item)
+        item.readied.remove(self)
+
+    def unwear(self, item):
+        self.worn.remove(item)
+        item.worn.remove(self)
 
     # COMBAT
 
