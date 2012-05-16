@@ -665,11 +665,14 @@ class Inventory(View):
         self.y_acc = 0
         self.x_acc += 20
 
+        # TODO: Fix this messaging.
         self.cline("Equipped")
         for loc in sorted(self.player.body.locs.items()):
             equipped = ""
             for held in loc[1].held:
                 equipped += "%s (held)" % held.appearance()
+            for ready in loc[1].readied:
+                equipped += "%s (readied)" % ready.appearance()
             for worn in loc[1].worn:
                 equipped += "%s (worn)" % worn.appearance()
             if len(equipped) == 0:
@@ -689,14 +692,14 @@ class Inventory(View):
         elif c == ord('-'):
             self.selector.prev()
         elif c == ord('d'):
-            self.selector.toggle(self.player._drop, "Drop item")
+            self.selector.toggle(self.player.drop, "Drop item")
         elif c == ord('e'):
-            self.selector.toggle(self.player._equip, "Equip item")
+            self.selector.toggle(self.player.equip, "Equip item")
         elif c == ord('u'):
-            self.selector.toggle(self.player._unequip, "Unequip item")
+            self.selector.toggle(self.player.unequip, "Unequip item")
         elif c == curses.KEY_ENTER or c == ord('\n'):
             if len(self.items) > 0:
                 index, appearance, itemlist = self.items[self.selector.choice]
-                self.selector.fire(choice(itemlist))
+                self.selector.fire(appearance)
         else: return True
         return False
