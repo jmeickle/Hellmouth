@@ -613,7 +613,7 @@ def dot(tree, eventname):
         if event.get("choices", None) != None:
             for choice in event["choices"]:
                 if choice != '':
-                    print "%s -> %s" % (eventname, choice)
+                    print "%s -> %s" % (eventname.replace(' ', ''), choice.replace(' ', ''))
                     dot(tree, choice)
 
 if __name__ == "__main__":
