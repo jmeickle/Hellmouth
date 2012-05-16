@@ -33,28 +33,28 @@ eventdata = {
 'Mundane Parents' : {
     'age'     : 0,
     'text'    : "My parents were regular people like yourself.",
-    'short'   : "a normal family",
+    'short'   : "had a normal family",
     'effects' : {'Intelligence': 3},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
 'Warrior Parents' : {
     'age'     : 0,
     'text'    : "My parents were skilled warriors.",
-    'short'   : "heir to martial prowess",
+    'short'   : "were heir to martial prowess",
     'effects' : {'HP' : 1},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
 'Wizard Parents' : {
     'age'     : 0,
     'text'    : "Both of my parents were powerful mages.",
-    'short'   : "heir to magical power",
+    'short'   : "were heir to magical power",
     'effects' : {'MP' : 1},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
 'Mysterious Parents' : {
     'age'     : 0,
     'text'    : "My parents never spoke of how it came to pass, but I was certainly no child of my father.",
-    'short'   : "uncertain heritage",
+    'short'   : "had uncertain heritage",
     'effects' : {},
     'choices' : ('Mundane Infant', 'Dark Omen', 'Strange Omen', 'Holy Day', 'Bloody Birth', 'Immediate Adoption'),
 },
@@ -62,7 +62,7 @@ eventdata = {
 'Mundane Infant' : {
     'age'     : 1,
     'text'    : "My birth was exciting for my parents, but few others.",
-    'short'   : "a normal birth",
+    'short'   : "had a normal birth",
     'effects' : {'Intelligence' : -1},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
@@ -70,7 +70,7 @@ eventdata = {
 'Dark Omen' : {
     'age'     : 1,
     'text'    : "Dark omens troubled the day of my birth.",
-    'short'   : 'dark omens on the day of your birth',
+    'short'   : 'were born under dark omens',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
@@ -78,7 +78,7 @@ eventdata = {
 'Strange Omen' : {
     'age'     : 1,
     'text'    : "Eerie signs were seen on the day of my birth.",
-    'short'   : 'strange omens on the day of your birth',
+    'short'   : 'were born under strange omens',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
@@ -86,7 +86,7 @@ eventdata = {
 'Holy Day' : {
     'age'     : 1,
     'text'    : "I was born on a holy day.",
-    'short'   : 'your blessed birth on a holy day',
+    'short'   : 'were born on a holy day',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
@@ -94,7 +94,7 @@ eventdata = {
 'Bloody Birth' : {
     'age'     : 1,
     'text'    : "I was born on the battlefield.",
-    'short'   : 'your birth on the chaos of the battlefield',
+    'short'   : 'were born on the chaos of the battlefield',
     'effects' : {'Combat Reflexes' : True},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
@@ -102,24 +102,16 @@ eventdata = {
 'Immediate Adoption' : {
     'age'     : 1,
     'text'    : "I was given up right after birth - unwanted by my own mother.",
-    'short'   : 'your parents giving you up',
+    'short'   : 'were given up for adoption after birth',
     'effects' : {},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
-},
-# FORK: Who raised you? ('Immediate Adoption')
-'Church Young Child' : {
-    'age'     : 2,
-    'text'    : "My early years were uneventful.",
-    'short'   : 'being raised by the church',
-    'effects' : {},
-    'years'   : 1,
 },
 # Age 2: Young Child (1 to 6 years old)
 'Mundane Young Child' : {
     'age'     : 2,
     'text'    : "My early years were uneventful.",
-    'short'   : 'an uneventful young childhood',
+    'short'   : 'had an uneventful young childhood',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Mundane Child', 'Rich Child', 'Poor Child'),
@@ -127,21 +119,22 @@ eventdata = {
 'Rich Young Child' : {
     'age'     : 2,
     'text'    : "I spent my early years swaddled in cloth-of-gold.",
-    'short'   : 'a young childhood in a wealthy family',
+    'short'   : 'spent your early years in a wealthy family',
     'effects' : {},
     'years'   : 6,
 },
 'Poor Young Child' : {
     'age'     : 2,
     'text'    : "Even as an infant, I was deprived of life's necessities. Luxuries were unheard of.",
-    'short'   : 'a young childhood spent in poverty',
+    'short'   : 'spent your early years in a poor family',
     'effects' : {},
     'years'   : 6,
 },
+# TODO: Years are only for the actual choices
 'Stolen Young Child' : {
     'age'     : 2,
     'text'    : "I was stolen away from my parents.",
-    'short'   : 'theft from your parents',
+    'short'   : 'were stolen away from your parents soon after birth',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Changeling Young Child', 'Cultist Young Child', 'Initiate Young Child'),
@@ -149,19 +142,30 @@ eventdata = {
 'Orphaned Young Child' : {
     'age'     : 2,
     'text'    : "Soon after my birth, my parents were brutally killed.",
+    'short'   : 'were orphaned soon after birth',
     'effects' : {},
     'years'   : 6,
 },
 'Odd Young Child' : {
     'age'     : 2,
     'text'    : "Soon after my birth I began to exhibit odd behaviors.",
+    'short'   : 'exhibited odd behaviors from a very young age',
     'effects' : {},
     'years'   : 6,
+},
+# FORK: Who raised you? ('Immediate Adoption')
+'Church Young Child' : {
+    'age'     : 2,
+    'text'    : "My early years were uneventful.",
+    'short'   : 'spent your early years in the church',
+    'effects' : {},
+    'years'   : 1,
 },
 # FORK: Who raised you? 
 'Church Young Child' : {
     'age'     : 2,
     'text'    : "It was merely an accident of fate - unexpected, but not unusual.",
+    'short'   : 'spent your early years in the church',
     'effects' : {},
     'years'   : 6,
 },
@@ -169,18 +173,21 @@ eventdata = {
 'Changeling Young Child' : {
     'age'     : 2,
     'text'    : "Faeries came from the deep wood and swapped one of their children for me.",
+    'short'   : 'were abducted by faeries',
     'effects' : {},
     'choices' : ('Changeling Child', 'Rescued Child'),
 },
 'Cultist Young Child' : {
     'age'     : 2,
     'text'    : "Demon-worshipers saw something in me and took me as theirs. Perhaps I was intended to be a sacrifice, but was granted compassion for some reason.",
+    'short'   : 'were abducted by a dark cult',
     'effects' : {},
     'choices' : ('Cultist Child', 'Rescued Child'),
 },
 'Initiate Young Child' : {
     'age'     : 2,
     'text'    : "My abductors were a fanatical religious order dedicated to slaying demons.",
+    'short'   : 'were abducted by a secret order',
     'effects' : {},
     'choices' : ('Initiate Child', 'Rescued Child'),
 },
@@ -188,18 +195,21 @@ eventdata = {
 'Pirate Young Child' : {
     'age'     : 2,
     'text'    : "My parents were attacked by black-hearted pirates. They slaughtered everyone, but even they couldn't bear to harm a helpless child.",
+    'short'   : 'were the sole survivor of a pirate attack',
     'effects' : {},
     'choices' : ('Pirate Child', 'Rescued Child'),
 },
 'Bandit Young Child' : {
     'age'     : 2,
     'text'    : "My parents were attacked by bandits. My mother attempted to flee and they shot her where she stood. It wasn't until they heard my screams that they realized she had only been trying to protect me.",
+    'short'   : 'were the sole survivor of a bandit attack',
     'effects' : {},
     'choices' : ('Bandit Child', 'Rescued Child'),
 },
 'Wolf Young Child' : {
     'age'     : 2,
     'text'    : "a pack of wolves, hungered by encroaching farmers, came upon my family during their travels. One of the wolves took me in as her own.",
+    'short'   : 'were the sole survivor of a wolf attack',
     'effects' : {},
     'choices' : ('Wolf Child', 'Rescued Child'),
 },
@@ -207,11 +217,13 @@ eventdata = {
 'Magical Young Child' : {
     'age'     : 2,
     'text'    : "Soon after my birth I began to exhibit odd behaviors.",
+    'short'   : 'had innate magical talent',
     'effects' : {},
 },
 'Bookish Young Child' : {
     'age'     : 2,
     'text'    : "Soon after my birth I began to exhibit odd behaviors.",
+    'short'   : 'had an unnatural aptitude for reading',
     'effects' : {},
 },
 
@@ -219,7 +231,7 @@ eventdata = {
 'Mundane Child' : {
     'age'     : 3,
     'text'    : "I had an uneventful childhood.",
-    'short'   : 'an uneventful childhood',
+    'short'   : 'grew up in a normal household',
     'effects' : {'Skill/Farming' : 1},
     'years'   : 6,
     'choices' : ('Mundane Teen',),
@@ -227,20 +239,22 @@ eventdata = {
 'Rich Child' : {
     'age'     : 3,
     'text'    : "Fortune smiled upon me as a young child.",
+    'short'   : 'grew up in a wealthy household',
     'effects' : {},
     'years'   : 6,
 },
 'Poor Child' : {
     'age'     : 3,
     'text'    : "Fortune spat upon me as a young child.",
+    'short'   : 'grew up in an impoverished household',
     'effects' : {},
     'years'   : 6,
 },
 'Rescued Child' : {
     'age'     : 3,
     'text'    : "I had an uneventful childhood.",
+    'short'   : 'were rescued from your plight',
     'effects' : {},
-    'years'   : 6,
 },
 'Odd Child' : {
     'age'     : 3,
@@ -252,6 +266,7 @@ eventdata = {
 'Changeling Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the fey as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Changeling Teen', 'Rescued Teen'),
@@ -259,6 +274,7 @@ eventdata = {
 'Cultist Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the cultists as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Cultist Teen', 'Rescued Teen'),
@@ -266,6 +282,7 @@ eventdata = {
 'Initiate Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the order as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Initiate Teen', 'Rescued Teen'),
@@ -274,6 +291,7 @@ eventdata = {
 'Bandit Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the bandits as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Bandit Teen', 'Rescued Teen'),
@@ -281,6 +299,7 @@ eventdata = {
 'Pirate Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the pirates as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Pirate Teen', 'Rescued Teen'),
@@ -288,6 +307,7 @@ eventdata = {
 'Wolf Child' : {
     'age'     : 3,
     'text'    : "Separated from the civilization of my birth, my upbringing was unusual indeed.",
+    'short'   : 'grew to see the wolves as your family',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Wolf Teen', 'Rescued Teen'),
@@ -299,32 +319,37 @@ eventdata = {
 'Mundane Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
-    'short'   : 'uninteresting teenage years',
+    'short'   : 'faced the usual struggles of teenagers',
     'effects' : {},
     'years'   : 6,
-    'choices' : ('Mundane Young Adult',),
+    'choices' : ('Mundane Young Adult', 'Rich Young Adult', 'Poor Young Adult', 'Dedicated Young Adult', 'Scoundrel Young Adult', 'Enlisted Young Adult'),
 },
 'Dedicated Teen' : {
     'age'     : 4,
     'text'    : "I turned my efforts to labor from a young age, and I learned much from my experiences.",
+    'short'   : 'served dutifully through your teenage years',
     'effects' : {},
     'years'   : 6,
 },
 'Scoundrel Teen' : {
     'age'     : 4,
     'text'    : "I turned my efforts to sin from a young age, and I learned much from my experiences.",
+    'short'   : 'abdicated responsibility through your teenage years',
     'effects' : {},
     'years'   : 6,
 },
 'Enlisted Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'served as a common soldier',
     'effects' : {},
     'years'   : 6,
+    'choices' : ('Mundane Young Adult', 'Rich Young Adult', 'Poor Young Adult', 'Dedicated Young Adult', 'Scoundrel Young Adult', 'Enlisted Young Adult', 'Officer Young Adult'),
 },
 'Odd Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'were an outcast even among the outcasts',
     'effects' : {},
     'years'   : 6,
 },
@@ -332,18 +357,21 @@ eventdata = {
 'Changeling Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'embraced the teachings of the fairies',
     'effects' : {},
     'years'   : 6,
 },
 'Cultist Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'embraced the teachings of the cultists',
     'effects' : {},
     'years'   : 6,
 },
 'Initiate Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'embraced the teachings of the order',
     'effects' : {},
     'years'   : 6,
 },
@@ -351,18 +379,21 @@ eventdata = {
 'Bandit Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'chose to join the bandits',
     'effects' : {},
     'years'   : 6,
 },
 'Pirate Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'chose to join the pirates',
     'effects' : {},
     'years'   : 6,
 },
 'Wolf Teen' : {
     'age'     : 4,
     'text'    : "My years as a teenager were tumultuous - but who isn't that true of?",
+    'short'   : 'chose to stay among the pack',
     'effects' : {},
     'years'   : 6,
 },
@@ -379,28 +410,32 @@ eventdata = {
 },
 'Rich Young Adult' : {
     'age'     : 5,
-    'text'    : "My life was quiet as I grew into adulthood.",
+    'text'    : "As a young man, wealth freed me to do whatever my heart demanded. Many a time I cursed the fates that I had so little time with which to pursue my dreams.",
+    'short'   : 'spent years in luxury',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Demonslayer'),
 },
 'Poor Young Adult' : {
     'age'     : 5,
-    'text'    : "My life was quiet as I grew into adulthood.",
+    'text'    : "As a young man, poverty shackled me to a miserable existence of menial labor. Many a time I cursed the fates for my lot.",
+    'short'   : 'spent years in poverty',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Demonslayer'),
 },
 'Dedicated Young Adult' : {
     'age'     : 4,
-    'text'    : "I turned my efforts to labor from a young age, and I learned much from my experiences.",
+    'text'    : "As I grew into adulthood, I indulged in little more than hard work and steady habits.",
+    'short'   : 'dedicated yourself to gainful work',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Demonslayer'),
 },
 'Scoundrel Young Adult' : {
     'age'     : 4,
-    'text'    : "I turned my efforts to sin from a young age, and I learned much from my experiences.",
+    'text'    : "As I grew into adulthood, I indulged in nothing less than decadent debauchery and cunning crimes.",
+    'short'   : 'indulged in questionable pursuits',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Demonslayer'),
@@ -408,9 +443,18 @@ eventdata = {
 'Enlisted Young Adult' : {
     'age'     : 5,
     'text'    : "My life was quiet as I grew into adulthood.",
+    'short'   : 'served as a common soldier',
     'effects' : {},
     'years'   : 6,
-    'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Demonslayer'),
+    'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Enlisted Adult', 'Officer Adult', 'Demonslayer'),
+},
+'Officer Young Adult' : {
+    'age'     : 5,
+    'text'    : "My life was quiet as I grew into adulthood.",
+    'short'   : 'served as an officer',
+    'effects' : {},
+    'years'   : 6,
+    'choices' : ('Mundane Adult', 'Rich Adult', 'Poor Adult', 'Dedicated Adult', 'Scoundrel Adult', 'Officer Adult', 'Heroic Adult', 'Demonslayer'),
 },
 # FORK: How were you trained? ('Immediate Adoption', rescued, or enlisted)
 # FORK: How were you wild? ('Wild Young Adult')
@@ -420,6 +464,7 @@ eventdata = {
 'Mundane Adult' : {
     'age'     : 6,
     'text'    : "As an adult, little troubled me.",
+    'short'   : 'lived as a normal person',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
@@ -427,6 +472,7 @@ eventdata = {
 'Rich Adult' : {
     'age'     : 6,
     'text'    : "As an adult, little troubled me.",
+    'short'   : 'enjoyed a luxurious life',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
@@ -434,6 +480,7 @@ eventdata = {
 'Poor Adult' : {
     'age'     : 6,
     'text'    : "As an adult, little troubled me.",
+    'short'   : 'labored through a miserable life',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
@@ -441,6 +488,7 @@ eventdata = {
 'Dedicated Adult' : {
     'age'     : 6,
     'text'    : "I turned my efforts to labor from a young age, and I learned much from my experiences.",
+    'short'   : 'dedicated yourself to respectable endeavors',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
@@ -448,13 +496,31 @@ eventdata = {
 'Scoundrel Adult' : {
     'age'     : 6,
     'text'    : "I turned my efforts to sin from a young age, and I learned much from my experiences.",
+    'short'   : 'dedicated yourself to reprehensible endeavors',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
 },
 'Enlisted Adult' : {
     'age'     : 6,
-    'text'    : "As an adult, little troubled me.",
+    'text'    : "served as a common soldier.",
+    'short'   : 'served as a common soldier',
+    'effects' : {},
+    'years'   : 6,
+    'choices' : ('Demonslayer',),
+},
+'Officer Adult' : {
+    'age'     : 6,
+    'text'    : "served as an officer.",
+    'short'   : 'served as an officer',
+    'effects' : {},
+    'years'   : 6,
+    'choices' : ('Demonslayer',),
+},
+'Heroic Adult' : {
+    'age'     : 6,
+    'text'    : "In recognition of my prowess, I was given ever greater roles on the battlefield.",
+    'short'   : 'served as a mighty leader of men',
     'effects' : {},
     'years'   : 6,
     'choices' : ('Demonslayer',),
@@ -465,7 +531,7 @@ eventdata = {
 # FORK: How did you get into demon-slaying?
 'Demonslayer' : {
     'age'     : 7,
-    'text'    : "The time came for me to follow my true calling. I've travelled for years, now, slaying demons all the while. It seems that wherever I go, they are there... but at least wherever I leave, they aren't.",
+    'text'    : "It was only within the past few years that I began to actively hunt demons. I've travelled across Europe, slaying demons all the while. It seems that wherever I go, they are there... but at least wherever I leave, they aren't. For a while.",
     'short'   : 'travelled as a demonslayer',
     'effects' : {},
     'years'   : 2,
@@ -474,37 +540,37 @@ eventdata = {
 
 # FORK: What was your reason for wanting to become a demonslayer?
 'Reluctant Demonslayer' : {
-    'text'    : "I did not want to, but against the forces of darkness, what choice did I have?",
+    'text'    : "I did not want to, but against the forces of darkness, what choice did I have but to stand? If I hadn't chosen to protect others, there's no guessing whether anyone else would have. It's a lonely calling, but a necessary one, and for now the burden of demonslaying has fallen on my shoulders.",
     'short'   : 'became a demonslayer to protect others',
     'effects' : {},
     'choices' : ('End',),
 },
 'Vengeful Demonslayer' : {
-    'text'    : "I have seen too much bloodshed. I need to destroy the fiends before they hurt anyone else.",
+    'text'    : "I have seen too much bloodshed. Families torn apart. Churches razed. Entire towns swallowed whole by the maw of Chaos. I need to destroy as many of these fiends as I can, as soon as I can... before they hurt anyone else.",
     'short'   : 'became a demonslayer to seek revenge',
     'effects' : {},
     'choices' : ('End',),
 },
 'Zealous Demonslayer' : {
-    'text'    : "I don't regret leaving my life behind me. God himself called me to this task, and I will listen and obey.",
-    'short'   : 'became a demonslayer to purify the world',
+    'text'    : "God himself called me to this task, and I will listen and obey. The life I left behind was just an instrument He crafted to prepare me for my true purpose, and I have left it behind me with no regrets.",
+    'short'   : 'became a demonslayer to serve God',
     'effects' : {},
     'choices' : ('End',),
 },
 'Violent Demonslayer' : {
-    'text'    : "I plan to slay every one of those abominations. Even if they won't stay dead, I'll kill them until they get the picture.",
-    'short'   : 'became a demonslayer to shed blood',
+    'text'    : "I'll slay these abominations until I drown in their blood. Even if they won't stay dead, I'll rip them apart until they get the picture!",
+    'short'   : 'became a demonslayer out of lust for violence',
     'effects' : {},
     'choices' : ('End',),
 },
 'Curious Demonslayer' : {
-    'text'    : "I didn't truly believe they existed - not at first - but now I have to learn more about them.",
+    'text'    : "I had never truly believed in demons until I saw them with my own eyes. Now that I know, I have no choice but to learn more about them.",
     'short'   : 'became a demonslayer out of curiosity',
     'effects' : {},
     'choices' : ('End',),
 },
 'Corrupt Demonslayer' : {
-    'text'    : "The forces of darkness have vast... vast power. Power you wouldn't believe. It has to be studied.",
+    'text'    : "The forces of darkness have vast power. Power you wouldn't believe. It has to be... studied.",
     'short'   : 'became a demonslayer for dark reasons',
     'effects' : {},
     'choices' : ('End',),
