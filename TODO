@@ -1,9 +1,9 @@
 Global todo:
 
 DISPLAY:
-- Support attributes
+- Support curses attributes
 - Convert colors to default to a black background.
-- Support 256 colors.
+- Support 256 color mode.
 
 UTILITY:
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
@@ -12,4 +12,4 @@ UTILITY:
 
 STRUCTURE:
 - Clean up the game loop
-- Move color stuff out of define.py
+- Clean up the chargen screen. Too much of it is in the view.
