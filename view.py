@@ -14,56 +14,6 @@ from dialogue import chargen
 from lifepath import Lifepath
 from lifepath_events import eventdata
 
-# Cycling selector.
-class Selector():
-    def __init__(self, parent, choices, initial=0):
-        self.parent = parent
-        self.choices = choices
-        self.choice = initial
-        self.action = None
-        self.text = None
-
-    def next(self, amt=1):
-        self.choice += amt
-        if self.choice >= self.choices:
-            self.choice = 0
-
-    def prev(self, amt=1):
-        self.choice -= amt
-        if self.choice < 0:
-            self.choice = self.choices-1
-
-    # TODO: Make this take a function and call it
-    def choose(self):
-        self.parent.selector = self.choice
-
-    def fire(self, arg):
-        if self.action is not None:
-            self.action(arg)
-
-    def toggle(self, action, text):
-        if self.action == action:
-            self.action = None
-            self.text = None
-        else:
-            self.action = action
-            self.text = text
-
-class Cursor():
-    def __init__(self, parent, pos):
-        self.parent = parent
-        self.pos = pos
-        self.style = ("{","}")
-
-    # Move the cursor (hexagonally).
-    def scroll(self, dir):
-        self.pos = (self.pos[0] + dir[0], self.pos[1] + dir[1])
-
-    # This is a function so that the cursor color can change in response to
-    # the hex that it's targeting.
-    def color(self):
-        return "magenta-black"
-
 class View():
     def __init__(self, window, x, y, startx=0, starty=0):
         self.screen = window
@@ -701,3 +651,53 @@ class Inventory(View):
                 self.selector.fire(appearance)
         else: return True
         return False
+
+# Cycling selector.
+class Selector():
+    def __init__(self, parent, choices, initial=0):
+        self.parent = parent
+        self.choices = choices
+        self.choice = initial
+        self.action = None
+        self.text = None
+
+    def next(self, amt=1):
+        self.choice += amt
+        if self.choice >= self.choices:
+            self.choice = 0
+
+    def prev(self, amt=1):
+        self.choice -= amt
+        if self.choice < 0:
+            self.choice = self.choices-1
+
+    # TODO: Make this take a function and call it
+    def choose(self):
+        self.parent.selector = self.choice
+
+    def fire(self, arg):
+        if self.action is not None:
+            self.action(arg)
+
+    def toggle(self, action, text):
+        if self.action == action:
+            self.action = None
+            self.text = None
+        else:
+            self.action = action
+            self.text = text
+
+class Cursor():
+    def __init__(self, parent, pos):
+        self.parent = parent
+        self.pos = pos
+        self.style = ("{","}")
+
+    # Move the cursor (hexagonally).
+    def scroll(self, dir):
+        self.pos = (self.pos[0] + dir[0], self.pos[1] + dir[1])
+
+    # This is a function so that the cursor color can change in response to
+    # the hex that it's targeting.
+    def color(self):
+        return "magenta-black"
