@@ -453,7 +453,7 @@ class Chargen(View):
                     self.line("* %s" % choice)
         # Prints the final choice: whether to start.
         else:
-            self.y_acc = self.height
+            self.y_acc = self.height-1
             self.cline("<red-black>Really use this lifepath? You can't change it once you've started the game.</>")
 
         # Go back up to where we started, but this time, to the right.
