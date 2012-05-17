@@ -56,18 +56,22 @@ def iterator(map, x, y, rank, list=False, iterate=True, debug=False, curr=0):
 
     if list is True: return ret
 
+# Generate a map of "."s and return it.
+def hex_map(height, width):
+    map = []
+    for Y in range(0,height):
+        map.append([])
+        for X in range(0,width):
+            map[Y].append(".")
+    return map
+
 # Simple tool to test hex code.
 # Takes a center point, hex size, and map size.
 def hex_tester(x, y, rank, height, width):
 
     print "Rank %s Hexagon at %s,%s; Map %sx%s" % (rank,x,y,width,height)
 
-    # Generate empty map.
-    map = []
-    for Y in range(0,height):
-        map.append([])
-        for X in range(0,width):
-            map[Y].append(".")
+    map = hex_map(height, width)
 
     print "Array coordinates:"
     iterator(map,x,y,rank,debug=True)
@@ -89,13 +93,10 @@ def hex_tester(x, y, rank, height, width):
         print "\n",
 
 if __name__ == "__main__":
-    import sys
-#    import getopt
-#    options = getopt.getopt(sys.argv[1:], 'xyrhw')
+    import sys # Slightly cleaner printing for the above test code.
     x = 10
     y = 10
     rank = 8
     height = 24
     width = 24
-#    hex_tester(0,0,4,20,20)
     hex_tester(x, y, rank, height, width)
