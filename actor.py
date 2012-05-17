@@ -3,6 +3,7 @@ from dice import _3d6, _d6, roll
 from random import choice
 from describe import d
 import hex
+import ai.astar
 
 # Players, monsters, etc.
 class Actor:
@@ -49,11 +50,39 @@ class Actor:
         # Purely interface nicety
         self.letters = {}
 
+        # AI stuff
+        # TODO: Move to another file
+        self.ai = ai.astar.AStar()
+        self.path = None
+        self.target = None
+        self.distance = None
+
     # UTILITY
 
     # AI actions. Currently: move in a random direction.
     def act(self):
-        self.do(choice(dirs))
+        # TODO: More intelligently decide when to re-path
+        if _d6() > 0 and self.path is None:
+            # TODO: Get target stuff in here.
+            if self.target is not None:
+                self.ai.__init__()
+                path = self.ai.path(self.pos, self.target.pos)
+                if self.path is False: # Could not find a path
+                    self.path = None
+                else: # Set the list of coords as our path
+                    self.path = path.get_path()
+
+        if self.path is not None:
+            if self.path:
+                pos = self.path.pop()
+                # TODO: Set up a real coord tuple class already, slacker
+                #exit("(%s, %s)" % pos)
+                dir = (self.pos[0]-pos[0], self.pos[1]-pos[1])
+                self.do(dir)
+                return True
+
+        # Fallback: random movement.
+        #self.do(choice(dirs))
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
