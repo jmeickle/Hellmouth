@@ -5,6 +5,10 @@
 # and found through:
 #     http://www.amagam.com/hexpath/
 
+# DEBUG: You have to comment these out to be able to run the test.
+from define import *
+import hex
+
 # TODO: Better tuple solution
 def add(pos1, pos2):
     return pos1[0]+pos2[0], pos1[1]+pos2[1]
@@ -45,6 +49,8 @@ class AStar:
             return node2
 
     def lowest(self):
+         #return min(self.open_list.values(), key=lambda x:x.cost)
+         #exit("%s" "%s" % (self.open_list.values(), result))
         return reduce(lambda x, y: self.lower(x, y), self.open_list.values())
 
     def path(self, pos, dest):
@@ -56,8 +62,17 @@ class AStar:
 
         self.move_closed(curr.pos)
 
-        node = self.lowest() 
-        return self._path(node, dest)
+        loops = 0
+        while len(self.open_list) > 0:
+            loops += 1
+            next = self.lowest()
+            path = self._path(next, dest)
+            if path is not False:
+                return path
+            if loops > 10000:
+                exit("Too many loops! Length:%s\n%s" % (len(self.open_list), self.open_list))
+        return False
+
 
     def _path(self, curr, dest):
         self.move_closed(curr.pos)
@@ -74,12 +89,7 @@ class AStar:
                 elif existing.g > curr.g:
                     existing.parent = curr
                     existing.set_cost(curr.pos, dest, False)
-
-        if len(self.open_list) > 0:
-            next = self.lowest()
-            return self._path(next, dest)
-        else:
-            return False
+        return False
 
 class Node:
     def __init__(self, pos, parent):
@@ -97,10 +107,10 @@ class Node:
 
     def get_path(self):
         if self.parent is None:
-            return [self.pos]
+            return []
         else:
-            list = self.parent.get_path()
-            list.extend((self.pos,))
+            list = [self.pos]
+            list.extend(self.parent.get_path())
             return list
 
 # Test code.
@@ -111,16 +121,16 @@ if __name__ == "__main__":
     import os, sys
     path = os.path.abspath('.')
     sys.path.append(path)
-
-    # Hellmouth imports.
-    from define import *
-    import hex
     import random
 
+    # Hellmouth imports, which depend on lower folders.
+    from define import *
+    import hex
+
     # Map parameters.
-    x = 20
-    y = 20
-    start = (0, 0)
+    x = 50
+    y = 50
+    start = (13, 13)
     finish = (random.randint(0, x-1), random.randint(0, y-1))
 
     print "Start: (%s, %s)" % start,
@@ -135,7 +145,7 @@ if __name__ == "__main__":
     else:
         path = result.get_path()
     print "True distance: %s" % hex.dist(start, finish)
-    print "Steps taken: %s" % (len(path) - 1)# Because it includes (0, 0)
+    print "Steps taken: %s" % (len(path))# Because it includes (0, 0)
     print "Path taken: %s" % path
 
     # Generate map
