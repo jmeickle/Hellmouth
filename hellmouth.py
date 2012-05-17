@@ -57,16 +57,19 @@ def main(stdscr):
             exit("COWARD.")
 
     # Very basic map init - 50x50.
+    x = 50
+    y = 50
+
     map = Map()
-    map.loadmap(50, 50)
+    map.loadmap(x, y)
 
     # Define the map center.
     center_x = map.width/2 - 1
     center_y = map.height/2 - 1
 
     # Mega hack to draw a hexagonal map: draw a hex from hex_start to hex_max.
-    hex_max = 25
-    hex_start = 15
+    hex_max = map.width/2
+    hex_start = hex_max/2
 
     # Arena walls
     walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
@@ -74,7 +77,7 @@ def main(stdscr):
         terrain = map.put(Terrain(), pos, True)
 
     # Randomly placed columns
-    colnum = 10
+    colnum = 0
     for x in range(colnum):
         colsize = random.randint(1, 3)
         pos = (center_x + dice.flip()*random.randint(4, hex_start)-colsize, center_y + dice.flip() * random.randint(4,hex_start)-colsize)
@@ -90,10 +93,12 @@ def main(stdscr):
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
-    num_mons = 100
+    num_mons = 1
     for x in range(num_mons):
         monster = random.choice(monsters)
-        map.put(monster(), (center_x + dice.flip()*random.randint(1, hex_start), center_y + dice.flip() * random.randint(1,hex_start)))
+        monster = monster()
+        monster.target = player
+        map.put(monster, (center_x + dice.flip()*random.randint(1, hex_start), center_y + dice.flip() * random.randint(1,hex_start)))
 
     # HACK:
     mainmap_width = 45
