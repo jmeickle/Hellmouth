@@ -61,8 +61,12 @@ class Actor:
 
     # AI actions. Currently: move in a random direction.
     def act(self):
+
+        # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
+        self.distance = hex.dist(self.pos, self.target.pos)
+
         # TODO: More intelligently decide when to re-path
-        if _d6() > 0 and self.path is None:
+        if self.distance > 1 and self.path is None:
             # TODO: Get target stuff in here.
             if self.target is not None:
                 self.ai.__init__()
@@ -72,14 +76,26 @@ class Actor:
                 else: # Set the list of coords as our path
                     self.path = path.get_path()
 
-        if self.path is not None:
+        if self.distance > 1 and self.path is not None:
             if self.path:
+                #exit(self.path)
                 pos = self.path.pop()
                 # TODO: Set up a real coord tuple class already, slacker
-                #exit("(%s, %s)" % pos)
-                dir = (self.pos[0]-pos[0], self.pos[1]-pos[1])
-                self.do(dir)
-                return True
+                dir = (pos[0] - self.pos[0], pos[1] - self.pos[1])
+                #exit("Curr: (%s, %s)\nNext: (%s, %s)\nDir: (%s, %s)" % (pos[0], pos[1], self.pos[0], self.pos[1], dir[0], dir[1]))
+                if not self.do(dir):
+                    # Coinflip chance to try a new path
+                    if _d6() > 3:
+                        self.path = None
+                    else:
+                        self.path.append(pos)
+                    self.over()
+            else:
+                self.path = None
+                self.over()
+        else:
+            dir = (self.target.pos[0] - self.pos[0], self.target.pos[1] - self.pos[1])
+            self.do(dir)
 
         # Fallback: random movement.
         #self.do(choice(dirs))
@@ -87,17 +103,22 @@ class Actor:
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
+        #exit("%s, %s" % pos)
         if self.map.valid(pos) is False:
+            exit("Tried to move past map borders")
             return False
+
         if self.map.cell(pos).occupied() is True:
-            self.attack(self.map.actor(pos))
+            return self.attack(self.map.actor(pos))
         else:
-            self.move(pos)
+            return self.move(pos)
+        return True
 
     # Mark self as done acting.
     def over(self):
-        self.map.acting = None
-        self.map.queue.append(self)
+        if self.map.acting is not None:
+            self.map.acting = None
+            self.map.queue.append(self)
 
     # Return your own cell
     def cell(self):
@@ -156,6 +177,7 @@ class Actor:
             target.hit(amt)
 
         self.over()
+        return True
 
     # Process damage when you are hit by something.
     def hit(self, amt):
