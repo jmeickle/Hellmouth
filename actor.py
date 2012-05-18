@@ -28,10 +28,11 @@ class Actor:
 
         # More static information: points spent on your character
         self.points = {
-            "Attributes" : {},
-            "Skills" : {},
-            "Techniques" : {},
-            "Traits" : {},
+            "total": 0,
+            "attributes" : {},
+            "skills" : {},
+            "techniques" : {},
+            "traits" : {},
         }
 
         # The 'character sheet': derived from points spent in the above
