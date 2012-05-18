@@ -196,14 +196,14 @@ class Cell:
             if self.actor is None:
                 self.actor = obj
             else:
-                return false
+                return False
         else:
             if self.terrain is None:
                 self.terrain = obj
                 if self.terrain is None:
                    exit("No terrain after placement")
             else:
-                return false
+                return False
 
     # Stub, for eventually handling multiple things
     def remove(self, obj):
