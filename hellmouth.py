@@ -77,7 +77,7 @@ def main(stdscr):
         terrain = map.put(Terrain(), pos, True)
 
     # Randomly placed columns
-    colnum = 0
+    colnum = 10
     for x in range(colnum):
         colsize = random.randint(1, 3)
         pos = (center_x + dice.flip()*random.randint(4, hex_start)-colsize, center_y + dice.flip() * random.randint(4,hex_start)-colsize)
