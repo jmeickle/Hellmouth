@@ -252,7 +252,7 @@ class Actor:
     def items(self):
         items = []
         index = 0
-        for appearance, item in self.inventory.iteritems():
+        for appearance, item in self.inventory.items():
             items.append((index, appearance, item))
             index += 1
         return items
@@ -680,7 +680,7 @@ if __name__ == "__main__":
     print "Random movement choice:", choice(dirs)
 
     print "Actor's parts:"
-    for index, part in testactor.body.locs.iteritems():
+    for index, part in testactor.body.locs.items():
         print "Part: %s - Children: %s - Parent:%s" % (part.type, part.children, part.parent)
 
     print "Connectivity test:"

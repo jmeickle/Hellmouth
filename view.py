@@ -390,7 +390,7 @@ class Chargen(View):
         self.cline("Your character:")
         if self.current is not None:
             self.player.character = self.lifepath.effects()
-            for key, value in self.player.character.iteritems():
+            for key, value in self.player.character.items():
                 self.cline("%s: %s" % (key, value))#: %s" % (stat, value))
 
         # Top part of the screen:

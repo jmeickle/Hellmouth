@@ -169,7 +169,7 @@ def indexed_remove(keys, n, ret):
 # DEBUG: Print dictionaries a bit more nicely.
 def print_dict(name, dict):
     print "--%s--" % name
-    for k,v in dict.iteritems():
+    for k,v in dict.items():
         print "| %s: %s" % (k,v)
     print "--%s--" % ("-" * len(name))
 

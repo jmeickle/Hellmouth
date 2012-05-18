@@ -975,7 +975,7 @@ def full_dot(tree, eventname):
                     full_dot(tree, choice)
 
 def dot(tree):
-        for name, event in tree.iteritems():
+        for name, event in tree.items():
             choices = event.get("choices", None)
             if choices is not None:
                 for choice in choices:
@@ -985,7 +985,7 @@ def dot(tree):
 if __name__ == "__main__":
 
 # Print all event names
-#    for k, v in eventdata.iteritems():
+#    for k, v in eventdata.items():
 #        print k
 
 # Print a tree
