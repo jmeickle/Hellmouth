@@ -36,7 +36,7 @@ def calculate_ranks(actor):
     # Reset existing ranks.
     actor.skills = {}
     # Use the skill dictionary to fill out ranks.
-    for skill, points in actor.points["Skills"].iteritems():
+    for skill, points in actor.points["Skills"].items():
         attribute = skills[skill]["attribute"]
         difficulty = difficulties.get(skills[skill]["difficulty"])
         spent = 0
@@ -60,7 +60,7 @@ def calculate_ranks(actor):
 # Calculate skills from attributes.
 # Should only be run after calculating skill ranks.
 def calculate_skills(actor):
-    for skill, info in actor.skills.iteritems():
+    for skill, info in actor.skills.items():
         attribute, rank = info
         stat = actor.attributes.get(attribute)
         actor.base_skills[skill] = (stat+rank, False)
@@ -68,7 +68,7 @@ def calculate_skills(actor):
 # Calculate defaults from related skills.
 # Should only be run after calculating base skills.
 def calculate_defaults(actor):
-    for current_skill, current_info in actor.skills.iteritems():
+    for current_skill, current_info in actor.skills.items():
         defaults = skills[current_skill]["defaults"]
         for default in defaults:
             # Get the information for this default
@@ -102,16 +102,16 @@ if __name__ == "__main__":
 
     # Print out a character sheet:
     print "==ATTRIBUTESS=="
-    for stat, points in actor.attributes.iteritems():
+    for stat, points in actor.attributes.items():
         print "%s: %s" % (stat, points)
     print "==POINTS=="
-    for skill, points in actor.points["Skills"].iteritems():
+    for skill, points in actor.points["Skills"].items():
         print "%s: %s points" % (skill, points)
     print "==RANKS=="
-    for skill, info in actor.skills.iteritems():
+    for skill, info in actor.skills.items():
         print "%s (%s/%s): %s%+d" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1])
     print "==SKILLS=="
-    for skill, level in actor.base_skills.iteritems():
+    for skill, level in actor.base_skills.items():
         print "%s (%s/%s) - %s" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0]),
         if level[1] is not False:
             print "(default: %s%d)" % (level[1][0], level[1][1])

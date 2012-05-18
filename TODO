@@ -1,6 +1,5 @@
 SHORT TERM GOALS:
 - Basic combat
-- Basic movement AI
 - Basic combat AI
 - Fill out lifepaths so all reachable events are meaningful
 
@@ -24,5 +23,3 @@ STRUCTURE:
 - Clean up the game loop
 - Clean up the chargen screen. Too much of it is in the view.
 - Split into a folder structure.
-
-

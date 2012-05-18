@@ -1,4 +1,5 @@
 import random
+import re
 
 SUCC = 1
 TIE = 0
@@ -44,7 +45,36 @@ def sc(skill, mod):
 #    else:
 #        return TIE
 
+# Convert text representation of dice to a roll
+def dice(text, capped=True):
+    parts = re.split('(\d+)d([+-]?\d*)', text)
+    dice = int(parts[1])
+    if parts[2] == "":
+        mod = 0
+    else:
+        mod = int(parts[2])
+
+    # Convert modifiers in excess of +3 to extra dice
+    dice += mod / 4
+    mod = mod % 4
+
+    # DEBUG:
+    #exit("%sd+%s" % (dice, mod))
+
+    # Roll
+    result = sum(roll(_d6, dice)) - mod
+
+    # Whether we can go below 0
+    if capped is True:
+        return max(0, result)
+    else:
+        return result
+
 # Test function
 if __name__ == '__main__':
-    print "Ten 1d6 rolls:", roll(_d6, 10)
-    print "Ten 3d6 rolls:", roll(_3d6, 10)
+    #print "Ten 1d6 rolls:", roll(_d6, 10)
+    #print "Ten 3d6 rolls:", roll(_3d6, 10)
+    print "Dice interpretation test"
+    print dice("3d+9")
+    print dice("2d+4")
+    print dice("1d+3")

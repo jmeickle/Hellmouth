@@ -28,10 +28,11 @@ class Actor:
 
         # More static information: points spent on your character
         self.points = {
-            "Attributes" : {},
-            "Skills" : {},
-            "Techniques" : {},
-            "Traits" : {},
+            "total": 0,
+            "attributes" : {},
+            "skills" : {},
+            "techniques" : {},
+            "traits" : {},
         }
 
         # The 'character sheet': derived from points spent in the above
@@ -273,7 +274,7 @@ class Actor:
     def items(self):
         items = []
         index = 0
-        for appearance, item in self.inventory.iteritems():
+        for appearance, item in self.inventory.items():
             items.append((index, appearance, item))
             index += 1
         return items
@@ -701,7 +702,7 @@ if __name__ == "__main__":
     print "Random movement choice:", choice(dirs)
 
     print "Actor's parts:"
-    for index, part in testactor.body.locs.iteritems():
+    for index, part in testactor.body.locs.items():
         print "Part: %s - Children: %s - Parent:%s" % (part.type, part.children, part.parent)
 
     print "Connectivity test:"

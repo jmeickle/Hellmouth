@@ -73,7 +73,7 @@ class LifepathEvent:
             ret = self.child.sum_effects()
         else:
             ret = {}
-        for k,v in self.effects.iteritems():
+        for k,v in self.effects.items():
             if ret.get(k, None) is not None:
                 ret[k] += v
             else:
@@ -88,7 +88,7 @@ class LifepathEvent:
         print "  %s" % self.text
         print ""
         print "  GAMEPLAY EFFECTS:"
-        for k, v in self.effects.iteritems():
+        for k, v in self.effects.items():
             print "  %s: %+d" % (k, int(v))
         print ""
         print "  This event takes %d years." % self.years

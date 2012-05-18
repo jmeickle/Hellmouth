@@ -202,7 +202,7 @@ def main(stdscr):
         # DEBUG: Print current inventory.
         #stdscr.addstr(16, 59, "INVENTORY")
         #i = 0
-        #for appearance, item in player.inventory.iteritems():
+        #for appearance, item in player.inventory.items():
         #    stdscr.addstr(17+i, 59, "%s (%s)" % (appearance, len(item)))
         #    i += 1
  
