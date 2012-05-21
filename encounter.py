@@ -8,9 +8,10 @@ class Encounter:
     def __init__(self, size=801):
         # Number of hexes 'tall' or 'wide'.
         self.size = size
-        self.center = (0,0)
         # The 'radius'.
         self.rank = size/2
+
+        self.center = (0,0)
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
@@ -33,7 +34,8 @@ class Encounter:
         for pos in hexes:
             cell = Cell(pos)
             # TODO: REMOVE TEST CODE
-            cell.put(Item())
+            if random.randint(1, 10) == 1:
+                cell.put(Item())
             self.cells[pos] = cell
 
     # Return a cell at a pos tuple.
@@ -81,7 +83,10 @@ class Encounter:
             return False
 
 class Cell:
-    def __init__(self, glyph='.', color=None):
+    def __init__(self, pos, glyph='.', color=None):
+        # Don't really need it but it might come in handy.
+        self.pos = pos
+
         # Basic cell details
         self.glyph = glyph
         self.color = color
@@ -243,8 +248,8 @@ if __name__ == '__main__':
     #map.put(Actor(), (0, 0))
     #print map.cells[0][0].actor.name
 
-    for y in range(-15, 15):
-        str = ""
-        for x in range(-15, 15):
-            str += map.cells.get((x,y), "x")
-        print "%s%s" % (" " * (y%2), str)
+    #for y in range(-15, 15):
+    #    str = ""
+    #    for x in range(-15, 15):
+    #        str += map.cells.get((x,y), "x")
+    #    print "%s%s" % (" " * (y%2), str)
