@@ -1,9 +1,9 @@
 from color import Color
 from define import *
+from hex import *
 
 import curses
 import math
-import hex
 import re
 
 from collections import deque
@@ -177,41 +177,40 @@ class MainMap(View):
 
     # Hex character function, for maps only.
     def hd(self, x, y, glyph, col=0, attr=None):
-        # X/Y are offsets from the map center
+        # X/Y are offsets from the viewport center
         X = x - self.player.pos[0]
         Y = y - self.player.pos[1]
 
         self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, self.attr(col, attr))
 
-    # Offset hexes.
+    # Offset hexes, i.e., the 'blank' ones.
     def offset_hd(self, x, y, glyph, col=0, attr=None, dir=(0,0)):
-        # X/Y are offsets from the map center
+        # X/Y are offsets from the viewport center
         X = x - self.player.pos[0]
         Y = y - self.player.pos[1]
 
         self.window.addch(self.viewport[1]+Y+dir[0], 2*(self.viewport[0]+X)+Y+dir[1], glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
-    def get_glyph(self, x, y):
-        return self.map.cells[min(self.map.width-1, x)][min(self.map.height-1, y)].draw()
+    def get_glyph(self, pos):
+        return self.map.cell(pos).draw()
 
     def draw(self):
-        hexes = []
-        hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.map.viewrange)
+        cells = area(self.map.viewrange, self.player.pos)
+        #hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.map.viewrange)
 
-        minX = 0
-        maxX = self.map.width-1
-        minY = 0
-        maxY = self.map.height-1
+        #minX = 0
+        #maxX = self.map.width-1
+        #minY = 0
+        #maxY = self.map.height-1
 
-        for h in hexes:
-            if h[0] < minX or h[0] > maxX or h[1] < minY or h[1] > maxY:
+        for cell in cells:
+            if self.map.valid(cell) is not False:
+                glyph, col = self.get_glyph(cell)
+            else:
                 glyph = 'X'
                 col = "red-black"
-            else:
-                glyph, col = self.get_glyph(h[0], h[1])
-
-            self.hd(h[0], h[1], glyph, col)
+            self.hd(cell[0], cell[1], glyph, col)
 
         # Draw the map cursor if it's present.
         if self.cursor is not None:
@@ -521,7 +520,7 @@ class Chargen(View):
             else: return True
             return False
         # Choicely choosing the next choice from choices
-        if self.current.choices is not None:
+        elif self.current.choices is not None:
             if c == curses.KEY_ENTER or c == ord('\n'):
                 self.next()
             elif c == ord(' '):

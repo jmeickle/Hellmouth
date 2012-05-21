@@ -41,6 +41,32 @@ def distance(x1, y1, x2, y2):
 
     return distance
 
+# Turns out this is slower. Xom laughs.
+def _area(rank, pos, dir, left=False, right=True, curr=0):
+    hexes = [pos]
+    if curr < rank:
+        hexes.extend(_area(rank, add(pos, dir), dir, False, False, curr+1))
+        if right is True:
+            hexes.extend(_area(rank, add(pos, rot(dir)), dir, left, right, curr+1))
+        if left is True:
+            hexes.extend(_area(rank, add(pos, rot(dir, 5)), dir, left, right, curr+1))
+    return hexes
+
+# Generate a list of hex positions in an area from a starting position.
+# This list includes the starting position.
+def area(rank, start=(0,0)):
+    hexes = [start]
+    #for dir in dirs:
+    #    hexes.extend(_area(rank, add(start, dir), dir, True))
+    #return hexes
+    for Y in range(-rank, rank):
+        for X in range(-rank, rank):
+            offset = (X,Y)
+            hex = add(start, offset)
+            if dist(start, hex) < rank:
+                hexes.append(hex)
+    return hexes
+
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
 # By default, this takes a map[][] and puts the current range in each cell.

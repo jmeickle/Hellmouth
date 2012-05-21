@@ -7,17 +7,13 @@
 
 # DEBUG: You have to comment these out to be able to run the test.
 from define import *
-import hex
-
-# TODO: Better tuple solution
-def add(pos1, pos2):
-    return pos1[0]+pos2[0], pos1[1]+pos2[1]
+from hex import *
 
 def heuristic(pos1, pos2):
 # Manhattan (probably totally broken for hexes!):
 #    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
 # Pure hexagonal distance
-    return hex.dist(pos1, pos2)
+    return dist(pos1, pos2)
 
 class AStar:
     def __init__(self):
@@ -144,12 +140,12 @@ if __name__ == "__main__":
         exit(ai.__dict__)
     else:
         path = result.get_path()
-    print "True distance: %s" % hex.dist(start, finish)
+    print "True distance: %s" % dist(start, finish)
     print "Steps taken: %s" % (len(path))# Because it includes (0, 0)
     print "Path taken: %s" % path
 
     # Generate map
-    map = hex.hex_map(x, y)
+    map = hex_map(x, y)
 
     # Draw the path
     for pos in path:
