@@ -59,11 +59,11 @@ def area(rank, start=(0,0)):
     #for dir in dirs:
     #    hexes.extend(_area(rank, add(start, dir), dir, True))
     #return hexes
-    for Y in range(-rank, rank):
-        for X in range(-rank, rank):
+    for Y in range(-rank, rank+1):
+        for X in range(-rank, rank+1):
             offset = (X,Y)
             hex = add(start, offset)
-            if dist(start, hex) < rank:
+            if dist(start, hex) <= rank:
                 hexes.append(hex)
     return hexes
 
