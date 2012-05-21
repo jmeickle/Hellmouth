@@ -62,7 +62,6 @@ class Actor:
 
     # AI actions. Currently: move in a random direction.
     def act(self):
-
         # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         self.distance = hex.dist(self.pos, self.target.pos)
 
@@ -90,10 +89,10 @@ class Actor:
                         self.path = None
                     else:
                         self.path.append(pos)
-                    self.over()
+                    #self.over()
             else:
                 self.path = None
-                self.over()
+                #self.over()
         else:
             dir = (self.target.pos[0] - self.pos[0], self.target.pos[1] - self.pos[1])
             self.do(dir)
