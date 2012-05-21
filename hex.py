@@ -1,11 +1,33 @@
 # Functions for making hexes easier to use.
+# Directional stuff
+NW = (0, -1)
+NE = (1, -1)
+CE = (1, 0)
+SE = (0, 1)
+SW = (-1, 1)
+CW = (-1, 0)
+dirs = [NW, NE, CE, SE, SW, CW]
+rotation = {NW: 0, NE: 1, CE: 2, SE: 3, SW: 4, CW: 5}
+num_dirs = 6
 
+# Return the sign of a number.
 def signum(int):
     if int < 0:
         return -1
     else:
         return 1
 
+# Return a direction to face in after a number of turns right.
+def rot(dir, turns=1):
+    start = rotation[dir]
+    end = (start+turns) % num_dirs
+    return dirs[end]
+
+# Add a hex dir to a hex pos.
+def add(pos, dir):
+    return pos[0] + dir[0], pos[1] + dir[1]
+
+# Calculate hex distance with two hex positions.
 def dist(pos1, pos2):
     return distance(pos1[0], pos1[1], pos2[0], pos2[1])
 
@@ -99,4 +121,12 @@ if __name__ == "__main__":
     rank = 8
     height = 24
     width = 24
-    hex_tester(x, y, rank, height, width)
+    #hex_tester(x, y, rank, height, width)
+
+    # Rotation test
+    import random
+    for x in range(10):
+        dir = random.choice(dirs)
+        num = random.randint(1,6)
+        print "Was", dir,
+        print ", rotated %s to face" % num, rot(dir, num)
