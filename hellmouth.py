@@ -59,7 +59,7 @@ def main(stdscr):
     # Very basic map init - width 50.
     width = 50
 
-    map = Encounter(50)
+    map = Encounter(width)
     map.loadmap()
     # Define the map center.
     center_x, center_y = map.center
