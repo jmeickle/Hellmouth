@@ -13,63 +13,60 @@ def main(stdscr):
     import random
     import dice 
     import hex
+    import define
     from describe import Descriptions
-    from define import NW, NE, CE, SE, SW, CW
     from actor import Actor
-    from player import *
-    from map import Map, Terrain
+    import player
+    from encounter import Encounter, Terrain
     from view import MainMap, Stats, Chargen, Status, Log, View
     from key import keyin
 
     # HACK: Display an intro screen.
-    intro = View(stdscr, term_x, term_y, 0, 0)
-    intro.x_acc = 10
-    intro.line("")
-    intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
-    intro.line('BASED ROGUELIKE "MEAT ARENA", WITH FABULOUS FEATURES:')
-    intro.line("")
-    intro.line("  * A MEAT ARENA")
-    intro.line("")
-    intro.line("  * HEXAGONS")
-    intro.line("")
-    intro.line("  * A MEAT PLAYER")
-    intro.line("")
-    intro.line("  * SIX DIRECTIONS OF MOVEMENT.")
-    intro.line("")
-    intro.line("  * HEXAGONS")
-    intro.line("")
-    intro.line("  * UP TO FOUR KINDS OF MEAT ENEMIES")
-    intro.line("")
-    intro.line("  * HEXAGONS")
-    intro.line("")
-    intro.line("  * A MEAT ARENA")
-    intro.line("")
-    intro.line("")
-    intro.line("PRESS SPACE TO ENTER THE MEAT ARENA")
-    intro.line("")
-    intro.line("PRESS ESC TO COWARDLY LEAVE")
+#    intro = View(stdscr, term_x, term_y, 0, 0)
+#    intro.x_acc = 10
+#    intro.line("")
+#    intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
+#    intro.line('BASED ROGUELIKE "MEAT ARENA", WITH FABULOUS FEATURES:')
+#    intro.line("")
+#    intro.line("  * A MEAT ARENA")
+#    intro.line("")
+#    intro.line("  * HEXAGONS")
+#    intro.line("")
+#    intro.line("  * A MEAT PLAYER")
+#    intro.line("")
+#    intro.line("  * SIX DIRECTIONS OF MOVEMENT.")
+#    intro.line("")
+#    intro.line("  * HEXAGONS")
+#    intro.line("")
+#    intro.line("  * UP TO FOUR KINDS OF MEAT ENEMIES")
+#    intro.line("")
+#    intro.line("  * HEXAGONS")
+#    intro.line("")
+#    intro.line("  * A MEAT ARENA")
+#    intro.line("")
+#    intro.line("")
+#    intro.line("PRESS SPACE TO ENTER THE MEAT ARENA")
+#    intro.line("")
+#    intro.line("PRESS ESC TO COWARDLY LEAVE")
     # Wait for player input.
-    while 1:
-        c = stdscr.getch()
-        if c == ord(' '):
-            break;
-        if c == 27:
-            exit("COWARD.")
+#    while 1:
+#        c = stdscr.getch()
+#        if c == ord(' '):
+#            break;
+#        if c == 27:
+#            exit("COWARD.")
 
-    # Very basic map init - 50x50.
-    x = 50
-    y = 50
+    # Very basic map init - width 50.
+    width = 50
 
-    map = Map()
-    map.loadmap(x, y)
-
+    map = Encounter(50)
+    map.loadmap()
     # Define the map center.
-    center_x = map.width/2 - 1
-    center_y = map.height/2 - 1
+    center_x, center_y = map.center
 
     # Mega hack to draw a hexagonal map: draw a hex from hex_start to hex_max.
-    hex_max = map.width/2
-    hex_start = hex_max/2
+    hex_max = map.rank
+    hex_start = hex_max - 3
 
     # Arena walls
     walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
@@ -86,10 +83,13 @@ def main(stdscr):
             map.put(Terrain(), loc, True)       
 
     # Place our friendly @
-    player = map.put(Player(), (center_x, center_y))
-    map.player = player
+    pc = player.Player()
+
+    map.put(pc, (center_x, center_y))
+    map.player = pc
 
     # Define monsters to be placed
+    from player import MeatSlave, MeatWorm, MeatGolem, MeatHydra
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
@@ -97,7 +97,7 @@ def main(stdscr):
     for x in range(num_mons):
         monster = random.choice(monsters)
         monster = monster()
-        monster.target = player
+        monster.target = pc
         map.put(monster, (center_x + dice.flip()*random.randint(1, hex_start), center_y + dice.flip() * random.randint(1,hex_start)))
 
     # HACK:
@@ -106,7 +106,7 @@ def main(stdscr):
     # Map screen init
     mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
     mainmap.map = map
-    mainmap.player = player
+    mainmap.player = pc
     # Just a hook. Does nothing now.
     mainmap.ready()
 
@@ -116,14 +116,14 @@ def main(stdscr):
 
     # Chargen window init
     chargen = Chargen(stdscr, term_x, term_y, 0, 0)
-    chargen.player = player
+    chargen.player = pc
 
     # Stats window init
     # HACK:
     spacing = 2
     stat_height = 11
     stats = Stats(stdscr, 80-mainmap_width-spacing, stat_height, mainmap_width+spacing, 0)
-    stats.player = player
+    stats.player = pc
 
     # Log window init
     log = Log(stdscr, 80-mainmap_width-status_size, term_y-stat_height, mainmap_width+spacing, stat_height)
@@ -147,13 +147,12 @@ def main(stdscr):
     gameplay = True
 
     # Main game loop
-    while 1:
-
+    while gameplay == True:
         # End the game if there is nobody else left to act, or if the player is dead.
-        if len(map.queue) == 0:
-            break;
-        if player.hp <= 0:
-            break;
+        if map.acting is None and len(map.queue) == 0:
+            gameplay = False
+        if pc.hp <= 0:
+            gameplay = False
 
         # Remove all dead views
         for view in views:
@@ -174,7 +173,7 @@ def main(stdscr):
         #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
 
         # NPCs act until the player's turn comes up.
-        if map.acting is not player:
+        if map.acting is not pc:
             map.acting.act()
             continue
     
@@ -222,7 +221,7 @@ def main(stdscr):
     intro = View(stdscr, term_x, term_y, 0, 0)
     intro.x_acc = 10
     intro.line("")
-    if player.hp > 0:
+    if pc.hp > 0:
         intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
         intro.line("")
         intro.line("YOU ARE HUNGRY AFTER YOUR BATTLE AND MANAGE TO EAT YOUR WAY OUT")
@@ -250,7 +249,7 @@ def main(stdscr):
     intro.line("    -ERONARN")
     intro.line("")
     intro.line("")
-    if player.hp > 0:
+    if pc.hp > 0:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
     else:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")
