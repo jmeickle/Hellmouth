@@ -112,13 +112,14 @@ class Actor:
             return self.attack(self.map.actor(pos))
         else:
             return self.move(pos)
-        return True
+
+        self.over()
+        return False
 
     # Mark self as done acting.
     def over(self):
-        if self.map.acting is not None:
-            self.map.acting = None
-            self.map.queue.append(self)
+        self.map.acting = None
+        self.map.queue.append(self)
 
     # Return your own cell
     def cell(self):
