@@ -70,7 +70,7 @@ def main(stdscr):
         terrain = map.put(Terrain(), pos, True)
 
     # Randomly placed columns
-    colnum = 10
+    colnum = map.rank / 2 + r1d6()
     for x in range(colnum):
         colsize = random.randint(1, 3)
         pos = (center_x + flip()*random.randint(4, hex_start)-colsize, center_y + flip() * random.randint(4,hex_start)-colsize)
@@ -89,7 +89,7 @@ def main(stdscr):
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
-    num_mons = 1
+    num_mons = map.rank / 2 + r3d6()
     for x in range(num_mons):
         monster = random.choice(monsters)
         monster = monster()
