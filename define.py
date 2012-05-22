@@ -3,7 +3,7 @@ TERM_X = 80
 TERM_Y = 24
 
 # Define some screen region X and Ys.
-MAP_START_X = 0 
+MAP_START_X = 0
 MAP_START_Y = 0
 MAP_X = 45
 MAP_Y = TERM_Y
