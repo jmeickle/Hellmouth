@@ -26,6 +26,7 @@ class View():
         self.y_acc = 0
         self.alive = True
         self.children = []
+        self.parent = None
 
     # Utility functions shared by all views
 
@@ -42,6 +43,16 @@ class View():
             return True
         else:
             return False
+
+    # TODO: Actually fix this.
+    # Returns true if a screen coordinate cannot be drawn to.
+    def undrawable(self, pos):
+        return False
+        x, y = pos
+        if x > 0 or y > 0:
+            return True
+        if x >= self.width or y >= self.height:
+            return True
 
     # Handle keyin. Abstract.
     def keyin(self, c):
@@ -61,6 +72,13 @@ class View():
         child.parent = self
         return child
 
+    def suicide(self):
+        for child in self.children:
+            child.suicide()
+        if self.parent is not None:
+            self.parent.children.remove(self)
+        self.alive = False
+
     # Set up curses attributes on a string
     # TODO: Handle anything but color
     def attr(self, col, attr):
@@ -70,17 +88,26 @@ class View():
         return curses.color_pair(color)
 
     # Rectangular character function.
-    def rd(self, x, y, glyph, col=0, attr=None):
+    def rd(self, pos, glyph, col=0, attr=None):
+        if self.undrawable(pos) is True:
+            exit("rd function tried to draw out of bounds: %s." % self.__dict__)
+
+        x, y = pos
         self.window.addch(y, x, glyph, self.attr(col, attr))
 
     # Rectangular string function.
-    def rds(self, x, y, string, col=0, attr=None):
+    def rds(self, pos, string, col=0, attr=None):
+        #if self.undrawable(pos) is True:
+        #    exit("rds function tried to draw out of bounds: %s." % self.__dict__)
+
+        x, y = pos
         self.window.addstr(y, x, string, self.attr(col, attr))
 
     # Draw a line; only relevant for text-y views.
     # TODO: Handle multi-line strings!
     def line(self, str, col=None, attr=None):
-        self.rds(0+self.x_acc, 0+self.y_acc, str, col, attr)
+        pos = (self.x_acc, self.y_acc)
+        self.rds(pos, str, col, attr)
         self.y_acc += 1
 
     def reset(self):
@@ -102,7 +129,8 @@ class View():
             elif Color.pair.get(substr, None) is not None:
                 curr_col = substr
             else:
-                self.rds(0+self.x_acc+strlen, 0+self.y_acc, substr, curr_col, attr)
+                pos = (self.x_acc + strlen, self.y_acc)
+                self.rds(pos, substr, curr_col, attr)
                 strlen += len(substr)
         # Only increment y at the end of the line.
         self.y_acc += 1
@@ -125,22 +153,22 @@ class MainMap(View):
         # Return true if no keyin was used; otherwise, false.
         if c == ord('I'):
             child = self.spawn(Inventory(self.screen, self.width, self.height))
-            child.map = self.map
             child.reset()
             return False
 
         elif c == ord('v'):
             if self.cursor is None:
-                child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
                 self.cursor = Cursor(self, self.player.pos)
+                child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
+                exit(self.__dict__)
                 self.cursor.child = child
                 return False
 
         # TODO: Move this elsewhere, it doesn't belong.
         if self.cursor is not None:
             if c == ord(' '):
+                self.cursor.child.suicide()
                 self.cursor = None
-                self.child = None
             elif c == ord('7'):
                 self.cursor.scroll(NW)
             elif c == ord('4'):
@@ -176,20 +204,43 @@ class MainMap(View):
             return False
 
     # Hex character function, for maps only.
-    def hd(self, x, y, glyph, col=0, attr=None):
-        # X/Y are offsets from the viewport center
-        X = x - self.player.pos[0]
-        Y = y - self.player.pos[1]
+    def hd(self, pos, glyph, col=0, attr=None):
+        # Three sets of coords are involved:
+        x, y = pos
+        p_x, p_y = self.player.pos
+        v_x, v_y = self.viewport
 
-        self.window.addch(self.viewport[1]+Y, 2*(self.viewport[0]+X)+Y, glyph, self.attr(col, attr))
+        # Offsets from the viewport center
+        off_x = x - p_x
+        off_y = y - p_y
 
-    # Offset hexes, i.e., the 'blank' ones.
-    def offset_hd(self, x, y, glyph, col=0, attr=None, dir=(0,0)):
-        # X/Y are offsets from the viewport center
-        X = x - self.player.pos[0]
-        Y = y - self.player.pos[1]
+        draw_x = off_y + 2*(off_x+v_x)
+        draw_y = off_y + v_y
 
-        self.window.addch(self.viewport[1]+Y+dir[0], 2*(self.viewport[0]+X)+Y+dir[1], glyph, self.attr(col, attr))
+        if self.undrawable((draw_x, draw_y)) is True:
+            exit("hd function tried to draw out of bounds: %s." % self.__dict__)
+
+        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+
+    # Draw to offset hexes, i.e., the 'blank' ones.
+    def offset_hd(self, pos, dir, glyph, col=0, attr=None):
+        # Four sets of coords are involved:
+        x, y = pos
+        p_x, p_y = self.player.pos
+        v_x, v_y = self.viewport
+        d_x, d_y = dir
+
+        # Offsets from the viewport center
+        off_x = x - p_x
+        off_y = y - p_y
+
+        draw_x = off_y + 2*(off_x+v_x) + d_x
+        draw_y = off_y + v_y + d_y
+
+        if self.undrawable((draw_x, draw_y)) is True:
+            exit("offset_hd function tried to draw out of bounds: %s." % self.__dict__)
+
+        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, pos):
@@ -210,13 +261,13 @@ class MainMap(View):
             else:
                 glyph = 'X'
                 col = "red-black"
-            self.hd(cell[0], cell[1], glyph, col)
+            self.hd(cell, glyph, col)
 
         # Draw the map cursor if it's present.
         if self.cursor is not None:
             c = self.cursor
-            self.offset_hd(c.pos[0], c.pos[1], c.style[0], c.color(), None, (0,-1))
-            self.offset_hd(c.pos[0], c.pos[1], c.style[1], c.color(), None, (0,1))
+            self.offset_hd(c.pos, WW, c.style[0], c.color(), None)
+            self.offset_hd(c.pos, EE, c.style[1], c.color(), None)
             return False
 
         #self.window.refresh()
@@ -534,7 +585,7 @@ class Chargen(View):
         # Last stage: choosing whether to start the game or not.
         else:
             if c == curses.KEY_ENTER or c == ord('\n'):
-                self.alive = False
+                self.suicide()
             elif c == ord(' '):
                 self.prev()
             else: return True
@@ -634,7 +685,6 @@ class Log(View):
 class Inventory(View):
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
-        self.map = None # So it can access, e.g., items on the ground
         self.player = None
         self.items = None
         self.selector = None
@@ -643,8 +693,8 @@ class Inventory(View):
     def reset(self):
         self.x_acc = 0
         self.y_acc = 0
-        self.player = self.map.player
         self.items = self.player.items()
+
         if self.selector is None:
             self.selector = Selector(self, len(self.items))
         else:
