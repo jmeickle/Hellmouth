@@ -8,8 +8,15 @@ SW = (-1, 1)
 CW = (-1, 0)
 dirs = [NW, NE, CE, SE, SW, CW]
 rotation = {NW: 0, NE: 1, CE: 2, SE: 3, SW: 4, CW: 5}
-num_dirs = 6
+num_dirs = len(dirs)
 
+# Offset directions. These only make sense in the context of rendering!
+NN = (0, -1)
+EE = (1, 0)
+SS = (0, 1)
+WW = (-1, 0)
+offsets = [NN, EE, SS, WW]
+num_offsets = len(offsets)
 # Return the sign of a number.
 def signum(int):
     if int < 0:
