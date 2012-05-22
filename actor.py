@@ -1,5 +1,5 @@
 from define import *
-from dice import _3d6, _d6, roll
+from dice import *
 from random import choice
 from describe import d
 import hex
@@ -102,7 +102,7 @@ class Actor:
                 #exit("Curr: (%s, %s)\nNext: (%s, %s)\nDir: (%s, %s)" % (pos[0], pos[1], self.pos[0], self.pos[1], dir[0], dir[1]))
                 if not self.do(dir):
                     # Coinflip chance to try a new path
-                    if _d6() > 3:
+                    if r1d6() > 3:
                         self.path = None
                     else:
                         self.path.append(pos)
@@ -203,14 +203,14 @@ class Actor:
         if target == self.map.player:
             def_name = "you"
 
-        if _3d6() > 8:
+        if r3d6() > 8:
             str = "%s @dmg@%s %s" % (att_name, verb, def_name)
 
             # Mute non-nearby messages
             if str is not None and hex.dist(self.map.player.pos, target.pos) <= 3:
                 self.map.log.add(d(str))
-
-            amt = sum(roll(_d6, self.damage))
+            # TODO: Replace roll() with dice()
+            amt = sum(roll(r1d6, self.damage))
             target.hit(amt)
 
         self.over()
@@ -273,10 +273,10 @@ class Actor:
 
     # Choose a random hit location
     def randomloc(self):
-        roll = _3d6()
+        roll = r3d6()
         loc = self.body.table.get(roll, None)
         if loc is None:
-            subroll = _d6()
+            subroll = r1d6()
             loc = self.body.table[("%s-%s" % (roll, subroll))]
         return loc
 

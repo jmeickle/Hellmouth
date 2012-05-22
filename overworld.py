@@ -1,5 +1,5 @@
 import define
-from dice import _d6
+from dice import *
 import hex
 import random
 import ai/astar
@@ -46,18 +46,18 @@ if __name__ == "__main__":
         pos = (random.randint(1, x), random.randint(1, y))
         loc = Location(pos)
         # Init each location with random values.
-        if _d6() > 5:
-            loc.visibility += _d6()
+        if r1d6() > 5:
+            loc.visibility += r1d6()
         loc.name = "N%s" % i
         locations[loc.name] = loc
         loc.test_put_in(map)
 
     # Connect each location to a few random locations.
     for i in range(num_locs):
-        for j in range(_d6()):
+        for j in range(r1d6()):
             loc1 = locations["N%s" % (random.randint(1, num_locs)-1)]
             loc2 = locations["N%s" % (random.randint(1, num_locs)-1)]
-            if _d6() > 5:
+            if r1d6() > 5:
                 loc1.connect(loc2, "P%d" % i)
             else:
                 loc1.connect(loc2)

@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
     # Generate a dummy actor
     actor = Actor()
-    actor.points["total"] = 50+_3d6()
+    actor.points["total"] = 50+r3d6()
 
     # Spend points!
     spent = spend_points(actor, generator)
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         print ""
 
         # Choose number of points.
-        points = _d6()+10+actor.points["skills"].pop("unspent", 0)
+        points = r1d6()+10+actor.points["skills"].pop("unspent", 0)
 
         print "Improved actor by %s points." % points
         print ""

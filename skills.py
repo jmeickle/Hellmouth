@@ -133,14 +133,14 @@ skills = {
 if __name__ == "__main__":
     # Import necessary classes.
     from actor import Actor
-    from dice import _3d6, _d6, roll
+    from dice import *
 
     # Generate a dummy actor
     actor = Actor()
 
     # Put points in a few skills
-    actor.points["Skills"]["Brawling"] = _3d6()
-    actor.points["Skills"]["Judo"] = max(_3d6() - _3d6(), 1)
+    actor.points["Skills"]["Brawling"] = r3d6()
+    actor.points["Skills"]["Judo"] = max(r3d6() - _3d6(), 1)
 
     # Calculate skills
     calculate_ranks(actor)

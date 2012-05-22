@@ -13,12 +13,12 @@ def flip():
         return FAIL
 
 # Basic d6 roll
-def _d6():
+def r1d6():
     return random.randint(1, 6)
 
 # Basic 3d6 roll
-def _3d6():
-    return sum(roll(_d6, 3))
+def r3d6():
+    return sum(_roll(r1d6, 3))
 
 # Return n rolls of either d6 or 3d6, with per-roll modifiers
 def roll(func, n, per=0):
@@ -27,7 +27,7 @@ def roll(func, n, per=0):
 # Skill check
 # TODO: Handle critical successes/failures
 def sc(skill, mod=0):
-    roll = _3d6()
+    roll = r3d6()
     margin = skill + mod - roll
     if margin > 0:
         return SUCC, margin
@@ -62,7 +62,7 @@ def dice(text, capped=True):
     #exit("%sd+%s" % (dice, mod))
 
     # Roll
-    result = sum(roll(_d6, dice)) - mod
+    result = sum(roll(r1d6, dice)) - mod
 
     # Whether we can go below 0
     if capped is True:
@@ -72,8 +72,8 @@ def dice(text, capped=True):
 
 # Test function
 if __name__ == '__main__':
-    #print "Ten 1d6 rolls:", roll(_d6, 10)
-    #print "Ten 3d6 rolls:", roll(_3d6, 10)
+    #print "Ten 1d6 rolls:", roll(r1d6, 10)
+    #print "Ten 3d6 rolls:", roll(r3d6, 10)
     print "Dice interpretation test"
     print dice("3d+9")
     print dice("2d+4")
