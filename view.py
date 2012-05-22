@@ -85,7 +85,7 @@ class Component():
 
     # Set up curses attributes on a string
     # TODO: Handle anything but color
-    def attr(self, col, attr):
+    def attr(self, col, attr=None):
         color = 0
         if col is not None and col is not 0:
             color += Color.pair[col]
@@ -199,6 +199,7 @@ class View(Component):
         # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,1))
 
+# TODO: Make this a subclass of a Map view.
 class MainMap(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
@@ -227,7 +228,8 @@ class MainMap(View):
                     return False
 
         if True is True:#else:
-        # TODO: Move these!
+        # This is generally the last step before keys fall into oblivion.
+        # TODO: Feed the keyin into a player function.
             if c == ord('7'):
                 self.map.player.do(NW)
             elif c == ord('4'):
@@ -249,12 +251,12 @@ class MainMap(View):
     def hd(self, pos, glyph, col=0, attr=None):
         # Three sets of coords are involved:
         x, y = pos
-        p_x, p_y = self.player.pos
+        c_x, c_y = self.center#self.player.pos
         v_x, v_y = self.viewport
 
         # Offsets from the viewport center
-        off_x = x - p_x
-        off_y = y - p_y
+        off_x = x - c_x
+        off_y = y - c_y
 
         draw_x = off_y + 2*(off_x+v_x)
         draw_y = off_y + v_y
@@ -266,13 +268,13 @@ class MainMap(View):
     def offset_hd(self, pos, dir, glyph, col=0, attr=None):
         # Four sets of coords are involved:
         x, y = pos
-        p_x, p_y = self.player.pos
+        c_x, c_y = self.center#self.player.pos
         v_x, v_y = self.viewport
         d_x, d_y = dir
 
         # Offsets from the viewport center
-        off_x = x - p_x
-        off_y = y - p_y
+        off_x = x - c_x
+        off_y = y - c_y
 
         draw_x = off_y + 2*(off_x+v_x) + d_x
         draw_y = off_y + v_y + d_y
@@ -285,19 +287,27 @@ class MainMap(View):
         return self.map.cell(pos).draw()
 
     def draw(self):
-        cells = area(self.map.viewrange, self.player.pos)
+        if self.cursor is not None:
+            self.center = self.cursor.pos
+        else:
+            self.center = self.player.pos
+
+        cells = area(self.map.viewrange, self.center)
 
         for cell in cells:
             if self.map.valid(cell) is not False:
                 glyph, col = self.get_glyph(cell)
+                self.hd(cell, glyph, col)
             else:
                 glyph = 'X'
-                col = "red-black"
-            self.hd(cell, glyph, col)
+                col = "magenta-black"
+                #self.hd(cell, glyph, col)
 
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
+
 # TODO: Update for FOV
+
 class Examine(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
@@ -313,9 +323,12 @@ class Examine(View):
 
     def draw(self):
         pos = self.parent.pos
-        str = self.map.cell(pos).contents()
-        self.line(str)
-
+        cell = self.map.cell(pos)
+        if cell is not None:
+            str = cell.contents()
+            self.line(str)
+        else:
+            self.line("There's... nothing there. Nothing at all.")
 
 class Stats(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
