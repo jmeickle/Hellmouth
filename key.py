@@ -12,7 +12,7 @@ def keyin(stdscr, views):
 
         # Always allow quitting.
         if c == ctrl('q'):
-            exit(Descriptions.fail)
+            exit(views[0].player.__dict__)
 
         # Offer keyin to each view, and continue if any of them returns false
         for view in views:
