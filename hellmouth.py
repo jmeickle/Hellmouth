@@ -1,3 +1,14 @@
+# Handle game-related imports.
+import random
+
+from actor import Actor
+from dice import *
+from define import *
+import hex
+import player
+from encounter import Encounter, Terrain
+from key import keyin
+
 def main(stdscr):
 
     # HACK: Define termsize rather than figuring it out.
@@ -9,18 +20,8 @@ def main(stdscr):
     # Use raw input.
     curses.raw()
 
-    # Handle game-related imports.
-    import random
-    import dice 
-    import hex
-    import define
-    from describe import Descriptions
-    from actor import Actor
-    import player
-    from encounter import Encounter, Terrain
+    # Imports that can't happen until after curses is init'd. 
     from view import MainMap, Stats, Chargen, Status, Log, View
-    from key import keyin
-
     # HACK: Display an intro screen.
 #    intro = View(stdscr, term_x, term_y, 0, 0)
 #    intro.x_acc = 10
@@ -77,7 +78,7 @@ def main(stdscr):
     colnum = 10
     for x in range(colnum):
         colsize = random.randint(1, 3)
-        pos = (center_x + dice.flip()*random.randint(4, hex_start)-colsize, center_y + dice.flip() * random.randint(4,hex_start)-colsize)
+        pos = (center_x + flip()*random.randint(4, hex_start)-colsize, center_y + flip() * random.randint(4,hex_start)-colsize)
         col = hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
         for loc in col:
             map.put(Terrain(), loc, True)       
@@ -98,7 +99,7 @@ def main(stdscr):
         monster = random.choice(monsters)
         monster = monster()
         monster.target = pc
-        map.put(monster, (center_x + dice.flip()*random.randint(1, hex_start), center_y + dice.flip() * random.randint(1,hex_start)))
+        map.put(monster, (center_x + flip()*random.randint(1, hex_start), center_y + flip() * random.randint(1,hex_start)))
 
     # HACK:
     mainmap_width = 45
