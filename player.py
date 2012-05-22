@@ -1,3 +1,4 @@
+# The player character(s).
 from actor import Actor
 
 class Player(Actor):

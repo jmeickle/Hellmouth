@@ -89,8 +89,8 @@ def main(stdscr):
     map.put(pc, (center_x, center_y))
     map.player = pc
 
-    # Define monsters to be placed
-    from monster import MeatSlave, MeatWorm, MeatGolem, MeatHydra
+    # Define NPCs to be placed
+    from npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
