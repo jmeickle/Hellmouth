@@ -79,6 +79,13 @@ class Actor:
                         self.points[k][entry] += points
                     else:
                         self.points[k][entry] = points
+        self.recalculate()
+
+    # Recalculate the character sheet from points spent.
+    def recalculate(self):
+        skills.calculate_ranks(self)
+        skills.calculate_skills(self)
+        skills.calculate_defaults(self)
 
     # AI actions. Currently: move in a random direction.
     def act(self):
