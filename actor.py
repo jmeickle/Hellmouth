@@ -62,11 +62,16 @@ class Actor:
     # UTILITY
 
     # Actor generation/improvement.
-    def build(self, points):
+    # 'unspent' determines whether to try to re-spend unspent points, as well
+    # as whether to save unspent points accrued during generation.
+    def build(self, points, unspent=True):
         self.points["total"] += points
+        if unspent is True:
+            points += self.points["unspent"]
+            self.points["unspent"] = 0
         spent = generate.spend_points(self)
         for k, v in spent.items():
-            if k == 'unspent':
+            if k == 'unspent' and unspent is True:
                 self.points["unspent"] += v
             else:
                 for entry, points in v.items():
