@@ -91,6 +91,12 @@ class Actor:
     def act(self):
         if self.controlled is True:
             exit("A player tried to hit AI code")
+
+        self.attempts += 1
+        if self.attempts > 10:
+            self.over()
+            return False
+
         # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         self.distance = hex.dist(self.pos, self.target.pos)
 
@@ -149,6 +155,8 @@ class Actor:
     def over(self):
         self.map.acting = None
         self.map.queue.append(self)
+        if self.controlled is False:
+            self.attempts = 0
 
     # Return your own cell
     def cell(self):

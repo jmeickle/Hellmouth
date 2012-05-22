@@ -17,6 +17,8 @@ class NPC(Actor):
         self.distance = None
         self.path = None
 
+        self.attempts = 0
+
 class MeatSlave(NPC):
     def __init__(self):
         NPC.__init__(self)
