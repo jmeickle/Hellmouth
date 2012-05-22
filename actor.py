@@ -154,6 +154,25 @@ class Actor:
 
         return True
 
+    # SKILLS
+
+    # Gets the level of a skill as well as any situational modifiers.
+    def skill(self, skill):
+        level = self.skills.get(skill)        
+        return level, mod
+
+    # Performs a skill check.
+    def sc(self, skill):
+        level = self.skill.get(skill)
+        mod = 0
+        return sc(skill, mod)
+
+    # Performs a quick contest.
+    def qc(self, them, skill):
+        self_skill, self_mod = self.skill(skill)
+        their_skill, their_mod = them.skill(skill)
+        return qc(self_skill, self_mod, their_skill, their_mod)
+
     # COMBAT
 
     # Do a basic attack.
