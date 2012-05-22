@@ -6,8 +6,8 @@ def calculate_ranks(actor):
     actor.skills = {}
     # Use the skill dictionary to fill out ranks.
     for skill, points in actor.points["skills"].items():
-        attribute = skills[skill]["attribute"]
-        difficulty = difficulties.get(skills[skill]["difficulty"])
+        attribute = skill_list[skill]["attribute"]
+        difficulty = difficulties.get(skill_list[skill]["difficulty"])
         spent = 0
         rank = None
 
@@ -38,7 +38,7 @@ def calculate_skills(actor):
 # Should only be run after calculating base skills.
 def calculate_defaults(actor):
     for current_skill, current_info in actor.skills.items():
-        defaults = skills[current_skill]["defaults"]
+        defaults = skill_list[current_skill]["defaults"]
         for default in defaults:
             # Get the information for this default
             default_skill, default_modifier = default
@@ -59,7 +59,7 @@ def calculate_defaults(actor):
 # 'difficulty' (str): How hard the skill is to learn.
 # 'text' (str): Short, flavorful description of the skill.
 # 'defaults' (list of tuples): An associated skill and the penalty when defaulting from it.
-skills = {
+skill_list = {
 # Unarmed skills
 "Brawling" : {
     "type"       : "Unarmed",
