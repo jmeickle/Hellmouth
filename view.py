@@ -693,19 +693,39 @@ class Log(View):
         self.events = deque()
         self.index = 0
 
-    # Scrolling the log up and down.
-    def keyin(self, c):
-        if c == curses.KEY_UP: self.scroll(-1)
-        elif c == curses.KEY_DOWN: self.scroll(1)
-        else: return True
-        return False
-
     # Add an event to the history. Autoscrolls unless this has been turned off.
     def add(self, event, scroll=True):
         self.events.append(event)
         if scroll is True:
             self.scroll(1)
 
+    def draw(self):
+        # Start from the bottom:
+        self.y_acc = self.height
+        for event in reversed(self.events):
+            if self.logline(event) is False:
+                break;
+
+    def logline(self, event):
+        lines = 1 + (len(event) / self.width) # Number of lines the string will take up
+        self.y_acc -= lines # Move up by that much to offset what the function will do.
+        # Couldn't fit a whole line.
+        if self.y_acc < 0:
+            self.y_acc = 0
+            self.line("[...]")
+            return False;
+        self.line(event, None, None, 1) # color, attr, indent
+        self.y_acc -= lines # Move to where we started.
+
+    # Accepts keyin to scroll - that's it for now.
+    # TODO: Logline highlight stuff.
+    def keyin(self, c):
+        if c == curses.KEY_UP: self.scroll(-1)
+        elif c == curses.KEY_DOWN: self.scroll(1)
+        else: return True
+        return False
+
+    # Scrolling the log up and down.
     def scroll(self, amt):
         self.index += amt
         # Prevent an index below zero.
@@ -717,47 +737,6 @@ class Log(View):
         if self.index >= max:
             self.index = max
 
-    def draw(self):
-        count = 0
-        lines = 0
-        for x in self.events:
-            count += 1
-            if count <= self.index:
-                continue
-            # TODO: Fix multiline and get rid of that -1.
-            if lines >= self.height-1:
-                break
-            self.line(x)
-            lines += 1
-            continue
-
-    # TODO: Multi-line log entries
-            if len(x) > self.width:
-                substrs = self.logline(x)
-                for substr in substrs:
-                    self.line(substr)
-                    lines += 1
-
-    def logline(self, str, x=None):
-        if x is None:
-            x = self.width
-
-        ret = []
-        line = ""
-        count = 0
-        lines = 0
-
-        for char in str:
-            count += 1
-            line += char
-            if count >= x:
-                count = 0
-                if lines > 0:
-                    line = "  %s" % line
-                ret.append(line)
-                lines += 1
-
-        return ret
 
 class Inventory(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
