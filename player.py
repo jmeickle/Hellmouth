@@ -7,7 +7,7 @@ class Player(Actor):
         self.glyph = '@'
         self.name = 'player character'
         self.color = 'cyan-black'
-        self.hp = 1000
+        self.hp = 100
         self.damage = 1
         self.build(150)
         self.controlled = True
