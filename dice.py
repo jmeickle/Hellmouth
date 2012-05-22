@@ -26,7 +26,7 @@ def roll(func, n, per=0):
 
 # Skill check
 # TODO: Handle critical successes/failures
-def sc(skill, mod):
+def sc(skill, mod=0):
     roll = _3d6()
     margin = skill + mod - roll
     if margin > 0:
