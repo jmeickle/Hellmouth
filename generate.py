@@ -1,15 +1,54 @@
 # Generate (or improve) an actor's points.
 import random
+from define import *
 from dice import _3d6, _d6, roll
 
-def spend_points(actor, generator, points=None):
+# TODO: Move elsewhere.
+    # Weight defaults to 100, as set above.
+default_generator = {
+    "skills" : {
+        "melee" : {
+            "options" : {
+                "Unarmed" : {
+                    "weight" : 10,
+                    "options" : {
+                        "Unarmed/Brawling" : {},
+                        "Unarmed/Judo" : {},
+                        "Unarmed/Karate" : {},
+                    },
+                },
+                "Melee" : {
+                    "options" : {
+                        "Melee/Shortsword" : {},
+                        "Melee/Broadsword" : {},
+                        "Melee/Axe" : {"weight": 50},
+                    },
+                },
+            },
+        },
+        "magic" : { "weight" : 10,
+            "options" : {
+                "Magic/Fire Magic" : {},
+                "Magic/Ice Magic" : {},
+                "Magic/Necromancy" : {"weight" : 10},
+            },
+        },
+    }
+}
+
+def spend_points(actor, points=None):
     # If we didn't feed in a number of points, we're using the actor's
     # starting points. The alternative is that we're improving the actor.
+    if actor.generator is None:
+        actor.generator = Generator()
+
     if points is None:
         points = actor.points["total"]
 
     # Dict of expenditures thus far
     spent = {}
+    for x in point_types:
+        spent[x] = {}
 
     # Number of tries, to avoid infinite loops
     tries = 0
@@ -17,33 +56,36 @@ def spend_points(actor, generator, points=None):
 
     while points > 0 and tries < allowed:
         tries += 1
-        choice, cost = generator.choose()
+        type = random.choice(point_types)
+        choice, cost = actor.generator.choose(type)
+        if choice is None:
+            continue
         if cost <= points:
             # TODO: continue out here, based on logic of skill appropriateness.
-            if spent.get(choice) is None:
-                spent[choice] = cost
+            if spent[type].get(choice) is None:
+                spent[type][choice] = cost
             else:
-                spent[choice] += cost
+                spent[type][choice] += cost
             points -= cost
 
     # Save any unspent points.
     spent["unspent"] = points
     return spent
 
-#Tasks:
-# 1) Improve existing skills
-
 # Helper class to make choices from a weighted list.
 class Generator:
-    def __init__(self, choices={}):
+    def __init__(self, choices=default_generator):
         self.choices = choices # See test code for an example of structure.
         self.amount = _d6 # Default points per choice made.
         self.weight = 100 # Default weight.
 
     # Pick from the weighted list(s).
-    def choose(self, current=None):
+    def choose(self, type, current=None):
         if current is None:
-            current = self.choices
+            current = self.choices.get(type)
+            if current is None:
+                return (None, 0)
+
         choice = None
         sum = reduce(lambda x, y: x+y.get("weight", self.weight), current.values(), 0)
         weighting = random.randint(1, sum)
@@ -55,36 +97,19 @@ class Generator:
                 if options is None:
                     return k, v.get("amount", self.amount())
                 else:
-                    return self.choose(options)
+                    return self.choose(type, options)
 
 # Test code.
 if __name__ == "__main__":
     print "Random choice test:"
-    generator = Generator()
 
-    # Weight defaults to 100, as set above.
-    generator.choices = {
-        "melee" : {
-            "options" : {
-                "Melee/Shortsword" : {},
-                "Melee/Broadsword" : {},
-                "Melee/Axe" : {},
-            },
-        },
-        "magic" : {
-            "weight" : 10,
-            "options" : {
-                "Fire Magic" : {},
-                "Ice Magic" : {},
-                "Necromancy" : {"weight" : 10},
-            },
-        },
-    }
+    generator = Generator()
+    #generator.choices = default_generator
 
     picks = 10
     choices = []
     for x in range(picks):
-        choices.append(generator.choose())
+        choices.append(generator.choose("skills"))
 
     print "==CHOICES=="
     for choice in choices:
@@ -99,7 +124,7 @@ if __name__ == "__main__":
 
     # Generate a dummy actor
     actor = Actor()
-    actor.points["total"] = 103
+    actor.points["total"] = 50+_3d6()
 
     # Spend points!
     spent = spend_points(actor, generator)
