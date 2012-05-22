@@ -27,6 +27,7 @@ class MeatSlave(NPC):
         self.color = 'yellow-black'
         self.hp = 1
         self.damage = 1
+        self.build(5)
 
 class MeatGolem(NPC):
     def __init__(self):
@@ -36,6 +37,7 @@ class MeatGolem(NPC):
         self.color = 'blue-black'
         self.hp = 50
         self.damage = 1
+        self.build(50)
 
 class MeatWorm(NPC):
     def __init__(self):
@@ -45,6 +47,7 @@ class MeatWorm(NPC):
         self.color = 'magenta-black'
         self.hp = 20
         self.damage = 3
+        self.build(10)
 
 class MeatHydra(NPC):
     def __init__(self):
@@ -54,3 +57,4 @@ class MeatHydra(NPC):
         self.color = 'magenta-black'
         self.hp = 80
         self.damage = 5
+        self.build(50)
