@@ -1,6 +1,7 @@
 from color import Color
 from define import *
 from hex import *
+from skills import skill_list
 
 import curses
 import math
@@ -920,14 +921,14 @@ class CharacterSheet(View):
         self.cline("--Points--")
         for skill, points in actor.points["skills"].items():
             self.cline("%s: %s points" % (skill, points))
-        self.cline("")
-        self.cline("--Skill Ranks--")
-        for skill, info in actor.skills.items():
-            self.cline("%s (%s/%s): %s%+d" % (skill, labels[skills[skill]["attribute"]], terms[skills[skill]["difficulty"]], terms[info[0]], info[1]))
-        self.cline("")
-        self.cline("--Skill Levels--")
-        for skill, level in actor.base_skills.items():
-            str = "%s (%s/%s) - %s" % (skill, labels[skills[skill]["attribute"]], terms[skills[skill]["difficulty"]], level[0])
-            if level[1] is not False:
-                str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
-            self.cline(str)
+        #self.cline("")
+        #self.cline("--Skill Ranks--")
+        #for skill, info in actor.skills.items():
+        #    self.cline("%s (%s/%s): %s%+d" % (skill, labels[skill_list[skill]["attribute"]], labels[skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
+        #self.cline("")
+        #self.cline("--Skill Levels--")
+        #for skill, level in actor.base_skills.items():
+        #    str = "%s (%s/%s) - %s" % (skill, labels[skill_list[skill]["attribute"]], labels[skill_list[skill]["difficulty"]], level[0])
+        #    if level[1] is not False:
+        #        str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
+        #    self.cline(str)
