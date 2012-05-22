@@ -170,13 +170,12 @@ class MainMap(View):
         # Return true if no keyin was used; otherwise, false.
         if c == ord('I'):
             child = self.spawn(Inventory(self.screen, self.width, self.height))
-            child.reset()
             return False
 
         elif c == ord('v'):
             if self.cursor is None:
                 self.cursor = Cursor(self, self.player.pos)
-                child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
+                child = self.spawn(Examine(self.screen, self.width, 1, self.LEFT, self.BOTTOM))
                 self.cursor.child = child
                 return False
 
@@ -293,17 +292,25 @@ class Examine(View):
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
 
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord('\n'):
+            child = self.spawn(CharacterSheet(self.screen, X_PANE, Y_PANE))
+        elif c == ord(' '):
+            child.suicide()
+        else:
+            return True
+        return False
+
     def draw(self):
         self.reset()
-        pos = self.parent.cursor.pos
-        map = self.parent.map
-        str = map.cell(pos).contents()
+        pos = self.cursor.pos
+        str = self.map.cell(pos).contents()
         self.line(str)
+
 
 class Stats(View):
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
-        self.player = None
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
