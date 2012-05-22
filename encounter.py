@@ -109,8 +109,8 @@ class Cell:
             return self.glyph, self.color
 
     # TODO: Options for what to list.
+    # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!
     def contents(self):
-        str = ""#You see here"
         list = []
         if self.actor is not None:
             list.append("a %s" % self.actor.name)
@@ -118,7 +118,7 @@ class Cell:
             list.append("a %s" % self.terrain.name)
         if len(self.items) > 0:
             list.append("some items")
-        return commas(str, list)
+        return commas(list, True) # Capitalized.
 
     # ITEMS
 
