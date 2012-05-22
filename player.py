@@ -8,6 +8,7 @@ class Player(Actor):
         self.color = 'cyan-black'
         self.hp = 1000
         self.damage = 1
+        self.build(150)
 
 # NOT THE PLAYER BUT GOES IN HERE ANYWAYS
 

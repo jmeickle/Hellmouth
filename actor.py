@@ -4,6 +4,8 @@ from random import choice
 from describe import d
 import hex
 import ai.astar
+import skills
+import generate
 
 # Players, monsters, etc.
 class Actor:
@@ -29,6 +31,7 @@ class Actor:
         # More static information: points spent on your character
         self.points = {
             "total": 0,
+            "unspent" : 0,
             "attributes" : {},
             "skills" : {},
             "techniques" : {},
@@ -58,7 +61,23 @@ class Actor:
         self.target = None
         self.distance = None
 
+        self.generator = None
+
     # UTILITY
+
+    # Actor generation/improvement.
+    def build(self, points):
+        self.points["total"] += points
+        spent = generate.spend_points(self)
+        for k, v in spent.items():
+            if k == 'unspent':
+                self.points["unspent"] += v
+            else:
+                for entry, points in v.items():
+                    if self.points[k].get(entry) is not None:
+                        self.points[k][entry] += points
+                    else:
+                        self.points[k][entry] = points
 
     # AI actions. Currently: move in a random direction.
     def act(self):
