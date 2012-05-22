@@ -78,17 +78,20 @@ class View():
         border_x, border_y = border
         padding_x, padding_y = padding
 
+        edge_x = margin_x + border_x + padding_x
+        edge_y = margin_y + border_y + padding_y
+
         # Available width/height.
-        self.width = self.x - 2*(margin_x + border_x + padding_x)
+        self.width = self.x - 2*(edge_x)
         assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
-        self.height = self.y - 2*(margin_y + border_y + padding_y)
+        self.height = self.y - 2*(edge_y)
         assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
 
         # Some references based on width/height, to make placing a bit nicer
-        self.TOP = 0
-        self.RIGHT = self.width - 1
-        self.BOTTOM = self.height - 1
-        self.LEFT = 0
+        self.TOP = edge_y
+        self.BOTTOM = self.height - edge_y - 1
+        self.LEFT = edge_x
+        self.RIGHT = self.width - edge_x - 1
 
         # Cumulative x/y tracking.
         self.x_acc = 0
@@ -105,12 +108,12 @@ class View():
     # TODO: Actually fix this.
     # Returns true if a screen coordinate cannot be drawn to.
     def undrawable(self, pos):
-        return False
         x, y = pos
-        if x > 0 or y > 0:
+        if x < 0 or y < 0:
             return True
-        if x >= self.width or y >= self.height:
+        if x >= TERM_X or y >= TERM_Y:
             return True
+        return False
 
     # Set up curses attributes on a string
     # TODO: Handle anything but color
@@ -122,19 +125,19 @@ class View():
 
     # Rectangular character function.
     def rd(self, pos, glyph, col=0, attr=None):
-        if self.undrawable(pos) is True:
-            exit("rd function tried to draw out of bounds: %s." % self.__dict__)
-
         x, y = pos
-        self.window.addch(y, x, glyph, self.attr(col, attr))
+        draw_x = x + self.LEFT
+        draw_y = y + self.TOP
+        assert self.undrawable((draw_x, draw_y)) is False, "rd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
+        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
 
     # Rectangular string function.
     def rds(self, pos, string, col=0, attr=None):
-        #if self.undrawable(pos) is True:
-        #    exit("rds function tried to draw out of bounds: %s." % self.__dict__)
-
         x, y = pos
-        self.window.addstr(y, x, string, self.attr(col, attr))
+        draw_x = x + self.LEFT
+        draw_y = y + self.TOP
+        assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
+        self.window.addstr(draw_y, draw_x, string, self.attr(col, attr))
 
     # Draw a line; only relevant for text-y views.
     # TODO: Handle multi-line strings!
@@ -164,14 +167,15 @@ class View():
         # Only increment y at the end of the line.
         self.y_acc += 1
 
-    # Simple border function (no margin, border 1, padding 1)
+    # Simple border function (no margin, border 1, padding 1).
     def border(self, glyph):
-        cline(glyph*self.width)
-        while self.y_acc < self.height:
-            self.rd((self.LEFT, y_acc), glyph)
-            self.rd((self.RIGHT, y_acc), glyph)
-        cline(glyph*self.width)
-        # Margin, border, padding
+        self.cline(glyph*(self.x))
+        while self.y_acc < self.y-1:
+            self.rd((0, self.y_acc), glyph)
+            self.rd((self.x-1, self.y_acc), glyph)
+            self.y_acc += 1
+        self.cline(glyph*(self.x-1))
+        # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,1))
 
     # KEYIN
@@ -269,9 +273,7 @@ class MainMap(View):
         draw_x = off_y + 2*(off_x+v_x)
         draw_y = off_y + v_y
 
-        if self.undrawable((draw_x, draw_y)) is True:
-            exit("hd function tried to draw out of bounds: %s." % self.__dict__)
-
+        assert self.undrawable((draw_x, draw_y)) is False, "hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
         self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
 
     # Draw to offset hexes, i.e., the 'blank' ones.
@@ -289,9 +291,7 @@ class MainMap(View):
         draw_x = off_y + 2*(off_x+v_x) + d_x
         draw_y = off_y + v_y + d_y
 
-        if self.undrawable((draw_x, draw_y)) is True:
-            exit("offset_hd function tried to draw out of bounds: %s." % self.__dict__)
-
+        assert self.undrawable((draw_x, draw_y)) is False, "offset hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
         self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
@@ -320,9 +320,6 @@ class MainMap(View):
             c = self.cursor
             self.offset_hd(c.pos, WW, c.style[0], c.color(), None)
             self.offset_hd(c.pos, EE, c.style[1], c.color(), None)
-#                exit(self.__dict__)
-
-        #self.window.refresh()
 
 # TODO: Update for FOV
 class Examine(View):
