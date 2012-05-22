@@ -356,28 +356,28 @@ class Stats(View):
         self.x_acc += 12
         self.y_acc = 0
         self.line("Remaining HP: %s" % p.hp)
-#        self.statline('Hit Points')
-#        self.statline('Mana Points')
-#        self.statline('Fatigue Points')
-#        self.line("")
-#        self.statline('Block')
-#        self.statline('Dodge')
-#        self.statline('Parry')
+        self.statline('HP')
+        self.statline('MP')
+        self.statline('FP')
+        self.line("")
+        self.statline('Block')
+        self.statline('Dodge')
+        self.statline('Parry')
 
         # Col 3: Stats
         self.x_acc += 12
         self.y_acc = 0
 
-#        self.statline("Strength")
-#        self.statline("Dexterity")
-#        self.statline("Intelligence")
-#        self.statline("Health")
-#        self.line("")
-#        self.statline("Will")
-#        self.statline("Perception")
-#        self.line("")
-#        self.statline("Move")
-#        self.statline("Speed")
+        self.statline("ST")
+        self.statline("DX")
+        self.statline("IQ")
+        self.statline("HT")
+        self.line("")
+        self.statline("Will")
+        self.statline("Perception")
+        self.line("")
+        self.statline("Move")
+        self.statline("Speed")
 
         # Combat Log
         self.x_acc = 0
@@ -401,7 +401,11 @@ class Stats(View):
 #        self.line("FP: %3d/%2d" % (10, 12))
 #        self.line("MP: %3d/%2d" % (8, 15))
 
-        short = abbreviations.get(stat, stat)
+        # Always use the shortest label here.
+        short = labels.get(stat)
+        if short is not None:
+            short = short[0]
+
         # Alternate draw for these stats.
         if short in ["HP", "FP", "MP"]:
             self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
@@ -914,11 +918,11 @@ class CharacterSheet(View):
         self.cline("")
         self.cline("--Skill Ranks--")
         for skill, info in actor.skills.items():
-            self.cline("%s (%s/%s): %s%+d" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1]))
+            self.cline("%s (%s/%s): %s%+d" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1]))
         self.cline("")
         self.cline("--Skill Levels--")
         for skill, level in actor.base_skills.items():
-            str = "%s (%s/%s) - %s" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0])
+            str = "%s (%s/%s) - %s" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0])
             if level[1] is not False:
                 str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             self.cline(str)

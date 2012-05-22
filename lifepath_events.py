@@ -25,7 +25,7 @@ eventdata = {
 'Start' : {
     'age'     : -1,
     'text'    : "Starting point of character generation, before any details are determined.",
-    'effects' : {'Strength': 10, 'Dexterity': 10, 'Intelligence': 10, 'Health': 10},
+    'effects' : {'ST': 10, 'DX': 10, 'IQ': 10, 'HT': 10},
     'years'   : 0,
     'choices' : ('Mundane Parents', 'Warrior Parents', 'Wizard Parents'),
 },
@@ -56,7 +56,7 @@ eventdata = {
     'age'     : 1,
     'text'    : "My birth was exciting for my parents, but few others.",
     'short'   : "were brought into this world without incident",
-    'effects' : {'Intelligence' : -1},
+    'effects' : {'IQ' : -1},
     'years'   : 1,
     'choices' : ('Mundane Young Child', 'Rich Young Child', 'Poor Young Child', 'Stolen Young Child', 'Orphaned Young Child', 'Odd Young Child'),
 },

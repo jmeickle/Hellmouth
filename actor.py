@@ -41,10 +41,10 @@ class Actor:
         # The 'character sheet': derived from points spent in the above
         # categories, and changing only when they do.
         self.attributes = {
-                      "Strength" : 10,
-                      "Dexterity" : 10,
-                      "Intelligence" : 10,
-                      "Health" : 10,
+                      "ST" : 10,
+                      "DX" : 10,
+                      "IQ" : 10,
+                      "HT" : 10,
                      }
 
         self.skills = {}
@@ -248,7 +248,8 @@ class Actor:
 
     # Retrieve actor stat.
     def stat(self, stat):
-        val = self.stats.get(stat)
+        val = self.attributes.get(stat)
+        # Not an attribute? Must be a calculcated stat.
         if val is None:
             return self.calc_stat(stat)
         else:
@@ -256,17 +257,17 @@ class Actor:
 
     # If it wasn't found in self.stats, it must need to be calculated.
     def calc_stat(self, stat):
-        func = getattr(Actor, stat.replace(' ', ''))
+        func = getattr(Actor, stat)
         return func(self)
 
     # STUB: Insert formulas
     # Formulas for calculated stats.
-    def HitPoints(self):       return 33
-    def MaxHitPoints(self):       return 33
-    def ManaPoints(self):       return 33
-    def MaxManaPoints(self):       return 33
-    def FatiguePoints(self):       return 33
-    def MaxFatiguePoints(self):       return 33
+    def HP(self):       return 33
+    def MaxHP(self):       return 33
+    def MP(self):       return 33
+    def MaxMP(self):       return 33
+    def FP(self):       return 33
+    def MaxFP(self):       return 33
     def Will(self):       return 33
     def Perception(self): return 33
     def Move(self):       return 33
