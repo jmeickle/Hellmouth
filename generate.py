@@ -1,46 +1,18 @@
 # Generate (or improve) an actor's points.
-import random
-from define import *
-from dice import _3d6, _d6, roll
 
-# TODO: Move elsewhere.
-    # Weight defaults to 100, as set above.
-default_generator = {
-    "skills" : {
-        "melee" : {
-            "options" : {
-                "Unarmed" : {
-                    "weight" : 10,
-                    "options" : {
-                        "Unarmed/Brawling" : {},
-                        "Unarmed/Judo" : {},
-                        "Unarmed/Karate" : {},
-                    },
-                },
-                "Melee" : {
-                    "options" : {
-                        "Melee/Shortsword" : {},
-                        "Melee/Broadsword" : {},
-                        "Melee/Axe" : {"weight": 50},
-                    },
-                },
-            },
-        },
-        "magic" : { "weight" : 10,
-            "options" : {
-                "Magic/Fire Magic" : {},
-                "Magic/Ice Magic" : {},
-                "Magic/Necromancy" : {"weight" : 10},
-            },
-        },
-    }
-}
+import random
+
+from define import *
+from dice import *
+from generators import *
 
 def spend_points(actor, points=None):
     # If we didn't feed in a number of points, we're using the actor's
     # starting points. The alternative is that we're improving the actor.
-    if actor.generator is None:
-        actor.generator = Generator()
+    if actor.generator is not None:
+        generator = Generator(generators[actor.generator])
+    else:
+        generator = Generator()
 
     if points is None:
         points = actor.points["total"]
@@ -57,7 +29,7 @@ def spend_points(actor, points=None):
     while points > 0 and tries < allowed:
         tries += 1
         type = random.choice(point_types)
-        choice, cost = actor.generator.choose(type)
+        choice, cost = generator.choose(type)
         if choice is None:
             continue
         if cost <= points:
@@ -74,9 +46,9 @@ def spend_points(actor, points=None):
 
 # Helper class to make choices from a weighted list.
 class Generator:
-    def __init__(self, choices=default_generator):
+    def __init__(self, choices=generators["default"]):
         self.choices = choices # See test code for an example of structure.
-        self.amount = _d6 # Default points per choice made.
+        self.amount = r1d6 # Default points per choice made.
         self.weight = 100 # Default weight.
 
     # Pick from the weighted list(s).
