@@ -54,12 +54,8 @@ class Actor:
         # Purely interface nicety
         self.letters = {}
 
-        # AI stuff
-        # TODO: Move to another file
-        self.ai = ai.astar.AStar()
-        self.path = None
-        self.target = None
-        self.distance = None
+        # Whether this thing accepts keyboard control currently
+        self.controlled = False
 
         self.generator = None
 
@@ -81,6 +77,8 @@ class Actor:
 
     # AI actions. Currently: move in a random direction.
     def act(self):
+        if self.controlled is True:
+            exit("A player tried to hit AI code")
         # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         self.distance = hex.dist(self.pos, self.target.pos)
 

@@ -89,7 +89,7 @@ def main(stdscr):
     map.player = pc
 
     # Define monsters to be placed
-    from player import MeatSlave, MeatWorm, MeatGolem, MeatHydra
+    from monster import MeatSlave, MeatWorm, MeatGolem, MeatHydra
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
@@ -173,7 +173,7 @@ def main(stdscr):
         #stdscr.addstr(21, 59, "Next: %s" % map.queue[0].name)
 
         # NPCs act until the player's turn comes up.
-        if map.acting is not pc:
+        if map.acting.controlled is False:
             map.acting.act()
             continue
     
