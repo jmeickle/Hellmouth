@@ -16,7 +16,7 @@ def main(stdscr):
     curses.raw()
 
     # Imports that can't happen until after curses is init'd. 
-    from view import MainMap, Stats, Chargen, Status, Log, View
+    from view import MainMap, Pane, Stats, Chargen, Status, Log, View
     # HACK: Display an intro screen.
 #    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
 #    intro.x_acc = 10
@@ -103,6 +103,7 @@ def main(stdscr):
     mainmap = MainMap(stdscr, MAP_X, MAP_Y)
     mainmap.map = map
     mainmap.player = pc
+
     # Just a hook. Does nothing now.
     mainmap.ready()
 
@@ -115,13 +116,16 @@ def main(stdscr):
     chargen = Chargen(stdscr, TERM_X, TERM_Y)
     chargen.player = pc
 
+    # Right hand pane
+    pane = Pane(stdscr, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y)
+
     # Stats window init
     stat_height = 11
-    stats = Stats(stdscr, PANE_X, stat_height, PANE_START_X, PANE_START_Y)
+    stats = pane.spawn(Stats(stdscr, PANE_X, stat_height))
     stats.player = pc
 
     # Log window init
-    log = Log(stdscr, PANE_X, PANE_Y-stat_height, PANE_START_X, PANE_START_Y + stat_height)
+    log = pane.spawn(Log(stdscr, PANE_X, PANE_Y-stat_height, PANE_START_X, PANE_START_Y + stat_height))
     map.log = log
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 

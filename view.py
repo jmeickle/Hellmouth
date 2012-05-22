@@ -303,6 +303,11 @@ class MainMap(View):
                 col = "magenta-black"
                 #self.hd(cell, glyph, col)
 
+# Main pane class.
+class Pane(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
+
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
 
