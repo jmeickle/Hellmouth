@@ -14,34 +14,24 @@ from dialogue import chargen
 from lifepath import Lifepath
 from lifepath_events import eventdata
 
-class View():
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        self.screen = window
-        self.window = window.subwin(y, x, start_y, start_x)
-        self.x = x
-        self.y = y
-        self.start_x = start_x
-        self.start_y = start_y
-
-        # Logic
+# Component is the minimal base class. They participate in keyin and draw
+# loops, but do not have access to drawing functions.
+class Component():
+    def __init__(self):
         self.alive = True
         self.children = []
         self.parent = None
 
-        # Set up drawing variables (redone each draw)
-        self._reset()
+    # CREATION / DELETION
 
-    # Utility functions shared by all views
-
-    # LOGIC:
-    # Spawn child and return it.
+    # Spawn a child and return it.
     def spawn(self, child):
         # Some information is passed down for convenience:
-        if self.cursor:
+        if hasattr(self, 'cursor'):
             child.cursor = self.cursor
-        if self.map:
+        if hasattr(self, 'map'):
             child.map = self.map
-        if self.player:
+        if hasattr(self, 'player'):
             child.player = self.player
 
         child.parent = self
@@ -71,31 +61,9 @@ class View():
         else:
             return False
 
-    # Resets drawing-related variables. Run each draw.
-    def _reset(self, margin=(0,0), border=(0,0), padding=(0,0)):
-        # Box model.
-        margin_x, margin_y = margin
-        border_x, border_y = border
-        padding_x, padding_y = padding
-
-        edge_x = margin_x + border_x + padding_x
-        edge_y = margin_y + border_y + padding_y
-
-        # Available width/height.
-        self.width = self.x - 2*(edge_x)
-        assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
-        self.height = self.y - 2*(edge_y)
-        assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
-
-        # Some references based on width/height, to make placing a bit nicer
-        self.TOP = edge_y
-        self.BOTTOM = self.height - edge_y - 1
-        self.LEFT = edge_x
-        self.RIGHT = self.width - edge_x - 1
-
-        # Cumulative x/y tracking.
-        self.x_acc = 0
-        self.y_acc = 0
+    # Reset yourself to prepare for drawing. Abstract.
+    def _reset(self):
+        return True
 
     # Do something before drawing yourself. Abstract.
     def before_draw(self):
@@ -122,6 +90,59 @@ class View():
         if col is not None and col is not 0:
             color += Color.pair[col]
         return curses.color_pair(color)
+
+    # KEYIN
+
+    # Recurse through children trying their keyin functions,
+    # until you've done your own.
+    def _keyin(self, c):
+        for child in self.children:
+            if child._keyin(c) is False:
+                return False
+        return self.keyin(c)
+
+    # Handle keyin. Abstract.
+    def keyin(self, c):
+        return True
+
+class View(Component):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        Component.__init__(self)
+        self.screen = window
+        self.window = window.subwin(y, x, start_y, start_x)
+        self.x = x
+        self.y = y
+        self.start_x = start_x
+        self.start_y = start_y
+
+        # Set up drawing variables (redone each draw)
+        self._reset()
+
+    # Resets view-drawing-related variables. Run each draw.
+    def _reset(self, margin=(0,0), border=(0,0), padding=(0,0)):
+        # Box model.
+        margin_x, margin_y = margin
+        border_x, border_y = border
+        padding_x, padding_y = padding
+
+        edge_x = margin_x + border_x + padding_x
+        edge_y = margin_y + border_y + padding_y
+
+        # Available width/height.
+        self.width = self.x - 2*(edge_x)
+        assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
+        self.height = self.y - 2*(edge_y)
+        assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
+
+        # Some references based on width/height, to make placing a bit nicer
+        self.TOP = edge_y
+        self.BOTTOM = self.height - edge_y - 1
+        self.LEFT = edge_x
+        self.RIGHT = self.width - edge_x - 1
+
+        # Cumulative x/y tracking.
+        self.x_acc = 0
+        self.y_acc = 0
 
     # Rectangular character function.
     def rd(self, pos, glyph, col=0, attr=None):
@@ -177,21 +198,6 @@ class View():
         self.cline(glyph*(self.x-1))
         # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,1))
-
-    # KEYIN
-
-    # Recurse through children trying their keyin functions,
-    # until you've done your own.
-    def _keyin(self, c):
-        for child in self.children:
-            if child._keyin(c) is False:
-                return False
-        return self.keyin(c)
-
-    # Handle keyin. Abstract.
-    def keyin(self, c):
-        return True
-
 
 class MainMap(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
