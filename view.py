@@ -155,26 +155,51 @@ class View(Component):
 
     # Rectangular string function.
     def rds(self, pos, string, col=0, attr=None):
+        # The max string we could actually fit.
+        #max = self.width - self.x_acc
+        #assert max > len(string), "rds function tried to print a string that was too long: %s, length %s" % (string, len(string))
         x, y = pos
         draw_x = x + self.LEFT
         draw_y = y + self.TOP
-        assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
+        assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw %s out of bounds: %s at %s." % (string, self.__dict__, (draw_x, draw_y))
         self.window.addstr(draw_y, draw_x, string, self.attr(col, attr))
 
-    # Draw a line; only relevant for text-y views.
-    # TODO: Handle multi-line strings!
-    def line(self, str, col=None, attr=None):
+    # Draw a line in rectangular coords - requires linebreaking.
+    def rdl(self, pos, line, col=None, attr=None, indent=0):
+        # Maximum number of chars we'll try to print in a line.
+        max = self.width - self.x_acc - 1
+
+        if len(line) > max:
+            list = re.split('(\W+)', line)
+            string = ""
+
+            for word in list:
+                if len(word) + len(string) > max:
+                    self.rds(pos, string, col, attr)
+                    pos = add(pos, (0,1))
+                    self.y_acc += 1
+                    string = " "*indent
+                if len(string) == 0 and word.isspace() is True:
+                    continue
+                string += word
+        else:
+            string = line
+
+        self.rds(pos, string, col, attr)
+
+    # Draw a simple line; only relevant for text-y views.
+    def line(self, string, col=None, attr=None, indent=0):
         pos = (self.x_acc, self.y_acc)
-        self.rds(pos, str, col, attr)
+        self.rdl(pos, string, col, attr, indent)
         self.y_acc += 1
 
     # Print a line with multiple colors
     # TODO: Handle multi-line strings!
     # TODO: Handle other attributes.
-    def cline(self, str, col=None, attr=None):
-        strlen = 0
+    def cline(self, string, col=None, attr=None, indent=0):
+        position = 0
         curr_col = col
-        substrs = re.split('<(/*\w*-?\w*)>',str)
+        substrs = re.split('<(/*\w*-?\w*)>',string)
         for substr in substrs:
             if substr == '':
                 continue;
@@ -183,20 +208,25 @@ class View(Component):
             elif Color.pair.get(substr, None) is not None:
                 curr_col = substr
             else:
-                pos = (self.x_acc + strlen, self.y_acc)
-                self.rds(pos, substr, curr_col, attr)
-                strlen += len(substr)
+                y_acc = self.y_acc
+                pos = (self.x_acc + position, self.y_acc)
+                self.rdl(pos, substr, curr_col, attr, indent)
+                if y_acc == self.y_acc:
+                    position += len(substr)
+                else:
+                    position = 0
         # Only increment y at the end of the line.
         self.y_acc += 1
 
     # Simple border function (no margin, border 1, padding 1).
     def border(self, glyph):
-        self.cline(glyph*(self.x))
+        #exit(self.__dict__)
+        self.rds((0, 0), glyph*(self.x))
         while self.y_acc < self.y-1:
             self.rd((0, self.y_acc), glyph)
             self.rd((self.x-1, self.y_acc), glyph)
             self.y_acc += 1
-        self.cline(glyph*(self.x-1))
+        self.rds((0,0), glyph*(self.x-1))
         # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,1))
 
@@ -331,8 +361,8 @@ class Examine(View):
         pos = self.parent.pos
         cell = self.map.cell(pos)
         if cell is not None:
-            str = cell.contents()
-            self.line(str)
+            string = cell.contents()
+            self.line(string)
         else:
             self.line("There's... nothing there. Nothing at all.")
 
@@ -514,20 +544,20 @@ class Chargen(View):
             self.cline(chargen["final"])
             self.y_acc += 2
             level = self.y_acc
-            self.cline("What you've told\n the stranger:")
+            self.cline("What you've told the stranger:")
             self.y_acc += 1
             # TODO: Duplicated code.
             for event in self.lifepath.events:
                 # We only want events with short descriptions. If they take a certain number of years, list that.
                 if event.short is not None:
-                    str = "You %s" % event.short
+                    string = "You %s" % event.short
                     if event.years is not None:
-                        str += " "
+                        string += " "
                         if event.years == 1:
-                            str += "(%s year)" % event.years
+                            string += "(%s year)" % event.years
                         else:
-                            str += "(%s years)" % event.years
-                    self.cline(str+".")
+                            string += "(%s years)" % event.years
+                    self.cline(string+".")
             old = self.y_acc
             self.y_acc = level
 
@@ -558,7 +588,7 @@ class Chargen(View):
 
         # Go back up to where we started, but this time, to the right.
         self.y_acc = y_save
-        self.x_acc = 20
+        self.x_acc = 25
 
         # Print the text from the currently highlighted event.
         if self.current is None:
@@ -577,14 +607,14 @@ class Chargen(View):
             for event in self.lifepath.events:
                 # We only want events with short descriptions. If they take a certain number of years, list that.
                 if event.short is not None:
-                    str = "%s" % event.short
+                    string = "%s" % event.short
                     if event.years is not None:
-                        str += " "
+                        string += " "
                         if event.years == 1:
-                            str += "(%s year)" % event.years
+                            string += "(%s year)" % event.years
                         else:
-                            str += "(%s years)" % event.years
-                    line += str+" -> "
+                            string += "(%s years)" % event.years
+                    line += string+" -> "
             line += "?\n"
             self.cline(line)
             self.y_acc += 4
