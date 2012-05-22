@@ -213,40 +213,20 @@ class MainMap(View):
         return
 
     def keyin(self, c):
-        # TODO: Fix spacing here.
-        # Return true if no keyin was used; otherwise, false.
-        if c == ord('I'):
-            child = self.spawn(Inventory(self.screen, self.width, self.height))
-            return False
-
-        elif c == ord('v'):
-            if self.cursor is None:
-                self.cursor = Cursor(self, self.player.pos)
-                child = self.spawn(Examine(self.screen, self.width, 1, self.LEFT, self.BOTTOM))
-                self.cursor.child = child
+        # TODO: Allow multiple open children.
+        if not self.children:
+            if c == ord('I'):
+                self.spawn(Inventory(self.screen, self.width, self.height))
                 return False
 
-        # TODO: Move this elsewhere, it doesn't belong.
-        if self.cursor is not None:
-            if c == ord(' '):
-                self.cursor.child.suicide()
-                self.cursor = None
-            elif c == ord('7'):
-                self.cursor.scroll(NW)
-            elif c == ord('4'):
-                self.cursor.scroll(CW)
-            elif c == ord('1'):
-                self.cursor.scroll(SW)
-            elif c == ord('9'):
-                self.cursor.scroll(NE)
-            elif c == ord('6'):
-                self.cursor.scroll(CE)
-            elif c == ord('3'):
-                self.cursor.scroll(SE)
-            else: return True
-            return False
+            elif c == ord('v'):
+                if self.cursor is None:
+                    self.cursor = self.spawn(Cursor(self.player.pos))
+                    self.cursor.cursor = self.cursor # Weird, right? But it can't be passed down automatically because it didn't exist.
+                    self.cursor.spawn(Examine(self.screen, self.width, 1, self.LEFT, self.BOTTOM))
+                    return False
 
-        else:
+        if True is True:#else:
         # TODO: Move these!
             if c == ord('7'):
                 self.map.player.do(NW)
@@ -306,12 +286,6 @@ class MainMap(View):
 
     def draw(self):
         cells = area(self.map.viewrange, self.player.pos)
-        #hex.iterator(hexes, self.player.pos[0], self.player.pos[1], self.map.viewrange)
-
-        #minX = 0
-        #maxX = self.map.width-1
-        #minY = 0
-        #maxY = self.map.height-1
 
         for cell in cells:
             if self.map.valid(cell) is not False:
@@ -321,12 +295,8 @@ class MainMap(View):
                 col = "red-black"
             self.hd(cell, glyph, col)
 
-        # Draw the map cursor if it's present.
-        if self.cursor is not None:
-            c = self.cursor
-            self.offset_hd(c.pos, WW, c.style[0], c.color(), None)
-            self.offset_hd(c.pos, EE, c.style[1], c.color(), None)
-
+# A single line of text at the bottom of the screen describing what your
+# cursor is currently over.
 # TODO: Update for FOV
 class Examine(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
@@ -342,7 +312,7 @@ class Examine(View):
         return False
 
     def draw(self):
-        pos = self.cursor.pos
+        pos = self.parent.pos
         str = self.map.cell(pos).contents()
         self.line(str)
 
@@ -493,7 +463,6 @@ class Chargen(View):
         # Character pane:
         self.x_acc = 60
         self.y_acc = 4
-
         # TODO: Don't calculate this each time, jeez!
         self.cline("Your character:")
         if self.current is not None:
