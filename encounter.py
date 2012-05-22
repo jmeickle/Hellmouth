@@ -44,11 +44,19 @@ class Encounter:
 
     # Return an actor at a pos tuple.
     def actor(self, pos):
-        return self.cells[pos].actor
+        cell = self.cell(pos)
+        if cell is None:
+            return None
+        else:
+            return cell.actor
 
     # Return terrain at a pos tuple.
     def terrain(self, pos):
-        return self.cells[pos].terrain
+        cell = self.cell(pos)
+        if cell is None:
+            return None
+        else:
+            return cell.terrain
 
     # TODO: FIGURE OUT THIS SECTION, WHAT THE FUCK
     # Place an object on the map.
