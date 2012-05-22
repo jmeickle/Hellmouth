@@ -18,7 +18,7 @@ def r1d6():
 
 # Basic 3d6 roll
 def r3d6():
-    return sum(_roll(r1d6, 3))
+    return sum(roll(r1d6, 3))
 
 # Return n rolls of either d6 or 3d6, with per-roll modifiers
 def roll(func, n, per=0):
