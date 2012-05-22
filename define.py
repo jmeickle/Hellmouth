@@ -54,10 +54,10 @@ labels = {
     "HP" : ("HP", "Hit Points"),
     "FP" : ("FP", "Fatigue", "Fatigue Points"),
     "MP" : ("MP", "Mana", "Mana Points"),
-    "Easy" : ("E", "Easy"),
-    "Average" : ("A", "Average"),
-    "Hard" : ("H", "Hard"),
-    "Very Hard" : ("VH", "Very Hard"),
+    "E" : ("E", "Easy"),
+    "A" : ("A", "Average"),
+    "H" : ("H", "Hard"),
+    "VH" : ("VH", "Very Hard"),
 }
 
 # Skill difficulty.
