@@ -24,9 +24,17 @@ class View():
         self.height = y
         self.x_acc = 0
         self.y_acc = 0
+
+        # Logic
         self.alive = True
         self.children = []
         self.parent = None
+
+        # References to make placing a bit nicer
+        self.TOP = 0
+        self.RIGHT = self.width - 1
+        self.BOTTOM = self.height - 1
+        self.LEFT = 0
 
     # Utility functions shared by all views
 
@@ -68,8 +76,17 @@ class View():
 
     # Spawn child and return it.
     def spawn(self, child):
-        self.children.append(child)
         child.parent = self
+
+        # Some information is passed down for convenience:
+        if self.cursor:
+            child.cursor = self.cursor
+        if self.map:
+            child.map = self.map
+        if self.player:
+            child.player = self.player
+
+        self.children.append(child)
         return child
 
     def suicide(self):
