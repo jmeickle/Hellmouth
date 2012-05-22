@@ -109,7 +109,7 @@ class Cell:
             return self.glyph, self.color
 
     # TODO: Options for what to list.
-    def describe(self):
+    def contents(self):
         str = ""#You see here"
         list = []
         if self.actor is not None:
@@ -242,6 +242,8 @@ if __name__ == '__main__':
     # Prepare the map.
     map.loadmap()
 
+    #print map.cells
+    print len(map.cells)
     #print map.cells
     # More advanced: add an actor   
     #from actor import Actor

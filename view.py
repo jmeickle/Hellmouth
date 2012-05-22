@@ -160,7 +160,6 @@ class MainMap(View):
             if self.cursor is None:
                 self.cursor = Cursor(self, self.player.pos)
                 child = self.spawn(Examine(self.screen, self.width, 1, 0, 23))
-                exit(self.__dict__)
                 self.cursor.child = child
                 return False
 
@@ -268,7 +267,7 @@ class MainMap(View):
             c = self.cursor
             self.offset_hd(c.pos, WW, c.style[0], c.color(), None)
             self.offset_hd(c.pos, EE, c.style[1], c.color(), None)
-            return False
+#                exit(self.__dict__)
 
         #self.window.refresh()
 
@@ -276,13 +275,12 @@ class MainMap(View):
 class Examine(View):
     def __init__(self, window, x, y, startx=0, starty=0):
         View.__init__(self, window, x, y, startx, starty)
-        self.parent = None
 
     def draw(self):
         self.reset()
         pos = self.parent.cursor.pos
         map = self.parent.map
-        str = map.cell(pos).describe()
+        str = map.cell(pos).contents()
         self.line(str)
 
 class Stats(View):
