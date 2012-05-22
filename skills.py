@@ -1,36 +1,5 @@
 from define import *
 
-# Fields for skills:
-# 'name' (str): More friendly display name.
-# 'attribute' (str): What the skill is based on.
-# 'difficulty' (str): How hard the skill is to learn.
-# 'text' (str): Short, flavorful description of the skill.
-# 'defaults' (list of tuples): An associated skill and the penalty when defaulting from it.
-skills = {
-"Brawling" : {
-    "name"       : "Brawling",
-    "attribute"  : "Dexterity",
-    "difficulty" : "Easy",
-    "text"       : "Hit stuff good",
-    "defaults"   : [("Karate", -3), ("Judo", -3)],
-},
-"Judo" : {
-    "name"       : "Brawling",
-    "attribute"  : "Dexterity",
-    "difficulty" : "Hard",
-    "text"       : "Hit stuff good",
-    "defaults"   : [("Brawling", -3)],
-},
-"Karate" : {
-    "name"       : "Brawling",
-    "attribute"  : "Dexterity",
-    "difficulty" : "Very Hard",
-    "text"       : "Hit stuff good",
-    "defaults"   : [],
-},
-# End skill dictionary
-}
-
 # Calculate ranks in skills based on number of points spent and their difficulty.
 def calculate_ranks(actor):
     # Reset existing ranks.
@@ -82,6 +51,84 @@ def calculate_defaults(actor):
             if new_level > current_level:
                 actor.base_skills[current_skill] = (new_level, (default_skill, default_modifier))
 
+# DATA. Eventually will be moved to another file.
+
+# Fields for skills:
+# 'type' (str): The skill category it falls under.
+# 'attribute' (str): What the skill is based on.
+# 'difficulty' (str): How hard the skill is to learn.
+# 'text' (str): Short, flavorful description of the skill.
+# 'defaults' (list of tuples): An associated skill and the penalty when defaulting from it.
+skills = {
+# Unarmed skills
+"Brawling" : {
+    "type"       : "Unarmed",
+    "attribute"  : "DX",
+    "difficulty" : "E",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Karate", -3), ("Judo", -3)],
+},
+"Judo" : {
+    "type"       : "Unarmed",
+    "attribute"  : "DX",
+    "difficulty" : "H",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Brawling", -3)],
+},
+"Karate" : {
+    "type"       : "Unarmed",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+# Melee skills
+"Shortsword" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+"Broadsword" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+"Axe" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+# Magic skills
+"Fire Magic" : {
+    "type"       : "Magic",
+    "attribute"  : "Intelligence",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+"Unarmed/Karate" : {
+    "type"       : "Karate",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+"Unarmed/Karate" : {
+    "type"       : "Karate",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+# End skill dictionary
+}
+
 # Skill test code.
 if __name__ == "__main__":
     # Import necessary classes.
@@ -117,3 +164,4 @@ if __name__ == "__main__":
             print "(default: %s%d)" % (level[1][0], level[1][1])
         else:
             print ""
+
