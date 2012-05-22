@@ -5,7 +5,7 @@ def calculate_ranks(actor):
     # Reset existing ranks.
     actor.skills = {}
     # Use the skill dictionary to fill out ranks.
-    for skill, points in actor.points["Skills"].items():
+    for skill, points in actor.points["skills"].items():
         attribute = skills[skill]["attribute"]
         difficulty = difficulties.get(skills[skill]["difficulty"])
         spent = 0
@@ -107,21 +107,21 @@ skills = {
 # Magic skills
 "Fire Magic" : {
     "type"       : "Magic",
-    "attribute"  : "Intelligence",
+    "attribute"  : "IQ",
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
     "defaults"   : [],
 },
-"Unarmed/Karate" : {
-    "type"       : "Karate",
+"Ice Magic" : {
+    "type"       : "Magic",
     "attribute"  : "DX",
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
     "defaults"   : [],
 },
-"Unarmed/Karate" : {
-    "type"       : "Karate",
-    "attribute"  : "DX",
+"Necromancy" : {
+    "type"       : "Magic",
+    "attribute"  : "IQ",
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
     "defaults"   : [],
@@ -156,10 +156,10 @@ if __name__ == "__main__":
         print "%s: %s points" % (skill, points)
     print "==RANKS=="
     for skill, info in actor.skills.items():
-        print "%s (%s/%s): %s%+d" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1])
+        print "%s (%s/%s): %s%+d" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1])
     print "==SKILLS=="
     for skill, level in actor.base_skills.items():
-        print "%s (%s/%s) - %s" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0]),
+        print "%s (%s/%s) - %s" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0]),
         if level[1] is not False:
             print "(default: %s%d)" % (level[1][0], level[1][1])
         else:
