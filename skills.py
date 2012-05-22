@@ -148,7 +148,7 @@ if __name__ == "__main__":
     calculate_defaults(actor)
 
     # Print out a character sheet:
-    print "==ATTRIBUTESS=="
+    print "==ATTRIBUTES=="
     for stat, points in actor.attributes.items():
         print "%s: %s" % (stat, points)
     print "==POINTS=="
