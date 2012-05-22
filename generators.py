@@ -10,20 +10,20 @@ generators = {
     "skills" : {
         "melee" : { "options" : {
             "Unarmed" : { "weight" : 10, "options" : {
-                 "Unarmed/Brawling" : {},
-                 "Unarmed/Judo" : {},
-                 "Unarmed/Karate" : {},
+                 "Brawling" : {},
+                 "Judo" : {},
+                 "Karate" : {},
             }},
             "Melee" : { "options" : {
-                "Melee/Shortsword" : {},
-                "Melee/Broadsword" : {},
-                "Melee/Axe" : {"weight": 50},
+                "Shortsword" : {},
+                "Broadsword" : {},
+                "Axe" : {"weight": 50},
             }},
         }},
         "magic" : { "weight" : 10, "options" : {
-            "Magic/Fire Magic" : {},
-            "Magic/Ice Magic" : {},
-            "Magic/Necromancy" : {"weight" : 10},
+            "Fire Magic" : {},
+            "Ice Magic" : {},
+            "Necromancy" : {"weight" : 10},
         }},
     }, #</skills>
 } #</default>
