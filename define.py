@@ -1,3 +1,18 @@
+# HACK: Define termsize rather than figuring it out.
+TERM_X = 80
+TERM_Y = 24
+
+# Define some screen region X and Ys.
+MAP_START_X = 0 
+MAP_START_Y = 0
+MAP_X = 45
+MAP_Y = TERM_Y
+
+PANE_START_X = MAP_X
+PANE_START_Y = 0
+PANE_X = TERM_X - MAP_X
+PANE_Y = TERM_Y
+
 # Location statuses
 UNHURT = 0
 SCRATCHED = 1

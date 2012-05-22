@@ -10,11 +10,6 @@ from encounter import Encounter, Terrain
 from key import keyin
 
 def main(stdscr):
-
-    # HACK: Define termsize rather than figuring it out.
-    term_x = 80
-    term_y = 24
-
     # Make the cursor invisible.
     curses.curs_set(0)
     # Use raw input.
@@ -23,7 +18,7 @@ def main(stdscr):
     # Imports that can't happen until after curses is init'd. 
     from view import MainMap, Stats, Chargen, Status, Log, View
     # HACK: Display an intro screen.
-#    intro = View(stdscr, term_x, term_y, 0, 0)
+#    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
 #    intro.x_acc = 10
 #    intro.line("")
 #    intro.line('7DRL 2012 ENTRY "HELLMOUTH" HAS BEEN TURNED INTO MEAT')
@@ -105,29 +100,28 @@ def main(stdscr):
     mainmap_width = 45
 
     # Map screen init
-    mainmap = MainMap(stdscr, mainmap_width, term_y, 0, 0)
+    mainmap = MainMap(stdscr, MAP_X, MAP_Y)
     mainmap.map = map
     mainmap.player = pc
     # Just a hook. Does nothing now.
     mainmap.ready()
 
     # Status window init
-    status_size = 5
-    status = Status(stdscr, 80-mainmap_width-status_size, status_size, mainmap_width-status_size, 0)
+    status_width = 10
+    status_lines = 5
+    status = Status(stdscr, status_width, status_lines, PANE_START_X-status_width, PANE_START_Y)
 
     # Chargen window init
-    chargen = Chargen(stdscr, term_x, term_y, 0, 0)
+    chargen = Chargen(stdscr, TERM_X, TERM_Y)
     chargen.player = pc
 
     # Stats window init
-    # HACK:
-    spacing = 2
     stat_height = 11
-    stats = Stats(stdscr, 80-mainmap_width-spacing, stat_height, mainmap_width+spacing, 0)
+    stats = Stats(stdscr, PANE_X, stat_height, PANE_START_X, PANE_START_Y)
     stats.player = pc
 
     # Log window init
-    log = Log(stdscr, 80-mainmap_width-status_size, term_y-stat_height, mainmap_width+spacing, stat_height)
+    log = Log(stdscr, PANE_X, PANE_Y-stat_height, PANE_START_X, PANE_START_Y + stat_height)
     map.log = log
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
@@ -219,7 +213,7 @@ def main(stdscr):
     # HACK: If we get here, we're displaying the win screen.
     stdscr.clear()
 
-    intro = View(stdscr, term_x, term_y, 0, 0)
+    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
     intro.x_acc = 10
     intro.line("")
     if pc.hp > 0:
