@@ -825,17 +825,100 @@ class Selector():
             self.action = action
             self.text = text
 
-class Cursor():
-    def __init__(self, parent, pos):
-        self.parent = parent
+class Cursor(Component):
+    styles = {
+        "braces" : [("{", WW), ("}", EE)],
+    }
+
+    def __init__(self, pos):
+        Component.__init__(self)
         self.pos = pos
-        self.style = ("{","}")
+        self.style = "braces"
+
+    def keyin(self, c):
+        if c == ord(' '):
+            self.parent.cursor = None
+            self.suicide()
+        elif c == ord('7'):
+            self.scroll(NW)
+        elif c == ord('4'):
+            self.scroll(CW)
+        elif c == ord('1'):
+            self.scroll(SW)
+        elif c == ord('9'):
+            self.scroll(NE)
+        elif c == ord('6'):
+            self.scroll(CE)
+        elif c == ord('3'):
+            self.scroll(SE)
+        else: return True
+        return False
 
     # Move the cursor (hexagonally).
     def scroll(self, dir):
-        self.pos = (self.pos[0] + dir[0], self.pos[1] + dir[1])
+        self.pos = add(self.pos, dir)
+
+    def draw(self):
+        color = self.color()
+        for glyph, dir in Cursor.styles[self.style]:
+            self.parent.offset_hd(self.pos, dir, glyph, color)
 
     # This is a function so that the cursor color can change in response to
     # the hex that it's targeting.
+
+    # TODO: ask the cells how they want to be drawn, instead.
     def color(self):
-        return "magenta-black"
+        cell = self.map.cell(self.pos)
+        if cell is not None:
+            if cell.actor is not None:
+                if cell.actor.controlled is True:
+                    return "green-black"
+                else:
+                    return "red-black"
+            else:
+                if cell.terrain or cell.items:
+                    return "yellow-black"
+                else:
+                    return "magenta-black"
+
+class CharacterSheet(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
+
+    def keyin(self, c):
+        if c == ord(' '):
+            self.suicide()
+        else:
+            return True
+        return False
+
+    def draw(self):
+        self.border("~")
+        #self.window.bkgd("_", self.attr("white-black"))
+        pos = self.cursor.pos
+        actor = self.map.actor(pos)
+        if actor is None:
+            return True
+
+        # TODO: Make this a describe method of the actor.
+        # Print out a character sheet:
+        self.cline("Viewing %s" % actor.name)
+        self.cline("")
+        self.cline("--Attributes--")
+        for stat, points in actor.attributes.items():
+            self.cline("%s: %s" % (stat, points))
+        self.cline("")
+        self.cline("--Points--")
+        for skill, points in actor.points["skills"].items():
+            self.cline("%s: %s points" % (skill, points))
+        self.cline("")
+        self.cline("--Skill Ranks--")
+        for skill, info in actor.skills.items():
+            self.cline("%s (%s/%s): %s%+d" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1]))
+        self.cline("")
+        self.cline("--Skill Levels--")
+        for skill, level in actor.base_skills.items():
+            str = "%s (%s/%s) - %s" % (skill, abbreviations[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0])
+            if level[1] is not False:
+                str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
+            self.cline(str)
