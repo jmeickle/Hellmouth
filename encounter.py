@@ -40,7 +40,7 @@ class Encounter:
 
     # Return a cell at a pos tuple.
     def cell(self, pos):
-        return self.cells[pos]
+        return self.cells.get(pos)
 
     # Return an actor at a pos tuple.
     def actor(self, pos):
