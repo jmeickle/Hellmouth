@@ -923,11 +923,11 @@ class CharacterSheet(View):
         self.cline("")
         self.cline("--Skill Ranks--")
         for skill, info in actor.skills.items():
-            self.cline("%s (%s/%s): %s%+d" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1]))
+            self.cline("%s (%s/%s): %s%+d" % (skill, labels[skills[skill]["attribute"]], terms[skills[skill]["difficulty"]], terms[info[0]], info[1]))
         self.cline("")
         self.cline("--Skill Levels--")
         for skill, level in actor.base_skills.items():
-            str = "%s (%s/%s) - %s" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0])
+            str = "%s (%s/%s) - %s" % (skill, labels[skills[skill]["attribute"]], terms[skills[skill]["difficulty"]], level[0])
             if level[1] is not False:
                 str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             self.cline(str)

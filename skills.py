@@ -156,10 +156,10 @@ if __name__ == "__main__":
         print "%s: %s points" % (skill, points)
     print "==RANKS=="
     for skill, info in actor.skills.items():
-        print "%s (%s/%s): %s%+d" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1])
+        print "%s (%s/%s): %s%+d" % (skill, labels[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], abbreviations[info[0]], info[1])
     print "==SKILLS=="
     for skill, level in actor.base_skills.items():
-        print "%s (%s/%s) - %s" % (skill, terms[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0]),
+        print "%s (%s/%s) - %s" % (skill, labels[skills[skill]["attribute"]], abbreviations[skills[skill]["difficulty"]], level[0]),
         if level[1] is not False:
             print "(default: %s%d)" % (level[1][0], level[1][1])
         else:
