@@ -20,44 +20,52 @@ INJURED = 2
 CRIPPLED = 3
 SEVERED = -1
 
-# Damage types
+# Damage types.
 damage_types = {
-"aff"  : ("affliction", "affliction"),
-"burn" : ("burn", "burning"),
-"cor"  : ("corrosion", "corrosion"),
-"cr"   : ("crush", "crushing"),
-"cut"  : ("cut", "cutting"),
-"fat"  : ("fatigue", "fatigue"),
-"imp"  : ("impale", "impaling"),
-"pi"   : ("pierce", "piercing"),
-"tox"  : ("toxic", "toxic"),
-# Not really damage, but.
-"thr"  : ("thrust", "thrusting"),
-"sw"   : ("swing", "swinging"),
+    "aff"  : ("affliction", "affliction"),
+    "burn" : ("burn", "burning"),
+    "cor"  : ("corrosion", "corrosion"),
+    "cr"   : ("crush", "crushing"),
+    "cut"  : ("cut", "cutting"),
+    "fat"  : ("fatigue", "fatigue"),
+    "imp"  : ("impale", "impaling"),
+    "pi"   : ("pierce", "piercing"),
+    "tox"  : ("toxic", "toxic"),
+    # Not really damage, but.
+    "thr"  : ("thrust", "thrusting"),
+    "sw"   : ("swing", "swinging"),
 }
 
-abbreviations = {
-"Speed" : "Spd.",
-"Perception" : "Per.",
-"Strength" : "ST",
-"Dexterity" : "DX",
-"Intelligence" : "IQ",
-"Health" : "HT",
-"Hit Points" : "HP",
-"Fatigue Points" : "FP",
-"Mana Points" : "MP",
-"Easy" : "E",
-"Average" : "A",
-"Hard" : "H",
-"Very Hard" : "VH",
+# Labels for in-game attributes. Arranged as
+#
+#     key : (names from shortest to longest)
+#
+# Either of those may be none.
+
+labels = {
+    "ST" : ("ST", "Strength"),
+    "DX" : ("DX", "Dexterity"),
+    "IQ" : ("IQ", "Intelligence"),
+    "HT" : ("HT", "Health"),
+    "Will" : ("Will",),
+    "Perception" : ("Per.", "Perception"),
+    "Move" : ("Move",),
+    "Speed" : ("Spd.", "Speed"),
+    "HP" : ("HP", "Hit Points"),
+    "FP" : ("FP", "Fatigue", "Fatigue Points"),
+    "MP" : ("MP", "Mana", "Mana Points"),
+    "Easy" : ("E", "Easy"),
+    "Average" : ("A", "Average"),
+    "Hard" : ("H", "Hard"),
+    "Very Hard" : ("VH", "Very Hard"),
 }
 
-# Skill difficulties
+# Skill difficulty.
 difficulties = {
-"E" : 0,
-"A" : -1,
-"H" : -2,
-"V" : -3
+    "E" : 0,
+    "A" : -1,
+    "H" : -2,
+    "VH" : -3
 }
 
 # Types of point expenditures
