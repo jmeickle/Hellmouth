@@ -121,7 +121,7 @@ def main(stdscr):
 
     # Stats window init
     stat_height = 11
-    stats = pane.spawn(Stats(stdscr, PANE_X, stat_height))
+    stats = pane.spawn(Stats(stdscr, PANE_X, stat_height, PANE_START_X, PANE_START_Y))
     stats.player = pc
 
     # Log window init
