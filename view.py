@@ -89,12 +89,14 @@ class View():
         self.children.append(child)
         return child
 
+    # Kills children (recursively) and then itself.
     def suicide(self):
         for child in self.children:
             child.suicide()
         if self.parent is not None:
             self.parent.children.remove(self)
-        self.alive = False
+        else:
+            self.alive = False
 
     # Set up curses attributes on a string
     # TODO: Handle anything but color
@@ -294,7 +296,7 @@ class Examine(View):
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
-            child = self.spawn(CharacterSheet(self.screen, X_PANE, Y_PANE))
+            child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
         elif c == ord(' '):
             child.suicide()
         else:
@@ -713,8 +715,8 @@ class Inventory(View):
 
     # Just so this doesn't have to be passed in.
     def reset(self):
-        self.x_acc = 0
-        self.y_acc = 0
+        super().reset(self)
+
         self.items = self.player.items()
 
         if self.selector is None:
