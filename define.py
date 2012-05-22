@@ -18,7 +18,7 @@ damage_types = {
 "tox"  : ("toxic", "toxic"),
 # Not really damage, but.
 "thr"  : ("thrust", "thrusting"),
-"sw"   : ( "swing", "swinging"),
+"sw"   : ("swing", "swinging"),
 }
 
 abbreviations = {
@@ -37,9 +37,13 @@ abbreviations = {
 "Very Hard" : "VH",
 }
 
+# Skill difficulties
 difficulties = {
-"Easy" : 0,
-"Average" : -1,
-"Hard" : -2,
-"Very Hard" : -3
+"E" : 0,
+"A" : -1,
+"H" : -2,
+"V" : -3
 }
+
+# Types of point expenditures
+point_types = ("attributes", "skills", "techniques", "traits")
