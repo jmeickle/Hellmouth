@@ -310,19 +310,22 @@ class Actor:
         else:
             return "%s-black" % loc.color()
 
-    # Return how many points of wounds a location has. Optional parameter: wrap that
-    # string in a color tag.
+    # Calculate how many points of wounds a location has, then return
+    # it as a single character. Optional parameter: wrap the character
+    # in a color tag.
     def wound(self, loc, col=True):
         loc = self.body.locs.get(loc, None)
         if loc is None:
-            return 0
+            return "?"
         else:
             wounds = sum(loc.wounds)
+            if wounds == 0:
+                return " "
             col = loc.color()
             if loc.status() == SEVERED:
                 wounds = 'X'
             elif wounds >= 10:
-                wounds = '*'
+                wounds = '!'
             if col is True:
                 return "<%s-black>%s</>" % (col, wounds)
             else:
@@ -745,11 +748,11 @@ class HitLoc:
 
     # Return a color for the limb status.
     def color(self):
-        if self.status() == SEVERED:     return "cyan"
+        if self.status() == SEVERED:     return "white"
         elif self.status() == CRIPPLED:  return "magenta"
         elif self.status() == INJURED:   return "red"
         elif self.status() == SCRATCHED: return "yellow"
-        else:                            return "white"
+        else:                            return "green"
 
     # TODO: Move the limb glyph code here.
 
