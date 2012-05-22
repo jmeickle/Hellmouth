@@ -15,69 +15,27 @@ from lifepath import Lifepath
 from lifepath_events import eventdata
 
 class View():
-    def __init__(self, window, x, y, startx=0, starty=0):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
         self.screen = window
-        self.window = window.subwin(y, x, starty, startx)
-        self.x = startx
-        self.y = starty
-        self.width = x
-        self.height = y
-        self.x_acc = 0
-        self.y_acc = 0
+        self.window = window.subwin(y, x, start_y, start_x)
+        self.x = x
+        self.y = y
+        self.start_x = start_x
+        self.start_y = start_y
 
         # Logic
         self.alive = True
         self.children = []
         self.parent = None
 
-        # References to make placing a bit nicer
-        self.TOP = 0
-        self.RIGHT = self.width - 1
-        self.BOTTOM = self.height - 1
-        self.LEFT = 0
+        # Set up drawing variables (redone each draw)
+        self._reset()
 
     # Utility functions shared by all views
 
-    # Draw self. Abstract.
-    def draw(self):
-        return True
-
-    # Draw yourself, then recurse through your children to draw them.
-    def _draw(self):
-        if self.draw() is not False:
-            for child in self.children:
-                if child._draw() is False:
-                    return False
-            return True
-        else:
-            return False
-
-    # TODO: Actually fix this.
-    # Returns true if a screen coordinate cannot be drawn to.
-    def undrawable(self, pos):
-        return False
-        x, y = pos
-        if x > 0 or y > 0:
-            return True
-        if x >= self.width or y >= self.height:
-            return True
-
-    # Handle keyin. Abstract.
-    def keyin(self, c):
-        return True
-
-    # Recurse through children trying their keyin functions,
-    # until you've done your own.
-    def _keyin(self, c):
-        for child in self.children:
-            if child._keyin(c) is False:
-                return False
-        return self.keyin(c)
-
+    # LOGIC:
     # Spawn child and return it.
     def spawn(self, child):
-        child.parent = self
-
         # Some information is passed down for convenience:
         if self.cursor:
             child.cursor = self.cursor
@@ -86,6 +44,7 @@ class View():
         if self.player:
             child.player = self.player
 
+        child.parent = self
         self.children.append(child)
         return child
 
@@ -97,6 +56,61 @@ class View():
             self.parent.children.remove(self)
         else:
             self.alive = False
+
+    # DRAWING:
+
+    # Draw yourself, then recurse through your children to draw them.
+    def _draw(self):
+        self._reset()
+        self.before_draw()
+        if self.draw() is not False:
+            for child in self.children:
+                if child._draw() is False:
+                    return False
+            return True
+        else:
+            return False
+
+    # Resets drawing-related variables. Run each draw.
+    def _reset(self, margin=(0,0), border=(0,0), padding=(0,0)):
+        # Box model.
+        margin_x, margin_y = margin
+        border_x, border_y = border
+        padding_x, padding_y = padding
+
+        # Available width/height.
+        self.width = self.x - 2*(margin_x + border_x + padding_x)
+        assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
+        self.height = self.y - 2*(margin_y + border_y + padding_y)
+        assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
+
+        # Some references based on width/height, to make placing a bit nicer
+        self.TOP = 0
+        self.RIGHT = self.width - 1
+        self.BOTTOM = self.height - 1
+        self.LEFT = 0
+
+        # Cumulative x/y tracking.
+        self.x_acc = 0
+        self.y_acc = 0
+
+    # Do something before drawing yourself. Abstract.
+    def before_draw(self):
+        return True
+
+    # Draw self. Abstract.
+    def draw(self):
+        return True
+
+    # TODO: Actually fix this.
+    # Returns true if a screen coordinate cannot be drawn to.
+    def undrawable(self, pos):
+        return False
+        x, y = pos
+        if x > 0 or y > 0:
+            return True
+        if x >= self.width or y >= self.height:
+            return True
 
     # Set up curses attributes on a string
     # TODO: Handle anything but color
@@ -129,10 +143,6 @@ class View():
         self.rds(pos, str, col, attr)
         self.y_acc += 1
 
-    def reset(self):
-        self.x_acc = 0
-        self.y_acc = 0
-
     # Print a line with multiple colors
     # TODO: Handle multi-line strings!
     # TODO: Handle other attributes.
@@ -154,9 +164,34 @@ class View():
         # Only increment y at the end of the line.
         self.y_acc += 1
 
+    # Simple border function (no margin, border 1, padding 1)
+    def border(self, glyph):
+        cline(glyph*self.width)
+        while self.y_acc < self.height:
+            self.rd((self.LEFT, y_acc), glyph)
+            self.rd((self.RIGHT, y_acc), glyph)
+        cline(glyph*self.width)
+        # Margin, border, padding
+        self._reset((0,0), (1,1), (1,1))
+
+    # KEYIN
+
+    # Recurse through children trying their keyin functions,
+    # until you've done your own.
+    def _keyin(self, c):
+        for child in self.children:
+            if child._keyin(c) is False:
+                return False
+        return self.keyin(c)
+
+    # Handle keyin. Abstract.
+    def keyin(self, c):
+        return True
+
+
 class MainMap(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
         self.map = None
         self.player = None
         # -1 to account for 0,0 start
@@ -291,32 +326,30 @@ class MainMap(View):
 
 # TODO: Update for FOV
 class Examine(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
+            if self.children:
+                return True
             child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
-        elif c == ord(' '):
-            child.suicide()
         else:
             return True
         return False
 
     def draw(self):
-        self.reset()
         pos = self.cursor.pos
         str = self.map.cell(pos).contents()
         self.line(str)
 
 
 class Stats(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
-        self.reset()
         # Brevity!
         p = self.player
 
@@ -391,8 +424,8 @@ class Stats(View):
 
 # TODO: Chargen actually affects stats.
 class Chargen(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
         self.player = None
         self.lifepath = Lifepath()
         self.current = None
@@ -454,8 +487,6 @@ class Chargen(View):
             self.max = len(self.lifepath.skip)-1
 
     def draw(self):
-        self.reset()
-
         # Character pane:
         self.x_acc = 60
         self.y_acc = 4
@@ -621,20 +652,19 @@ class Chargen(View):
 
 # TODO: Implement this
 class Status(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
-        self.reset()
-#        self.line("")
+        self.line("")
 #        self.line("")
 #        self.line("Pain", "red-black")
 #        self.line("Shock", "magenta-black")
 
 # Very hackish right now: events added through map...
 class Log(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
         self.events = deque()
         self.index = 0
 
@@ -663,8 +693,6 @@ class Log(View):
             self.index = max
 
     def draw(self):
-        self.reset()
-
         count = 0
         lines = 0
         for x in self.events:
@@ -707,16 +735,13 @@ class Log(View):
         return ret
 
 class Inventory(View):
-    def __init__(self, window, x, y, startx=0, starty=0):
-        View.__init__(self, window, x, y, startx, starty)
-        self.player = None
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
         self.items = None
         self.selector = None
 
     # Just so this doesn't have to be passed in.
-    def reset(self):
-        super().reset(self)
-
+    def before_draw(self):
         self.items = self.player.items()
 
         if self.selector is None:
@@ -726,7 +751,6 @@ class Inventory(View):
             self.selector.choice = min(self.selector.choice, self.selector.choices-1)
 
     def draw(self):
-        self.reset()
         self.x_acc += 10
         self.cline("Inventory")
         self.y_acc += 3
