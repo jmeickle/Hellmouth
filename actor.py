@@ -194,6 +194,7 @@ class Actor:
 
     # Do a basic attack.
     def attack(self, target, loc=None):
+    # TODO: Make sure this can only happen within weapon range.
         att_name = self.name
         def_name = target.name
         verb = "s"
