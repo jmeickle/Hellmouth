@@ -952,8 +952,8 @@ class CharacterSheet(View):
         return False
 
     def draw(self):
-        self.border("~")
-        #self.window.bkgd("_", self.attr("white-black"))
+        self.window.erase()
+        self.border(".")
         pos = self.cursor.pos
         actor = self.map.actor(pos)
         if actor is None:
@@ -961,7 +961,7 @@ class CharacterSheet(View):
 
         # TODO: Make this a describe method of the actor.
         # Print out a character sheet:
-        self.cline("Viewing %s" % actor.name)
+        self.cline("Viewing %s:" % actor.name)
         self.cline("")
         self.cline("--Attributes--")
         for stat, points in actor.attributes.items():
