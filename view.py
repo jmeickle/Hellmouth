@@ -129,17 +129,18 @@ class View(Component):
         edge_x = margin_x + border_x + padding_x
         edge_y = margin_y + border_y + padding_y
 
+        self.TOP = edge_y
+        self.LEFT = edge_x
+        self.BOTTOM = self.y - edge_y
+        self.RIGHT = self.x - edge_x
+
         # Available width/height.
-        self.width = self.x - 2*(edge_x)
+        self.width = self.RIGHT - edge_y
         assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
-        self.height = self.y - 2*(edge_y)
+        self.height = self.BOTTOM - edge_y
         assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
 
         # Some references based on width/height, to make placing a bit nicer
-        self.TOP = edge_y
-        self.BOTTOM = self.height - edge_y - 1
-        self.LEFT = edge_x
-        self.RIGHT = self.width - edge_x - 1
 
         # Cumulative x/y tracking.
         self.x_acc = 0
