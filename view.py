@@ -228,19 +228,37 @@ class View(Component):
             self.y_acc += 1
         self.rds((0,0), glyph*(self.x-1))
         # Margin, border, padding. Re-calling _reset isn't harmful.
-        self._reset((0,0), (1,1), (1,1))
+        self._reset((0,0), (1,1), (1,0))
 
 # Border, heading, body text.
 class Screen(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
-        self.title = "Hello"
+        self.title = "Debug Title"
 
     def draw(self):
         self.border("#")
         heading = "%s%s%s" % (self.title, " "*(self.width - len(self.title) - len(self.player.location) - 1), self.player.location)
         self.cline(heading)
         self.cline("-"*self.width)
+        return False
+
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord('\n'):
+            self.suicide()
+        return False # Don't permit anything but continuing.
+
+class DialogueScreen(Screen):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        Screen.__init__(self, window, x, y, start_x, start_y)
+        self.actor = None
+
+    def draw(self):
+        self.border(" ")
+        title = "<%s>%s</>" % (self.actor.dialogue_color(), self.title)
+        heading = "%s%s%s" % (title, " "*(self.width - len(self.title) - len(self.player.location)), self.player.location)
+        self.cline(heading)
+        self.cline("-"*(self.width))
         return False
 
     def keyin(self, c):

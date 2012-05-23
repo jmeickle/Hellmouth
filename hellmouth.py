@@ -16,7 +16,7 @@ def main(stdscr):
     curses.raw()
 
     # Imports that can't happen until after curses is init'd. 
-    from view import MainMap, Pane, Stats, Chargen, Status, Log, View, Screen
+    from view import MainMap, Pane, Stats, Chargen, Status, Log, View, DialogueScreen
     # HACK: Display an intro screen.
 #    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
 #    intro.x_acc = 10
@@ -82,7 +82,7 @@ def main(stdscr):
     pc = player.Player()
 
     map.put(pc, (center_x, center_y))
-    map.enter(player)
+    map.enter(pc)
 
     pc.location = "A tavern in a sleepy village"
 
@@ -132,7 +132,8 @@ def main(stdscr):
     map.log = log
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
-    screen = Screen(stdscr, TERM_X, TERM_Y)
+    screen = DialogueScreen(stdscr, TERM_X, TERM_Y)
+    screen.actor = pc # HACK
     screen.player = pc
     # DEBUG: Generate log entries
     #for x in range(50):
