@@ -294,6 +294,17 @@ class Actor:
     def Block(self):      return 32
     def Parry(self):      return 31
 
+    # UI / DIALOGUE
+    # STUB:
+    def cursor_color(self):
+        return self.dialogue_color()
+
+    def dialogue_color(self):
+        if self.controlled is True:
+            return "green-black"
+        else:
+            return "red-black"
+    
     # INJURY / HIT LOCATIONS
 
     # Choose a random hit location

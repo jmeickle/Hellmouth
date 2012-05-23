@@ -131,13 +131,13 @@ class View(Component):
 
         self.TOP = edge_y
         self.LEFT = edge_x
-        self.BOTTOM = self.y - edge_y
-        self.RIGHT = self.x - edge_x
+        self.BOTTOM = self.y - edge_y - 1
+        self.RIGHT = self.x - edge_x - 1
 
         # Available width/height.
-        self.width = self.RIGHT - edge_y
+        self.width = self.x - 2*edge_x
         assert self.width > 0, "Width was below 1 after box model: %s" % self.__dict__
-        self.height = self.BOTTOM - edge_y
+        self.height = self.y -2*edge_y
         assert self.height > 0, "Height was below 1 after box model: %s" % self.__dict__
 
         # Some references based on width/height, to make placing a bit nicer
@@ -908,10 +908,7 @@ class Cursor(Component):
         cell = self.map.cell(self.pos)
         if cell is not None:
             if cell.actor is not None:
-                if cell.actor.controlled is True:
-                    return "green-black"
-                else:
-                    return "red-black"
+                return cell.actor.cursor_color()
             else:
                 if cell.terrain or cell.items:
                     return "yellow-black"
