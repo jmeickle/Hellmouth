@@ -1,6 +1,10 @@
 import curses
 
 class Color:
+    if __name__ == '__main__':
+        curses.initscr()
+        curses.start_color()
+
     # Basic color names and definitions.
     colors = [
         ('black', curses.COLOR_BLACK),
@@ -14,24 +18,27 @@ class Color:
     ]
 
     # Color names
-    names = [x[0] for x in colors]
+    color_names = [x[0] for x in colors]
 
     #fg-bg colornames : curses colorpair
-    pair = {}
-    if __name__ == '__main__':
-        curses.initscr()
-        curses.start_color()
+    pairs = {}
 
-    # Set up all colorpairs
+    # Must be hardcoded.
+    pairs["white-black"] = 0
+
+    # Set up all other colorpairs
+    id = 1
     for i in range(8):
         for j in range(8):
             fg = colors[i%8]
             bg = colors[j%8]
-            if i == 0 and j == 0 or fg[1] == 'white' and bg[2] == 'black':
+            if fg[0] == 'white' and bg[0] == 'black':
                 continue;
-            curses.init_pair(i*8+j, fg[1], bg[1])
-            pair["%s-%s" % (fg[0], bg[0])] = i*8 + j
+            curses.init_pair(id, fg[1], bg[1])
+            pairs["%s-%s" % (fg[0], bg[0])] = id
+            id += 1
 
 # TEST: Print colors.
 if __name__ == '__main__':
-    print Color.pair
+    print Color.pairs
+    print len(Color.pairs)

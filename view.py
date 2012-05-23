@@ -89,7 +89,7 @@ class Component():
     def attr(self, col, attr=None):
         color = 0
         if col is not None and col is not 0:
-            color += Color.pair[col]
+            color += Color.pairs[col]
         return curses.color_pair(color)
 
     # KEYIN
@@ -206,7 +206,7 @@ class View(Component):
                 continue;
             if substr == '/':
                 curr_col = col
-            elif Color.pair.get(substr, None) is not None:
+            elif Color.pairs.get(substr, None) is not None:
                 curr_col = substr
             else:
                 y_acc = self.y_acc
