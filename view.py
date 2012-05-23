@@ -221,7 +221,6 @@ class View(Component):
 
     # Simple border function (no margin, border 1, padding 1).
     def border(self, glyph):
-        #exit(self.__dict__)
         self.rds((0, 0), glyph*(self.x))
         while self.y_acc < self.y-1:
             self.rd((0, self.y_acc), glyph)
@@ -230,6 +229,24 @@ class View(Component):
         self.rds((0,0), glyph*(self.x-1))
         # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,1))
+
+# Border, heading, body text.
+class Screen(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
+        self.title = "Hello"
+
+    def draw(self):
+        self.border("#")
+        heading = "%s%s%s" % (self.title, " "*(self.width - len(self.title) - len(self.player.location) - 1), self.player.location)
+        self.cline(heading)
+        self.cline("-"*self.width)
+        return False
+
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord('\n'):
+            self.suicide()
+        return False # Don't permit anything but continuing.
 
 # TODO: Make this a subclass of a Map view.
 class MainMap(View):

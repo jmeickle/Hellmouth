@@ -6,6 +6,7 @@ import random
 import hex
 class Encounter:
     def __init__(self, size=801):
+        self.name = "MEAT ARENA"
         # Number of hexes 'tall' or 'wide'.
         self.size = size
         # The 'radius'.
@@ -28,6 +29,16 @@ class Encounter:
 
         # View range
         self.viewrange = 10
+
+    # Handle things that happen when the player enters the map.
+    def enter(self, player):
+        self.player = player
+        self.player.location = self.name
+
+    # Handle things that happen when the player leaves the map.
+    def leave(self, player):
+        self.player.location = None
+        self.player = None
 
     def loadmap(self):
         hexes = hex.area(self.rank)
