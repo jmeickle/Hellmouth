@@ -147,23 +147,28 @@ class View(Component):
         self.y_acc = 0
 
     # Rectangular character function.
-    def rd(self, pos, glyph, col=0, attr=None):
+    def rd(self, pos, glyph, col=0, attr=None, box=True):
         x, y = pos
-        draw_x = x + self.LEFT
-        draw_y = y + self.TOP
+        draw_x = x
+        draw_y = y
+        if box is True:
+            draw_x += self.LEFT
+            draw_y += self.TOP
         assert self.undrawable((draw_x, draw_y)) is False, "rd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        except curses.error: pass
 
     # Rectangular string function.
-    def rds(self, pos, string, col=0, attr=None):
-        # The max string we could actually fit.
-        #max = self.width - self.x_acc
-        #assert max > len(string), "rds function tried to print a string that was too long: %s, length %s" % (string, len(string))
+    def rds(self, pos, string, col=0, attr=None, box=True):
         x, y = pos
-        draw_x = x + self.LEFT
-        draw_y = y + self.TOP
+        draw_x = x
+        draw_y = y
+        if box is True:
+            draw_x += self.LEFT
+            draw_y += self.TOP
         assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw %s out of bounds: %s at %s." % (string, self.__dict__, (draw_x, draw_y))
-        self.window.addstr(draw_y, draw_x, string, self.attr(col, attr))
+        try: self.window.addstr(draw_y, draw_x, string, self.attr(col, attr))
+        except curses.error: pass
 
     # Draw a line in rectangular coords - requires linebreaking.
     def rdl(self, pos, line, col=None, attr=None, indent=0):
@@ -222,11 +227,11 @@ class View(Component):
     # Simple border function (no margin, border 1, padding 1).
     def border(self, glyph):
         self.rds((0, 0), glyph*(self.x))
-        while self.y_acc < self.y-1:
+        while self.y_acc+1 < self.y:
             self.rd((0, self.y_acc), glyph)
             self.rd((self.x-1, self.y_acc), glyph)
             self.y_acc += 1
-        self.rds((0,0), glyph*(self.x-1))
+        self.rds((0, self.y_acc), glyph*(self.x))
         # Margin, border, padding. Re-calling _reset isn't harmful.
         self._reset((0,0), (1,1), (1,0))
 
@@ -329,7 +334,8 @@ class MainMap(View):
         draw_y = off_y + v_y
 
         assert self.undrawable((draw_x, draw_y)) is False, "hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        except curses.error: pass
 
     # Draw to offset hexes, i.e., the 'blank' ones.
     def offset_hd(self, pos, dir, glyph, col=0, attr=None):
@@ -347,7 +353,8 @@ class MainMap(View):
         draw_y = off_y + v_y + d_y
 
         assert self.undrawable((draw_x, draw_y)) is False, "offset hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        except curses.error: pass
 
     # Accepts viewrange offsets to figure out what part of the map is visible.
     def get_glyph(self, pos):
