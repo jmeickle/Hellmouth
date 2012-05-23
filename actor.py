@@ -89,56 +89,59 @@ class Actor:
 
     # AI actions. Currently: move in a random direction.
     def act(self):
-        if self.controlled is True:
-            exit("A player tried to hit AI code")
+        assert self.controlled is not True, "A player tried to hit AI code."
 
         self.attempts += 1
         if self.attempts > 10:
             self.over()
             return False
 
-        # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         self.distance = hex.dist(self.pos, self.target.pos)
+        repath = False
+
+        # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
+        if self.distance > 1 and self.path is None:
+            repath = True
+        if self.destination != self.target.pos:
+            if random.randint(1, hex.dist(self.destination, self.target.pos)) == 1:
+                repath = True
 
         # TODO: More intelligently decide when to re-path
-        if self.distance > 1 and self.path is None:
+        if repath is True:
             # TODO: Get target stuff in here.
             if self.target is not None:
                 self.ai.__init__()
-                path = self.ai.path(self.pos, self.target.pos)
+                self.destination = self.target.pos
+                path = self.ai.path(self.pos, self.destination)
                 if self.path is False: # Could not find a path
                     self.path = None
                 else: # Set the list of coords as our path
                     self.path = path.get_path()
 
         if self.distance > 1 and self.path is not None:
-            if self.path:
-                #exit(self.path)
+            if self.path: # i.e., a list with entries
                 pos = self.path.pop()
                 # TODO: Set up a real coord tuple class already, slacker
                 dir = (pos[0] - self.pos[0], pos[1] - self.pos[1])
                 #exit("Curr: (%s, %s)\nNext: (%s, %s)\nDir: (%s, %s)" % (pos[0], pos[1], self.pos[0], self.pos[1], dir[0], dir[1]))
                 if not self.do(dir):
-                    # Coinflip chance to try a new path
-                    if r1d6() > 3:
+                    # Chance to flat out abandon the path
+                    if r1d6() == 6:
                         self.path = None
                     else:
+                        # Try again
                         self.path.append(pos)
-                    #self.over()
             else:
-                self.path = None
-                #self.over()
+                self.path = None # Remove the empty list
+
+        # This should only happen if stuff is adjacent and without a path.
         else:
             dir = (self.target.pos[0] - self.pos[0], self.target.pos[1] - self.pos[1])
             self.do(dir)
 
-        # Fallback: random movement.
-        #self.do(choice(dirs))
-
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
-        pos = (self.pos[0]+dir[0], self.pos[1]+dir[1])
-        #exit("%s, %s" % pos)
+        pos = hex.add(self.pos, dir)
         if self.map.valid(pos) is False:
             exit("Tried to move past map borders")
             return False

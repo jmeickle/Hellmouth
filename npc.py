@@ -10,10 +10,13 @@ class NPC(Actor):
     def __init__(self):
         Actor.__init__(self)
 
+        # TODO: Make an AI class.
+
         # AI-related properties.
         self.target = None
 
         self.ai = ai.astar.AStar()
+        self.destination = None
         self.distance = None
         self.path = None
 

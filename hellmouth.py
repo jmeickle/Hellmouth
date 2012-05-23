@@ -94,6 +94,7 @@ def main(stdscr):
         monster = random.choice(monsters)
         monster = monster()
         monster.target = pc
+        monster.destination = pc.pos
         map.put(monster, (center_x + flip()*random.randint(1, hex_start), center_y + flip() * random.randint(1,hex_start)))
 
     # HACK:
