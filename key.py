@@ -1,6 +1,6 @@
+# Define dict of keys/actions
 from define import *
 from describe import Descriptions
-# Define dict of keys/actions
 
 # Return the corresponding control-modified key.
 def ctrl(c):
@@ -9,6 +9,10 @@ def ctrl(c):
 def keyin(stdscr, views):
         # Keyin stuff for player actions
         c = stdscr.getch()
+
+        # Always allow help.
+#        if c == ctrl('?'):
+#            views.append(HelpScreen() ... & etc.
 
         # Always allow quitting.
         if c == ctrl('q'):
