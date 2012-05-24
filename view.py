@@ -171,7 +171,7 @@ class View(Component):
         if box is True:
             draw_x += self.LEFT
             draw_y += self.TOP
-        assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw %s out of bounds: %s at %s." % (string, self.__dict__, (draw_x, draw_y))
+        assert self.undrawable((draw_x, draw_y)) is False, "rds function tried to draw '%s' out of bounds: %s at %s." % (string, self.__dict__, (draw_x, draw_y))
         try: self.window.addstr(draw_y, draw_x, string, self.attr(col, attr))
         except curses.error: pass
 
