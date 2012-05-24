@@ -10,7 +10,7 @@ class MapGen():
         self.size = 25
         self.cells = {}
 
-    def attempt(self, map):
+    def attempt(self):
         hexes = area(self.size, self.center)
         for pos, dist in hexes.items():
             self.cells[pos] = (dist, None)
@@ -21,7 +21,7 @@ class MeatArena(MapGen):
         MapGen.__init__(self)
         self.walls = 3
 
-    def attempt(self, map):
+    def attempt(self):
         hexes = area(self.size, self.center)
 
         # Arena floor / walls

@@ -28,7 +28,6 @@ class Encounter:
 
     # Handle things that happen when the player enters the map.
     def enter(self, player):
-        self.entry = self.center # TODO: Something else
         self.player = player
         self.player.location = self.name
         self.put(self.player, self.entry)
@@ -40,10 +39,11 @@ class Encounter:
 
     def generate(self, generate):
         generator = generate()
-        cells = generator.attempt(self)
+        cells = generator.attempt()
         # TODO: Possibly checks for validity first
         # TODO: Generator has a field for this.
         self.center = generator.center
+        self.entry = self.center
         self.size = generator.size
         # Final step.
         self.populate(cells)
@@ -53,7 +53,6 @@ class Encounter:
         for pos, contents in cells.items():
             distance, type = contents
             cell = Cell(pos)
-
             if type is not None:
                 map.put(Terrain(), pos, True)
 
