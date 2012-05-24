@@ -178,7 +178,7 @@ class View(Component):
     # Draw a line in rectangular coords - requires linebreaking.
     def rdl(self, pos, line, col=None, attr=None, indent=0):
         # Maximum number of chars we'll try to print in a line.
-        max = self.width - self.x_acc
+        max = self.width - pos[0]# - self.x_acc - pos[0]
 
         if len(line) > max:
             list = re.split('(\W+)', line)
@@ -187,16 +187,22 @@ class View(Component):
             for word in list:
                 if len(word) + len(string) > max:
                     self.rds(pos, string, col, attr)
-                    pos = add(pos, (0,1))
+                    max = self.width - self.x_acc
+                    pos = (self.x_acc, pos[1]+1)
                     self.y_acc += 1
                     string = " "*indent
-                if len(string) == 0 and word.isspace() is True:
+                # Skip if:
+                # 1: We're on the start of a line
+                # 2: And the current to-print is nothing
+                # 3: And we're trying to print a space
+                if pos[0] == 0 and string == '' and word.isspace() is True:
                     continue
                 string += word
         else:
             string = line
 
         self.rds(pos, string, col, attr)
+        return len(string)
 
     # Draw a simple line; only relevant for text-y views.
     def line(self, string, col=None, attr=None, indent=0):
@@ -209,27 +215,36 @@ class View(Component):
     def cline(self, string, col=None, attr=None, indent=0):
         x_position = 0
         curr_col = col
-        substrs = re.split('<(/*\w*-?\w*)>',string)
+        substrs = re.split('(</*\w*-?\w*>)',string)
         for substr in substrs:
             # Figure out tags.
             if substr == '':
                 continue;
-            elif substr == 'br':
+            elif substr == '<br>':
                 self.y_acc += 1
-            elif substr == '/':
+                x_position = 0
+            elif substr == '</>':
                 curr_col = col
-            elif Color.pairs.get(substr) is not None:
-                curr_col = substr
+            elif re.match('<.*>', substr):
+                tag = re.split('<(.*)>', substr)[1]
+                if tag is not None:
+                    curr_col = tag
             else:
                 #if len(string) > self.width+20:
                 #    exit(substrs)
-                y_acc = self.y_acc
-                pos = (self.x_acc + x_position, self.y_acc)
-                self.rdl(pos, substr, curr_col, attr, indent)
-                if y_acc != self.y_acc:
-                    x_position += len(substr)
-                else:
-                    x_position = 0
+#                y_acc = self.y_acc
+                pos = (x_position + self.x_acc, self.y_acc)
+                length = self.rdl(pos, substr, curr_col, attr, indent)
+                if self.x_acc + x_position + length <= self.width:
+                    #x_position = 0
+#                    self.y_acc += 1
+                #else:
+                    x_position += length
+#                    if x_position == 80:
+#                        exit("This was it")
+             #   else:
+#                    self.y_acc += 1
+              #      x_position = self.x_acc
         # Only increment y at the end of the line.
         self.y_acc += 1
 
@@ -293,7 +308,25 @@ class StartScreen(Screen):
         self.cline(heading)
         self.cline("-"*(self.width))
         self.cline(help.entry["start-meat"])
-#        self.cline(help.entry["commands"])
+        self.y_acc = self.BOTTOM
+        self.cline("Press <green-black>Enter</> to continue. Press <green-black>'?'</> for help at any time.")
+        return False
+
+class HelpScreen(Screen):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        Screen.__init__(self, window, x, y, start_x, start_y)
+
+    def draw(self):
+        import help
+        self.border(" ")
+        title = "<%s>%s</>" % ("green-black", "Help!")
+        spacing = self.width - len("Help!") - len(self.player.location)
+        heading = "%s%s%s" % (title, " "*spacing, self.player.location)
+        self.cline(heading)
+        self.cline("-"*(self.width))
+        self.cline(help.entry["commands"])
+        self.y_acc = self.BOTTOM
+        self.cline("Press <green-black>Enter</> to continue. Press <green-black>'?'</> for help at any time.")
         return False
 
 # TODO: Make this a subclass of a Map view.
@@ -582,12 +615,12 @@ class Chargen(View):
             self.max = len(self.lifepath.skip)-1
 
     def draw(self):
-        # Character pane:
-        self.x_acc = 60
-        self.y_acc = 4
         # TODO: Don't calculate this each time, jeez!
-        self.cline("Your character:")
         if self.current is not None:
+            # Character pane:
+            self.x_acc = 50
+            self.y_acc = 4
+            self.cline("Your character:")
             self.player.character = self.lifepath.effects()
             for key, value in self.player.character.items():
                 self.cline("%s: %s" % (key, value))#: %s" % (stat, value))
