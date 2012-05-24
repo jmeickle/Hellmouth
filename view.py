@@ -1054,6 +1054,9 @@ class CharacterSheet(View):
             self.text = self.actor.character_sheet()
             self.scroller.resize(len(self.text)-self.height)
         for x in range(self.scroller.index, len(self.text)):
+            if x > 1 and x == self.scroller.index > 1:
+                self.cline('[...]')
+                continue
             line = self.text[x]
             if len(line) > self.width:
                 line = line[:self.width]
