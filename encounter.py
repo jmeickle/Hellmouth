@@ -5,14 +5,11 @@ from item import Item
 import random
 import hex
 class Encounter:
-    def __init__(self, size=801):
-        self.name = "MEAT ARENA"
-        # Number of hexes 'tall' or 'wide'.
-        self.size = size
-        # The 'radius'.
-        self.rank = size/2
+    def __init__(self):
+        self.size = None
+        self.center = None
 
-        self.center = (0,0)
+        self.name = "MEAT ARENA"
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
@@ -26,15 +23,15 @@ class Encounter:
 
         # Player
         self.player = None
-
-        # View range
-        self.viewrange = 10
+        # Where the player starts
+        self.entry = None
 
     # Handle things that happen when the player enters the map.
     def enter(self, player):
+        self.entry = self.center # TODO: Something else
         self.player = player
         self.player.location = self.name
-        self.put(self.player, self.center)
+        self.put(self.player, self.entry)
 
     # Handle things that happen when the player leaves the map.
     def leave(self, player):
@@ -43,17 +40,27 @@ class Encounter:
 
     def generate(self, generate):
         generator = generate()
-        generator.attempt(self)
-#        # Checks for validity
-#        self.loadmap(generator.cells)
+        cells = generator.attempt(self)
+        # TODO: Possibly checks for validity first
+        # TODO: Generator has a field for this.
+        self.center = generator.center
+        self.size = generator.size
+        # Final step.
+        self.populate(cells)
 
-    def loadmap(self, cells):
-#        hexes = hex.area(self.rank)
-        for pos in cells:
+    # Take a provided dict of {pos : data} and turn it into objects.
+    def populate(self, cells):
+        for pos, contents in cells.items():
+            distance, type = contents
             cell = Cell(pos)
-            # TODO: REMOVE TEST CODE
+
+            if type is not None:
+                map.put(Terrain(), pos, True)
+
+            # TODO: Replace this test code with something better.
             if random.randint(1, 10) == 1:
                 cell.put(Item())
+
             self.cells[pos] = cell
 
     # Return a cell at a pos tuple.

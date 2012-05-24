@@ -279,6 +279,7 @@ class MainMap(View):
         self.player = None
         # -1 to account for 0,0 start
         self.viewport = (int(y/2)-1, int(y/2)-1)
+        self.viewrange = 10
         self.cursor = None
 
     # Called before the map is rendered, but after it's ready to go.
@@ -366,7 +367,7 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
-        cells = area(self.map.viewrange, self.center)
+        cells = area(self.viewrange, self.center)
 
         for cell in cells:
             if self.map.valid(cell) is not False:

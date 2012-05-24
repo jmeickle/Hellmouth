@@ -255,7 +255,7 @@ class Actor:
 
     # Remove self from the map and the queue
     def die(self):
-        if hex.dist(self.map.player.pos, self.pos) <= self.map.viewrange:
+        if hex.dist(self.map.player.pos, self.pos) <= 10: # HACK: Shouldn't be a magic number
             self.map.log.add(d("%s has been slain!" % self.name))
         if self == self.map.acting:
             self.map.acting = None
