@@ -59,10 +59,9 @@ def _area(rank, pos, dir, left=False, right=True, curr=0):
             hexes.extend(_area(rank, add(pos, rot(dir, 5)), dir, left, right, curr+1))
     return hexes
 
-# Generate a list of hex positions in an area from a starting position.
-# This list includes the starting position.
+# Generate a dict of hex position : distance, including the start position.
 def area(rank, start=(0,0)):
-    hexes = [start]
+    hexes = {start : 0}
     #for dir in dirs:
     #    hexes.extend(_area(rank, add(start, dir), dir, True))
     #return hexes
@@ -70,8 +69,9 @@ def area(rank, start=(0,0)):
         for X in range(-rank, rank+1):
             offset = (X,Y)
             hex = add(start, offset)
-            if dist(start, hex) <= rank:
-                hexes.append(hex)
+            distance = dist(start, hex)
+            if distance <= rank:
+                hexes[hex] = distance
     return hexes
 
 # TODO: Clean this the fuck up.
