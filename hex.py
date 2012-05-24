@@ -83,6 +83,32 @@ def area(rank, start=(0,0)):
                 hexes[hex] = distance
     return hexes
 
+def line(pos1, pos2):
+    pos = pos1
+    steps = []
+    while pos != pos2:
+        diff = sub(pos2, pos)
+        diff_x, diff_y = diff
+
+        dir_x = signum(diff_x, True)
+        dir_y = signum(diff_y, True)
+
+        if dir_x == dir_y:
+            if diff_x > diff_y:
+                dir_y = 0
+            elif diff_x < diff_y:
+                dir_x = 0
+            else:
+                if random.randint(0,1) == 0:
+                    dir_x = 0
+                else:
+                    dir_y = 0
+
+        dir = (dir_x, dir_y)
+        pos = add(pos, dir)
+        steps.append(pos)
+    return steps
+
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
 # By default, this takes a map[][] and puts the current range in each cell.
