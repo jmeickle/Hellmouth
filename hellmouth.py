@@ -16,7 +16,7 @@ def main(stdscr):
     curses.raw()
 
     # Imports that can't happen until after curses is init'd. 
-    from view import MainMap, Pane, Stats, Chargen, Status, Log, View, DialogueScreen
+    from view import MainMap, Pane, Stats, Chargen, Status, Log, View, StartScreen
     # HACK: Display an intro screen.
 #    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
 #    intro.x_acc = 10
@@ -109,7 +109,7 @@ def main(stdscr):
     map.log = log
     map.log.add("WELCOME TO THE ARENA OF MEAT")
 
-    screen = DialogueScreen(stdscr, TERM_X, TERM_Y)
+    screen = StartScreen(stdscr, TERM_X, TERM_Y)
     screen.actor = pc # HACK
     screen.player = pc
     # DEBUG: Generate log entries
