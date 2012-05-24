@@ -39,6 +39,10 @@ def rot(dir, turns=1):
 def add(pos, dir):
     return pos[0] + dir[0], pos[1] + dir[1]
 
+# Subtract two tuples.
+def sub(pos1, pos2):
+    return pos1[0] - pos2[0], pos1[1] - pos2[1]
+
 # Calculate hex distance with two hex positions.
 def dist(pos1, pos2):
     return distance(pos1[0], pos1[1], pos2[0], pos2[1])
