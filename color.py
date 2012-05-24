@@ -6,7 +6,7 @@ class Color:
         curses.start_color()
 
     # Basic color names and definitions.
-    colors = [
+    curses_colors = [
         ('black', curses.COLOR_BLACK),
         ('white', curses.COLOR_WHITE),
         ('blue', curses.COLOR_BLUE),
@@ -18,7 +18,13 @@ class Color:
     ]
 
     # Color names
-    color_names = [x[0] for x in colors]
+    colors = {}
+
+    for x in [x[0] for x in curses_colors]:
+        colors[x] = (x,)
+
+    # Elemental colors.
+    colors["meat"] = ('magenta', 'red', 'yellow')
 
     #fg-bg colornames : curses colorpair
     pairs = {}
@@ -30,8 +36,8 @@ class Color:
     id = 1
     for i in range(8):
         for j in range(8):
-            fg = colors[i%8]
-            bg = colors[j%8]
+            fg = curses_colors[i%8]
+            bg = curses_colors[j%8]
             if fg[0] == 'white' and bg[0] == 'black':
                 continue;
             curses.init_pair(id, fg[1], bg[1])
