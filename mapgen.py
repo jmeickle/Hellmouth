@@ -1,4 +1,5 @@
 import random
+from define import *
 from dice import *
 from hex import *
 
