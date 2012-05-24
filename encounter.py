@@ -51,10 +51,10 @@ class Encounter:
     # Take a provided dict of {pos : data} and turn it into objects.
     def populate(self, cells):
         for pos, contents in cells.items():
-            distance, type = contents
+            distance, terrain = contents
             cell = Cell(pos)
-            if type is not None:
-                map.put(Terrain(), pos, True)
+            if terrain is not None:
+                cell.put_terrain(terrain)
 
             # TODO: Replace this test code with something better.
             if random.randint(1, 10) == 1:
@@ -151,6 +151,10 @@ class Cell:
         self.actor = None
         self.terrain = None
         self.items = {}
+
+    # STUB
+    def put_terrain(self, terrain):
+        self.terrain = terrain
 
     # Return a glyph to display for this cell.
     # TODO: improve this function greatly
