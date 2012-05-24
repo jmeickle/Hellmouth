@@ -12,6 +12,7 @@ class Terrain():
     def setup():
         return False
 
+# Meat Arena
 class MeatWall(Terrain):
     def __init__(self, terrain_type=None):
         Terrain.__init__(self)
@@ -24,3 +25,11 @@ class MeatWall(Terrain):
         if terrain_type == 'inner':
             self.color = "yellow-black"
             self.name = "inner " + self.name
+
+# Caves
+class CaveWall(Terrain):
+    def __init__(self, terrain_type=None):
+        Terrain.__init__(self)
+        self.name = "rough-hewn cave wall"
+        self.glyph = "#"
+        self.color = "yellow-black"
