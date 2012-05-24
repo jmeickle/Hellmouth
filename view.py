@@ -207,24 +207,29 @@ class View(Component):
     # Print a line with multiple colors
     # TODO: Handle other attributes.
     def cline(self, string, col=None, attr=None, indent=0):
-        position = 0
+        x_position = 0
         curr_col = col
         substrs = re.split('<(/*\w*-?\w*)>',string)
         for substr in substrs:
+            # Figure out tags.
             if substr == '':
                 continue;
-            if substr == '/':
+            elif substr == 'br':
+                self.y_acc += 1
+            elif substr == '/':
                 curr_col = col
-            elif Color.pairs.get(substr, None) is not None:
+            elif Color.pairs.get(substr) is not None:
                 curr_col = substr
             else:
+                #if len(string) > self.width+20:
+                #    exit(substrs)
                 y_acc = self.y_acc
-                pos = (self.x_acc + position, self.y_acc)
+                pos = (self.x_acc + x_position, self.y_acc)
                 self.rdl(pos, substr, curr_col, attr, indent)
-                if y_acc == self.y_acc:
-                    position += len(substr)
+                if y_acc != self.y_acc:
+                    x_position += len(substr)
                 else:
-                    position = 0
+                    x_position = 0
         # Only increment y at the end of the line.
         self.y_acc += 1
 
