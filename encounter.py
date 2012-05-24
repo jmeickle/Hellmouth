@@ -112,8 +112,9 @@ class Encounter:
 
     # Decides whether a position exists.
     def valid(self, pos):
-        if self.cells.get(pos, None) is None:
+        if self.cells.get(pos) is None:
             return False
+        return True
 
 class Cell:
     def __init__(self, pos, glyph='.', color=None):
