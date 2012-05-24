@@ -143,7 +143,8 @@ class Actor:
     def do(self, dir):
         pos = hex.add(self.pos, dir)
         if self.map.valid(pos) is False:
-            self.map.log.add("You can't bring yourself to dive into the yawning abyss before you.")
+            if self.controlled is True:
+                self.map.log.add("You can't bring yourself to dive into the yawning abyss before you.")
             return False
 
         if self.map.cell(pos).occupied() is True:
