@@ -1,37 +1,48 @@
 import random
 from dice import *
 from hex import *
-from encounter import Terrain, Cell
-import itertools
 
-class MeatArena():
-    #def __init__(self):
-
+# Map generator class. If called, builds a hexagonal shape of plain tiles.
+class MapGen():
+    def __init__(self):
+        self.center = (0,0)
+        self.size = 25
+        self.cells = {}
 
     def attempt(self, map):
-        rank = 25
-        center_x, center_y = (0,0)
+        hexes = area(self.size, self.center)
+        for pos, dist in hexes.items():
+            self.cells[pos] = (dist, None)
+        return self.cells
 
-        # Hexagonal walls around the arena.
-        wall_rank = rank + 3
+class MeatArena(MapGen):
+    def __init__(self):
+        MapGen.__init__(self)
+        self.walls = 3
 
-        # Arena floor hexes
-        arena = area(rank)
-        # Wall hexes
-        walls = area(wall_rank, (center_x, center_y))
+    def attempt(self, map):
+        hexes = area(self.size, self.center)
 
-        for pos in walls:
-            map.cells[pos] = Cell(pos)
-            map.put(Terrain(), pos, True)
-
-        for pos in arena:
-            map.cells[pos].terrain = None
+        # Arena floor / walls
+        for pos, dist in hexes.items():
+            if dist > self.size - self.walls:
+                self.cells[pos] = (dist, 'wall-outer')
+            elif dist == self.size - self.walls:
+                self.cells[pos] = (dist, 'wall-inner')
+            else:
+                self.cells[pos] = (dist, None)
 
         # Randomly placed columns
-        colnum = rank / 2 + r1d6()
+        colnum = self.size / 2 + r1d6()
         for x in range(colnum):
             colsize = random.randint(1, 3)
-            pos = (center_x + flip()*random.randint(4, rank)-colsize, center_y + flip() * random.randint(4,rank)-colsize)
-            col = area(colsize, pos)#hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
-            for loc in col:
-                map.put(Terrain(), loc, True)
+            pos = (self.center[0] + flip()*random.randint(4, self.size)-colsize, self.center[1] + flip() * random.randint(4,self.size)-colsize)
+            col = area(colsize, pos)
+            for pos, dist in col.items():
+                if dist == colsize:
+                    self.cells[pos] = (dist, 'wall-outer')
+                else:
+                    self.cells[pos] = (dist, 'wall-inner')
+
+        return self.cells
+

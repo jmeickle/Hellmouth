@@ -53,9 +53,8 @@ def main(stdscr):
 #            exit("COWARD.")
 
     import mapgen
-    map = Encounter(50)
-    map.generate(mapgen.MeatArena)
-
+    map = Encounter()
+    map.generate(mapgen.MapGen)
 
     # Place our friendly @
     pc = player.Player()
@@ -69,13 +68,13 @@ def main(stdscr):
     monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
 
     # Place monsters
-    num_mons = map.rank / 2 + r3d6()
+    num_mons = map.size / 2 + r3d6()
     for x in range(num_mons):
         monster = random.choice(monsters)
         monster = monster()
         monster.target = pc
         monster.destination = pc.pos
-        map.put(monster, (map.center[0] + flip()*random.randint(1, map.rank), map.center[1] + flip() * random.randint(1,map.rank)))
+        map.put(monster, (map.center[0] + flip()*random.randint(1, map.size), map.center[1] + flip() * random.randint(1,map.size)))
 
     # HACK:
     mainmap_width = 45
