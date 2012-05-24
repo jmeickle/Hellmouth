@@ -6,7 +6,7 @@ from dice import *
 from define import *
 import hex
 import player
-from encounter import Encounter, Terrain
+from encounter import Encounter
 from key import keyin
 
 def main(stdscr):
@@ -52,36 +52,14 @@ def main(stdscr):
 #        if c == 27:
 #            exit("COWARD.")
 
-    # Very basic map init - width 50.
-    width = 50
+    import mapgen
+    map = Encounter(50)
+    map.generate(mapgen.MeatArena)
 
-    map = Encounter(width)
-    map.loadmap()
-    # Define the map center.
-    center_x, center_y = map.center
-
-    # Mega hack to draw a hexagonal map: draw a hex from hex_start to hex_max.
-    hex_max = map.rank
-    hex_start = hex_max - 3
-
-    # Arena walls
-    walls = hex.iterator(map, center_x, center_y, hex_max, True, True, False, hex_start)
-    for pos in walls:
-        terrain = map.put(Terrain(), pos, True)
-
-    # Randomly placed columns
-    colnum = map.rank / 2 + r1d6()
-    for x in range(colnum):
-        colsize = random.randint(1, 3)
-        pos = (center_x + flip()*random.randint(4, hex_start)-colsize, center_y + flip() * random.randint(4,hex_start)-colsize)
-        col = hex.iterator(map, pos[0], pos[1], colsize, True, True, False, 0)
-        for loc in col:
-            map.put(Terrain(), loc, True)       
 
     # Place our friendly @
     pc = player.Player()
 
-    map.put(pc, (center_x, center_y))
     map.enter(pc)
 
     pc.location = "A tavern in a sleepy village"
@@ -97,7 +75,7 @@ def main(stdscr):
         monster = monster()
         monster.target = pc
         monster.destination = pc.pos
-        map.put(monster, (center_x + flip()*random.randint(1, hex_start), center_y + flip() * random.randint(1,hex_start)))
+        map.put(monster, (map.center[0] + flip()*random.randint(1, map.rank), map.center[1] + flip() * random.randint(1,map.rank)))
 
     # HACK:
     mainmap_width = 45

@@ -34,15 +34,22 @@ class Encounter:
     def enter(self, player):
         self.player = player
         self.player.location = self.name
+        self.put(self.player, self.center)
 
     # Handle things that happen when the player leaves the map.
     def leave(self, player):
         self.player.location = None
         self.player = None
 
-    def loadmap(self):
-        hexes = hex.area(self.rank)
-        for pos in hexes:
+    def generate(self, generate):
+        generator = generate()
+        generator.attempt(self)
+#        # Checks for validity
+#        self.loadmap(generator.cells)
+
+    def loadmap(self, cells):
+#        hexes = hex.area(self.rank)
+        for pos in cells:
             cell = Cell(pos)
             # TODO: REMOVE TEST CODE
             if random.randint(1, 10) == 1:
