@@ -47,3 +47,85 @@ class MeatArena(MapGen):
 
         return self.cells
 
+class Cave(MapGen):
+    def __init__(self):
+        MapGen.__init__(self)
+        self.max_connections = 30
+        self.max_nodes = 40
+        self.scale = 1
+
+        self.nodes = []
+        self.connections = {}
+
+    def attempt(self):
+        self.build_nodes()
+        node = self.nodes.pop(0)
+
+        # Entry point, at (0, 0).
+        pos = self.center
+        cells = area(3, pos)
+        self.cells.update(cells)
+
+        for connection in self.connections.pop(node, []):
+            self.place_nodes(connection, pos)
+
+        cells = {}
+
+        for pos, dist in self.cells.items():
+            cells[pos] = (dist, None)
+
+        return cells
+
+    # Connect nodes with a line.
+    def connect_nodes(self, pos1, pos2):
+        width = min(r1d6(), 3)
+        steps = line(pos1, pos2)
+        for step in steps:
+            if width > 1:
+                cells = area(width-1, step)  # TODO: Efficiency!
+                for cell in cells.keys():
+                    self.cells[cell] = (None, None)
+            else:
+                self.cells[step] = (None, None)
+
+    # Place a node, then try to do the same for its children.
+    def place_nodes(self, node, origin):
+        dir = random.choice(dirs)
+        distance = self.scale * r3d6() + r3d6()
+        pos = add(origin, (dir[0]*distance, dir[1]*distance))
+
+        self.connect_nodes(origin, pos)
+
+        size = r1d6() + 2
+        cells = area(size, pos)
+#        for pos, dist in cells.items():
+#            self.cells[pos] = (dist, None)
+        self.cells.update(cells)
+
+        for connection in self.connections.pop(node, []):
+            self.place_nodes(connection, pos)
+
+    def build_nodes(self):
+        # Starting node.
+        node = len(self.nodes)
+        self.nodes.append(node)
+
+        while len(self.connections) < self.max_connections:
+            node = random.choice(self.nodes)
+            for child in range(max(1, r1d6()-3)):
+                # Make a new node and connect to it.
+                if len(self.nodes) < self.max_nodes:#random.randint(1, len(self.nodes)) <= self.max_nodes) >= len(self.nodes):
+                    child_node = len(self.nodes)
+                    self.nodes.append(child_node)
+                # Connect to an existing node that isn't us.
+                else:
+                    child_node = random.choice(self.nodes)
+                    if node == child_node:
+                        continue;
+                # Create the connection.
+                list = self.connections.get(node, [])
+                list.append(child_node)
+                self.connections[node] = list
+#                list = self.connections.get(child_node, [])
+ #               list.append(node)
+#                self.connections[child_node] = list
