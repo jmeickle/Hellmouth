@@ -58,36 +58,42 @@ class Cave(MapGen):
         self.nodes = []
         self.connections = {}
 
+    def store(self, cells, size):
+        for pos, dist in cells.items():
+            if dist == size and self.cells.get(pos) is None:
+                self.cells[pos] = (dist, CaveWall())
+            else:
+                self.cells[pos] = (dist, None)
+
     def attempt(self):
         self.build_nodes()
-        node = self.nodes.pop(0)
 
-        # Entry point, at (0, 0).
+        # Entry point.
+        node = self.nodes.pop(0)
         pos = self.center
-        cells = area(3, pos)
-        self.cells.update(cells)
+        size = 5
+        hexes = area(size, pos)
+        self.store(hexes, size)
 
         for connection in self.connections.pop(node, []):
             self.place_nodes(connection, pos)
 
-        cells = {}
+#        for pos, dist in self.cells.items():
+#            cells[pos] = (dist, None)
 
-        for pos, dist in self.cells.items():
-            cells[pos] = (dist, None)
-
-        return cells
+        return self.cells
 
     # Connect nodes with a line.
     def connect_nodes(self, pos1, pos2):
         width = min(r1d6(), 3)
         steps = line(pos1, pos2)
         for step in steps:
-            if width > 1:
-                cells = area(width-1, step)  # TODO: Efficiency!
-                for cell in cells.keys():
-                    self.cells[cell] = (None, None)
-            else:
-                self.cells[step] = (None, None)
+            cells = area(width, step)  # TODO: Efficiency!
+            for pos, dist in cells.items():
+#                if dist == width:
+#                    self.cells[pos] = (None, CaveWall())
+#                else:
+                    self.cells[pos] = (None, None)
 
     # Place a node, then try to do the same for its children.
     def place_nodes(self, node, origin):
@@ -99,9 +105,9 @@ class Cave(MapGen):
 
         size = r1d6() + 2
         cells = area(size, pos)
+        self.store(cells, size)
 #        for pos, dist in cells.items():
 #            self.cells[pos] = (dist, None)
-        self.cells.update(cells)
 
         for connection in self.connections.pop(node, []):
             self.place_nodes(connection, pos)

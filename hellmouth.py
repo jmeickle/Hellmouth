@@ -54,7 +54,7 @@ def main(stdscr):
 
     import mapgen
     map = Encounter()
-    map.generate(mapgen.MeatArena)
+    map.generate(mapgen.Cave)
 
     # Place our friendly @
     pc = player.Player()
