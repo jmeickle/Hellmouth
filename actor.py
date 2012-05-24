@@ -610,6 +610,32 @@ class Actor:
             return True
         return False
 
+    # Returns a list of lines to go into a character sheet.
+    def character_sheet(self):
+        sheet = []
+        # TODO: Make this a describe method of the actor.
+        # Print out a character sheet:
+        sheet.append("Viewing %s:" % self.name)
+        sheet.append("")
+        sheet.append("--Attributes--")
+        for stat, points in self.attributes.items():
+            sheet.append("%s: %s" % (stat, points))
+        sheet.append("")
+        sheet.append("--Points--")
+        for skill, points in self.points["skills"].items():
+            sheet.append("%s: %s points" % (skill, points))
+        sheet.append("")
+        sheet.append("--Skill Ranks--")
+        for skill, info in self.skills.items():
+            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
+        sheet.append("")
+        sheet.append("--Skill Levels--")
+        for skill, level in self.base_skills.items():
+            str = "%s (%s/%s) - %s" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], level[0])
+            if level[1] is not False:
+                str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
+            sheet.append(str)
+        return sheet
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
     def __init__(self, parent):

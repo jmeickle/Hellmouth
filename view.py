@@ -979,6 +979,9 @@ class Cursor(Component):
 class CharacterSheet(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
+        self.actor = None
+        self.text = []
+        self.scroller = self.spawn(Scroller(0))
 
     def keyin(self, c):
         if c == ord(' '):
@@ -989,31 +992,20 @@ class CharacterSheet(View):
 
     def draw(self):
         self.window.erase()
-        self.border(".")
+        self.border(" ")
         pos = self.cursor.pos
         actor = self.map.actor(pos)
         if actor is None:
             return True
-
-        # TODO: Make this a describe method of the actor.
-        # Print out a character sheet:
-        self.cline("Viewing %s:" % actor.name)
-        self.cline("")
-        self.cline("--Attributes--")
-        for stat, points in actor.attributes.items():
-            self.cline("%s: %s" % (stat, points))
-        self.cline("")
-        self.cline("--Points--")
-        for skill, points in actor.points["skills"].items():
-            self.cline("%s: %s points" % (skill, points))
-        #self.cline("")
-        #self.cline("--Skill Ranks--")
-        #for skill, info in actor.skills.items():
-        #    self.cline("%s (%s/%s): %s%+d" % (skill, labels[skill_list[skill]["attribute"]], labels[skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
-        #self.cline("")
-        #self.cline("--Skill Levels--")
-        #for skill, level in actor.base_skills.items():
-        #    str = "%s (%s/%s) - %s" % (skill, labels[skill_list[skill]["attribute"]], labels[skill_list[skill]["difficulty"]], level[0])
-        #    if level[1] is not False:
-        #        str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
-        #    self.cline(str)
+        if actor != self.actor:
+            self.actor = actor
+            self.text = self.actor.character_sheet()
+            self.scroller.resize(len(self.text)-self.height)
+        for x in range(self.scroller.index, len(self.text)):
+            line = self.text[x]
+            if len(line) > self.width:
+                line = line[:self.width]
+            self.cline(line)
+            if self.y_acc+1 >= self.height and x+2 < len(self.text):
+                self.cline('[...]')
+                break
