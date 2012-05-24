@@ -115,6 +115,29 @@ class Encounter:
             return False
         return True
 
+    # Print a large text version of the map.
+    def dump(self, size=100, origin=(0,0)):
+        import sys
+        print "Map of %s:\n" % self.name
+        for y in range(-size, size):
+            line = ""
+            blank = True
+            for x in range(-size, size):
+                if x % 2 == 0:
+                    line += " "
+                    continue
+                cell = self.cell(((x-y)/2,y))
+                if cell is None:
+                    glyph = " "
+                else:
+                    glyph = cell.glyph
+                    blank = False
+                line += glyph
+            if blank is False:
+                sys.stdout.write(line)
+                sys.stdout.write("\n")
+        exit()
+
 class Cell:
     def __init__(self, pos, glyph='.', color=None):
         # Don't really need it but it might come in handy.
