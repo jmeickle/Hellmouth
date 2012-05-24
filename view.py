@@ -933,10 +933,8 @@ class Scroller(Component):
                 self.index = self.max
 
     def keyin(self, c):
-        if c == ord('+'):
-            self.scroll(1)
-        elif c == ord('-'):
-            self.scroll(-1)
+        if c == curses.KEY_UP or c == ord('-'): self.scroll(-1)
+        elif c == curses.KEY_DOWN or c == ord('+'): self.scroll(1)
         else:
             return True
         return False
