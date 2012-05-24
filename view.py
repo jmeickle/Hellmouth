@@ -159,7 +159,7 @@ class View(Component):
         if box is True:
             draw_x += self.LEFT
             draw_y += self.TOP
-        assert self.undrawable((draw_x, draw_y)) is False, "rd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
+        assert self.undrawable((draw_x, draw_y)) is False, "rd function tried to draw '%s' out of bounds: %s at %s." % (glyph, self.__dict__, (draw_x, draw_y))
         try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
         except curses.error: pass
 
