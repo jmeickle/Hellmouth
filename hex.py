@@ -1,3 +1,6 @@
+from define import *
+from dice import *
+
 # Functions for making hexes easier to use.
 # Directional stuff
 NW = (0, -1)
