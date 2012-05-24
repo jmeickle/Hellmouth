@@ -284,13 +284,6 @@ class Cell:
         if self.occupied() is True or self.impassable() is True:
             return True
 
-class Terrain():
-    def __init__(self, glyph="X", color="red-black", blocking=True):
-        self.name = "meat wall"
-        self.glyph = glyph
-        self.color = color
-        self.blocking = blocking
-
 if __name__ == '__main__':
     # Basic test: make a map and print it
     size = 50
