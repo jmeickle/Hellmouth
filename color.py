@@ -24,7 +24,7 @@ class Color:
         colors[x] = (x,)
 
     # Elemental colors.
-    colors["meat"] = ('magenta', 'red', 'yellow')
+    colors["meat"] = ('red', 'yellow')
 
     #fg-bg colornames : curses colorpair
     pairs = {}
