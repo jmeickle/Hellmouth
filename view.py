@@ -178,7 +178,7 @@ class View(Component):
     # Draw a line in rectangular coords - requires linebreaking.
     def rdl(self, pos, line, col=None, attr=None, indent=0):
         # Maximum number of chars we'll try to print in a line.
-        max = self.width - self.x_acc - 1
+        max = self.width - self.x_acc
 
         if len(line) > max:
             list = re.split('(\W+)', line)
@@ -205,7 +205,6 @@ class View(Component):
         self.y_acc += 1
 
     # Print a line with multiple colors
-    # TODO: Handle multi-line strings!
     # TODO: Handle other attributes.
     def cline(self, string, col=None, attr=None, indent=0):
         position = 0
@@ -907,6 +906,7 @@ class Cursor(Component):
         if c == ord(' '):
             self.parent.cursor = None
             self.suicide()
+        # TODO: Replace by hexdirs code
         elif c == ord('7'):
             self.scroll(NW)
         elif c == ord('4'):
