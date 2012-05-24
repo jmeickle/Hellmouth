@@ -857,6 +857,36 @@ class Inventory(View):
         else: return True
         return False
 
+class Scroller(Component):
+    def __init__(self, max, min=0, initial=0):
+        Component.__init__(self)
+        self.min = min
+        self.max = max
+        self.index = initial
+
+    def resize(self, max, min=0):
+        self.min = min
+        self.max = max
+        self.scroll(0)
+
+    def scroll(self, amt):
+        self.index += amt
+        if self.min is not None:
+            if self.index < self.min:
+                self.index = self.min
+        if self.max is not None:
+            if self.index >= self.max:
+                self.index = self.max
+
+    def keyin(self, c):
+        if c == ord('+'):
+            self.scroll(1)
+        elif c == ord('-'):
+            self.scroll(-1)
+        else:
+            return True
+        return False
+
 # Cycling selector.
 class Selector():
     def __init__(self, parent, choices, initial=0):
