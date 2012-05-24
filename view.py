@@ -85,12 +85,17 @@ class Component():
         return False
 
     # Set up curses attributes on a string
-    # TODO: Handle anything but color
-    def attr(self, col, attr=None):
-        color = 0
-        if col is not None and col is not 0:
-            color += Color.pairs[col]
-        return curses.color_pair(color)
+    # TODO: Handle anything but basic colors
+    def attr(self, color=None, attr=None):
+        if color is not None:
+            col = Color.pairs.get(color)
+            if col is None:
+                fg, bg = color.split("-")
+                fg = random.choice(Color.colors[fg])
+                bg = random.choice(Color.colors[bg])
+                col = Color.pairs.get(fg+"-"+bg)
+            return curses.color_pair(col)
+        return 0
 
     # KEYIN
 
@@ -147,7 +152,7 @@ class View(Component):
         self.y_acc = 0
 
     # Rectangular character function.
-    def rd(self, pos, glyph, col=0, attr=None, box=True):
+    def rd(self, pos, glyph, col=None, attr=None, box=True):
         x, y = pos
         draw_x = x
         draw_y = y
@@ -159,7 +164,7 @@ class View(Component):
         except curses.error: pass
 
     # Rectangular string function.
-    def rds(self, pos, string, col=0, attr=None, box=True):
+    def rds(self, pos, string, col=None, attr=None, box=True):
         x, y = pos
         draw_x = x
         draw_y = y
@@ -321,7 +326,7 @@ class MainMap(View):
             return False
 
     # Hex character function, for maps only.
-    def hd(self, pos, glyph, col=0, attr=None):
+    def hd(self, pos, glyph, col=None, attr=None):
         # Three sets of coords are involved:
         x, y = pos
         c_x, c_y = self.center#self.player.pos
@@ -339,7 +344,7 @@ class MainMap(View):
         except curses.error: pass
 
     # Draw to offset hexes, i.e., the 'blank' ones.
-    def offset_hd(self, pos, dir, glyph, col=0, attr=None):
+    def offset_hd(self, pos, dir, glyph, col=None, attr=None):
         # Four sets of coords are involved:
         x, y = pos
         c_x, c_y = self.center#self.player.pos
