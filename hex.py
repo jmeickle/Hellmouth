@@ -184,17 +184,44 @@ def hex_tester(x, y, rank, height, width):
 
 if __name__ == "__main__":
     import sys # Slightly cleaner printing for the above test code.
-    x = 10
-    y = 10
-    rank = 8
-    height = 24
-    width = 24
+#    x = 10
+#    y = 10
+#    rank = 8
+#    height = 24
+#    width = 24
     #hex_tester(x, y, rank, height, width)
 
     # Rotation test
-    import random
-    for x in range(10):
-        dir = random.choice(dirs)
-        num = random.randint(1,6)
-        print "Was", dir,
-        print ", rotated %s to face" % num, rot(dir, num)
+#    import random
+#    for x in range(10):
+#        dir = random.choice(dirs)
+#        num = random.randint(1,6)
+#        print "Was", dir,
+#        print ", rotated %s to face" % num, rot(dir, num)
+
+    # Line test.
+    map = []
+    width = 20
+    height = 20
+    for y in range(width):
+        map.append([])
+        for x in range(height):
+            map[y].append(".")
+
+    pos1 = (width/2, height/2)
+    pos2 = (random.randint(1, width)-1, random.randint(1, height)-1)
+    steps = line(pos1, pos2)
+    print steps
+
+    for step in range(len(steps)):
+        x, y = steps[step]
+        map[y][x] = step+1
+  
+    map[pos2[1]][pos2[0]] = "^"
+    map[pos1[1]][pos1[0]] = "$"
+
+    for Y in range(height):
+        sys.stdout.write(" " * Y)
+        for X in range(height):
+            sys.stdout.write(" %s" % map[Y][X])
+        print "\n",
