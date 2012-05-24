@@ -280,6 +280,22 @@ class DialogueScreen(Screen):
             self.suicide()
         return False # Don't permit anything but continuing.
 
+class StartScreen(Screen):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        Screen.__init__(self, window, x, y, start_x, start_y)
+
+    def draw(self):
+        import help
+        self.border(" ")
+        title = "<%s>%s</>" % ("red-black", "Welcome to the Arena!")
+        spacing = self.width - len("Welcome to the Arena!") - len(self.player.location)
+        heading = "%s%s%s" % (title, " "*spacing, self.player.location)
+        self.cline(heading)
+        self.cline("-"*(self.width))
+        self.cline(help.entry["start-meat"])
+#        self.cline(help.entry["commands"])
+        return False
+
 # TODO: Make this a subclass of a Map view.
 class MainMap(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
