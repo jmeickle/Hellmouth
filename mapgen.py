@@ -2,6 +2,7 @@ import random
 from define import *
 from dice import *
 from hex import *
+from terrain import *
 
 # Map generator class. If called, builds a hexagonal shape of plain tiles.
 class MapGen():
@@ -27,9 +28,9 @@ class MeatArena(MapGen):
         # Arena floor / walls
         for pos, dist in hexes.items():
             if dist > self.size - self.walls:
-                self.cells[pos] = (dist, 'wall-outer')
+                self.cells[pos] = (dist, MeatWall('inner'))
             elif dist == self.size - self.walls:
-                self.cells[pos] = (dist, 'wall-inner')
+                self.cells[pos] = (dist, MeatWall('outer'))
             else:
                 self.cells[pos] = (dist, None)
 
@@ -41,9 +42,9 @@ class MeatArena(MapGen):
             col = area(colsize, pos)
             for pos, dist in col.items():
                 if dist == colsize:
-                    self.cells[pos] = (dist, 'wall-outer')
+                    self.cells[pos] = (dist, MeatWall('outer'))
                 else:
-                    self.cells[pos] = (dist, 'wall-inner')
+                    self.cells[pos] = (dist, MeatWall('inner'))
 
         return self.cells
 
