@@ -33,4 +33,4 @@ UTILITY:
 - Make all pos functions accept tuple args consistently.
 
 STRUCTURE:
-- Clean up the game loop
+- Make logging a feature of the game rather than of maps.
