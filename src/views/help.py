@@ -1,15 +1,15 @@
-from views.screens import Screen
 from data import help
+from views.screens import Screen
 
 class HelpScreen(Screen):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        Screen.__init__(self, window, x, y, start_x, start_y)
+    def __init__(self, window):
+        Screen.__init__(self, window)
 
+    # TODO: Header drawing should be nicer.
     def draw(self):
         self.border(" ")
-        title = "<%s>%s</>" % ("green-black", "Help!")
-        spacing = self.width - len("Help!") - len(self.player.location)
-        heading = "%s%s%s" % (title, " "*spacing, self.player.location)
+        title = "Help!"
+        heading = "<green-black>%s</>" % title
         self.cline(heading)
         self.cline("-"*(self.width))
         self.cline(help.entry["commands"])

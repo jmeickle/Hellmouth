@@ -1,13 +1,19 @@
+# Basic full-screen classes and their methods.
 import curses
 
+from define import *
 from views.view import View
 
 # Border, heading, body text.
 class Screen(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    def __init__(self, window):
+        View.__init__(self, window, TERM_X, TERM_Y)
         self.title = "Debug Title"
 
+    def before_draw(self):
+        self.window.clear()
+
+    # TODO: Function to make drawing headings a bit more generalizable
     def draw(self):
         self.border("#")
         heading = "%s%s%s" % (self.title, " "*(self.width - len(self.title) - len(self.player.location) - 1), self.player.location)

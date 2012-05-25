@@ -1,13 +1,13 @@
 from actors.player import Player
 from component import Component
 from views.tactical import Window
-
+from views.help import HelpScreen
 from levels.meat.arena import MeatArena
+from key import *
 
 class Game(Component):
     def __init__(self, window):
         Component.__init__(self)
-        # Overriding component init - it's not a subwin.
         self.window = window
         self.player = Player()
         self.level = None
@@ -40,6 +40,32 @@ class Game(Component):
         # Keyin tree.
         c = self.window.getch()
         self._keyin(c)
+
+    # Games don't have the normal keyin/_keyin function, since they need to
+    # steal input before their children can get to it.
+
+    def _keyin(self, c):
+        if self.keyin(c) is False:
+            return False
+        for child in reversed(self.children):
+            if child._keyin(c) is False:
+                return False
+
+    def keyin(self, c):
+        # Always allow help.
+        if c == ord('?'):
+            self.spawn(HelpScreen(self.window))
+
+        # Always allow quitting.
+        if c == ctrl('q'):
+            self.suicide()
+        # 'Global' keypresses that work anywhere
+#        if c == ord('P'):
+#            views[0].player.attack(views[0].player)
+#        elif c == ord('g'):
+#            views[0].player.get_all()
+#        elif c == ord('d'):
+#            views[0].player.drop_all()
 
     # Returns whether we meet the conditions to keep playing.
     def conditions(self):
