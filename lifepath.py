@@ -1,5 +1,7 @@
 from lifepath_events import eventdata, skip
 import random
+import skills
+import traits
 
 # A lifepath is the sum of your choices during character generation. It is
 # composed of lifepath events, forming a tree structure.
@@ -9,6 +11,7 @@ class Lifepath:
         self.skip = skip
         self.first = skip
         self.events = []
+        self.players = []
 
     # Add the first event.
     def start(self, event):
@@ -21,8 +24,17 @@ class Lifepath:
     def debug_display(self):
         self.first.debug_display(True)
 
-    def effects(self):
-        return self.first.sum_effects()
+    def effects(self, player):
+        effects = self.first.sum_effects()
+        for effect, points in effects.items():
+            trait = traits.trait_list.get(effect)
+            if trait is not None:
+                player.points["traits"][effect] = points
+                player.points["total"] += points
+            else:
+                skill = skills.skill_list.get(effect)
+                player.points["skills"][effect] = points
+                player.points["total"] += points
 
 class LifepathEvent:
     def __init__(self, choice, parent=None):
