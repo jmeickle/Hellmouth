@@ -12,4 +12,3 @@ class Player(Actor):
         self.damage = 1
         self.build(150)
         self.controlled = True
-        self.location = None

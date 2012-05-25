@@ -33,7 +33,7 @@ class Encounter:
     # Handle things that happen when the player enters the map.
     def enter(self, player):
         self.player = player
-        self.player.location = self.name
+        self.player.map = self
         self.put(self.player, self.entry)
 
     # Handle things that happen when the player leaves the map.
