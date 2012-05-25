@@ -379,7 +379,6 @@ class CharacterSheet(View):
         return False
 
     def draw(self):
-        self.window.erase()
         self.border(" ")
         pos = self.cursor.pos
         actor = self.map.actor(pos)
@@ -404,6 +403,7 @@ class CharacterSheet(View):
             if self.y_acc+1 >= self.height and x+2 < len(self.text):
                 self.cline('[...]')
                 break
+        return False # Block further drawing if we drew.
 
 # TODO: Add a minimap and a health screen.
 #class MiniMap(View):
