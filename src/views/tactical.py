@@ -245,9 +245,9 @@ class Log(View):
         self.events = deque()
         self.index = 0
 
-#    def ready(self):
-#        self.map.log = log
-#        self.map.log.add("WELCOME TO THE ARENA OF MEAT")
+    # Add the log to the map.
+    def ready(self):
+        self.map.log = self
 
     # Add an event to the history. Autoscrolls unless this has been turned off.
     def add(self, event, scroll=True):
