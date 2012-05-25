@@ -289,7 +289,7 @@ class Actor:
 
     # Retrieve actor stat.
     def stat(self, stat):
-        val = self.traits.get(stat)
+        val = self.attributes.get(stat)
         # Not an attribute? Must be a calculcated stat.
         if val is None:
             return self.calc_stat(stat)
