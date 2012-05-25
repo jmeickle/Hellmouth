@@ -74,6 +74,24 @@ def dice(text, roll=True, capped=True):
     else:
         return result
 
+# Return an appropriate text representation of your damage.
+def damage_dice(amount):
+    dice = 1
+    mod = amount
+
+    if amount > 0:
+        dice += amount / 4
+        mod = mod % 4
+
+    if mod == 3:
+        dice += 1
+        mod -= 4
+
+    if mod == 0:
+        return "%dd" % dice
+    else:
+        return "%dd%+d" % (dice, mod)
+
 # Test function
 if __name__ == '__main__':
     #print "Ten 1d6 rolls:", roll(r1d6, 10)
