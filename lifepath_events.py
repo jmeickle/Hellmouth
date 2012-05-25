@@ -238,7 +238,7 @@ eventdata = {
     'age'     : 3,
     'text'    : "I had an uneventful childhood.",
     'short'   : 'grew to adolescence in a normal household',
-    'effects' : {'Skill/Farming' : 1},
+    'effects' : {'Farming' : 1},
     'years'   : 6,
     'choices' : ('Mundane Teen', 'Rich Teen', 'Poor Teen', 'Dedicated Teen', 'Scoundrel Teen', 'Odd Teen', 'Enlisted Teen'),
 },
