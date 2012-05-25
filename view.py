@@ -912,7 +912,7 @@ class Inventory(View):
         return False
 
 class Scroller(Component):
-    def __init__(self, max, min=0, initial=0):
+    def __init__(self, max=0, min=0, initial=0):
         Component.__init__(self)
         self.min = min
         self.max = max
@@ -1033,7 +1033,7 @@ class CharacterSheet(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.actor = None
         self.text = []
-        self.scroller = self.spawn(Scroller(0))
+        self.scroller = self.spawn(Scroller())
 
     def keyin(self, c):
         if c == ord(' '):
