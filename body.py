@@ -1,8 +1,10 @@
+import drawing
 from hitloc import HitLoc
 
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
     def __init__(self, parent):
+        self.parent = parent
         # Size (0 for a human)
         self.size = None
         # Shape (tall, long, or full)
@@ -32,6 +34,10 @@ class BodyPlan:
                 else:
                     self.table[roll] = part
 
+    # Implement this for anything that needs a paperdoll.
+    def paperdoll(self):
+        return False
+
 class Humanoid(BodyPlan):
     # These tuples represent:
     # 1: Part name.
@@ -60,6 +66,19 @@ class Humanoid(BodyPlan):
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build(parent)
+
+    def paperdoll(self):
+        p = self.parent
+        list = []
+        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.wound('Head'), p.loccol('Head')))
+        list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
+        list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.wound('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.wound('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.wound('RArm')))
+        list.append(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.wound('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.wound('RHand')))
+        list.append('   <%s>.-</><%s>|</><%s>-.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
+        list.append('  %s<%s>|</>   <%s>|</>%s  ' % (p.wound('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.wound('RLeg')))
+        list.append('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
+        list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.wound('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.wound('RFoot')))
+        return list
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.

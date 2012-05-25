@@ -628,6 +628,10 @@ class Actor:
             sheet.append(str)
         return sheet
 
+    # Paperdolls are based on body, of course.
+    def paperdoll(self):
+        return self.body.paperdoll()
+
 # Actor test code
 if __name__ == "__main__":
     testactor = Actor()

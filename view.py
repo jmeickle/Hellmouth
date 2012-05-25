@@ -514,21 +514,8 @@ class Stats(View):
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
-        # Brevity!
-        p = self.player
-
-        self.cline('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.wound('Head'), p.loccol('Head')))
-        self.cline('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
-        self.cline(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.wound('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.wound('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.wound('RArm')))
-        self.cline(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.wound('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.wound('RHand')))
-        self.cline('   <%s>.-</><%s>|</><%s>-.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
-        self.cline('  %s<%s>|</>   <%s>|</>%s  ' % (p.wound('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.wound('RLeg')))
-        self.cline('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
-        self.cline(' %s<%s>--</>   <%s>--</>%s ' % (p.wound('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.wound('RFoot')))
-#        self.line("-"*12)
-#        for x in range(10):
-#            self.line("-"+" "*10+"-")
-#        self.line("-"*12)
+        for line in self.player.paperdoll():
+            self.cline(line)
 
         # Col 2: Combat information
         self.x_acc += 12
@@ -575,11 +562,6 @@ class Stats(View):
     # Print a line like 'Dodge: 15' using stat()
     # TODO: Print colors, *s, etc. for more info.
     def statline(self, stat):
-# Examples:
-#        self.line("HP: %3d/%2d" % (-50, 10))
-#        self.line("FP: %3d/%2d" % (10, 12))
-#        self.line("MP: %3d/%2d" % (8, 15))
-
         # Always use the shortest label here.
         short = labels.get(stat)
         if short is not None:
