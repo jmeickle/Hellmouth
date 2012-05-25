@@ -25,7 +25,12 @@ class Component():
 
         child.parent = self
         self.children.append(child)
+        child.ready()
         return child
+
+    # Abstract. Perform actions that the child couldn't during init.
+    def ready(self):
+        return True
 
     # Kills children (recursively) and then itself.
     def suicide(self):
