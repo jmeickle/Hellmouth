@@ -73,3 +73,6 @@ difficulties = {
 
 # Types of point expenditures
 point_types = ("attributes", "skills", "techniques", "traits")
+
+primary_attributes = ("ST", "DX", "IQ", "HT")
+secondary_attributes = ("HP", "FP", "MP", "Will", "Perception", "Speed", "Move")
