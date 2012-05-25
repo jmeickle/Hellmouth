@@ -3,6 +3,9 @@ from dice import *
 
 # Functions for making hexes easier to use.
 # Directional stuff
+# Center!
+CC = (0,0)
+
 NW = (0, -1)
 NE = (1, -1)
 CE = (1, 0)
