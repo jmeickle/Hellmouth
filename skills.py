@@ -126,6 +126,14 @@ skill_list = {
     "text"       : "Hit stuff good",
     "defaults"   : [],
 },
+# Economic skills
+"Farming" : {
+    "type"       : "Trade",
+    "attribute"  : "IQ",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
 # End skill dictionary
 }
 
