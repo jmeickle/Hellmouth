@@ -464,7 +464,7 @@ class Examine(View):
         cell = self.map.cell(pos)
         if cell is not None:
             string = cell.contents()
-            self.line(string)
+            self.line("Selected: %s" % string)
         else:
             self.line("There's... nothing there. Nothing at all.")
 
@@ -1065,8 +1065,8 @@ class CharacterSheet(View):
                 self.cline('[...]')
                 continue
             line = self.text[x]
-            if len(line) > self.width:
-                line = line[:self.width]
+      #      if len(line) > self.width:
+      #          line = line[:self.width]
             self.cline(line)
             if self.y_acc+1 >= self.height and x+2 < len(self.text):
                 self.cline('[...]')

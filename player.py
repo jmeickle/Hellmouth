@@ -7,6 +7,8 @@ class Player(Actor):
         self.glyph = '@'
         self.name = 'player character'
         self.color = 'cyan-black'
+        self.description = "Some hapless adventurer who stumbled across the arena. It looks pretty feeble."
+
         self.hp = 100
         self.damage = 1
         self.build(150)

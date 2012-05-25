@@ -617,6 +617,8 @@ class Actor:
         # Print out a character sheet:
         sheet.append("==%s==" % self.name)
         sheet.append("")
+        sheet.append(self.description)
+        sheet.append("")
         sheet.append("--Attributes--")
         for stat, points in self.attributes.items():
             sheet.append("%s: %s" % (stat, points))
