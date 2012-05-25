@@ -13,6 +13,7 @@ from random import choice
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         Component.__init__(self)
+        self.screen = window
         self.window = window.subwin(y, x, start_y, start_x)
         self.x = x
         self.y = y
