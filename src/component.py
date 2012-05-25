@@ -62,7 +62,6 @@ class Component():
     def draw(self):
         return True
 
-    # TODO: Actually fix this.
     # Returns true if a screen coordinate cannot be drawn to.
     def undrawable(self, pos):
         x, y = pos
@@ -90,7 +89,7 @@ class Component():
     # Recurse through children trying their keyin functions,
     # until you've done your own.
     def _keyin(self, c):
-        for child in self.children:
+        for child in reversed(self.children):
             if child._keyin(c) is False:
                 return False
         return self.keyin(c)
@@ -98,4 +97,3 @@ class Component():
     # Handle keyin. Abstract.
     def keyin(self, c):
         return True
-
