@@ -46,7 +46,7 @@ def sc(skill, mod=0):
 #        return TIE
 
 # Convert text representation of dice to a roll
-def dice(text, capped=True):
+def dice(text, roll=True, capped=True):
     parts = re.split('(\d+)d([+-]?\d*)', text)
     dice = int(parts[1])
     if parts[2] == "":
@@ -55,11 +55,15 @@ def dice(text, capped=True):
         mod = int(parts[2])
 
     # Convert modifiers in excess of +3 to extra dice
-    dice += mod / 4
-    mod = mod % 4
+    if dice > 1 or mod > 0:
+        dice += mod / 4
+        mod = mod % 4
 
-    # DEBUG:
-    #exit("%sd+%s" % (dice, mod))
+    if roll is False:
+        if mod == 0:
+            return "%dd" % dice
+        else:
+            return "%dd%+d" % (dice, mod)
 
     # Roll
     result = sum(roll(r1d6, dice)) - mod
