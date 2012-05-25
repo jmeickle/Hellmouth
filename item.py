@@ -8,13 +8,13 @@ class Item:
         self.description = "Debug description"
 
         # Basic characteristics
+        self.size = None
         self.hp = None
         self.hp_max = None
         self.dr = None
         self.effects = None
 
         # Construction
-        self.size = None
         self.quality = None
         self.material = random.choice(("iron", "gold", "copper", "steel"))
 
@@ -93,5 +93,9 @@ class Weapon(Item):
         Item.__init__(self)
 
         # Combat-only stats
-        self.skill = None # Primary skill, for descriptions - there can be others.
-        self.attackline = {} # Min ST in attackline
+        self.primary_skill = None # Primary skill, for descriptions - there can be others.
+        self.attacks = {} # Min ST in attackline
+
+class Sword(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)

@@ -2,6 +2,7 @@
 from collections import deque
 from describe import commas
 from item import Item
+from generate_items import generate_item
 import random
 import hex
 class Encounter:
@@ -58,7 +59,7 @@ class Encounter:
 
             # TODO: Replace this test code with something better.
             if random.randint(1, 10) == 1:
-                cell.put(Item())
+                cell.put(generate_item("broadsword"))
 
             self.cells[pos] = cell
 
