@@ -10,7 +10,7 @@ class Encounter:
         self.size = None
         self.center = None
 
-        self.name = "MEAT ARENA"
+        self.name = None
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
@@ -26,6 +26,9 @@ class Encounter:
         self.player = None
         # Where the player starts
         self.entry = None
+
+        # Where we're traveling to.
+        self.travel = None
 
     # Handle things that happen when the player enters the map.
     def enter(self, player):
@@ -138,6 +141,19 @@ class Encounter:
                 sys.stdout.write(line)
                 sys.stdout.write("\n")
         exit()
+
+    # Advance the queue, if we can. Only returns something if we're traveling.
+    def advance(self):
+        if self.travel is not None:
+            return self.travel
+
+        # If nobody is acting, let the first in the queue act.
+        if self.acting is None:
+            self.acting = self.queue.popleft()
+
+        # NPCs act until the player's turn comes up.
+        if self.acting.controlled is False:
+            self.acting.act()
 
 class Cell:
     def __init__(self, pos, glyph='.', color=None):
