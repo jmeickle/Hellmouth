@@ -26,8 +26,8 @@ class MainPane(View):
         View.__init__(self, window, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y)
 
     def ready(self):
-        self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
         self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
+        self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
 
 # Smaller, right-hand pane
 class SidePane(View):
@@ -212,24 +212,20 @@ class Stats(View):
         #for x in range(10):
         #    self.line("Sample combat log text, line %d" % x)
 
-    # Just a function to make retrieving stats less verbose.
-    def stat(self, stat):
-        return self.player.stat(stat)
-
     # Print a line like 'Dodge: 15' using stat()
     # TODO: Print colors, *s, etc. for more info.
     def statline(self, stat):
         # Always use the shortest label here.
-        short = labels.get(stat)
-        if short is not None:
-            short = short[0]
+        label = labels.get(stat)[0]
+        value = self.player.stat(stat)
+        if value is None:
+            value = "N/A"
+
+        # These particular stats actually have two stats to display.
+        if stat in ["HP", "FP", "MP"]:
+            self.line("%s: %3d/%2d" % (label, value, self.player.stat("Max"+stat)))
         else:
-            short = "N/A"
-        # These stats actually have two stats to display.
-        if short in ["HP", "FP", "MP"]:
-            self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
-        else:
-            self.line("%s: %s" % (short, self.stat(stat)))
+            self.line("%s: %s" % (label, value))
 
 # TODO: Implement this
 class Status(View):
