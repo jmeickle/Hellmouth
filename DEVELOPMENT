@@ -1,0 +1,12 @@
+Hellmouth is open source, and patches are appreciated.
+
+Check out the TODO for what you can help on, or get in touch with me.
+
+Folder structure:
+
+/actor: Code for actors (both the player and NPCs).
+/actor/ai: Contains the primary AI class and the modules it can call upon.
+/data: Contains information about items, skills, etc.
+/generators: Procedural content generation code.
+/generators/maps: Map generators.
+/views: Code for visible UI components (not all of which are View()s)
