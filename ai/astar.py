@@ -5,26 +5,40 @@
 # and found through:
 #     http://www.amagam.com/hexpath/
 
-# DEBUG: You have to comment these out to be able to run the test.
-from define import *
-from hex import *
+if __name__ != '__main__':
+    from define import *
+    from hex import *
 
 def heuristic(pos1, pos2):
 # Manhattan (probably totally broken for hexes!):
 #    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
-# Pure hexagonal distance
+# Pure hexagonal distance:
     return dist(pos1, pos2)
 
 class AStar:
-    def __init__(self):
+    def __init__(self, map):
         self.open_list = {}
         self.closed_list = {}
+        self.map = map
 
     def add_open(self, pos, parent=None):
-        node = Node(pos, parent)
-        self.open_list[pos] = node
-        return node
+        cell = self.map.cell(pos)
+        if cell is not None:
+            # Can pass through. Use it.
+            if cell.impassable() is False:
+                node = Node(pos, parent)
+                self.open_list[pos] = node
+                return node
+            # Can't pass through, but keep it around.
+            else:
+                self.add_closed(pos, parent)
+                return False
+        # No need to even create a node if it's not even a cell.
+        else:
+            self.closed_list[pos] = None
+            return False
 
+    # Create a node, but move it directly to the closed list.
     def add_closed(self, pos, parent=None):
         node = Node(pos, parent)
         self.closed_list[pos] = node
@@ -44,17 +58,19 @@ class AStar:
         else:
             return node2
 
+    # Return the lowest value from the open list.
     def lowest(self):
-         #return min(self.open_list.values(), key=lambda x:x.cost)
-         #exit("%s" "%s" % (self.open_list.values(), result))
+        #return min(self.open_list.values(), key=lambda x:x.cost)
         return reduce(lambda x, y: self.lower(x, y), self.open_list.values())
 
+    # Request a path from a destination to one.
     def path(self, pos, dest):
         curr = self.add_open(pos)
 
         for dir in dirs:
             pos = self.add_open(add(curr.pos, dir), curr)
-            pos.set_cost(curr.pos, dest)
+            if pos is not False:
+                pos.set_cost(curr.pos, dest)
 
         self.move_closed(curr.pos)
 
@@ -64,11 +80,10 @@ class AStar:
             next = self.lowest()
             path = self._path(next, dest)
             if path is not False:
-                return path
+                return path.get_path()
             if loops > 10000:
                 exit("Too many loops! Length:%s\n%s" % (len(self.open_list), self.open_list))
         return False
-
 
     def _path(self, curr, dest):
         self.move_closed(curr.pos)
@@ -81,7 +96,8 @@ class AStar:
                 existing = self.open_list.get(pos)
                 if existing is None:
                     node = self.add_open(pos, curr)
-                    node.set_cost(curr.pos, dest)
+                    if node is not False:
+                        node.set_cost(curr.pos, dest)
                 elif existing.g > curr.g:
                     existing.parent = curr
                     existing.set_cost(curr.pos, dest, False)
