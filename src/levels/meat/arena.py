@@ -13,6 +13,7 @@ class MeatArena():
         self.map = Encounter()
         self.map.name = "MEAT ARENA"
         self.map.generate(mapgen.MeatArena)
+        self.map.level = self
 
         # Define NPCs to be placed
         from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra

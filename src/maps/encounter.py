@@ -9,7 +9,7 @@ class Encounter:
     def __init__(self):
         self.size = None
         self.center = None
-
+        self.level = None
         self.name = None
 
         # Dict of (hex) cell objects, indexed by pos.
