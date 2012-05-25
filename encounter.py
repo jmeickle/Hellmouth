@@ -145,7 +145,7 @@ class Cell:
 
         # Basic cell details
         self.glyph = glyph
-        self.color = "meat-black"
+        self.color = "white-black"
 
         # Stuff inside the cell
         self.actor = None
