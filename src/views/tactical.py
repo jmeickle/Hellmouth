@@ -84,7 +84,7 @@ class MainMap(View):
     def hd(self, pos, glyph, col=None, attr=None):
         # Three sets of coords are involved:
         x, y = pos
-        c_x, c_y = self.center#self.player.pos
+        c_x, c_y = self.center
         v_x, v_y = self.viewport
 
         # Offsets from the viewport center
@@ -102,7 +102,7 @@ class MainMap(View):
     def offset_hd(self, pos, dir, glyph, col=None, attr=None):
         # Four sets of coords are involved:
         x, y = pos
-        c_x, c_y = self.center#self.player.pos
+        c_x, c_y = self.center
         v_x, v_y = self.viewport
         d_x, d_y = dir
 
@@ -136,14 +136,13 @@ class MainMap(View):
             else:
                 glyph = 'X'
                 col = "magenta-black"
+                # If we ever want to print something for missing cells.
                 #self.hd(cell, glyph, col)
 
 
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
-
 # TODO: Update for FOV
-
 class Examine(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
@@ -213,7 +212,7 @@ class Stats(View):
         #for x in range(10):
         #    self.line("Sample combat log text, line %d" % x)
 
-    # Retrieve stat
+    # Just a function to make retrieving stats less verbose.
     def stat(self, stat):
         return self.player.stat(stat)
 
@@ -231,10 +230,6 @@ class Stats(View):
             self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
         else:
             self.line("%s: %s" % (short, self.stat(stat)))
-
-# TODO: Add a minimap and a health screen.
-#class MiniMap(View):
-#class Health(View):
 
 # TODO: Implement this
 class Status(View):
@@ -413,3 +408,7 @@ class CharacterSheet(View):
             if self.y_acc+1 >= self.height and x+2 < len(self.text):
                 self.cline('[...]')
                 break
+
+# TODO: Add a minimap and a health screen.
+#class MiniMap(View):
+#class Health(View):
