@@ -57,7 +57,6 @@ class MainMap(View):
             elif c == ord('v'):
                 if self.cursor is None:
                     self.cursor = self.spawn(Cursor(self.player.pos))
-                    self.cursor.cursor = self.cursor # Weird, right? But it can't be passed down automatically because it didn't exist.
                     self.cursor.spawn(Examine(self.screen, self.width, 1, self.LEFT, self.BOTTOM))
                     return False
 

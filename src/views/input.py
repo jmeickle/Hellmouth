@@ -127,3 +127,7 @@ class Cursor(Component):
                 else:
                     return "magenta-black"
 
+    # Seems silly, but this lets the cursor be passed on automatically to
+    # children of it. (This can't be done during spawn, of course.)
+    def ready(self):
+        self.cursor = self
