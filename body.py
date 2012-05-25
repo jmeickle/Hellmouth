@@ -1,4 +1,3 @@
-import drawing
 from hitloc import HitLoc
 
 # Body layouts - humanoid, hexapod, etc.

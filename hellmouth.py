@@ -16,7 +16,9 @@ def main(stdscr):
     curses.raw()
 
     # Imports that can't happen until after curses is init'd. 
-    from view import MainMap, Pane, Stats, Chargen, Status, Log, View, StartScreen, HelpScreen
+    from views.tactical import MainMap, Pane, Stats, Status, Log, View, StartScreen
+    from chargen import Chargen
+    from help import HelpScreen
     # HACK: Display an intro screen.
 #    intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
 #    intro.x_acc = 10
