@@ -723,6 +723,82 @@ class Chargen(View):
         self.y_acc = self.height - 8
         y_save = self.y_acc
 
+        # START HEXAGONS
+        # Show choices in a pretty hexagon!
+#        hex_size = 3
+#        width = 1 + hex_size * 3 * 2
+#        center = width / 2
+
+#        self.x_acc = center
+#        self.y_acc = hex_size*3
+
+        def hex_reset(x):
+            self.x_acc = center
+            self.y_acc = y_acc+1 + hex_size*3
+            #self.rds((center, y_acc), "X")
+            if x >= len(dirs):
+                dir = CC
+            else:
+                dir = dirs[x]
+            self.x_acc += hex_size*(2*dir[0] + dir[1])
+            self.y_acc += 2*hex_size*dir[1] - (1+(hex_size-1)/3)*dir[1]
+
+        def hexagon(size, color=None):
+            x, y = self.x_acc, self.y_acc
+#center
+#                x = 2*pos[0] + pos[1]
+#                y = pos[1]
+            for offset in range(size+1):#/2+1):
+                #f
+                if offset == 0:
+                    self.rd((x-size, y), "|", color)
+                    self.rd((x+size, y), "|", color)
+                elif offset <= size/3:
+                    extra = 0#offset#size/3
+                    self.rd((x-size, y-offset-extra), "|", color)
+                    self.rd((x+size, y-offset-extra), "|", color)
+                    self.rd((x-size, y+offset+extra), "|", color)
+                    self.rd((x+size, y+offset+extra), "|", color)
+                elif offset > 0:
+                    self.rd((x+offset - size-size/3, y-offset), "/", color)
+                    self.rd((x-offset + size+size/3, y+offset), "/", color)
+                    self.rd((x-offset + size+size/3, y-offset), "\\", color)
+                    self.rd((x+offset - size-size/3, y+offset), "\\", color)
+            self.x_acc -= size-1
+
+        # Draw the empty hexes.
+        #for x in range(len(self.choices), 6):
+        #    hex_reset(x)
+        #    hexagon(hex_size, "cyan-black")
+
+#        for x in range(len(self.choices)):
+        # TODO: Split this off into its own function.
+#            if x == self.selector.choice:
+#                continue
+#            hex_reset(x)
+            #hexagon(hex_size)
+#            string = self.lifepath.name(self.choices[x])
+#            for word in re.split('\W', string):
+#                self.line("%s" % word)
+
+#                self.cline("<green-black>* %s</>" % choice)
+#                 self.cline("<green-black>*</>")
+#            else:
+#                 self.line("*")
+
+        # Draw the selected hex.
+#        hex_reset(self.selector.choice)
+#        hexagon(hex_size, "green-black")
+#        string = self.lifepath.name(self.choices[self.selector.choice])
+#        for word in re.split('\W', string):
+#            self.cline("<green-black>%s</>" % word)
+
+        # Restore to previous values.
+#        self.x_acc = x_acc + width + 5
+#        self.y_acc = y_acc + 5
+
+        # END HEXAGONS
+
         # Print a list of choices for the initial skip.
         if self.current is None:
             # Start with just enough room to list everything and save where we started.
