@@ -2,6 +2,7 @@ from color import Color
 from define import *
 from hex import *
 from skills import skill_list
+import key
 
 from copy import copy
 import curses
