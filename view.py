@@ -987,9 +987,9 @@ class Inventory(View):
         if len(self.items) > 0:
             for index, appearance, itemlist in self.items:
                 if self.selector.choice == index:
-                    self.cline("<green-black>%s - %s (%s)</>" % (index, appearance, len(itemlist)))
+                    self.cline("<green-black>%s (%s)</>" % (appearance, len(itemlist)))
                 else:
-                    self.cline("%s - %s (%s)" % (index, appearance, len(itemlist)))
+                    self.cline("%s (%s)" % (appearance, len(itemlist)))
         else:
             self.cline("No items")
 
@@ -1010,10 +1010,10 @@ class Inventory(View):
                 equipped = "Nothing"
             self.cline("%6s: %s" % (loc[0], equipped))
 
-        if self.selector.text is not None:
-            self.cline(self.selector.text)
-        else:
-            self.cline("d/e/u")
+#        if self.selector.text is not None:
+#            self.cline(self.selector.text)
+#        else:
+#            self.cline("d/e/u")
 
     def keyin(self, c):
         if c == ord(' '):
