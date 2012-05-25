@@ -1,25 +1,36 @@
 SHORT TERM GOALS:
+- Basic items
 - Basic combat
-- Basic combat AI
+- Basic inventory management
+- Use generated skills in combat
 - Fill out lifepaths so all reachable events are meaningful
+- Make lifepath events affect character stats
+- Provide a functional help screen
 
 LONGER TERM GOALS:
-- Basic skills
-- Basic items
+- Screen to spend discretionary character points
+- Enhanced combat text generation
+- Non-combat skills
+- Support numpads correctly across systems
+- Improved random monster generation
+
+VERY LONG TERM GOALS:
+- Better AI
+- Save/load game
+- Remappable keys
+- Windows support
+- Improved map generation
 
 MISC:
 
 DISPLAY:
 - Support curses attributes
-- Convert colors to default to a black background.
+- Convert colors to default to a black background (i.e., no "green-black").
 - Support 256 color mode.
 
 UTILITY:
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
 - Make all pos functions accept tuple args consistently.
-- Write a wrapper so that curses never, ever tries to print something offscreen.
 
 STRUCTURE:
 - Clean up the game loop
-- Clean up the chargen screen. Too much of it is in the view.
-- Split into a folder structure.
