@@ -272,17 +272,20 @@ class Cell:
     def occupied(self):
         if self.actor is not None:
             return True
+        return False
 
     # Return whether the cell has blocking terrain in it.
     def impassable(self):
         if self.terrain is not None:
             if self.terrain.blocking is True:
                 return True
+        return False
 
     # Return whether the cell is passable
     def blocked(self):
         if self.occupied() is True or self.impassable() is True:
             return True
+        return False
 
 if __name__ == '__main__':
     # Basic test: make a map and print it
