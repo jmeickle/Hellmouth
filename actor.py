@@ -108,58 +108,6 @@ class Actor:
         skills.calculate_skills(self)
         skills.calculate_defaults(self)
 
-    # AI actions. Currently: move in a random direction.
-    def act(self):
-        assert self.controlled is not True, "A player tried to hit AI code."
-
-        self.attempts += 1
-        if self.attempts > 10:
-            self.over()
-            return False
-
-        self.distance = hex.dist(self.pos, self.target.pos)
-        repath = False
-
-        # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
-        if self.distance > 1 and self.path is None:
-            repath = True
-        if self.destination != self.target.pos:
-            if random.randint(1, hex.dist(self.destination, self.target.pos)) == 1:
-                repath = True
-
-        # TODO: More intelligently decide when to re-path
-        if repath is True:
-            # TODO: Get target stuff in here.
-            if self.target is not None:
-                self.ai.__init__()
-                self.destination = self.target.pos
-                path = self.ai.path(self.pos, self.destination)
-                if self.path is False: # Could not find a path
-                    self.path = None
-                else: # Set the list of coords as our path
-                    self.path = path.get_path()
-
-        if self.distance > 1 and self.path is not None:
-            if self.path: # i.e., a list with entries
-                pos = self.path.pop()
-                # TODO: Set up a real coord tuple class already, slacker
-                dir = (pos[0] - self.pos[0], pos[1] - self.pos[1])
-                #exit("Curr: (%s, %s)\nNext: (%s, %s)\nDir: (%s, %s)" % (pos[0], pos[1], self.pos[0], self.pos[1], dir[0], dir[1]))
-                if not self.do(dir):
-                    # Chance to flat out abandon the path
-                    if r1d6() == 6:
-                        self.path = None
-                    else:
-                        # Try again
-                        self.path.append(pos)
-            else:
-                self.path = None # Remove the empty list
-
-        # This should only happen if stuff is adjacent and without a path.
-        else:
-            dir = (self.target.pos[0] - self.pos[0], self.target.pos[1] - self.pos[1])
-            self.do(dir)
-
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         pos = hex.add(self.pos, dir)
