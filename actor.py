@@ -318,7 +318,21 @@ class Actor:
     def Parry(self):       return None # STUB: depends on skill
     def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
     def Encumbrance(self): return 0 # STUB
-    
+
+    def Thrust(self):
+        assert self.stat('ST') <= 70, "ST value exceeded accurate range."
+        return damage_dice((self.stat('ST')+1) / 2 - 7)
+
+    # Three part piecewise function
+    def Swing(self):
+        assert self.stat('ST') <= 45, "ST value exceeded accurate range."
+        if self.stat('ST') > 27:
+            return damage_dice((self.stat('ST')-1)/2 + 4)
+        elif self.stat('ST') > 8:
+            return damage_dice(self.stat('ST')-10)
+        else:
+            return damage_dice((self.stat('ST')-1)/2-5)
+
     # UI / DIALOGUE
     # STUB:
     def cursor_color(self):
