@@ -1047,14 +1047,18 @@ class CharacterSheet(View):
         self.border(" ")
         pos = self.cursor.pos
         actor = self.map.actor(pos)
+        self.cline('You can see:')
+        self.cline('')
+        # Abort early if no actor.
         if actor is None:
+            self.cline('Nothing.')
             return True
         if actor != self.actor:
             self.actor = actor
             self.text = self.actor.character_sheet()
-            self.scroller.resize(len(self.text)-self.height)
+            self.scroller.resize(max(0,len(self.text)-self.height))
         for x in range(self.scroller.index, len(self.text)):
-            if x > 1 and x == self.scroller.index > 1:
+            if x > 1 and x == self.scroller.index:
                 self.cline('[...]')
                 continue
             line = self.text[x]
