@@ -635,17 +635,17 @@ class Actor:
         return False
 
     # Returns a list of lines to go into a character sheet.
-    def character_sheet(self):
+    def character_sheet(self, chargen=False):
         sheet = []
-        # TODO: Make this a describe method of the actor.
-        # Print out a character sheet:
-        sheet.append("==%s==" % self.name)
-        sheet.append("")
-        sheet.append(self.description)
-        sheet.append("")
+        if chargen is False:
+            sheet.append("==%s==" % self.name)
+            sheet.append("")
+            sheet.append(self.description)
+            sheet.append("")
         sheet.append("--Attributes--")
-        for stat, points in self.attributes.items():
-            sheet.append("%s: %s" % (stat, points))
+        for attribute in primary_attributes:
+            level = self.attributes[attribute]
+            sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
 #        sheet.append("--Points--")
 #        for skill, points in self.points["skills"].items():

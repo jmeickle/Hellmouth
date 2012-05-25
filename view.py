@@ -3,6 +3,7 @@ from define import *
 from hex import *
 from skills import skill_list
 
+from copy import copy
 import curses
 import math
 import re
@@ -581,6 +582,8 @@ class Chargen(View):
             self.current.choose(choice)
             self.current = self.current.child
             self.lifepath.events.append(self.current)
+            current_player = copy(self.player)
+            self.lifepath.players.append(current_player)
         else:
             self.lifepath.start(choice)
             self.current = self.lifepath.first
@@ -623,9 +626,13 @@ class Chargen(View):
             self.x_acc = 50
             self.y_acc = 4
             self.cline("Your character:")
-            self.player.character = self.lifepath.effects()
-            for key, value in self.player.character.items():
-                self.cline("%s: %s" % (key, value))#: %s" % (stat, value))
+            future = copy(self.player)#.character = self.lifepath.effects()
+            self.lifepath.effects(future)
+            future.recalculate()
+            text = future.character_sheet(True)
+            for line in text:
+                self.cline(line)
+                #self.cline("%s: %s" % (key, value))#: %s" % (stat, value))
 
         # Top part of the screen:
         self.x_acc = 0
@@ -665,6 +672,13 @@ class Chargen(View):
             old = self.y_acc
             self.y_acc = level
 
+        self.y_acc += 1
+        # Print the text from the currently highlighted event.
+        if self.current is None:
+            self.line(self.lifepath.first[self.selected][1])
+        else:
+            if self.current.choices is not None:
+               self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
 
         # Bottom part of the screen:
         self.y_acc = self.height - 8
@@ -693,13 +707,6 @@ class Chargen(View):
         # Go back up to where we started, but this time, to the right.
         self.y_acc = y_save
         self.x_acc = 25
-
-        # Print the text from the currently highlighted event.
-        if self.current is None:
-            self.line(self.lifepath.first[self.selected][1])
-        else:
-            if self.current.choices is not None:
-               self.cline(eventdata.get(self.current.choices[self.selected], {'text': '<DEBUG: NO TEXT>'})['text'])
 
         if self.toggle_events is True:
             self.x_acc = 0
