@@ -137,7 +137,7 @@ def main(stdscr):
         # End the game if there is nobody else left to act, or if the player is dead.
         if map.acting is None and len(map.queue) == 0:
             gameplay = False
-        if pc.hp <= 0:
+        if pc.alive is False:
             gameplay = False
 
         # Remove all dead views
@@ -207,7 +207,7 @@ def main(stdscr):
     intro = View(stdscr, TERM_X, TERM_Y, 0, 0)
     intro.x_acc = 10
     intro.line("")
-    if pc.hp > 0:
+    if pc.alive is True:
         intro.line('YOU HAVE CONQUERED THE MEAT BASED ROGUELIKE "MEAT ARENA"')
         intro.line("")
         intro.line("YOU ARE HUNGRY AFTER YOUR BATTLE AND MANAGE TO EAT YOUR WAY OUT")
@@ -235,7 +235,7 @@ def main(stdscr):
     intro.line("    -ERONARN")
     intro.line("")
     intro.line("")
-    if pc.hp > 0:
+    if pc.alive is True:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN TRIUMPH")
     else:
         intro.line("PRESS SPACE OR ESC TO EXIT THE ARENA IN IGNOMINY")

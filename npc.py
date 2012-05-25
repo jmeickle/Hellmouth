@@ -30,7 +30,6 @@ class MeatSlave(NPC):
         self.color = 'yellow-black'
         self.description = "A pitiful wretch who long ago abandoned all hope of escaping the arena. It has covered itself in lunchmeat to hide its scent from the other occupants."
 
-        self.hp = 1
         self.damage = 1
         self.build(5)
 
@@ -42,7 +41,6 @@ class MeatGolem(NPC):
         self.color = 'blue-black'
         self.description = "A lumbering construct made of a great many pieces of spoiled meat. They appear to have been stapled together."
 
-        self.hp = 50
         self.damage = 1
         self.build(50)
 
@@ -54,7 +52,6 @@ class MeatWorm(NPC):
         self.color = 'magenta-black'
         self.description = "These worms look like large sticks of pepperoni. A trail of grease glistens behind them."
 
-        self.hp = 20
         self.damage = 3
         self.build(10)
 
@@ -66,6 +63,5 @@ class MeatHydra(NPC):
         self.color = 'magenta-black'
         self.description = 'A hydra made from the meat of lesser beings. Each "head" is a cracked ribcage.'
 
-        self.hp = 80
         self.damage = 5
         self.build(50)

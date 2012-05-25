@@ -493,7 +493,6 @@ class Stats(View):
         # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0
-        self.line("Remaining HP: %s" % p.hp)
         self.statline('HP')
         self.statline('MP')
         self.statline('FP')
@@ -534,7 +533,9 @@ class Stats(View):
         return self.player.stat(stat)
 
     # Print a line like 'Dodge: 15' using stat()
+    # TODO: Print colors, *s, etc. for more info.
     def statline(self, stat):
+# Examples:
 #        self.line("HP: %3d/%2d" % (-50, 10))
 #        self.line("FP: %3d/%2d" % (10, 12))
 #        self.line("MP: %3d/%2d" % (8, 15))
@@ -543,8 +544,9 @@ class Stats(View):
         short = labels.get(stat)
         if short is not None:
             short = short[0]
-
-        # Alternate draw for these stats.
+        else:
+            short = "N/A"
+        # These stats actually have two stats to display.
         if short in ["HP", "FP", "MP"]:
             self.line("%s: %3d/%2d" % (short, self.stat(stat), self.stat("Max"+stat)))
         else:

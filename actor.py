@@ -24,6 +24,12 @@ class Actor:
         self.inventory = {}
         self.base_skills = {}
 
+        self.hp_spent = 0
+        self.fp_spent = 0
+        self.mp_spent = 0
+
+        self.alive = True
+
         # Positioning information
         self.map = None
         self.pos = None
@@ -245,13 +251,13 @@ class Actor:
     def hit(self, amt):
         loc = self.randomloc()
         loc.hurt(amt)
-        self.hp -= amt
+        self.hp_spent += amt
         if self.check_dead() is True:
             self.die()
 
     # Check whether you are dead.
     def check_dead(self):
-        if self.hp <= 0:
+        if self.HP() <= -5*self.MaxHP():
             return True
 
     # Remove self from the map and the queue
@@ -262,6 +268,7 @@ class Actor:
             self.map.acting = None
         self.map.queue.remove(self)
         self.cell().remove(self)
+        self.alive = False
 
     # STATS
 
@@ -279,22 +286,24 @@ class Actor:
         func = getattr(Actor, stat)
         return func(self)
 
-    # STUB: Insert formulas
     # Formulas for calculated stats.
-    def HP(self):       return 33
-    def MaxHP(self):       return 33
-    def MP(self):       return 33
-    def MaxMP(self):       return 33
-    def FP(self):       return 33
-    def MaxFP(self):       return 33
-    def Will(self):       return 33
-    def Perception(self): return 33
-    def Move(self):       return 33
-    def Speed(self):      return 33
-    def Dodge(self):      return 33
-    def Block(self):      return 32
-    def Parry(self):      return 31
-
+    def HP(self):          return self.MaxHP() - self.hp_spent
+    def MaxHP(self):       return self.stat('ST') # + levels of HP
+    def FP(self):          return self.MaxFP() - self.fp_spent # + levels of FP
+    def MaxFP(self):       return self.stat('HT') # + levels of FP
+    def MP(self):          return self.MaxMP() - self.mp_spent # + levels of MP
+    def MaxMP(self):       return self.stat('IQ') # + levels of MP, magery
+    def Will(self):        return self.stat('IQ') # + levels of Will
+    def Perception(self):  return self.stat('IQ') # +levels of Per
+    # STUB: Insert formulas
+    def Move(self):        return int(self.Speed() * (1 - .2 * self.Encumbrance())) # Plus basic move
+    def Speed(self):       return self.stat('DX') + self.stat('HT') # Plus buying speed
+    def Dodge(self):       return self.Speed()/4 + 3# Can be modified by acrobatics, etc.
+    def Block(self):       return None # STUB: depends on skill
+    def Parry(self):       return None # STUB: depends on skill
+    def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
+    def Encumbrance(self): return 0 # STUB
+    
     # UI / DIALOGUE
     # STUB:
     def cursor_color(self):
@@ -640,6 +649,7 @@ class Actor:
             #    str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             sheet.append(str)
         return sheet
+
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
     def __init__(self, parent):
