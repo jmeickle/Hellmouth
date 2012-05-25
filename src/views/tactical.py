@@ -11,20 +11,41 @@ from data.skills import skill_list
 from collections import deque
 from random import choice
 
-# TODO: Make this a subclass of a Map view.
+# Main tactical window class.
+class Window(View):
+    def __init__(self, window):
+        View.__init__(self, window, TERM_X, TERM_Y)
+
+    def ready(self):
+        self.spawn(MainPane(self.screen))
+        self.spawn(SidePane(self.screen))
+
+# Larger, left-hand pane
+class MainPane(View):
+    def __init__(self, window):
+        View.__init__(self, window, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y)
+
+    def ready(self):
+        self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
+        self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
+
+# Smaller, right-hand pane
+class SidePane(View):
+    def __init__(self, window):
+        View.__init__(self, window, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y)
+
+    def ready(self):
+        self.spawn(Stats(self.screen, PANE_X, STATS_Y, PANE_START_X, PANE_START_Y))
+        self.spawn(Log(self.screen, PANE_X, LOG_Y, PANE_START_X, LOG_START_Y))
+
+# TODO: Make this a subclass of a Map view, to account for tactical/strategic/etc.
 class MainMap(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
-        self.map = None
-        self.player = None
         # -1 to account for 0,0 start
         self.viewport = (int(y/2)-1, int(y/2)-1)
         self.viewrange = 10
         self.cursor = None
-
-    # Called before the map is rendered, but after it's ready to go.
-    def ready(self):
-        return
 
     def keyin(self, c):
         # TODO: Allow multiple open children.
@@ -118,11 +139,6 @@ class MainMap(View):
                 col = "magenta-black"
                 #self.hd(cell, glyph, col)
 
-# TODO: Add main window class.
-# Main pane class.
-class Pane(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
 
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
@@ -238,6 +254,10 @@ class Log(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.events = deque()
         self.index = 0
+
+#    def ready(self):
+#        self.map.log = log
+#        self.map.log.add("WELCOME TO THE ARENA OF MEAT")
 
     # Add an event to the history. Autoscrolls unless this has been turned off.
     def add(self, event, scroll=True):
