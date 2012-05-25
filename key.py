@@ -1,6 +1,6 @@
 # Define dict of keys/actions
 from define import *
-from describe import Descriptions
+from hex import *
 
 # Return the corresponding control-modified key.
 def ctrl(c):
@@ -31,6 +31,23 @@ def keyin(stdscr, views):
             views[0].player.get_all()
         elif c == ord('d'):
             views[0].player.drop_all()
+
+def hexkeys(c):
+    if c == ord('7'):
+        return NW
+    elif c == ord('4'):
+        return CW
+    elif c == ord('1'):
+        return SW
+    elif c == ord('9'):
+        return NE
+    elif c == ord('6'):
+        return CE
+    elif c == ord('3'):
+        return SE
+    elif c == ord('5'):
+        return CC
+    return None
 
 # TODO: Convert this into the multiple menu code
 #        elif hasattr(chargen.selector, 'parent') is True:
