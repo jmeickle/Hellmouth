@@ -106,7 +106,7 @@ class MeatWorm(NPC):
         self.glyph = '~'
         self.name = 'meat worm'
         self.color = 'magenta-black'
-        self.description = "These worms look like large sticks of pepperoni. A trail of grease glistens behind them."
+        self.description = "This worm looks like a large stick of pepperoni. A trail of grease glistens behind it."
 
         self.damage = 3
         self.build(10)
