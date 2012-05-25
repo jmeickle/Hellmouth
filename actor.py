@@ -5,6 +5,7 @@ from describe import d
 import hex
 import ai.astar
 import skills
+import traits
 import generate
 
 # Players, monsters, etc.
@@ -38,24 +39,23 @@ class Actor:
         self.points = {
             "total": 0,
             "unspent" : 0,
-            "attributes" : {},
             "skills" : {},
             "techniques" : {},
-            "traits" : {},
+            "traits" : {
+                "ST" : 0,
+                "DX" : 0,
+                "IQ" : 0,
+                "HT" : 0,
+            },
         }
 
         # The 'character sheet': derived from points spent in the above
         # categories, and changing only when they do.
-        self.attributes = {
-                      "ST" : 10,
-                      "DX" : 10,
-                      "IQ" : 10,
-                      "HT" : 10,
-                     }
-
+        self.attributes = {}
         self.skills = {}
         self.techniques = {}
-        self.traits = {}
+        self.advantages = {}
+        self.disadvantages = {}
 
         # Purely interface nicety
         self.letters = {}
@@ -89,6 +89,21 @@ class Actor:
 
     # Recalculate the character sheet from points spent.
     def recalculate(self):
+        self.recalculate_attributes()
+        self.recalculate_skills()
+
+    # Reset attributes and recalculate from points.
+    def recalculate_attributes(self):
+        self.attributes = {}
+        for attribute in primary_attributes + secondary_attributes:
+            points = self.points["traits"].get(attribute)
+            if points is not None:
+                trait = traits.trait_list[attribute]
+                levels = points / trait["cost"]
+                self.attributes[attribute] = trait.get("default", 0) + min(levels, trait["max"])
+
+    # Recalculate only skills (usually this will be all that changed.)
+    def recalculate_skills(self):
         skills.calculate_ranks(self)
         skills.calculate_skills(self)
         skills.calculate_defaults(self)
@@ -274,7 +289,7 @@ class Actor:
 
     # Retrieve actor stat.
     def stat(self, stat):
-        val = self.attributes.get(stat)
+        val = self.traits.get(stat)
         # Not an attribute? Must be a calculcated stat.
         if val is None:
             return self.calc_stat(stat)
