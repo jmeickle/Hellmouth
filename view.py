@@ -113,6 +113,18 @@ class Component():
     def keyin(self, c):
         return True
 
+class Chargen(Component):
+    def __init__(self, screen, player):
+        Component.__init__(self)
+        self.screen = screen
+        self.player = player
+        self.lifepath = self.player.lifepath
+
+    def draw(self):
+        if not self.children:
+            self.spawn(ChargenScreen(self.screen, self.lifepath))
+        #return False
+
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         Component.__init__(self)
@@ -279,22 +291,48 @@ class Screen(View):
             self.suicide()
         return False # Don't permit anything but continuing.
 
+# A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        Screen.__init__(self, window, x, y, start_x, start_y)
-        self.actor = None
+    def __init__(self, window, choices=None, callback=None):
+        Screen.__init__(self, window)
+        self.speaker = None
+        self.choices = choices
+        self.callback = callback
+        if self.callback is None:
+            self.callback = self.suicide
+        self.selector = Selector(self, choices)
+
+    # The color to use for the speaker.
+    def color(self):
+        if self.speaker is not None:
+            return self.speaker.dialogue_color()
+        else:
+            return "white-black"
 
     def draw(self):
         self.border(" ")
-        title = "<%s>%s</>" % (self.actor.dialogue_color(), self.title)
+        title = "<%s>%s</>" % (self.color(), self.title)
         heading = "%s%s%s" % (title, " "*(self.width - len(self.title) - len(self.player.location)), self.player.location)
         self.cline(heading)
-        self.cline("-"*(self.width))
+        self.x_acc -= 2
+        self.cline("-"*(self.x))
+        self.x_acc += 2
+#        self.y_acc += 1
+#        self.rds((0, self.y_acc), "-"*(self.x), None, None, False)
+#        self.cline("-"*(self.width))
         return False
 
+    # Since this is a 'forced' dialogue screen, you must press enter.
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
-            self.suicide()
+            self.selector.choose()
+        else:
+            dir = key.hexkeys(c)
+            if dir == CC:
+                self.selector.jump(6)
+            elif dir is not None:
+                self.selector.jump(rotation[dir])
+
         return False # Don't permit anything but continuing.
 
 class StartScreen(Screen):
@@ -951,38 +989,41 @@ class Scroller(Component):
 
 # Cycling selector.
 class Selector():
-    def __init__(self, parent, choices, initial=0):
+    def __init__(self, parent, choices=None, initial=0):
         self.parent = parent
         self.choices = choices
         self.choice = initial
-        self.action = None
-        self.text = None
 
-    def next(self, amt=1):
+    # Jump to a specific value, if it's valid.
+    def jump(self, choice):
+        if choice < len(self.choices):
+            self.choice = choice
+
+    # Scroll in either direction.
+    def scroll(self, amt=1):
         self.choice += amt
-        if self.choice >= self.choices:
-            self.choice = 0
-
-    def prev(self, amt=1):
-        self.choice -= amt
         if self.choice < 0:
             self.choice = self.choices-1
+        elif self.choice >= len(self.choices):
+            self.choice = 0
 
-    # TODO: Make this take a function and call it
     def choose(self):
-        self.parent.selector = self.choice
-
-    def fire(self, arg):
-        if self.action is not None:
-            self.action(arg)
-
-    def toggle(self, action, text):
-        if self.action == action:
-            self.action = None
-            self.text = None
+        if self.choices is None:
+            self.parent.callback()
         else:
-            self.action = action
-            self.text = text
+            self.parent.callback(self.choice)
+
+#    def fire(self, arg):
+#        if self.action is not None:
+#            self.action(arg)
+
+#    def toggle(self, action, text):
+#        if self.action == action:
+#            self.action = None
+#            self.text = None
+#        else:
+#            self.action = action
+#            self.text = text
 
 class Cursor(Component):
     styles = {
