@@ -976,13 +976,16 @@ class Selector():
 
 class Cursor(Component):
     styles = {
-        "braces" : [("{", WW), ("}", EE)],
+        "<>" : [("<", WW), (">", EE)],
+        "{}" : [("{", WW), ("}", EE)],
+        "[]" : [("[", WW), ("]", EE)],
+        "()" : [("[", WW), ("]", EE)],
     }
 
-    def __init__(self, pos):
+    def __init__(self, pos, style="{}"):
         Component.__init__(self)
         self.pos = pos
-        self.style = "braces"
+        self.style = style
 
     def keyin(self, c):
         if c == ord(' '):
