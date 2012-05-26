@@ -2,6 +2,7 @@
 
 class Terrain():
     def __init__(self, terrain_type=None):
+        self.cell = None
         self.name = None
         self.color = None
         self.glyph = None
@@ -9,7 +10,11 @@ class Terrain():
         self.terrain_type = terrain_type
 
     # Do additional setup based on the provided terrain type.
-    def setup():
+    def setup(self):
+        return False
+
+    # What the terrain does when an actor interacts with it.
+    def interact(self, actor):
         return False
 
 # Meat Arena
@@ -20,9 +25,11 @@ class Stairs(Terrain):
         self.destination = destination
         self.glyph = ">"
         self.color = "black-red"
+        self.blocking = False
 
-    def use(self, player):
-        self.map.travel = self.destination
+    def interact(self, actor):
+        self.cell.map.travel = self.destination
+        return True
 
 # Meat Arena
 class MeatWall(Terrain):

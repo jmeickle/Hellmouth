@@ -40,7 +40,7 @@ class Encounter:
     # Handle things that happen when the player leaves the map.
     def leave(self, player):
         self.player.location = None
-        self.player = None
+        #self.player = None
 
     def generate_terrain(self, generate):
         generator = generate(self.exits)
@@ -57,7 +57,7 @@ class Encounter:
     def populate(self, cells):
         for pos, contents in cells.items():
             distance, terrain = contents
-            cell = Cell(pos)
+            cell = Cell(pos, self)
             if terrain is not None:
                 cell.put_terrain(terrain)
 
@@ -110,6 +110,7 @@ class Encounter:
 
         else:
             # Update the map
+            obj.cell = cell
             cell.add(obj, terrain)
 
         return obj
@@ -157,13 +158,9 @@ class Encounter:
             self.acting.act()
 
 class Cell:
-    def __init__(self, pos, glyph='.', color=None):
-        # Don't really need it but it might come in handy.
+    def __init__(self, pos, parent):
+        self.map = parent
         self.pos = pos
-
-        # Basic cell details
-        self.glyph = glyph
-        self.color = "white-black"
 
         # Stuff inside the cell
         self.actor = None
@@ -173,6 +170,7 @@ class Cell:
     # STUB
     def put_terrain(self, terrain):
         self.terrain = terrain
+        terrain.cell = self
 
     # Return a glyph to display for this cell.
     # TODO: improve this function greatly
@@ -184,7 +182,7 @@ class Cell:
         elif len(self.items) > 0:
             return '!', 'magenta-black'
         else:
-            return self.glyph, self.color
+            return ".", "white-black"
 
     # TODO: Options for what to list.
     # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!

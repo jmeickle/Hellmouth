@@ -77,6 +77,8 @@ class MainMap(View):
                 self.map.player.do(SE)
             elif c == ord('5'):
                 self.map.player.over()
+            elif c == ord('>') or c == ord('<'):
+                self.map.player.stairs()
             else: return True
             return False
 
