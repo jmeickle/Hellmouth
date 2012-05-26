@@ -88,6 +88,10 @@ class Item():
                 return True
         return False
 
+class Armor(Item):
+    def __init__(self):
+        Item.__init__(self)
+
 class Weapon(Item):
     def __init__(self):
         Item.__init__(self)
@@ -99,3 +103,59 @@ class Weapon(Item):
 class Sword(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+
+class Knife(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Dagger(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Axe(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Mace(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Pick(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Hammer(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Club(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Flail(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Pollaxe(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Spear(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Staff(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Natural(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+
+class Tool(Item):
+    def __init__(self):
+        Item.__init__(self)
+
+class Glove(Armor):
+    def __init__(self):
+        Armor.__init__(self)

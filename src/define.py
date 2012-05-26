@@ -39,6 +39,7 @@ damage_types = {
     "fat"  : ("fatigue", "fatigue"),
     "imp"  : ("impale", "impaling"),
     "pi"   : ("pierce", "piercing"),
+    "pi+"  : ("pierce (lg.)", "piercing (lg.)"),
     "tox"  : ("toxic", "toxic"),
     # Not really damage, but.
     "thr"  : ("thrust", "thrusting"),
@@ -85,3 +86,8 @@ point_types = ("attributes", "skills", "techniques", "traits")
 
 primary_attributes = ("ST", "DX", "IQ", "HT")
 secondary_attributes = ("HP", "FP", "MP", "Will", "Perception", "Speed", "Move")
+
+# Make the syntax neater for weapon definitions.
+U0 = (0, False)
+C = 0
+
