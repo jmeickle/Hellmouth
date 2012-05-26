@@ -22,6 +22,7 @@ class Game(Component):
         self.level = destination()
         self.map = self.level.map
         self.map.enter(self.player)
+        self.inherit()
 
     def loop(self):
         self.alive = self.conditions()

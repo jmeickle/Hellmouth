@@ -15,18 +15,25 @@ class Component():
 
     # Spawn a child and return it.
     def spawn(self, child):
-        # Some information is passed down for convenience:
-        if hasattr(self, 'cursor'):
-            child.cursor = self.cursor
-        if hasattr(self, 'map'):
-            child.map = self.map
-        if hasattr(self, 'player'):
-            child.player = self.player
-
-        child.parent = self
         self.children.append(child)
+        child.parent = self
+        child.inherit()
         child.ready()
         return child
+
+    # Pass on values that need to be shared across components.
+    def inherit(self):
+        if self.parent is not None:
+            if hasattr(self.parent, 'cursor'):
+                self.cursor = self.parent.cursor
+            if hasattr(self.parent, 'map'):
+                self.map = self.parent.map
+            if hasattr(self.parent, 'player'):
+                self.player = self.parent.player
+
+        for child in self.children:
+            child.inherit()
+
 
     # Abstract. Perform actions that the child couldn't during init.
     def ready(self):
