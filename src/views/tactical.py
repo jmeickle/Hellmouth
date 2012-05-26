@@ -243,26 +243,32 @@ class Log(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
         self.events = deque()
-        self.index = 0
 
-    # Add the log to the map.
+    # Spawn a scroller and add the log to the map.
     def ready(self):
+        self.scroller = self.spawn(Scroller(len(self.events) - self.height))
         self.map.log = self
 
     # Add an event to the history. Autoscrolls unless this has been turned off.
     def add(self, event, scroll=True):
         self.events.append(event)
+        self.scroller.resize(max(0, len(self.events) - self.height))
         if scroll is True:
-            self.scroll(1)
+            self.scroller.scroll(1)
 
     def draw(self):
         # Start from the bottom:
         self.y_acc = self.height
+        index = 0
         for event in reversed(self.events):
+            index += 1
+            if index < self.scroller.index:
+                continue
             if self.logline(event) is False:
                 break;
 
     def logline(self, event):
+        # HACK: What about colors and such? This will fail.
         lines = 1 + (len(event) / self.width) # Number of lines the string will take up
         self.y_acc -= lines # Move up by that much to offset what the function will do.
         # Couldn't fit a whole line.
@@ -275,23 +281,23 @@ class Log(View):
 
     # Accepts keyin to scroll - that's it for now.
     # TODO: Logline highlight stuff.
-    def keyin(self, c):
-        if c == curses.KEY_UP: self.scroll(-1)
-        elif c == curses.KEY_DOWN: self.scroll(1)
-        else: return True
-        return False
+#    def keyin(self, c):
+#        if c == curses.KEY_UP: self.scroll(-1)
+#        elif c == curses.KEY_DOWN: self.scroll(1)
+#        else: return True
+#        return False
 
-    # Scrolling the log up and down.
-    def scroll(self, amt):
-        self.index += amt
-        # Prevent an index below zero.
-        if self.index < 0:
-            self.index = 0
+ #   # Scrolling the log up and down.
+ #   def scroll(self, amt):
+ #       self.index += amt
+ #       # Prevent an index below zero.
+ #       if self.index < 0:
+ #           self.index = 0
 
         # Prevent scrolling if there's no more entries to see.
-        max = len(self.events) - self.height
-        if self.index >= max:
-            self.index = max
+#        max = len(self.events) - self.height
+#        if self.index >= max:
+#            self.index = max
 
 class Inventory(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):

@@ -12,6 +12,7 @@ LONGER TERM GOALS:
 - Non-combat skills
 - Support numpads correctly across systems
 - Improved random monster generation
+- Fix combat log printing
 
 VERY LONG TERM GOALS:
 - Better AI
@@ -33,3 +34,4 @@ UTILITY:
 
 STRUCTURE:
 - Make logging a feature of the game rather than of maps.
+- Split generators into classes
