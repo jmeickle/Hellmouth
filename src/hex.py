@@ -107,10 +107,14 @@ def perimeter(rank, origin=CC):
         pos = next
     return hexes
 
-def line(pos1, pos2):
+def line(pos1, pos2, max=None):
     pos = pos1
     steps = []
     while pos != pos2:
+        if max is not None:
+            if len(steps) >= max:
+                break
+
         diff = sub(pos2, pos)
         diff_x, diff_y = diff
 

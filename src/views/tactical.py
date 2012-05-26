@@ -129,6 +129,14 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
+        if len(self.player.highlights) > 0:
+            for highlight, pos in self.player.highlights.items():
+                if dist(self.center, pos) > self.viewrange:
+                    cells = line(self.center, pos, self.viewrange+1)
+                    cell = cells.pop()
+                    glyph, col = "*", "red-black"
+                    self.hd(cell, glyph, col)
+
         cells = area(self.viewrange, self.center)
 
         for cell in cells:

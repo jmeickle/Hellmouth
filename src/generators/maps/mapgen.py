@@ -17,16 +17,19 @@ class MapGen():
         for pos, dist in hexes.items():
             self.cells[pos] = (dist, None)
         self.place_exits()
-        return self.cells
+        return self.cells, self.exits
 
-    # Place random stairs.
+    # Place random stairs, then set their positions in a list.
     def place_exits(self):
+        exits = []
         for which, exit in self.exits.items():
             where, pos = exit
             if pos is None:
                 dist = r1d(self.size)
                 pos = random_pos(dist, self.center)
             self.cells[pos] = (dist, Stairs(which, where))
+            exits.append((which, pos))
+        self.exits = exits
 
 class MeatArena(MapGen):
     def __init__(self, exits=None):
@@ -58,7 +61,7 @@ class MeatArena(MapGen):
                     self.cells[pos] = (dist, MeatWall('inner'))
 
         self.place_exits()
-        return self.cells
+        return self.cells, self.exits
 
 class Cave(MapGen):
     def __init__(self, exits=None):
@@ -94,7 +97,7 @@ class Cave(MapGen):
 #            cells[pos] = (dist, None)
 
         self.place_exits()
-        return self.cells
+        return self.cells, self.exits
 
     # Connect nodes with a line.
     def connect_nodes(self, pos1, pos2):

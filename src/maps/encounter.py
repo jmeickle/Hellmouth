@@ -36,15 +36,19 @@ class Encounter:
         self.player = player
         self.player.map = self
         self.put(self.player, self.entry)
+        for exit in self.exits:
+            which, pos = exit
+            self.player.highlights[which] = pos
 
     # Handle things that happen when the player leaves the map.
     def leave(self, player):
         self.player.location = None
+        self.player.highlights = {}
         #self.player = None
 
     def generate_terrain(self, generate):
         generator = generate(self.exits)
-        cells = generator.attempt()
+        cells, self.exits = generator.attempt()
         # TODO: Possibly checks for validity first
         # TODO: Generator has a field for this.
         self.center = generator.center

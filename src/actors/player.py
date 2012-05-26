@@ -8,7 +8,7 @@ class Player(Actor):
         self.name = 'player character'
         self.color = 'cyan-black'
         self.description = "Some hapless adventurer who stumbled across the arena. It looks pretty feeble."
-
+        self.highlights = {}
         self.damage = 1
         self.build(150)
         self.controlled = True
