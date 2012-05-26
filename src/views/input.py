@@ -72,10 +72,18 @@ class Selector():
 
 class Cursor(Component):
     styles = {
-        "<>" : [("<", WW), (">", EE)],
-        "{}" : [("{", WW), ("}", EE)],
-        "[]" : [("[", WW), ("]", EE)],
-        "()" : [("[", WW), ("]", EE)],
+        "<>"  : [("<", WW), (">", EE)],
+        "{}"  : [("{", WW), ("}", EE)],
+        "[]"  : [("[", WW), ("]", EE)],
+        "()"  : [("[", WW), ("]", EE)],
+        "hex" : [
+            ("/", add(WW,add(NW,WW))),#add(NW, add(NW, NW))),
+            ("\\", add(NE, EE)),
+            ("|", add(EE,add(EE, EE))),
+            ("|", add(WW, add(WW, WW))),
+            ("\\", add(SW, WW)),
+            ("/", add(EE,add(EE, SE)))
+        ],
     }
 
     def __init__(self, pos, style="{}"):
@@ -109,8 +117,16 @@ class Cursor(Component):
 
     def draw(self):
         color = self.color()
-        for glyph, dir in Cursor.styles[self.style]:
-            self.parent.offset_hd(self.pos, dir, glyph, color)
+
+# Makes a cool hex-y radial menu thing. Useless for now.
+#        if self.style == "hex":
+#            for dir in dirs:
+#                dir = (dir[0]*3, dir[1]*3)
+#                for glyph, offset in Cursor.styles[self.style]:
+#                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
+
+        for glyph, offset in Cursor.styles[self.style]:
+            self.parent.offset_hd(self.pos, offset, glyph, color)
 
     # This is a function so that the cursor color can change in response to
     # the hex that it's targeting.
