@@ -2,7 +2,7 @@ import random
 from define import *
 from dice import *
 from hex import *
-from maps.terrain import *
+from objects.terrain import *
 
 # Map generator class. If called, builds a hexagonal shape of plain tiles.
 class MapGen():
