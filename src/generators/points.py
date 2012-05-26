@@ -4,7 +4,7 @@ import random
 
 from define import *
 from dice import *
-from generators import *
+from data.generators import points
 
 def spend_points(actor, points=None):
     # If we didn't feed in a number of points, we're using the actor's
@@ -46,7 +46,7 @@ def spend_points(actor, points=None):
 
 # Helper class to make choices from a weighted list.
 class Generator:
-    def __init__(self, choices=generators["default"]):
+    def __init__(self, choices=points.generators["default"]):
         self.choices = choices # See test code for an example of structure.
         self.amount = r1d6 # Default points per choice made.
         self.weight = 100 # Default weight.
