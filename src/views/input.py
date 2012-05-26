@@ -76,7 +76,9 @@ class Cursor(Component):
         "{}"  : [("{", WW), ("}", EE)],
         "[]"  : [("[", WW), ("]", EE)],
         "()"  : [("[", WW), ("]", EE)],
-        "hex" : [
+        # TODO: Make 1hex prettier using unicode.
+        "1hex" : [("^", NN), ("v", SS), ("|", EE), ("|", WW)],
+        "2hex" : [
             ("/", add(WW,add(NW,WW))),#add(NW, add(NW, NW))),
             ("\\", add(NE, EE)),
             ("|", add(EE,add(EE, EE))),
@@ -86,7 +88,7 @@ class Cursor(Component):
         ],
     }
 
-    def __init__(self, pos, style="{}"):
+    def __init__(self, pos, style="1hex"):
         Component.__init__(self)
         self.pos = pos
         self.style = style
@@ -119,7 +121,7 @@ class Cursor(Component):
         color = self.color()
 
 # Makes a cool hex-y radial menu thing. Useless for now.
-#        if self.style == "hex":
+#        if self.style == "2hex":
 #            for dir in dirs:
 #                dir = (dir[0]*3, dir[1]*3)
 #                for glyph, offset in Cursor.styles[self.style]:
