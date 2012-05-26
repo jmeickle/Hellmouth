@@ -67,7 +67,7 @@ def distance(x1, y1, x2, y2):
     return distance
 
 # Generate a perimeter around an origin and return a random point on it.
-def random_pos(origin, dist):
+def random_pos(dist, origin=CC):
     return random.choice(perimeter(dist))
 
 # Turns out this is slower. Xom laughs.
