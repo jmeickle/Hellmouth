@@ -235,8 +235,8 @@ class Status(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
-        self.line("")
-#        self.line("")
+         self.line(self.map.name, "red-black")
+         self.line("Level %s" % self.map.level.current_depth())
 #        self.line("Pain", "red-black")
 #        self.line("Shock", "magenta-black")
 

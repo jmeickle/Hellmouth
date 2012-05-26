@@ -17,6 +17,9 @@ class Game(Component):
         self.spawn(Window(window))
 
     def go(self, destination):
+        # HACK: Not all stairs are increasing depth, after all.
+        if isinstance(self.level, destination):
+            destination.depth += 1
         if self.map is not None:
             self.map.leave(self.player)
         self.level = destination()

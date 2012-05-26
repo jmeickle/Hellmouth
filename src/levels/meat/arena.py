@@ -3,12 +3,18 @@ from generators.maps import mapgen
 from maps.encounter import Encounter
 
 class MeatArena():
+    depth = 1
+
     def __init__(self):
         self.name = "A strange, meaty arena"
         self.exits = { "down" : (MeatArena, None) }
         self.map = None
         self.generate_map()
         self.place_monsters()
+
+    # Just returns depth, but can be overridden for strings/etc.
+    def current_depth(self):
+        return self.__class__.depth
 
     # Map generation.
     def generate_map(self):
