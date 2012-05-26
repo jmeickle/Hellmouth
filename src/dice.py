@@ -12,6 +12,10 @@ def flip():
     else:
         return FAIL
 
+# Roll an n-sized die.
+def r1d(n):
+    return random.randint(1, n)
+
 # Basic d6 roll
 def r1d6():
     return random.randint(1, 6)
