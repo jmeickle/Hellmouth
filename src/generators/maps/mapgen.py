@@ -6,20 +6,31 @@ from objects.terrain import *
 
 # Map generator class. If called, builds a hexagonal shape of plain tiles.
 class MapGen():
-    def __init__(self):
+    def __init__(self, exits=None):
         self.center = (0,0)
         self.size = 25
         self.cells = {}
+        self.exits = exits
 
     def attempt(self):
         hexes = area(self.size, self.center)
         for pos, dist in hexes.items():
             self.cells[pos] = (dist, None)
+        self.place_exits()
         return self.cells
 
+    # Place random stairs.
+    def place_exits(self):
+        for which, exit in self.exits.items():
+            where, pos = exit
+            if pos is None:
+                dist = r1d(self.size)
+                pos = random_pos(self.size, self.center)
+            self.cells[pos] = (dist, Stairs(which, where))
+
 class MeatArena(MapGen):
-    def __init__(self):
-        MapGen.__init__(self)
+    def __init__(self, exits=None):
+        MapGen.__init__(self, exits)
         self.walls = 3
 
     def attempt(self):
@@ -46,11 +57,12 @@ class MeatArena(MapGen):
                 else:
                     self.cells[pos] = (dist, MeatWall('inner'))
 
+        self.place_exits()
         return self.cells
 
 class Cave(MapGen):
-    def __init__(self):
-        MapGen.__init__(self)
+    def __init__(self, exits=None):
+        MapGen.__init__(self, exits)
         self.max_connections = 30
         self.max_nodes = 40
         self.scale = 1
@@ -81,6 +93,7 @@ class Cave(MapGen):
 #        for pos, dist in self.cells.items():
 #            cells[pos] = (dist, None)
 
+        self.place_exits()
         return self.cells
 
     # Connect nodes with a line.

@@ -6,11 +6,12 @@ import random
 import hex
 
 class Encounter:
-    def __init__(self):
+    def __init__(self, exits=None):
         self.size = None
         self.center = None
         self.level = None
         self.name = None
+        self.exits = exits
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
@@ -41,8 +42,8 @@ class Encounter:
         self.player.location = None
         self.player = None
 
-    def generate(self, generate):
-        generator = generate()
+    def generate_terrain(self, generate):
+        generator = generate(self.exits)
         cells = generator.attempt()
         # TODO: Possibly checks for validity first
         # TODO: Generator has a field for this.

@@ -5,16 +5,21 @@ from maps.encounter import Encounter
 class MeatArena():
     def __init__(self):
         self.name = "A strange, meaty arena"
-        self.exits = None
+        self.exits = { "down" : (MeatArena, None) }
         self.map = None
-        self.generate()
+        self.generate_map()
+        self.place_monsters()
 
-    def generate(self):
+    # Map generation.
+    def generate_map(self):
         self.map = Encounter()
-        self.map.name = "MEAT ARENA"
-        self.map.generate(mapgen.MeatArena)
         self.map.level = self
+        self.map.name = "MEAT ARENA"
+        self.map.exits = self.exits
+	self.map.generate_terrain(mapgen.MeatArena)
 
+    # TODO: Hand this off to mapgen?
+    def place_monsters(self):
         # Define NPCs to be placed
         from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
         monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 

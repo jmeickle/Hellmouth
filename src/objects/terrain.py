@@ -13,6 +13,18 @@ class Terrain():
         return False
 
 # Meat Arena
+class Stairs(Terrain):
+    def __init__(self, which, destination):
+        Terrain.__init__(self)
+        self.name = "staircase " + which
+        self.destination = destination
+        self.glyph = ">"
+        self.color = "black-red"
+
+    def use(self, player):
+        self.map.travel = self.destination
+
+# Meat Arena
 class MeatWall(Terrain):
     def __init__(self, terrain_type=None):
         Terrain.__init__(self)
