@@ -25,7 +25,7 @@ class MapGen():
             where, pos = exit
             if pos is None:
                 dist = r1d(self.size)
-                pos = random_pos(self.size, self.center)
+                pos = random_pos(dist, self.center)
             self.cells[pos] = (dist, Stairs(which, where))
 
 class MeatArena(MapGen):
