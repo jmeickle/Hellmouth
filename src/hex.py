@@ -1,3 +1,5 @@
+import random
+
 from define import *
 from dice import *
 
@@ -23,6 +25,7 @@ SS = (0, 1)
 WW = (-1, 0)
 offsets = [NN, EE, SS, WW]
 num_offsets = len(offsets)
+
 # Return the sign of a number.
 def signum(int, zero=False):
     if int < 0:
@@ -46,6 +49,10 @@ def add(pos, dir):
 def sub(pos1, pos2):
     return pos1[0] - pos2[0], pos1[1] - pos2[1]
 
+# Multiply a tuple by an int.
+def mult(pos, int):
+    return pos[0] * int, pos[1] * int
+
 # Calculate hex distance with two hex positions.
 def dist(pos1, pos2):
     return distance(pos1[0], pos1[1], pos2[0], pos2[1])
@@ -57,8 +64,11 @@ def distance(x1, y1, x2, y2):
         distance = max(abs(dx), abs(dy))
     else:
         distance = abs(dx) + abs(dy)
-
     return distance
+
+# Generate a perimeter around an origin and return a random point on it.
+def random_pos(origin, dist):
+    return random.choice(perimeter(dist))
 
 # Turns out this is slower. Xom laughs.
 def _area(rank, pos, dir, left=False, right=True, curr=0):
@@ -72,18 +82,29 @@ def _area(rank, pos, dir, left=False, right=True, curr=0):
     return hexes
 
 # Generate a dict of hex position : distance, including the start position.
-def area(rank, start=(0,0)):
-    hexes = {start : 0}
+def area(rank, origin=CC):
+    hexes = {origin : 0}
     #for dir in dirs:
-    #    hexes.extend(_area(rank, add(start, dir), dir, True))
+    #    hexes.extend(_area(rank, add(origin, dir), dir, True))
     #return hexes
     for Y in range(-rank, rank+1):
         for X in range(-rank, rank+1):
             offset = (X,Y)
-            hex = add(start, offset)
-            distance = dist(start, hex)
+            hex = add(origin, offset)
+            distance = dist(origin, hex)
             if distance <= rank:
                 hexes[hex] = distance
+    return hexes
+
+# Hexes on the edge of an area.
+def perimeter(rank, origin=CC):
+    assert rank > 0, "Rank 0 hexes don't have a perimeter."
+    hexes = []
+    pos = add(origin, mult(SW, rank))
+    for dir in dirs:
+        next = add(pos, mult(dir, rank))
+        hexes.extend(line(pos, next))
+        pos = next
     return hexes
 
 def line(pos1, pos2):
