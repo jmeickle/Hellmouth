@@ -219,7 +219,7 @@ class Stats(View):
         label = labels.get(stat)[0]
         value = self.player.stat(stat)
         if value is None:
-            value = "N/A"
+            value = "n/a"
 
         # These particular stats actually have two stats to display.
         if stat in ["HP", "FP", "MP"]:
