@@ -1,30 +1,42 @@
-# Generators are weighted dictionaries of options for character generation.
-# A generator's weight defaults to 100, so new entries should take that into account.
-# Generators can reference generators declared before them.
-
-# TODO: Support callback functions for checking eligibility
-
 generators = {
-# Default generator, used if none is provided.
-"default" : {
-    "skills" : {
-        "melee" : { "options" : {
-            "Unarmed" : { "weight" : 10, "options" : {
-                 "Brawling" : {},
-                 "Judo" : {},
-                 "Karate" : {},
-            }},
-            "Melee" : { "options" : {
-                "Shortsword" : {},
-                "Broadsword" : {},
-                "Axe" : {"weight": 50},
-            }},
+"default_weapons" : {
+    "long swords" : { "weight" : 10, "options" : {
+        "broadsword" : { "options" : {
+            "broadsword" : {}
+            "thrusting broadsword" : {"weight" : 50},
         }},
-        "magic" : { "weight" : 10, "options" : {
-            "Fire Magic" : {},
-            "Ice Magic" : {},
-            "Necromancy" : {"weight" : 10},
+        "bastard sword" : { "weight" : 50, "options" : {
+            "bastard sword" : {}
+            "thrusting bastard sword" : {"weight" : 50},
         }},
-    }, #</skills>
-} #</default>
+        "greatsword" : { "weight" : 20, "options" : {
+            "greatsword" : {}
+            "thrusting greatsword" : {"weight" : 50},
+        }},
+    }}, #</long swords>
+
+    "short swords" : { "weight" : 30, "options" : {
+        "shortsword" : {},
+        "dagger" : { "weight": 30},
+    }}, #</short swords>
+
+    "axes" : { "weight" : 10, "options" : {
+        "hatchet" : { "weight" : 50},
+        "axe" : {},
+        "greataxe" : { "weight" : 20},
+    }}, #</axes>
+
+    "maces" : { "weight" : 75, "options" : {
+        "small mace" : { "weight" : 50},
+        "mace" : {},
+        "maul" : { "weight" : 20},
+    }}, #</maces>
+
+    "spears" : { "options" : {
+        "spear" : {},
+        "long spear" : { "weight" : 20},
+    }}, #</spears>
+
+}, #</default_weapons>
+
 } #</generators>
