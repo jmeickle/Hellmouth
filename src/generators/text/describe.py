@@ -66,6 +66,27 @@ def commas(list, capitalize=False):
         str = str.capitalize()
     return str
 
+# TODO: This is duplicated code from rdl
+def charactersheet(text, width, indent=1):
+    list = []
+    for line in text:
+        if len(line) > width:
+            string = ""
+            words = re.split('(\W+)', line)
+
+            for word in words:
+                if len(word) + len(string) > width: 
+                    list.append(string)
+                    string = " "*indent
+                if string.isspace() is True and word.isspace() is True:
+                    continue
+                string += word
+        else:
+            string = line
+        list.append(string)
+    return list
+
+
 def base_stat(value):
     if value > 20: return "godly"
     elif value > 14: return "amazing"
