@@ -98,7 +98,7 @@ class Weapon(Item):
 
         # Combat-only stats
         self.primary_skill = None # Primary skill, for descriptions - there can be others.
-        self.attacks = {} # Min ST in attackline
+        self.attack_options = {} # Min ST in attackline
 
 class Sword(Weapon):
     def __init__(self):
