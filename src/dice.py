@@ -50,20 +50,18 @@ def sc(skill, mod=0):
 #        return TIE
 
 # Convert text representation of dice to a roll
-def dice(text, roll=True, capped=True):
+def dice(text, mod=0, do_roll=True, capped=True):
     parts = re.split('(\d+)d([+-]?\d*)', text)
     dice = int(parts[1])
-    if parts[2] == "":
-        mod = 0
-    else:
-        mod = int(parts[2])
+    if parts[2] != "":
+        mod += int(parts[2])
 
     # Convert modifiers in excess of +3 to extra dice
     if dice > 1 or mod > 0:
         dice += mod / 4
         mod = mod % 4
 
-    if roll is False:
+    if do_roll is False:
         if mod == 0:
             return "%dd" % dice
         else:
