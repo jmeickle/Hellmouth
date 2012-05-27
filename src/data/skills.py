@@ -66,7 +66,7 @@ skill_list = {
     "attribute"  : "DX",
     "difficulty" : "E",
     "text"       : "Hit stuff good",
-    "defaults"   : [("Karate", -3), ("Judo", -3)],
+    "defaults"   : [],
 },
 "Judo" : {
     "type"       : "Unarmed",
