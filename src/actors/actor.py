@@ -626,8 +626,6 @@ class Actor:
     def character_sheet(self, chargen=False):
         sheet = []
         if chargen is False:
-            sheet.append("==%s==" % self.name)
-            sheet.append("")
             sheet.append(self.description)
             sheet.append("")
         sheet.append("--Attributes--")
@@ -651,6 +649,14 @@ class Actor:
             #if level[1] is not False:
             #    str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             sheet.append(str)
+
+        sheet.append("")
+        sheet.append("--Weapons--")
+        for weapon, loc in self.weapons.keys():
+            sheet.append("  %s: %s" % (loc, weapon))
+
+        # Print information about your body.
+        sheet.extend(self.body.display())
         return sheet
 
     # Paperdolls are based on body, of course.
