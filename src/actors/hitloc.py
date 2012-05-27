@@ -1,4 +1,5 @@
 from define import *
+from objects.items.item import Natural
 
 # Hit location
 class HitLoc:
@@ -10,16 +11,37 @@ class HitLoc:
         self.HP = 0
         self.DR = 0
         self.wounds = []
+        self.attack_options = {}
 
         # Connectivity
         self.parent = None
         self.children = []
         self.sublocations = []
 
+        # TODO: These will have to be inventories later.
         # Item-related
-        self.held = []
-        self.readied = []
-        self.worn = []
+        self.held = {}
+        self.readied = {}
+        self.worn = {}
+
+    def weapons(self, natural=True, wielded=True, improvised=False):
+        found_weapons = {}
+        if natural is True:
+            for appearance, weapons in self.attack_options.items():
+                found_weapons[appearance] = weapons
+        if wielded is True:
+            for appearance, weapons in self.held.items():
+                found_weapons[appearance] = weapons
+        return found_weapons
+
+    # Information about this location.
+    def display(self):
+        screen = []
+        if len(self.attack_options) > 0:
+            screen.append("%s:" % self.type)
+            for weapon in self.attack_options.keys():
+                screen.append("  %s" % weapon)# (%s)" % (weapon, object))
+        return screen
 
     # Return the healthiness of the limb
     # TODO: Base these values on self.owner
