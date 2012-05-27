@@ -133,10 +133,11 @@ class Actor:
 
     # Mark self as done acting.
     def over(self):
-        self.map.acting = None
-        self.map.queue.append(self)
-        if self.controlled is False:
-            self.attempts = 0
+        if self.map.acting == self:
+            self.map.acting = None
+            self.map.queue.append(self)
+            if self.controlled is False:
+                self.attempts = 0
 
     # Return your own cell
     def cell(self):
@@ -247,8 +248,8 @@ class Actor:
     def die(self):
         if dist(self.map.player.pos, self.pos) <= 10: # HACK: Shouldn't be a magic number
             self.map.log.add(describe("%s has been slain!" % self.name))
-        if self == self.map.acting:
-            self.map.acting = None
+        #if self == self.map.acting:
+        #    self.map.acting = None
         self.map.queue.remove(self)
         self.cell().remove(self)
         self.alive = False
