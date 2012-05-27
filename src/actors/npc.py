@@ -28,7 +28,8 @@ class NPC(Actor):
         assert self.controlled is not True, "A player-controlled actor tried to hit AI code."
 
         if self.target is None:
-            return
+            self.over()
+            return False
 
         self.attempts += 1
         if self.attempts > 10:
