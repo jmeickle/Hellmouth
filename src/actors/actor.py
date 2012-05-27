@@ -11,6 +11,8 @@ from data import traits
 import generators.points
 import body
 
+from combat import CombatAction
+
 # Players, monsters, etc.
 class Actor:
     def __init__(self):
@@ -205,34 +207,49 @@ class Actor:
             return dice(self.Thrust(), mod)
         elif type == "sw":
             return dice(self.Swing(), mod)
+
     # COMBAT
+    # Find eligible weapons.
     def check_weapons(self):
         for locname, loc in self.body.locs.items():
             for appearance, weapons in loc.weapons().items():
                 self.weapons[(appearance, locname)] = weapons
 
-    # Do a basic attack.
-    def attack(self, target, loc=None):
-    # TODO: Make sure this can only happen within weapon range.
-        att_name = self.name
-        def_name = target.name
-        verb = "s"
-        if self == self.map.player:
-            att_name = "you"
-            verb = ""
-        if target == self.map.player:
-            def_name = "you"
+    # Function called to produce a simple, single attack maneuver.
+    def attack(self, target):
+        maneuvers = []
+        item = random.choice(self.weapons.values())
+        skill = item.primary_skill
+        if skill is None or self.skill(skill) is None:
+            skill = "DX"
+        attack_option = random.choice(item.attack_options.get(skill).keys())
+        maneuvers.append((target, item, skill, attack_option))
+        self._attack(maneuvers)
+        self.over()
+        return False
 
-        if r3d6() > 8:
-            str = "%s @dmg@%s %s" % (att_name, verb, def_name)
+    # Use attack maneuvers to do an attack.
+    def _attack(self, maneuvers):
+        attacks = {}
 
-            # Mute non-nearby messages
-            if str is not None and dist(self.map.player.pos, target.pos) <= 3:
-                self.map.log.add(describe(str))
-            # TODO: Replace roll() with dice()
-            amt = sum(roll(r1d6, self.damage))
-            target.hit(amt)
+        for maneuver in maneuvers:
+            target, item, skill, attack_option = maneuver
+            attacks[maneuver] = {}
+            attacks[maneuver]["attacker"] = self
+            attacks[maneuver]["target"] = target
+            attacks[maneuver]["item"] = item
+            attacks[maneuver]["skill"] = skill
+            attacks[maneuver]["attack_option"] = attack_option
 
+        action = CombatAction(attacks)
+
+        if action.setup() is True:
+            action.fire()
+
+        # TODO: Replace with check for whether it's interesting.
+        for line in action.display():
+            self.map.log.add(line)
+        action.cleanup()
         self.over()
         return True
 
