@@ -89,5 +89,3 @@ secondary_attributes = ("HP", "FP", "MP", "Will", "Perception", "Speed", "Move")
 
 # Make the syntax neater for weapon definitions.
 U0 = (0, False)
-C = 0
-
