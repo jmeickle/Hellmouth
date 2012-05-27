@@ -186,6 +186,15 @@ class Actor:
         their_skill, their_mod = them.skill(skill)
         return qc(self_skill, self_mod, their_skill, their_mod)
 
+    # TODO: Support armor divisors.
+    def damage(self, damage):
+        damage = re.split('(\w*)([+-]?\d*)', damage)
+        type = damage[1]
+        mod = int(damage[2])
+        if type == "thr":
+            return dice(self.Thrust(), mod)
+        elif type == "sw":
+            return dice(self.Swing(), mod)
     # COMBAT
 
     # Do a basic attack.
