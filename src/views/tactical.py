@@ -398,13 +398,14 @@ class CharacterSheet(View):
         self.border(" ")
         pos = self.cursor.pos
         actor = self.map.actor(pos)
-        self.cline('You can see:')
-        self.cline("-"*self.width)
 
         # Abort early if no actor.
         if actor is None:
-            self.cline('Nothing.')
+            self.cline("There's nothing interesting here.")
             return False
+
+        self.cline('You can see: %s' % actor.name)
+        self.cline("-"*self.width)
 
         if actor != self.actor:
             self.actor = actor
