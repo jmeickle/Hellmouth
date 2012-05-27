@@ -67,6 +67,10 @@ class Actor:
         self.controlled = False
 
         self.generator = None
+        self.weapons = {}
+
+        # Can be run at any time, but this will at least grab the natural weapons.
+        self.check_weapons()
 
     # UTILITY
 
@@ -196,6 +200,10 @@ class Actor:
         elif type == "sw":
             return dice(self.Swing(), mod)
     # COMBAT
+    def check_weapons(self):
+        for locname, loc in self.body.locs.items():
+            for appearance, weapons in loc.weapons().items():
+                self.weapons[(appearance, locname)] = weapons
 
     # Do a basic attack.
     def attack(self, target, loc=None):
