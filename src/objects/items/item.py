@@ -151,6 +151,7 @@ class Staff(Weapon):
 class Natural(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Brawling"
 
 class Tool(Item):
     def __init__(self):
