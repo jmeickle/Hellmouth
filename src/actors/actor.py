@@ -241,8 +241,8 @@ class Actor:
         loc = self.randomloc()
         loc.hurt(amt)
         self.hp_spent += amt
-        if self.check_dead() is True:
-            self.die()
+        # TODO: Return damage taken (DR, wounding, etc.)
+        return amt
 
     # Check whether you are dead.
     def check_dead(self):
