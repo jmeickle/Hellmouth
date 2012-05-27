@@ -55,7 +55,7 @@ class Component():
         self._reset()
         self.before_draw()
         if self.draw() is not False:
-            for child in self.children:
+            for child in reversed(self.children):
                 if child._draw() is False:
                     return False
             return True

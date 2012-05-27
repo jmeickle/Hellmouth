@@ -11,14 +11,16 @@ from data.skills import skill_list
 from collections import deque
 from random import choice
 
+from generators.text import describe
+
 # Main tactical window class.
 class Window(View):
     def __init__(self, window):
         View.__init__(self, window, TERM_X, TERM_Y)
 
     def ready(self):
-        self.spawn(MainPane(self.screen))
         self.spawn(SidePane(self.screen))
+        self.spawn(MainPane(self.screen))
 
 # Larger, left-hand pane
 class MainPane(View):
