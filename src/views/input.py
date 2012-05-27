@@ -11,9 +11,9 @@ class Scroller(Component):
         self.max = max
         self.index = initial
 
-    def resize(self, max, min=0):
-        self.min = min
-        self.max = max
+    def resize(self, max_sz, min_sz=0):
+        self.min = max(0,min_sz)
+        self.max = max(0,max_sz)
         self.scroll(0)
 
     def scroll(self, amt):
@@ -22,7 +22,7 @@ class Scroller(Component):
             if self.index < self.min:
                 self.index = self.min
         if self.max is not None:
-            if self.index >= self.max:
+            if self.index > self.max:
                 self.index = self.max
 
     def keyin(self, c):
