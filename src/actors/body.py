@@ -1,4 +1,5 @@
 from hitloc import HitLoc
+from generators import items
 
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
@@ -20,8 +21,19 @@ class BodyPlan:
         for partname, parent, sublocation, rolls in self.parts:
             part = HitLoc(partname, owner)
             self.locs[partname] = part
+
+            # Generate natural weapons.
+            weapons = self.weapons.get(partname)
+            if weapons is not None:
+                for weapon in weapons:
+                    part.attack_options[weapon] = items.generate_item(weapon)
+
+
+            # Set up relationships between parts.
             if parent is not None:
                 HitLoc.add_child(self.locs[parent], part)
+
+            # Add the location to the hit location chart.
             for roll in rolls:
                 if isinstance(roll, list) is True:
                     base = roll[0]
@@ -32,6 +44,17 @@ class BodyPlan:
                         self.table["%s-%s" % (base, subroll)] = part
                 else:
                     self.table[roll] = part
+
+    # Very simple display of body information.
+    def display(self):
+        screen = []
+        screen.append("")
+        screen.append("--Body--")
+        screen.append("Size: %s" % self.size)
+        screen.append("Shape: %s" % self.shape)
+        for loc in self.locs.values():
+            screen.extend(loc.display())
+        return screen
 
     # Implement this for anything that needs a paperdoll.
     def paperdoll(self):
@@ -61,6 +84,13 @@ class Humanoid(BodyPlan):
     )
 
     primary_slot = 'RHand'
+
+    weapons = {
+        'RHand' : ("fist",),
+        'LHand' : ("fist",),
+#        'RFoot' : ("kick"),
+#        'LFoot' : ("kick"),
+    }
 
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
