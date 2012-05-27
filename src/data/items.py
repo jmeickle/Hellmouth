@@ -360,7 +360,7 @@ item_list = {
     },
 # Fake items.
 # Natural attacks.
-    "punch" : {
+    "fist" : {
         "class" : Natural,
         "attacks" : { # Damage, type, reach, parry, min ST
             "Boxing"   : { "punch" : ("thr-1", "cr", (C,), 0, None, None),},
@@ -386,15 +386,15 @@ item_list = {
     "fangs" : {
         "class" : Natural,
         "attacks" : {
-            "Brawling" : { "thrust" : ("thr-1", "imp", (C,), None, None, None),},
-            "DX"       : { "thrust" : ("thr-1", "imp", (C,), None, None, None),},
+            "Brawling" : { "bite" : ("thr-1", "imp", (C,), None, None, None),},
+            "DX"       : { "bite" : ("thr-1", "imp", (C,), None, None, None),},
         },
     },
     "beak" : {
         "class" : Natural,
         "attacks" : {
-            "Brawling" : { "thrust" : ("thr-1", "pi+", (C,), None, None, None),},
-            "DX"       : { "thrust" : ("thr-1", "pi+", (C,), None, None, None),},
+            "Brawling" : { "peck" : ("thr-1", "pi+", (C,), None, None, None),},
+            "DX"       : { "peck" : ("thr-1", "pi+", (C,), None, None, None),},
         },
     },
 # TODO: A ton of demonic strikers. Tails, wings, etc.
