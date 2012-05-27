@@ -260,6 +260,8 @@ class Log(View):
     def ready(self):
         self.scroller = self.spawn(Scroller(len(self.events) - self.height))
         self.map.log = self
+        for x in range(50):
+            self.add("Test Message %s" % x)
 
     # Add an event to the history. Autoscrolls unless this has been turned off.
     def add(self, event, scroll=True):
@@ -271,45 +273,39 @@ class Log(View):
     def draw(self):
         # Start from the bottom:
         self.y_acc = self.height
-        index = 0
-        for event in reversed(self.events):
+        index = self.scroller.max
+
+        if self.scroller.index != self.scroller.max:
+            self.y_acc -=1
+            self.line("[...]")
+            self.y_acc -=1
             index += 1
-            if index < self.scroller.index:
+
+        for event in reversed(self.events):
+            index -= 1
+            if index >= self.scroller.index:
                 continue
             if self.logline(event) is False:
+                self.y_acc = 0
+                self.line("[...]")
                 break;
 
     def logline(self, event):
-        # HACK: What about colors and such? This will fail.
-        lines = 1 + (len(event) / self.width) # Number of lines the string will take up
-        self.y_acc -= lines # Move up by that much to offset what the function will do.
-        # Couldn't fit a whole line.
-        if self.y_acc < 0:
-            self.y_acc = 0
-            self.line("[...]")
+        lines = describe.charactersheet([event], self.width)
+
+        # Move up by that much to offset what the line function would do.
+        self.y_acc -= len(lines)
+
+        # Couldn't fit it all.
+        if self.y_acc < 1 and self.scroller.index != self.scroller.min:
             return False;
-        self.line(event, None, None, 1) # color, attr, indent
-        self.y_acc -= lines # Move to where we started.
 
-    # Accepts keyin to scroll - that's it for now.
-    # TODO: Logline highlight stuff.
-#    def keyin(self, c):
-#        if c == curses.KEY_UP: self.scroll(-1)
-#        elif c == curses.KEY_DOWN: self.scroll(1)
-#        else: return True
-#        return False
+        # Otherwise, display the line(s):
+        for line in lines:
+            self.line(line)
 
- #   # Scrolling the log up and down.
- #   def scroll(self, amt):
- #       self.index += amt
- #       # Prevent an index below zero.
- #       if self.index < 0:
- #           self.index = 0
-
-        # Prevent scrolling if there's no more entries to see.
-#        max = len(self.events) - self.height
-#        if self.index >= max:
-#            self.index = max
+        # Since we're moving in reverse.
+        self.y_acc -= len(lines)
 
 class Inventory(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
@@ -387,7 +383,9 @@ class CharacterSheet(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.actor = None
         self.text = []
-        self.scroller = self.spawn(Scroller())
+
+    def ready(self):
+        self.scroller = self.spawn(Scroller(0))
 
     def keyin(self, c):
         if c == ord(' '):
@@ -401,26 +399,39 @@ class CharacterSheet(View):
         pos = self.cursor.pos
         actor = self.map.actor(pos)
         self.cline('You can see:')
-        self.cline('')
+        self.cline("-"*self.width)
+#self.y_acc += 1
         # Abort early if no actor.
         if actor is None:
             self.cline('Nothing.')
             return True
         if actor != self.actor:
             self.actor = actor
-            self.text = self.actor.character_sheet()
-            self.scroller.resize(max(0,len(self.text)-self.height))
-        for x in range(self.scroller.index, len(self.text)):
-            if x > 1 and x == self.scroller.index:
-                self.cline('[...]')
-                continue
-            line = self.text[x]
+            self.text = describe.charactersheet(self.actor.character_sheet(), self.width)
+            self.scroller.resize(len(self.text)-self.height)
+
+        offset = 0
+        if self.scroller.index > 0:
+            self.cline('[...]')
+            offset += 1
+        maxlines = self.height - self.y_acc
+
+# TODO: Generalize this.
+        for x in range(maxlines):
+            index = x + self.scroller.index + offset
+
       #      if len(line) > self.width:
       #          line = line[:self.width]
-            self.cline(line)
-            if self.y_acc+1 >= self.height and x+2 < len(self.text):
+            if x+1 == maxlines and index+3 < len(self.text):
+#self.scroller.index != self.scroller.max:#len(self.text):#x+1 < len(self.text):
                 self.cline('[...]')
-                break
+                break;
+
+#                continue
+            line = self.text[index]
+            self.cline(line)
+#            if self.y_acc == self.height:# and
+#                break
         return False # Block further drawing if we drew.
 
 # TODO: Add a minimap and a health screen.
