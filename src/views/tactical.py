@@ -400,38 +400,33 @@ class CharacterSheet(View):
         actor = self.map.actor(pos)
         self.cline('You can see:')
         self.cline("-"*self.width)
-#self.y_acc += 1
+
         # Abort early if no actor.
         if actor is None:
             self.cline('Nothing.')
-            return True
+            return False
+
         if actor != self.actor:
             self.actor = actor
             self.text = describe.charactersheet(self.actor.character_sheet(), self.width)
-            self.scroller.resize(len(self.text)-self.height)
+            self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
         offset = 0
+
         if self.scroller.index > 0:
             self.cline('[...]')
             offset += 1
-        maxlines = self.height - self.y_acc
 
+        maxlines = self.height - self.y_acc
 # TODO: Generalize this.
         for x in range(maxlines):
-            index = x + self.scroller.index + offset
-
-      #      if len(line) > self.width:
-      #          line = line[:self.width]
-            if x+1 == maxlines and index+3 < len(self.text):
-#self.scroller.index != self.scroller.max:#len(self.text):#x+1 < len(self.text):
+            if self.y_acc+1 == self.height and self.scroller.index < self.scroller.max:
                 self.cline('[...]')
                 break;
 
-#                continue
+            index = self.scroller.index + x + offset
             line = self.text[index]
             self.cline(line)
-#            if self.y_acc == self.height:# and
-#                break
         return False # Block further drawing if we drew.
 
 # TODO: Add a minimap and a health screen.
