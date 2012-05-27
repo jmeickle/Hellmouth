@@ -174,21 +174,26 @@ class Actor:
 
     # SKILLS
 
-    # Gets the level of a skill as well as any situational modifiers.
-    def skill(self, skill):
-        level = self.skills.get(skill)        
-        return level, mod
+    # STUB Gets the level of a skill as well as any situational modifiers.
+    def skill(self, skill, situational=False):
+        level, default = self.base_skills.get(skill, (None, None))
+        if situational is True:
+            return level, 0
+        else:
+            return level
 
     # Performs a skill check.
     def sc(self, skill):
-        level = self.skill.get(skill)
-        mod = 0
-        return sc(skill, mod)
+        level, mod = self.skill(skill, True)
+        # Is it a stat instead?
+        if level is None:
+            level = self.stat(skill)
+        return sc(level, mod)
 
     # Performs a quick contest.
     def qc(self, them, skill):
-        self_skill, self_mod = self.skill(skill)
-        their_skill, their_mod = them.skill(skill)
+        self_skill, self_mod = self.skill(skill, True)
+        their_skill, their_mod = them.skill(skill, True)
         return qc(self_skill, self_mod, their_skill, their_mod)
 
     # TODO: Support armor divisors.
