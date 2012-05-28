@@ -1,18 +1,15 @@
 SHORT TERM GOALS:
 - Basic items
-- Basic combat
 - Basic inventory management
-- Use generated skills in combat
-- Fill out lifepaths so all reachable events are meaningful
-- Make lifepath events affect character stats
+- Start screen
+- Win and loss screens
 
 LONGER TERM GOALS:
 - Screen to spend discretionary character points
-- Enhanced combat text generation
-- Non-combat skills
 - Support numpads correctly across systems
 - Improved random monster generation
-- Fix combat log printing
+- Fill out lifepaths so all reachable events are meaningful
+- Make lifepath events affect character stats
 
 VERY LONG TERM GOALS:
 - Better AI
@@ -21,6 +18,8 @@ VERY LONG TERM GOALS:
 - Remappable keys
 - Windows support
 - Improved map generation
+- Enhanced combat text generation
+- Non-combat skills
 
 MISC:
 
