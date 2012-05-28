@@ -3,11 +3,12 @@ SHORT TERM GOALS:
 - Basic inventory management
 - Start screen
 - Win and loss screens
+- Dialogue screens
+- Improved random monster generation
+- Support numpads correctly across systems
 
 LONGER TERM GOALS:
 - Screen to spend discretionary character points
-- Support numpads correctly across systems
-- Improved random monster generation
 - Fill out lifepaths so all reachable events are meaningful
 - Make lifepath events affect character stats
 
