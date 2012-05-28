@@ -379,10 +379,17 @@ class Actor:
 
     # INVENTORY
     # STUB: Return a sorted section of the inventory, or ground items, based on args
-    def items(self):
-        items = self.inventory.items()
-        items = sorted(items, key=itemgetter(0))
-        return items
+    # TODO: Print this more nicely after new inventory scheme.
+    def list_carried(self):
+        items = []
+        for appearance, itemlist in self.inventory.items():
+            append = True
+            for item in itemlist:
+                if item.is_equipped() is True:
+                    append = False
+            if append is True:
+                items.append((appearance, itemlist))
+        return sorted(items, key=itemgetter(0))
 
     # Convert an item appearance to an item (randomly). False if nothing by that appearance.
     def item(self, appearance):
@@ -450,10 +457,10 @@ class Actor:
     # 'Forcibly' drop a specific inventory item.
     # Returns false if the item wasn't found in the player's inventory.
     def _drop(self, item):
-        if self.can_drop_item(item) is True:
-            drop = self._remove(item)
-            if drop is not False:
-                self.cell().put(drop)
+        if self._can_drop_item(item) is True:
+            if self._unequip(item) is True:
+                self._remove(item)
+                self.cell().put(item)
             else:
                 exit("Lost an item: it was removed, but not returned.")
         return False
@@ -487,18 +494,18 @@ class Actor:
     # Misc. map-item checking functions
 
     # Can stuff be gotten from a pos?
-    def _can_get(self, item):
+    def _can_get(self):
         return self.cell().can_get()
 
     # TODO: Sanity checks not handled above
     def can_get(self):
-        return _can_get(self)
+        return self._can_get()
 
     # Whether there is anything both interesting and possible to get.
     def can_get_items(self):
         if len(self.cell().items) == 0:
             return False
-        return can_get(self)
+        return self.can_get()
 
     # Can stuff be dropped into a pos?
     def _can_drop(self):
@@ -622,6 +629,7 @@ class Actor:
             for loc in locs:
                 if loc.owner == self:
                     loc.unwear(item)
+        return True
 
     # TODO: Sanity checks not handled above.
     def unequip(self, appearance):

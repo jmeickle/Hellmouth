@@ -24,6 +24,20 @@ class HitLoc:
         self.readied = {}
         self.worn = {}
 
+    # Return a list of unique items.
+    def items(self):
+        # DARK MAGIC
+        items = set()
+
+        for itemlist in self.held.values():
+            items.update(itemlist)
+        for itemlist in self.readied.values():
+            items.update(itemlist)
+        for itemlist in self.worn.values():
+            items.update(itemlist)
+
+        return items
+
     def weapons(self, natural=True, wielded=True, improvised=False):
         found_weapons = {}
         if natural is True:

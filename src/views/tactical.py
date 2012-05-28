@@ -326,11 +326,18 @@ class Inventory(View):
 
     def ready(self):
         self.scroller = self.spawn(Scroller())
-        self.tabber = self.spawn(Tabber(2))
+        self.sidescroller = self.spawn(SideScroller(1))
 
+    # Stored here for convenience.
     def before_draw(self):
-        self.items = self.player.items()
-        self.scroller.resize(len(self.items)-1)
+        self.items = self.player.list_carried()
+        self.slots = self.player.body.locs.items()
+
+        # Tabbing! (Very hackish/simple.)
+        if self.sidescroller.index == 0:
+            self.scroller.resize(len(self.items)-1)
+        else:
+            self.scroller.resize(len(self.slots)-1)
 
     def draw(self):
         self.window.clear()
@@ -345,20 +352,35 @@ class Inventory(View):
                 else:
                     string = appearance
 
-                if x == self.scroller.index:
+                # Highlight tab, if present.
+                if self.sidescroller.index == 0 and x == self.scroller.index:
                     self.cline("<green-black>%s</>" % string)
                 else:
                     self.cline(string)
         else:
             self.cline("No items")
 
+        self.y_acc += 1
+
+        # Print what's on the ground, too.
+        ground = self.map.player.cell().items
+        if len(ground) > 0:
+            self.cline("Ground:")
+            self.y_acc += 1
+            for appearance, items in ground.items():
+                if len(items) > 1:
+                    self.line("%d %ss" % (len(items), appearance))
+                else:
+                    self.line(appearance)
+
         self.y_acc = 0
-        self.x_acc += 10
+        self.x_acc += 20
 
         # TODO: Fix this messaging.
         self.cline("Equipped")
         self.y_acc += 1
-        for locname, loc in self.player.body.locs.items():
+        for x in range(len(self.slots)):
+            locname, loc = self.slots[x]
             equipped = ""
             for appearance, items in loc.readied.items():
                 for item in items: # Ick. Definitely need to move this printing!
@@ -376,47 +398,77 @@ class Inventory(View):
 
             # If we don't have a string yet:
             if len(equipped) == 0:
-                equipped = "Nothing"
-            self.cline("%6s: %s" % (locname, equipped))
+                    equipped = "Nothing"
 
-        # Print what's on the ground, too.
-        ground = self.map.player.cell().items
-        if len(ground) > 0:
-            self.x_acc = 10
-            self.cline("Ground:")
-            self.y_acc += 1
-            for appearance, items in ground.items():
-                if len(items) > 1:
-                    self.line("%d %ss" % (len(items), appearance))
-                else:
-                    self.line(appearance)
+            # Highlights.
+            if self.sidescroller.index == 1 and x == self.scroller.index:
+                self.cline("%6s: <green-black>%s</a>" % (locname, equipped))
+            else:
+                self.cline("%6s: %s" % (locname, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
 
         self.cline("Available actions:")
         actions = []
-        appearance, items = self.items[self.scroller.index]
-        if self.map.player.can_drop_item(appearance):
-            actions.append("(<green-black>d</>)rop")
-        if self.map.player.can_equip_item(appearance):
-            actions.append("(<green-black>e</>)quip")
-        if self.map.player.can_unequip_item(appearance):
-            actions.append("(<green-black>u</>)nequip")
+        # These actions depend on having a carried item.
+        if self.sidescroller.index == 0 and len(self.items) > 0:
+            appearance, items = self.items[self.scroller.index]
+            if self.map.player.can_equip_item(appearance):
+                actions.append("(<green-black>e</>)quip")
+
+        elif self.sidescroller.index == 1:
+            locname, loc = self.slots[self.scroller.index]
+            #for item in loc.items():
+            # Hackish! Pop a random element from the set.
+            items = loc.items()
+            if len(items) > 0:
+                item = loc.items().pop()
+                if self.map.player._can_unequip_item(item):
+                    actions.append("(<green-black>u</>)equip")
+
+        item = self.selected()
+        if item is not None:
+            if self.sidescroller.index == 0:
+                if self.map.player.can_drop_item(item):
+                    actions.append("(<green-black>d</>)rop")
+            elif self.sidescroller.index == 1:
+                if self.map.player._can_drop_item(item):
+                    actions.append("(<green-black>d</>)rop")
+
+        # Always visible, if there are items to get.
         if self.map.player.can_get_items():
-            actions.append("(<green-black>(G/g)</>)get")
+            actions.append("(<green-black>G</>)et all")
 
         self.cline("  %s" % describe.commas(actions))
+
+    # Returns the seletected item (or appearance).
+    def selected(self):
+        if self.sidescroller.index == 0 and len(self.items) > 0:
+            appearance, items = self.items[self.scroller.index]
+            return appearance
+        elif self.sidescroller.index == 1:
+            locname, loc = self.slots[self.scroller.index]
+            #for item in loc.items():
+            # Hackish! Pop a random element from the set.
+            items = loc.items()
+            if len(items) > 0:
+                return items.pop()
 
     def keyin(self, c):
         if c == ord(' '):
             self.suicide()
+        # Hack.
         elif c == ord('d'):
-            self.player.drop(self.items[self.scroller.index][0])
+            if self.scroller.index == 0:
+                self.player.drop(self.selected())
+            else:
+                self.player._drop(self.selected())
         elif c == ord('e'):
-            self.player.equip(self.items[self.scroller.index][0])
+            self.player.equip(self.selected())
         elif c == ord('u'):
-            self.player.unequip(self.items[self.scroller.index][0])
+            # This is also a hack.
+            self.player._unequip(self.selected())
 #        else: return True
         return False
 
