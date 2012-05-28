@@ -494,16 +494,26 @@ class Actor:
     def can_get(self):
         return _can_get(self)
 
+    # Whether there is anything both interesting and possible to get.
+    def can_get_items(self):
+        if len(self.cell().items) == 0:
+            return False
+        return can_get(self)
+
     # Can stuff be dropped into a pos?
     def _can_drop(self):
         return self.cell().can_drop()
 
     # TODO: Sanity checks not handled above
     def can_drop(self):
-        return _can_drop(self)
+        return self._can_drop()
+
+    # Can this specific appearance be dropped?
+    def can_drop_item(self, appearance):
+        return self._can_drop_item(self.item(appearance))
 
     # Can this specific item be dropped?
-    def can_drop_item(self, item):
+    def _can_drop_item(self, item):
         # Worn (as opposed to held) items cannot be dropped.
         if self.worn(item):
             return False
@@ -545,6 +555,7 @@ class Actor:
     # Return false if nothing could be equipped.
     def _equip(self, item, loc, worn, weapon):
         if loc is None:
+            # TODO: Make this check alternate slots, rather than primary_slot.
             slot = item.preferred_slot()
             loc = self.body.locs.get(slot, self.body.primary_slot)
 
@@ -582,6 +593,16 @@ class Actor:
     def equip(self, appearance, loc=None, worn=None, weapon=None):
         return self._equip(self.item(appearance), loc, worn, weapon)
 
+    # Can we equip an item of a specific appearance?
+    def can_equip_item(self, appearance):
+        return self._can_equip_item(self.item(appearance))
+
+    # Can we equip a specific item?
+    def _can_equip_item(self, item):
+        if item.is_worn():
+            return False
+        return True
+
     # Unhold or unwear the item in all appropriate ways.
     def _unequip(self, item):
         if item.is_held() is True:
@@ -605,6 +626,16 @@ class Actor:
     # TODO: Sanity checks not handled above.
     def unequip(self, appearance):
         self._unequip(self.item(appearance))
+
+    # Can we unequip an item of a specific appearance?
+    def can_unequip_item(self, appearance):
+        return self._can_unequip_item(self.item(appearance))
+
+    # Can we unequip a specific item?
+    def _can_unequip_item(self, item):
+        if not item.is_equipped():
+            return False
+        return True
 
     # Misc. inventory checking functions
 

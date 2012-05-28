@@ -63,27 +63,39 @@ class HitLoc:
 
     # ITEMS
     def hold(self, item):
-        self.held.append(item)
+        held = self.held.get(item.appearance(), [])
+        held.append(item)
+        self.held[item.appearance()] = held
         item.held.append(self)
 
     def ready(self, item):
-        self.readied.append(item)
+        readied = self.readied.get(item.appearance(), [])
+        readied.append(item)
+        self.readied[item.appearance()] = readied
         item.readied.append(self)
 
     def wear(self, item):
-        self.worn.append(item)
+        worn = self.worn.get(item.appearance(), [])
+        worn.append(item)
+        self.worn[item.appearance()] = worn
         item.worn.append(self)
 
     def unhold(self, item):
-        self.held.remove(item)
+        held = self.held.get(item.appearance(), [])
+        held.remove(item)
+        self.held[item.appearance()] = held
         item.held.remove(self)
 
     def unready(self, item):
-        self.readied.remove(item)
+        readied = self.readied.get(item.appearance(), [])
+        readied.remove(item)
+        self.readied[item.appearance()] = readied
         item.readied.remove(self)
 
     def unwear(self, item):
-        self.worn.remove(item)
+        worn = self.worn.get(item.appearance(), [])
+        worn.remove(item)
+        self.worn[item.appearance()] = worn
         item.worn.remove(self)
 
     # COMBAT

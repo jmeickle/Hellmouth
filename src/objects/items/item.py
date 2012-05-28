@@ -18,7 +18,7 @@ class Item():
         self.quality = None
         self.material = random.choice(("iron", "gold", "copper", "steel"))
 
-        # References
+        # References. These just need to be lists, not dicts, because we don't care about the appearances involved.
         self.held = []
         self.readied = []
         self.worn = []
@@ -86,6 +86,22 @@ class Item():
         else:
             if worn.count(loc) > 0:
                 return True
+        return False
+
+    # Return true if the item is being wielded - held and readied (possibly
+    # in a specific location), and not worn (anywhere).
+    def is_wielded(self, loc=None):
+        if self.is_worn():
+            return False
+        if self.is_held(loc) and self.is_readied(loc):
+            return True
+        return False
+
+    # Is the item being worn or held (optionally in a specific loc)?
+    def is_equipped(self, loc=None):
+        if self.is_worn(loc) or self.is_held(loc):
+            return True
+        assert self.is_readied(loc) is False, "Item wasn't worn or held, but still managed to be readied."
         return False
 
 class Armor(Item):

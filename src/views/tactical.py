@@ -72,7 +72,7 @@ class MainMap(View):
             elif c == ord('v'):
                 if self.cursor is None:
                     self.cursor = self.spawn(Cursor(self.player.pos))
-                    self.cursor.spawn(Examine(self.screen, self.width, 1, self.LEFT, self.BOTTOM))
+                    self.cursor.spawn(Examine(self.screen, self.width, 1, 0, self.BOTTOM))
                     return False
 
         if True is True:#else:
@@ -326,13 +326,15 @@ class Inventory(View):
 
     def ready(self):
         self.scroller = self.spawn(Scroller())
+        self.tabber = self.spawn(Tabber(2))
 
     def before_draw(self):
         self.items = self.player.items()
         self.scroller.resize(len(self.items)-1)
 
     def draw(self):
-        self.x_acc += 10
+        self.window.clear()
+        self.border(" ")
         self.cline("Inventory")
         self.y_acc += 1
         if len(self.items) > 0:
@@ -351,23 +353,33 @@ class Inventory(View):
             self.cline("No items")
 
         self.y_acc = 0
-        self.x_acc += 20
+        self.x_acc += 10
 
         # TODO: Fix this messaging.
         self.cline("Equipped")
         self.y_acc += 1
-        for loc in sorted(self.player.body.locs.items()):
+        for locname, loc in self.player.body.locs.items():
             equipped = ""
-            for held in loc[1].held:
-                equipped += "%s (held)" % held.appearance()
-            for ready in loc[1].readied:
-                equipped += "%s (readied)" % ready.appearance()
-            for worn in loc[1].worn:
-                equipped += "%s (worn)" % worn.appearance()
+            for appearance, items in loc.readied.items():
+                for item in items: # Ick. Definitely need to move this printing!
+                    if item.is_wielded():
+                        equipped += "%s (wielded)" % appearance
+                    else:
+                        equipped += "%s (readied)" % appearance
+            for appearance, items in loc.held.items():
+                for item in items:
+                    if not item.is_wielded():
+                        equipped += "%s (held)" % appearance
+            for appearance, items in loc.worn.items():
+                for item in items:
+                    equipped += "%s (worn)" % appearance
+
+            # If we don't have a string yet:
             if len(equipped) == 0:
                 equipped = "Nothing"
-            self.cline("%6s: %s" % (loc[0], equipped))
+            self.cline("%6s: %s" % (locname, equipped))
 
+        # Print what's on the ground, too.
         ground = self.map.player.cell().items
         if len(ground) > 0:
             self.x_acc = 10
@@ -378,25 +390,34 @@ class Inventory(View):
                     self.line("%d %ss" % (len(items), appearance))
                 else:
                     self.line(appearance)
-#        if self.selector.text is not None:
-#            self.cline(self.selector.text)
-#        else:
-#            self.cline("d/e/u")
+
+        self.x_acc = 0
+        self.y_acc = self.BOTTOM - 2
+
+        self.cline("Available actions:")
+        actions = []
+        appearance, items = self.items[self.scroller.index]
+        if self.map.player.can_drop_item(appearance):
+            actions.append("(<green-black>d</>)rop")
+        if self.map.player.can_equip_item(appearance):
+            actions.append("(<green-black>e</>)quip")
+        if self.map.player.can_unequip_item(appearance):
+            actions.append("(<green-black>u</>)nequip")
+        if self.map.player.can_get_items():
+            actions.append("(<green-black>(G/g)</>)get")
+
+        self.cline("  %s" % describe.commas(actions))
 
     def keyin(self, c):
         if c == ord(' '):
             self.suicide()
         elif c == ord('d'):
-            self.selector.toggle(self.player.drop, "Drop item")
+            self.player.drop(self.items[self.scroller.index][0])
         elif c == ord('e'):
-            self.selector.toggle(self.player.equip, "Equip item")
+            self.player.equip(self.items[self.scroller.index][0])
         elif c == ord('u'):
-            self.selector.toggle(self.player.unequip, "Unequip item")
-#        elif c == curses.KEY_ENTER or c == ord('\n'):
-#            if len(self.items) > 0:
-#                index, appearance, itemlist = self.items[self.selector.choice]
-#                self.selector.fire(appearance)
-        else: return True
+            self.player.unequip(self.items[self.scroller.index][0])
+#        else: return True
         return False
 
 class CharacterSheet(View):
