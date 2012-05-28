@@ -160,10 +160,23 @@ class Cursor(Component):
     def ready(self):
         self.cursor = self
 
+# Generic prompt.
 class Prompt(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y/2, start_x, start_y + y/4)
         self.prompt = True
+
+    def ready(self):
+        self.scroller = self.spawn(Scroller())
+
+    def draw(self):
+        self.window.clear()
+        self.border("/")
+
+# Text entry prompt.
+class TextPrompt(Prompt):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        Prompt.__init__(self, window, x, y/2, start_x, start_y + y/4)
         self.input = ""
         self.max = 0
 
@@ -171,8 +184,7 @@ class Prompt(View):
         self.scroller = self.spawn(SideScroller())
 
     def draw(self):
-        self.window.clear()
-        self.border("/")
+        Prompt.draw(self)
         # HACK: This is a guesstimate until I make the text functions more consistent.
         self.max = self.width * (self.height - 1)
 
@@ -225,3 +237,9 @@ class Prompt(View):
         self.input = left + right
 
         self.scroller.resize(len(self.input))
+
+class ItemPrompt(Prompt):
+    def __init__(self):
+        Prompt.__init__(self)
+
+
