@@ -1,6 +1,7 @@
 from dice import *
 from generators.maps import mapgen
 from maps.encounter import Encounter
+from data import screens
 
 class MeatArena():
     depth = 1
@@ -11,6 +12,8 @@ class MeatArena():
         self.map = None
         self.generate_map()
         self.place_monsters()
+        self.screens = []
+        self.generate_screens()
 
     # Just returns depth, but can be overridden for strings/etc.
     def current_depth(self):
@@ -36,3 +39,10 @@ class MeatArena():
             monster = random.choice(monsters)
             monster = monster()
             self.map.put(monster, (self.map.center[0] + flip()*random.randint(1, self.map.size), self.map.center[1] + flip() * random.randint(1,self.map.size)))
+
+    def generate_screens(self):
+        screen = screens.text.get("meat-%s" % self.current_depth())
+        if screen is not None:
+            screen["header_right"] = self.name
+            screen["footer_text"] = screens.footer
+            self.screens.append(screen)
