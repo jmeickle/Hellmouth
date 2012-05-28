@@ -108,7 +108,7 @@ class Component():
                 return False
         if self.parent is not None and self.prompt is False:
             if c < 256:
-                if key.globals.get(chr(c)) is True:
+                if key.globals.get(c) is True:
                     return None
         return self.keyin(c)
 

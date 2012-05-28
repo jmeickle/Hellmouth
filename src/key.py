@@ -1,11 +1,13 @@
 # TODO: Define a dict of keys/actions for remappable keys.
 from define import *
 
-globals = {"?" : True}
-
 # Return the corresponding control-modified key.
 def ctrl(c):
     return ord(c) - 96
+
+globals = {}
+globals[ord("?")] = True
+globals[ctrl("q")] = True
 
 # Return the corresponding hex direction.
 def hexkeys(c):

@@ -5,6 +5,7 @@ from views.screens import Screen
 class HelpScreen(Screen):
     def __init__(self, window):
         Screen.__init__(self, window)
+        self.prompt = True
 
     # TODO: Header drawing should be nicer.
     def draw(self):
