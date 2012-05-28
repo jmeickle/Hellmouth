@@ -2,24 +2,45 @@
 import curses
 
 from define import *
+from text import *
 from views.view import View
 
 # Border, heading, body text.
 class Screen(View):
-    def __init__(self, window):
+    def __init__(self, window, header_left="", header_right="", body_text="", footer_text=""):
         View.__init__(self, window, TERM_X, TERM_Y)
-        self.title = "Debug Title"
+        self.header_left = header_left
+        self.header_right = header_right
+        self.body_text = body_text
+        self.footer_text = footer_text
 
     def before_draw(self):
         self.window.clear()
 
     # TODO: Function to make drawing headings a bit more generalizable
     def draw(self):
-        self.border("#")
-        heading = "%s%s%s" % (self.title, " "*(self.width - len(self.title) - len(self.player.location) - 1), self.player.location)
-        self.cline(heading)
-        self.cline("-"*self.width)
+        self.border(" ")
+        self.header()
+        self.body()
+        self.footer()
         return False
+
+    def header(self):
+        left = len(striptags(self.header_left))
+        right = len(striptags(self.header_right))
+        spacing = " " * (self.width - left - right)
+        header_text = "%s%s%s" % (self.header_left, spacing, self.header_right)
+        self.cline(header_text)
+        self.cline("-"*self.width)
+
+    def body(self):
+        self.cline(self.body_text)
+
+    def footer(self):
+        y_acc = self.y_acc
+        self.y_acc = self.BOTTOM
+        self.cline(self.footer_text)
+        self.y_acc = y_acc
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):

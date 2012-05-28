@@ -28,8 +28,8 @@ class MainPane(View):
         View.__init__(self, window, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y)
 
     def ready(self):
-        self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
         self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
+        self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
 
 # Smaller, right-hand pane
 class SidePane(View):

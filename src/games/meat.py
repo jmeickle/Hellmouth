@@ -1,5 +1,6 @@
 from actors.player import Player
 from component import Component
+from views.screens import Screen
 from views.tactical import Window
 from views.help import HelpScreen
 from levels.meat.arena import MeatArena
@@ -13,8 +14,15 @@ class Game(Component):
         self.level = None
         self.map = None
 
-        self.go(MeatArena)
+        # Generate the level and get screens from it.
+        screens = self.go(MeatArena)
+
+        # Main game window.
         self.spawn(Window(window))
+
+        # Level-defined entry screens.
+        for screen in screens:
+            self.spawn(Screen(window, **screen))
 
     def go(self, destination):
         # HACK: Not all stairs are increasing depth, after all.
@@ -26,6 +34,8 @@ class Game(Component):
         self.map = self.level.map
         self.map.enter(self.player)
         self.inherit()
+        # Return any entry screens defined by the level.
+        return self.level.screens
 
     def loop(self):
         self.alive = self.conditions()
