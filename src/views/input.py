@@ -1,6 +1,7 @@
 import curses
 
 from component import Component
+from views.view import View
 from define import *
 from hex import *
 
@@ -28,6 +29,15 @@ class Scroller(Component):
     def keyin(self, c):
         if c == curses.KEY_UP or c == ord('-'): self.scroll(-1)
         elif c == curses.KEY_DOWN or c == ord('+'): self.scroll(1)
+        else:
+            return True
+        return False
+
+# Same as a scroller, but only left/right.
+class SideScroller(Scroller):
+    def keyin(self, c):
+        if c == curses.KEY_LEFT: self.scroll(-1)
+        elif c == curses.KEY_RIGHT: self.scroll(1)
         else:
             return True
         return False
@@ -149,3 +159,61 @@ class Cursor(Component):
     # children of it. (This can't be done during spawn, of course.)
     def ready(self):
         self.cursor = self
+
+class Prompt(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
+        self.input = ""
+
+    def ready(self):
+        self.scroller = self.spawn(SideScroller())
+
+    def draw(self):
+        self.border("/")
+        text = self.input[:self.scroller.index]
+        if self.scroller.index < self.scroller.max:
+            text += "<black-white>%s</>" % self.input[self.scroller.index]
+        if len(self.input) > 1:
+            text += self.input[self.scroller.index+1:]
+        if self.scroller.index == self.scroller.max:
+            text += "<black-white>_</>"
+        self.cline(text)
+
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord("\n"):
+            self.suicide()
+        elif c == curses.KEY_BACKSPACE:
+            self.backspace()
+        elif c == curses.KEY_DC:
+            self.delete()
+        elif c < 256:
+            self.write(c)
+        return False
+
+    def write(self, c):
+        left = self.input[:self.scroller.index]
+        right = self.input[self.scroller.index:]
+        self.input = left + chr(c) + right
+        self.scroller.resize(len(self.input))
+        self.scroller.index += 1
+
+    def backspace(self):
+        if self.scroller.index == 0:
+            return False
+        left = self.input[:self.scroller.index-1]
+        right = self.input[self.scroller.index:]
+        self.input = left + right
+
+        self.scroller.resize(len(self.input))
+        if self.scroller.index != self.scroller.max:
+            self.scroller.index -= 1
+
+    def delete(self):
+        if self.scroller.index == self.scroller.max:
+            return False
+
+        left = self.input[:self.scroller.index]
+        right = self.input[self.scroller.index+1:]
+        self.input = left + right
+
+        self.scroller.resize(len(self.input))
