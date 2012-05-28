@@ -52,14 +52,21 @@ class MainMap(View):
         self.cursor = None
 
     def keyin(self, c):
+        if c == ord('G'):
+            self.map.player.get_all()
+            return False
+
+        if c == ord('g'):
+            if len(self.map.player.cell().items) > 1:
+                self.spawn(ItemPrompt(self.screen, self.width, self.height))
+            else:
+                self.map.player.get_all()
+            return False
+
         # TODO: Allow multiple open children.
         if not self.children:
             if c == ord('I'):
                 self.spawn(Inventory(self.screen, self.width, self.height))
-                return False
-
-            if c == ord('g'):
-                self.spawn(Prompt(self.screen, self.width, self.height))
                 return False
 
             elif c == ord('v'):
@@ -316,18 +323,13 @@ class LogViewer(View):
 class Inventory(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
-        self.items = None
-        self.selector = None
 
-    # Just so this doesn't have to be passed in.
+    def ready(self):
+        self.scroller = self.spawn(Scroller())
+
     def before_draw(self):
         self.items = self.player.items()
-
-        if self.selector is None:
-            self.selector = Selector(self, len(self.items))
-        else:
-            self.selector.choices = len(self.items)
-            self.selector.choice = min(self.selector.choice, self.selector.choices-1)
+        self.scroller.resize(len(self.items)-1)
 
     def draw(self):
         self.x_acc += 10
@@ -335,7 +337,7 @@ class Inventory(View):
         self.y_acc += 3
         if len(self.items) > 0:
             for index, appearance, itemlist in self.items:
-                if self.selector.choice == index:
+                if self.scroller.index == index:
                     self.cline("<green-black>%s (%s)</>" % (appearance, len(itemlist)))
                 else:
                     self.cline("%s (%s)" % (appearance, len(itemlist)))
@@ -359,6 +361,16 @@ class Inventory(View):
                 equipped = "Nothing"
             self.cline("%6s: %s" % (loc[0], equipped))
 
+        ground = self.map.player.cell().items
+        if len(ground) > 0:
+            self.x_acc = 10
+            self.cline("Ground:")
+            self.y_acc += 1
+            for appearance, items in ground.items():
+                if len(items) > 1:
+                    self.line("%d %ss" % (len(items), appearance))
+                else:
+                    self.line(appearance)
 #        if self.selector.text is not None:
 #            self.cline(self.selector.text)
 #        else:
@@ -366,21 +378,17 @@ class Inventory(View):
 
     def keyin(self, c):
         if c == ord(' '):
-            self.parent.children.remove(self)
-        elif c == ord('+'):
-            self.selector.next()
-        elif c == ord('-'):
-            self.selector.prev()
+            self.suicide()
         elif c == ord('d'):
             self.selector.toggle(self.player.drop, "Drop item")
         elif c == ord('e'):
             self.selector.toggle(self.player.equip, "Equip item")
         elif c == ord('u'):
             self.selector.toggle(self.player.unequip, "Unequip item")
-        elif c == curses.KEY_ENTER or c == ord('\n'):
-            if len(self.items) > 0:
-                index, appearance, itemlist = self.items[self.selector.choice]
-                self.selector.fire(appearance)
+#        elif c == curses.KEY_ENTER or c == ord('\n'):
+#            if len(self.items) > 0:
+#                index, appearance, itemlist = self.items[self.selector.choice]
+#                self.selector.fire(appearance)
         else: return True
         return False
 
