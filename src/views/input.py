@@ -162,14 +162,19 @@ class Cursor(Component):
 
 class Prompt(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+        View.__init__(self, window, x, y/2, start_x, start_y + y/4)
         self.input = ""
+        self.max = 0
 
     def ready(self):
         self.scroller = self.spawn(SideScroller())
 
     def draw(self):
+        self.window.clear()
         self.border("/")
+        # HACK: This is a guesstimate until I make the text functions more consistent.
+        self.max = self.width * (self.height - 1)
+
         text = self.input[:self.scroller.index]
         if self.scroller.index < self.scroller.max:
             text += "<black-white>%s</>" % self.input[self.scroller.index]
@@ -191,6 +196,8 @@ class Prompt(View):
         return False
 
     def write(self, c):
+        if len(self.input) == self.max:
+            return False
         left = self.input[:self.scroller.index]
         right = self.input[self.scroller.index:]
         self.input = left + chr(c) + right
