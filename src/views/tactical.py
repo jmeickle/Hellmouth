@@ -334,7 +334,7 @@ class Inventory(View):
     def draw(self):
         self.x_acc += 10
         self.cline("Inventory")
-        self.y_acc += 3
+        self.y_acc += 1
         if len(self.items) > 0:
             for x in range(len(self.items)):
                 appearance, items = self.items[x]
@@ -355,6 +355,7 @@ class Inventory(View):
 
         # TODO: Fix this messaging.
         self.cline("Equipped")
+        self.y_acc += 1
         for loc in sorted(self.player.body.locs.items()):
             equipped = ""
             for held in loc[1].held:
