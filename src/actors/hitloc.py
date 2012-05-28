@@ -44,7 +44,7 @@ class HitLoc:
             for appearance, weapons in self.attack_options.items():
                 found_weapons[appearance] = weapons
         if wielded is True:
-            for appearance, weapons in self.held.items():
+            for appearance, weapons in self.readied.items():
                 found_weapons[appearance] = weapons
         return found_weapons
 
@@ -95,21 +95,24 @@ class HitLoc:
         item.worn.append(self)
 
     def unhold(self, item):
-        held = self.held.get(item.appearance(), [])
+        held = self.held.pop(item.appearance(), [])
         held.remove(item)
-        self.held[item.appearance()] = held
+        if held:
+            self.held[item.appearance()] = held
         item.held.remove(self)
 
     def unready(self, item):
-        readied = self.readied.get(item.appearance(), [])
+        readied = self.readied.pop(item.appearance(), [])
         readied.remove(item)
-        self.readied[item.appearance()] = readied
+        if readied:
+            self.readied[item.appearance()] = readied
         item.readied.remove(self)
 
     def unwear(self, item):
-        worn = self.worn.get(item.appearance(), [])
+        worn = self.worn.pop(item.appearance(), [])
         worn.remove(item)
-        self.worn[item.appearance()] = worn
+        if worn:
+            self.worn[item.appearance()] = worn
         item.worn.remove(self)
 
     # COMBAT
