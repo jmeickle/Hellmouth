@@ -56,6 +56,10 @@ class MainMap(View):
                 self.spawn(Inventory(self.screen, self.width, self.height))
                 return False
 
+            if c == ord('g'):
+                self.spawn(Prompt(self.screen, self.width, self.height))
+                return False
+
             elif c == ord('v'):
                 if self.cursor is None:
                     self.cursor = self.spawn(Cursor(self.player.pos))

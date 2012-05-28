@@ -48,12 +48,12 @@ class Game(Component):
     # Games don't have the normal keyin/_keyin function, since they need to
     # steal input before their children can get to it.
 
-    def _keyin(self, c):
-        if self.keyin(c) is False:
-            return False
-        for child in reversed(self.children):
-            if child._keyin(c) is False:
-                return False
+#    def _keyin(self, c):
+#        if self.keyin(c) is False:
+#            return False
+#        for child in reversed(self.children):
+#            if child._keyin(c) is False:
+#                return False
 
     def keyin(self, c):
         # Always allow help.

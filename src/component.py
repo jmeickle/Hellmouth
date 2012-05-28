@@ -2,6 +2,7 @@ import curses
 
 from views.color import Color
 from define import *
+import key
 
 # Component is the minimal base class. They participate in keyin and draw
 # loops, but do not have access to drawing functions.
@@ -10,6 +11,7 @@ class Component():
         self.alive = True
         self.children = []
         self.parent = None
+        self.prompt = False
 
     # CREATION / DELETION
 
@@ -104,6 +106,10 @@ class Component():
         for child in reversed(self.children):
             if child._keyin(c) is False:
                 return False
+        if self.parent is not None and self.prompt is False:
+            if c < 256:
+                if key.globals.get(chr(c)) is True:
+                    return None
         return self.keyin(c)
 
     # Handle keyin. Abstract.

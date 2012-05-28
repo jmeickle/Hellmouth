@@ -1,6 +1,8 @@
 # TODO: Define a dict of keys/actions for remappable keys.
 from define import *
 
+globals = {"?" : True}
+
 # Return the corresponding control-modified key.
 def ctrl(c):
     return ord(c) - 96

@@ -163,6 +163,7 @@ class Cursor(Component):
 class Prompt(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y/2, start_x, start_y + y/4)
+        self.prompt = True
         self.input = ""
         self.max = 0
 
