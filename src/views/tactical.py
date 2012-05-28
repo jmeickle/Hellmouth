@@ -13,6 +13,8 @@ from random import choice
 
 from generators.text import describe
 
+import log
+
 # Main tactical window class.
 class Window(View):
     def __init__(self, window):
@@ -38,7 +40,7 @@ class SidePane(View):
 
     def ready(self):
         self.spawn(Stats(self.screen, PANE_X, STATS_Y, PANE_START_X, PANE_START_Y))
-        self.spawn(Log(self.screen, PANE_X, LOG_Y, PANE_START_X, LOG_START_Y))
+        self.spawn(LogViewer(self.screen, PANE_X, LOG_Y, PANE_START_X, LOG_START_Y))
 
 # TODO: Make this a subclass of a Map view, to account for tactical/strategic/etc.
 class MainMap(View):
@@ -255,24 +257,24 @@ class Status(View):
 #        self.line("Shock", "magenta-black")
 
 # Very hackish right now: events added through map...
-class Log(View):
+class LogViewer(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
-        self.events = deque()
+        self.autoscroll = True
+        self.events = 0
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
-        self.scroller = self.spawn(Scroller(len(self.events) - self.height))
-        self.map.log = self
+        self.scroller = self.spawn(Scroller(log.length() - self.height))
         for x in range(50):
-            self.add("Test Message %s" % x)
+            log.add("Test Message %s" % x)
 
-    # Add an event to the history. Autoscrolls unless this has been turned off.
-    def add(self, event, scroll=True):
-        self.events.append(event)
-        self.scroller.resize(max(0, len(self.events) - self.height))
-        if scroll is True:
-            self.scroller.scroll(1)
+    def before_draw(self):
+        if log.length() > self.events:
+            max_scroll = max(0, log.length() - self.height)
+            self.scroller.resize(max_scroll)
+            if self.autoscroll is True:
+                self.scroller.scroll(log.length() - self.events)
 
     def draw(self):
         # Start from the bottom:
@@ -285,7 +287,7 @@ class Log(View):
             self.y_acc -=1
             index += 1
 
-        for event in reversed(self.events):
+        for event in reversed(log.events()):
             index -= 1
             if index >= self.scroller.index:
                 continue

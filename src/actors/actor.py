@@ -12,7 +12,7 @@ import generators.points
 import body
 
 from combat import CombatAction
-
+import log
 # Players, monsters, etc.
 class Actor:
     def __init__(self):
@@ -122,7 +122,7 @@ class Actor:
         pos = add(self.pos, dir)
         if self.map.valid(pos) is False:
             if self.controlled is True:
-                self.map.log.add("You can't bring yourself to dive into the yawning abyss before you.")
+                log.add("You can't bring yourself to dive into the yawning abyss before you.")
             return False
 
         if self.map.cell(pos).occupied() is True:
@@ -248,7 +248,7 @@ class Actor:
 
         # TODO: Replace with check for whether it's interesting.
         for line in action.display():
-            self.map.log.add(line)
+            log.add(line)
         action.cleanup()
         self.over()
         return True
@@ -269,7 +269,7 @@ class Actor:
     # Remove self from the map and the queue
     def die(self):
         if dist(self.map.player.pos, self.pos) <= 10: # HACK: Shouldn't be a magic number
-            self.map.log.add(describe("%s has been slain!" % self.name))
+            log.add(describe("%s has been slain!" % self.name))
         #if self == self.map.acting:
         #    self.map.acting = None
         self.map.queue.remove(self)
