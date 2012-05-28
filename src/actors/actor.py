@@ -13,6 +13,8 @@ import body
 
 from combat import CombatAction
 import log
+from operator import itemgetter
+
 # Players, monsters, etc.
 class Actor:
     def __init__(self):
@@ -378,11 +380,8 @@ class Actor:
     # INVENTORY
     # STUB: Return a sorted section of the inventory, or ground items, based on args
     def items(self):
-        items = []
-        index = 0
-        for appearance, item in self.inventory.items():
-            items.append((index, appearance, item))
-            index += 1
+        items = self.inventory.items()
+        items = sorted(items, key=itemgetter(0))
         return items
 
     # Convert an item appearance to an item (randomly). False if nothing by that appearance.

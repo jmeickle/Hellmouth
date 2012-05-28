@@ -336,11 +336,17 @@ class Inventory(View):
         self.cline("Inventory")
         self.y_acc += 3
         if len(self.items) > 0:
-            for index, appearance, itemlist in self.items:
-                if self.scroller.index == index:
-                    self.cline("<green-black>%s (%s)</>" % (appearance, len(itemlist)))
+            for x in range(len(self.items)):
+                appearance, items = self.items[x]
+                if len(items) > 1:
+                    string = "%d %ss" % (len(items), appearance)
                 else:
-                    self.cline("%s (%s)" % (appearance, len(itemlist)))
+                    string = appearance
+
+                if x == self.scroller.index:
+                    self.cline("<green-black>%s</>" % string)
+                else:
+                    self.cline(string)
         else:
             self.cline("No items")
 
