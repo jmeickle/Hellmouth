@@ -1,4 +1,5 @@
 from data import help
+from data import screens
 from views.screens import Screen
 
 class HelpScreen(Screen):
@@ -14,5 +15,10 @@ class HelpScreen(Screen):
         self.cline("-"*(self.width))
         self.cline(help.entry["commands"])
         self.y_acc = self.BOTTOM
-        self.cline("Press <green-black>Enter</> to continue. Press <green-black>'?'</> for help at any time.")
+        self.cline(screens.footer_back)
+        return False
+
+    def keyin(self, c):
+        if c == ord(' '):
+            self.suicide()
         return False
