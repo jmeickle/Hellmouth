@@ -49,6 +49,7 @@ def commas(list, capitalize=False):
     spacer = " "
     punc = "."
 
+    # TODO: haha, this totally doesn't belong here, wtc
     if not list:
         str += "nothing of interest"
 
