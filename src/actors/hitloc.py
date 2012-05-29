@@ -40,7 +40,8 @@ class HitLoc:
 
     def weapons(self, natural=True, wielded=True, improvised=False):
         found_weapons = {}
-        if natural is True:
+        # HACK: Not all natural attacks will be blocked like this!
+        if natural is True and len(self.readied) == 0:
             for appearance, weapons in self.attack_options.items():
                 found_weapons[appearance] = weapons
         if wielded is True:
