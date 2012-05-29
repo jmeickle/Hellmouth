@@ -220,7 +220,9 @@ class Actor:
     def damage(self, damage):
         damage = re.split('(\w*)([+-]?\d*)', damage)
         type = damage[1]
-        mod = int(damage[2])
+        mod = 0
+        if damage[2] != '':
+            mod += int(damage[2])
         if type == "thr":
             return dice(self.Thrust(), mod)
         elif type == "sw":
