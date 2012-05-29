@@ -78,6 +78,12 @@ class Actor:
 
     # UTILITY
 
+    # Get ready to act.
+    def prepare(self):
+        # HACK:
+        if self.controlled is True:
+            self.check_weapons()
+
     # Actor generation/improvement.
     # 'unspent' determines whether to try to re-spend unspent points, as well
     # as whether to save unspent points accrued during generation.
