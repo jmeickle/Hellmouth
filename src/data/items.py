@@ -12,7 +12,7 @@ from objects.items.item import *
 item_list = {
 # Swords.
     "broadsword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 500,
         "weight" : 3,
         "attack_options" : {
@@ -23,7 +23,7 @@ item_list = {
         },
     },
     "thrusting broadsword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 600,
         "weight" : 3,
         "attack_options" : {
@@ -34,9 +34,10 @@ item_list = {
         },
     },
     "bastard sword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 650,
         "weight" : 5,
+        "primary_skill" : "Two-Handed Sword",
         "attack_options" : {
             "Broadsword" : {
                 "swing"  : ("sw+1", "cut", (1,2), U0, 11, 1),
@@ -49,9 +50,10 @@ item_list = {
         },
     },
     "thrusting bastard sword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 750,
         "weight" : 5,
+        "primary_skill" : "Two-Handed Sword",
         "attack_options" : {
             "Broadsword" : {
                 "swing"  : ("sw+1", "cut", (1,2), U0, 11, 1),
@@ -64,9 +66,10 @@ item_list = {
         },
     },
     "greatsword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 800,
         "weight" : 7,
+        "primary_skill" : "Two-Handed Sword",
         "attack_options" : {
             "Two-Handed Sword" : {
                 "swing"  : ("sw+3", "cut", (1,2), 0, 12, 2),
@@ -75,9 +78,10 @@ item_list = {
         },
     },
     "thrusting greatsword" : {
-        "class" : Sword,
+        "class" : Broadsword,
         "cost" : 900,
         "weight" : 7,
+        "primary_skill" : "Two-Handed Sword",
         "attack_options" : {
             "Two-Handed Sword" : {
                 "swing"  : ("sw+3", "cut", (1,2), 0, 12, 2),
@@ -87,7 +91,7 @@ item_list = {
     },
 # Short blades.
     "shortsword" : {
-        "class" : Sword,
+        "class" : Shortsword,
         "cost" : 400,
         "weight" : 2,
         "attack_options" : {
@@ -158,6 +162,7 @@ item_list = {
         "class" : Axe,
         "cost" : 100,
         "weight" : 8,
+        "primary_skill" : "Two-Handed Axe/Mace",
         "attack_options" : {
             "Two-Handed Axe/Mace" : { "swing" : ("sw+3", "cut", (1,2), U0, 12, 3),}
         },
@@ -192,6 +197,7 @@ item_list = {
         "class" : Hammer,
         "cost" : 80,
         "weight" : 12,
+        "primary_skill" : "Two-Handed Axe/Mace",
         "attack_options" : {
             "Two-Handed Axe/Mace" : { "swing"  : ("sw+4", "cr", (1,2), U0, 12, 3),},
         },
@@ -200,6 +206,7 @@ item_list = {
         "class" : Hammer,
         "cost" : 100,
         "weight" : 7,
+        "primary_skill" : "Two-Handed Axe/Mace",
         "attack_options" : {
             "Two-Handed Axe/Mace" : { "swing" : ("sw+3", "imp", (1,2), U0, 12, 3),},
         },
@@ -210,6 +217,7 @@ item_list = {
         "class" : Club,
         "cost" : 20,
         "weight" : 1,
+        "primary_skill" : "Shortsword",
         "attack_options" : {
             "Shortsword" : {
                 "swing"  : ("sw", "cr", (1,), 0, 6, 1),
@@ -241,6 +249,7 @@ item_list = {
         "class" : Flail,
         "cost" : 100,
         "weight" : 8,
+        "primary_skill" : "Two-Handed Flail",
         "attack_options" : {
             "Two-Handed Flail" : { "swing" : ("sw+4", "cr", (1,2), U0, 13, 2),},
         },
