@@ -425,7 +425,7 @@ class Inventory(View):
             if len(items) > 0:
                 item = loc.items().pop()
                 if self.map.player._can_unequip_item(item):
-                    actions.append("(<green-black>u</>)equip")
+                    actions.append("(<green-black>u</>)nequip")
 
         item = self.selected()
         if item is not None:
