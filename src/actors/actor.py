@@ -231,6 +231,7 @@ class Actor:
     # COMBAT
     # Find eligible weapons.
     def check_weapons(self):
+        self.weapons = {}
         for locname, loc in self.body.locs.items():
             for appearance, weapons in loc.weapons().items():
                 self.weapons[(appearance, locname)] = weapons
