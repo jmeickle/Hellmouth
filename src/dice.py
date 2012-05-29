@@ -68,11 +68,11 @@ def dice(text, mod=0, do_roll=True, capped=True):
             return "%dd%+d" % (dice, mod)
 
     # Roll
-    result = sum(roll(r1d6, dice)) - mod
+    result = sum(roll(r1d6, dice)) + mod
 
-    # Whether we can go below 0
+    # Whether we can go below 1
     if capped is True:
-        return max(0, result)
+        return max(1, result)
     else:
         return result
 
