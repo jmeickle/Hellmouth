@@ -26,8 +26,8 @@ class BodyPlan:
             weapons = self.weapons.get(partname)
             if weapons is not None:
                 for weapon in weapons:
-                    part.attack_options[weapon] = items.generate_item(weapon)
-
+                    # List, for consistency elsewhere.
+                    part.attack_options[weapon] = [items.generate_item(weapon)]
 
             # Set up relationships between parts.
             if parent is not None:
