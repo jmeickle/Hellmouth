@@ -53,7 +53,7 @@ class MainMap(View):
 
     def keyin(self, c):
         if c == ord('G'):
-            self.map.player.get_all()
+            self.player.get_all()
             return False
 
         if c == ord('g'):
@@ -414,7 +414,7 @@ class Inventory(View):
         # These actions depend on having a carried item.
         if self.sidescroller.index == 0 and len(self.items) > 0:
             appearance, items = self.items[self.scroller.index]
-            if self.map.player.can_equip_item(appearance):
+            if self.map.player.can_equip_item(appearance, self.player.body.locs.get(self.player.body.primary_slot)):
                 actions.append("(<green-black>e</>)quip")
 
         elif self.sidescroller.index == 1:
@@ -424,20 +424,20 @@ class Inventory(View):
             items = loc.items()
             if len(items) > 0:
                 item = loc.items().pop()
-                if self.map.player._can_unequip_item(item):
+                if self.player._can_unequip_item(item):
                     actions.append("(<green-black>u</>)nequip")
 
         item = self.selected()
         if item is not None:
             if self.sidescroller.index == 0:
-                if self.map.player.can_drop_item(item):
+                if self.player.can_drop_item(item):
                     actions.append("(<green-black>d</>)rop")
             elif self.sidescroller.index == 1:
-                if self.map.player._can_drop_item(item):
+                if self.player._can_drop_item(item):
                     actions.append("(<green-black>d</>)rop")
 
         # Always visible, if there are items to get.
-        if self.map.player.can_get_items():
+        if self.player.can_get_items():
             actions.append("(<green-black>G</>)et all")
 
         self.cline("  %s" % describe.commas(actions))
@@ -465,7 +465,7 @@ class Inventory(View):
             else:
                 self.player._drop(self.selected())
         elif c == ord('e'):
-            self.player.equip(self.selected())
+            self.player.equip(self.selected(), self.player.body.locs.get(self.player.body.primary_slot))
         elif c == ord('u'):
             # This is also a hack.
             self.player._unequip(self.selected())
