@@ -595,6 +595,9 @@ class Actor:
     # Either hold or wear the item as appropriate.
     # Return false if nothing could be equipped.
     def _equip(self, item, loc, worn, weapon):
+        if self._can_equip_item(item, loc) is False:
+            return False
+
         if loc is None:
             # TODO: Make this check alternate slots, rather than primary_slot.
             slot = item.preferred_slot()
@@ -635,13 +638,18 @@ class Actor:
         return self._equip(self.item(appearance), loc, worn, weapon)
 
     # Can we equip an item of a specific appearance?
-    def can_equip_item(self, appearance):
-        return self._can_equip_item(self.item(appearance))
+    def can_equip_item(self, appearance, loc=None):
+        return self._can_equip_item(self.item(appearance), loc)
 
     # Can we equip a specific item?
-    def _can_equip_item(self, item):
+    def _can_equip_item(self, item, loc=None):
         if item.is_worn():
             return False
+
+        # HACK:
+        if loc is not None:
+            if loc.can_hold(item) is False:
+                return False
         return True
 
     # Unhold or unwear the item in all appropriate ways.
