@@ -1,7 +1,9 @@
 SHORT TERM GOALS:
-- Start screen
+- Armor
+- Fix equipment bugs
+- Improve messaging for items
+- Restore monster AI
 - Win and loss screens
-- Dialogue screens
 - Improved random monster generation
 - Support numpads correctly across systems
 
@@ -9,6 +11,7 @@ LONGER TERM GOALS:
 - Screen to spend discretionary character points
 - Fill out lifepaths so all reachable events are meaningful
 - Make lifepath events affect character stats
+- Dialogue screens
 
 VERY LONG TERM GOALS:
 - Better AI
