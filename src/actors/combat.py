@@ -1,3 +1,4 @@
+# TODO: Make the keys more consistent.
 from define import *
 from dice import *
 from hex import *
@@ -23,7 +24,7 @@ class CombatAction:
         # Key ripostes / etc. off of maneuver (a hashable tuple)
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
-            attack["attackline"] = attack["item"].attack_options[attack["skill"]][attack["attack_option"]]
+            attack["attackline"] = attack["item"].attack_options[attack["skill"]][attack["attack option"]]
 
             if self.reach(attack) is False:
                 continue
@@ -89,6 +90,6 @@ class CombatAction:
     def display(self):
         lines = []
         for attack in self.results["landed"].values():
-            string = describe("%s @dmg-%s@ %s" % (attack["attacker"].name, attack["damage type"], attack["target"].name))
+            string = describe("%s @dmg-%s-%s@ %s for %s" % (attack["attacker"].name, attack["damage type"], attack["attack option"], attack["target"].name, attack["damage done"]))
             lines.append(string)
         return lines

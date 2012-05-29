@@ -241,7 +241,7 @@ class Actor:
             attacks[maneuver]["target"] = target
             attacks[maneuver]["item"] = item
             attacks[maneuver]["skill"] = skill
-            attacks[maneuver]["attack_option"] = attack_option
+            attacks[maneuver]["attack option"] = attack_option
 
         action = CombatAction(attacks)
 
