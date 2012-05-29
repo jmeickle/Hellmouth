@@ -77,6 +77,12 @@ class HitLoc:
         self.sublocations.append(part)
 
     # ITEMS
+    # STUB: Can we hold the item?
+    def can_hold(self, item):
+        if len(self.held) > 0:
+            return False
+        return True
+
     def hold(self, item):
         held = self.held.get(item.appearance(), [])
         held.append(item)
