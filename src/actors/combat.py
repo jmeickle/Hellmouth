@@ -33,7 +33,7 @@ class CombatAction:
             attack["attack-check"], attack["attack-margin"] = attack["attacker"].sc(attack["skill"])
 
             # Early exit.
-            if attack["attack-check"] == FAIL:
+            if attack["attack-check"] == FAIL or attack["attack-check"] == CRIT_FAIL:
                 self.results["missed"][maneuver] = attack
             else:
                 hits = self.hits.get(attack["target"], [])
@@ -58,7 +58,8 @@ class CombatAction:
                     attack["damage"] = attack["attackline"][0]
                     attack["damage type"] = attack["attackline"][1]
                     attack["damage rolled"] = attack["attacker"].damage(attack["damage"])
-                    attack["damage done"] = attack["target"].hit(attack["damage rolled"])
+                    #attack["damage done"], attack["damage blocked"] =
+                    attack["target"].hit(attack)
                     self.results["landed"][maneuver] = attack
                     # TODO: Trigger effects that depend on hitting, etc.
 
