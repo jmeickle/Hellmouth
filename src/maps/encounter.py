@@ -185,10 +185,12 @@ class Cell:
             return self.actor.glyph, self.actor.color
         elif self.terrain is not None:
             return self.terrain.glyph, self.terrain.color
-        elif len(self.items) > 0:
+        elif len(self.items) == 1:
+            return '?', 'magenta-black'
+        elif len(self.items) > 1:
             return '!', 'magenta-black'
         else:
-            return ".", "white-black"
+            return self.map.level.floor
 
     # TODO: Options for what to list.
     # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!
@@ -198,7 +200,9 @@ class Cell:
             list.append("a %s" % self.actor.name)
         if self.terrain is not None:
             list.append("a %s" % self.terrain.name)
-        if len(self.items) > 0:
+        if len(self.items) == 1:
+            list.append("an item")
+        elif len(self.items) > 1:
             list.append("some items")
         return commas(list, True) # Capitalized.
 

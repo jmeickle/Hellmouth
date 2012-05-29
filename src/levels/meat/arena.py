@@ -8,6 +8,7 @@ class MeatArena():
 
     def __init__(self):
         self.name = "A strange, meaty arena"
+        self.floor = (".", "white-black")
         self.exits = { "down" : (MeatArena, None) }
         self.map = None
         self.generate_map()

@@ -186,9 +186,9 @@ class Examine(View):
         cell = self.map.cell(pos)
         if cell is not None:
             string = cell.contents()
-            self.line("Selected: %s" % string)
+            self.line("Cursor: %s" % string)
         else:
-            self.line("There's... nothing there. Nothing at all.")
+            self.line("Cursor: There's... nothing. Nothing at all.")
 
 class Stats(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
