@@ -283,12 +283,19 @@ class Actor:
         return True
 
     # Process damage when you are hit by something.
-    def hit(self, amt):
-        loc = self.randomloc()
-        loc.hurt(amt)
-        self.hp_spent += amt
-        # TODO: Return damage taken (DR, wounding, etc.)
-        return amt
+    def hit(self, attack):
+        attack["location"] = self.randomloc()
+        attack["damage blocked"] = 0 # TODO: DR
+        self.multiplier(attack)
+        # TODO: Cap by limb, etc.
+        attack["location"].hurt(attack["damage done"])
+        self.hp_spent += attack["damage done"]
+
+    # TODO: Look up own advantages & etc. to determine appropriate multiplier.
+    def multiplier(self, attack):
+        multipliers = {"cut" : 1.5, "imp" : 2}
+        multiplier = multipliers.get(attack["damage type"], 1)
+        attack["damage done"] = int(multiplier * (attack["damage rolled"] - attack["damage blocked"]))
 
     # Check whether you are dead.
     def check_dead(self):
