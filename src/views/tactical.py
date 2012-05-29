@@ -272,9 +272,9 @@ class LogViewer(View):
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
-        self.scroller = self.spawn(Scroller(log.length() - self.height))
         for x in range(50):
             log.add("Test Message %s" % x)
+        self.scroller = self.spawn(Scroller(log.length() - self.height))
 
     def before_draw(self):
         if log.length() > self.events:
@@ -282,6 +282,7 @@ class LogViewer(View):
             self.scroller.resize(max_scroll)
             if self.autoscroll is True:
                 self.scroller.scroll(log.length() - self.events)
+            self.events = log.length()
 
     def draw(self):
         # Start from the bottom:
