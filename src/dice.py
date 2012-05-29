@@ -1,9 +1,11 @@
 import random
 import re
 
+CRIT_SUCC = 2
 SUCC = 1
 TIE = 0
 FAIL = -1
+CRIT_FAIL = -2
 
 # Basic coinflip
 def flip():
@@ -29,10 +31,17 @@ def roll(func, n, per=0):
     return [func() + per for x in range(n)]
 
 # Skill check
-# TODO: Handle critical successes/failures
 def sc(skill, mod=0):
     roll = r3d6()
+
     margin = skill + mod - roll
+
+    # TODO: Handle critical success/failure numbers changing with skill.
+    if (roll <= 4) or (skill > 15 and roll <= 5) or (skill > 16 and roll <= 6):
+        return CRIT_SUCC, margin
+    elif (roll == 18) or (roll == 17 and skill < 16) or (margin >= 10):
+        return CRIT_FAIL, margin
+
     if margin > 0:
         return SUCC, margin
     else:
