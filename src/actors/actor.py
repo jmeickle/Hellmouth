@@ -232,9 +232,11 @@ class Actor:
     # Find eligible weapons.
     def check_weapons(self):
         self.weapons = {}
-        for locname, loc in self.body.locs.items():
-            for appearance, weapons in loc.weapons().items():
-                self.weapons[(appearance, locname)] = weapons
+        # HACK: Only look at the primary slot.
+#        for locname, loc in self.body.locs.items():
+        loc = self.body.locs.get(self.body.primary_slot)
+        for appearance, weapons in loc.weapons().items():
+            self.weapons[(appearance, self.body.primary_slot)] = weapons
 
     # Function called to produce a simple, single attack maneuver.
     def attack(self, target):

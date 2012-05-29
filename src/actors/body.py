@@ -14,7 +14,7 @@ class BodyPlan:
         # Body parts indexed by 3d6 roll
         self.table = {}
         # Primary slot
-        self.primary_slot = None
+#        self.primary_slot = None
 
     # Build a body from the class information.
     def build(self, owner):
