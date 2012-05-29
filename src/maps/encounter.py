@@ -68,7 +68,7 @@ class Encounter:
             # TODO: Replace this test code with something better.
             if random.randint(1, 10) == 1:
                 for x in range(random.randint(1, 3)):
-                    cell.put(generate_item(random.choice(("shortsword", "spear", "broadsword"))))
+                    cell.put(generate_item(random.choice(("shortsword", "spear", "thrusting broadsword"))))
 
             self.cells[pos] = cell
 

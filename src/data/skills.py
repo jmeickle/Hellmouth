@@ -95,9 +95,16 @@ skill_list = {
     "attribute"  : "DX",
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
-    "defaults"   : [],
+    "defaults"   : [("Shortsword", -2), ("Two-Handed Sword", -4)],
 },
 "Axe" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "VH",
+    "text"       : "Hit stuff good",
+    "defaults"   : [],
+},
+"Spear" : {
     "type"       : "Melee",
     "attribute"  : "DX",
     "difficulty" : "VH",
