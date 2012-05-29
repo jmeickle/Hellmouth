@@ -239,10 +239,16 @@ class Actor:
     # Function called to produce a simple, single attack maneuver.
     def attack(self, target):
         maneuvers = []
-        item = random.choice(self.weapons.values())
+        # Can have multiple items here, weirdly enough...
+        itemlist = random.choice(self.weapons.values())
+        item = random.choice(itemlist)
         skill = item.primary_skill
-        if skill is None or self.skill(skill) is None:
-            skill = "DX"
+        # Weren't able to find a skill.
+        if skill is None:
+            Log.add("%s couldn't be used by %s." % (item.name, self.name))
+            self.over()
+            return False
+
         attack_option = random.choice(item.attack_options.get(skill).keys())
         maneuvers.append((target, item, skill, attack_option))
         self._attack(maneuvers)
