@@ -116,53 +116,70 @@ class Weapon(Item):
         self.primary_skill = None # Primary skill, for descriptions - there can be others.
         self.attack_options = {} # Min ST in attackline
 
-class Sword(Weapon):
+class Broadsword(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Broadsword"
+
+class Shortsword(Weapon):
+    def __init__(self):
+        Weapon.__init__(self)
+        self.primary_skill = "Shortsword"
 
 class Knife(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Knife"
 
 class Dagger(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Knife"
 
 class Axe(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Axe/Mace"
 
 class Mace(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Axe/Mace"
 
 class Pick(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Axe/Mace"
 
 class Hammer(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Axe/Mace"
 
 class Club(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Broadsword"
 
 class Flail(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Flail"
 
 class Pollaxe(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Polearm"
 
 class Spear(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Spear"
 
 class Staff(Weapon):
     def __init__(self):
         Weapon.__init__(self)
+        self.primary_skill = "Staff"
 
 class Natural(Weapon):
     def __init__(self):
