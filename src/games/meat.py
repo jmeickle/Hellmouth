@@ -18,11 +18,11 @@ class Game(Component):
         screens = self.go(MeatArena)
 
         # Main game window.
-        self.spawn(Window(window))
+        self.spawn(Window(self.window))
 
         # Level-defined entry screens.
         for screen in screens:
-            self.spawn(Screen(window, **screen))
+            self.spawn(Screen(self.window, **screen))
 
     def go(self, destination):
         # HACK: Not all stairs are increasing depth, after all.
@@ -44,7 +44,10 @@ class Game(Component):
 
         destination = self.map.advance()
         if destination is not None:
-            self.go(destination)
+            screens = self.go(destination)
+            if screens:
+                for screen in screens:
+                    self.spawn(Screen(self.window, **screen))
 
         # Draw tree.
         self.window.clear()
