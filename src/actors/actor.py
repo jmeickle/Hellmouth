@@ -655,19 +655,19 @@ class Actor:
     # Unhold or unwear the item in all appropriate ways.
     def _unequip(self, item):
         if item.is_held() is True:
-            locs = item.held
+            locs = item.held[:]
             for loc in locs:
                 if loc.owner == self:
                     loc.unhold(item)
 
         if item.is_readied() is True:
-            locs = item.readied
+            locs = item.readied[:]
             for loc in locs:
                 if loc.owner == self:
                     loc.unready(item)
 
         if item.is_worn() is True:
-            locs = item.worn
+            locs = item.worn[:]
             for loc in locs:
                 if loc.owner == self:
                     loc.unwear(item)
