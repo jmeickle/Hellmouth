@@ -13,10 +13,11 @@ class Item():
         self.hp_max = None
         self.dr = None
         self.effects = None
+        self.slots = None
 
         # Construction
         self.quality = None
-        self.material = random.choice(("iron", "gold", "copper", "steel"))
+        self.material = "meat"
 
         # References. These just need to be lists, not dicts, because we don't care about the appearances involved.
         self.held = []
@@ -43,11 +44,11 @@ class Item():
     # some objects, like torches or shields, fit into this category
     # despite not being 'weapon' objects.
     def can_be_weapon(self):
-        return True
+        return False
 
     # Whether this particular weapon needs to be held to be used. True for almost everything.
     def must_be_held(self):
-        return True
+        return False
 	
     # Whether the item is intended to be worn. Note that some objects,
     # like bags, might be perfectly serviceable wearables without being
@@ -108,13 +109,27 @@ class Armor(Item):
     def __init__(self):
         Item.__init__(self)
 
+    def can_be_worn(self):
+        return True
+
+    def can_be_weapon(self):
+        return False
+
 class Weapon(Item):
     def __init__(self):
         Item.__init__(self)
 
+        self.material = "bone"
+
         # Combat-only stats
         self.primary_skill = None # Primary skill, for descriptions - there can be others.
         self.attack_options = {} # Min ST in attackline
+
+    def can_be_weapon(self):
+        return True
+
+    def must_be_held(self):
+        return True
 
 class Broadsword(Weapon):
     def __init__(self):
