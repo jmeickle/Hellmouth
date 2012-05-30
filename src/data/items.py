@@ -408,6 +408,31 @@ item_list = {
     },
 # TODO: A ton of demonic strikers. Tails, wings, etc.
 # TODO: Shield bashes.
+
+    "armor" : {
+        "class" : Armor,
+        "dr" : 2,
+        "slots" : ["Neck", "Torso", "RArm", "LArm"]
+    },
+
+    "leggings" : {
+        "class" : Armor,
+        "dr" : 2,
+        "slots" : ["RLeg", "LLeg", "Groin"]
+    },
+
+    "gloves" : {
+        "class" : Armor,
+        "dr" : 2,
+	"slots" : ["RHand", "LHand"]
+    },
+
+    "boots" : {
+        "class" : Armor,
+        "dr" : 2,
+        "slots" : ["RFoot", "LFoot"]
+    },
+
 }
 
 # Test code.
