@@ -99,6 +99,10 @@ class MeatGolem(NPC):
 
         self.build(50)
 
+    # HACK: To be removed when the advantage works.
+    def DR(self):
+        return 5
+
 class MeatWorm(NPC):
     def __init__(self):
         NPC.__init__(self)
