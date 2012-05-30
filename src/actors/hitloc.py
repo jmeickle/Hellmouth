@@ -8,8 +8,8 @@ class HitLoc:
         self.owner = owner
 
         # Combat stats
-        self.HP = 0
-        self.DR = 0
+        self.hp = 0
+        self.dr = 0
         self.wounds = []
         self.attack_options = {}
 
@@ -123,6 +123,18 @@ class HitLoc:
         item.worn.remove(self)
 
     # COMBAT
+    # Ickkkk.
+    def hit(self, attack):
+        import random
+        attack["damage blocked"] = 0
+        for appearance, itemlist in self.worn.items():
+            item = random.choice(itemlist)
+            attack["damage blocked"] += item.dr
+        attack["damage blocked"] += self.dr
+
+    def multiplier(self, attack):
+        multipliers = {"cut" : 1.5, "imp" : 2}
+        attack["multiplier"] = multipliers.get(attack["damage type"], 1)
 
     # Add a wound to this location.
     def hurt(self, amt):
