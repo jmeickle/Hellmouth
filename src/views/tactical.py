@@ -466,7 +466,7 @@ class Inventory(View):
             else:
                 self.player._drop(self.selected())
         elif c == ord('e'):
-            self.player.equip(self.selected(), self.player.body.locs.get(self.player.body.primary_slot))
+            self.player.equip(self.selected())#, self.player.body.locs.get(self.player.body.primary_slot))
         elif c == ord('u'):
             # This is also a hack.
             self.player._unequip(self.selected())
