@@ -2,7 +2,7 @@
 from define import *
 from dice import *
 from hex import *
-from generators.text.describe import describe
+from generators.text.combat import combat
 
 # For convenient reference, attack lines are structured as such:
 #     skill          name     dmg    dtype  reach parry minST hands
@@ -15,7 +15,7 @@ class CombatAction:
         self.results = {
             "missed" : {},
             "defended" : {},
-            "landed" : {},
+            "hit" : {},
         }
 
     # Decide which attacks are or aren't going to work, but don't actually
@@ -60,11 +60,11 @@ class CombatAction:
                     attack["damage rolled"] = attack["attacker"].damage(attack["damage"])
                     #attack["damage done"], attack["damage blocked"] =
                     attack["target"].hit(attack)
-                    self.results["landed"][maneuver] = attack
+                    self.results["hit"][maneuver] = attack
                     # TODO: Trigger effects that depend on hitting, etc.
 
     def cleanup(self):
-        for maneuver, attack in self.results["landed"].items():
+        for maneuver, attack in self.results["hit"].items():
             if attack["target"].check_dead() is True:
                 attack["target"].die()
 
@@ -90,7 +90,13 @@ class CombatAction:
     # TODO: Generate a message (using text generator)
     def display(self):
         lines = []
-        for attack in self.results["landed"].values():
-            string = describe("%s @dmg-%s-%s@ %s for %s" % (attack["attacker"].name, attack["damage type"], attack["attack option"], attack["target"].name, attack["damage done"]))
+        for attack in self.results["missed"].values():
+            string = combat(attack)
+            lines.append(string)
+        for attack in self.results["defended"].values():
+            string = combat(attack)
+            lines.append(string)
+        for attack in self.results["hit"].values():
+            string = combat(attack)
             lines.append(string)
         return lines
