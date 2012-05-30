@@ -288,9 +288,10 @@ class Actor:
         attack["location"].hit(attack)
         attack["location"].multiplier(attack)
         # TODO: Cap by limb, etc.
-        attack["damage done"] = int(attack["multiplier"] * (attack["damage rolled"] - attack["damage blocked"]))
-        attack["location"].hurt(attack["damage done"])
-        self.hp_spent += attack["damage done"]
+        attack["damage done"] = max(0, int(attack["multiplier"] * (attack["damage rolled"] - attack["damage blocked"])))
+        if attack["damage done"] > 0:
+            attack["location"].hurt(attack["damage done"])
+            self.hp_spent += attack["damage done"]
 
     # Check whether you are dead.
     def check_dead(self):
@@ -354,6 +355,10 @@ class Actor:
             return damage_dice(self.stat('ST')-10)
         else:
             return damage_dice((self.stat('ST')-1)/2-5)
+
+    # STUB: Return body-wide damage resistance.
+    def DR(self):
+        return 0
 
     # UI / DIALOGUE
     # STUB:

@@ -137,6 +137,7 @@ class HitLoc:
             item = random.choice(itemlist)
             attack["damage blocked"] += item.dr
         attack["damage blocked"] += self.dr
+        attack["damage blocked"] += self.owner.DR()
 
     def multiplier(self, attack):
         multipliers = {"cut" : 1.5, "imp" : 2}
