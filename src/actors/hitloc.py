@@ -52,8 +52,14 @@ class HitLoc:
     # Information about this location.
     def display(self):
         screen = []
+        screen.append("%s:" % self.type)
+        for k, v in self.worn.items():
+            screen.append(k)
+        for k, v in self.held.items():
+            screen.append(k)
+        for k, v in self.readied.items():
+            screen.append(k)
         if len(self.attack_options) > 0:
-            screen.append("%s:" % self.type)
             for weapon in self.attack_options.keys():
                 screen.append("  %s" % weapon)# (%s)" % (weapon, object))
         return screen
