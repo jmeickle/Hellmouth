@@ -1,6 +1,6 @@
 # The map, cells in the map, and terrain.
 from collections import deque
-from generators.text.describe import commas
+from text import commas
 from generators.items import generate_item
 import random
 import hex
@@ -204,6 +204,8 @@ class Cell:
             list.append("an item")
         elif len(self.items) > 1:
             list.append("some items")
+        if not list:
+            list.append("nothing of interest")
         return commas(list, True) # Capitalized.
 
     # ITEMS

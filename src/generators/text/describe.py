@@ -1,7 +1,7 @@
 import copy
 import re
 import random
-
+from data.generators.text import tokens
 # This file is mostly for generating random text. Other stuff will eventually be moved out of it.
 
 # Key combinations. Supports anything, but using these keys:
@@ -15,81 +15,8 @@ import random
 # If a tuple is provided, a random choice will be made with equal weight. Tuples can be nested.
 
 class Descriptions():
-    dict = {
-    "dmg" : ("hit with a @weapon@", "strike with your @weapon@"),
-    "dmg-crit" : ("skillfully", "gracefully"),
-    "dmg-burn" : "burn",
-    "dmg-cut" : "cut",
-    "dmg-cut-swing" : ("chop", "slice"),
-    "dmg-cr" : "whack",
-    "dmg-cr-punch" : ("smack", "punch", "hit", "whack"),
-    "dmg-pi" : "stab",
-    "dmg-imp" : "impale",
-    "dmg-imp-thrust" : ("stab", "skewer"),
-#    "dmg-scratch-cut" : "cut",
-#    "dmg-scratch-cut" : "cut",
-#    "dmg-scratch-cut" : "cut",
-#    "dmg-scratch-cut" : "cut",
-#    "dmg-injure-cut" : "
-#    "dmg-injure-cut" : "
-#    "dmg-injure-cut" : "
-#    "dmg-injure-cut" : "
-#    "dmg-cripple-cut"
-#    "dmg-cripple-cut"
-#    "dmg-cripple-cut"
-#    "dmg-cripple-cut"
-    "dmg-sever-cut" : "lop off",
-    "dmg-cripple-cut-neck" : "partially decapitate",
-    "dmg-sever-cut-neck" : "decapitate",
-    "dmg-sever-crush-neck" : "crush the windpipe",
-}
     hits = {}
     fail = {}
-
-# Return a string with appropriate punctuation.
-def commas(list, capitalize=False):
-    str = ""
-    spacer = " "
-    punc = "."
-
-    # TODO: haha, this totally doesn't belong here, wtc
-    if not list:
-        str += "nothing of interest"
-
-    for x in range(len(list)):
-        if len(list) > 2 and x > 0:
-            str += ","
-        if len(list) > 1 and x == len(list)-1:
-            str += spacer + "and"
-        if x > 0:
-            str += spacer
-        str += list[x]
-    str += punc
-
-    if capitalize is True:
-        str = str.capitalize()
-    return str
-
-# TODO: This is duplicated code from rdl
-def charactersheet(text, width, indent=1):
-    list = []
-    for line in text:
-        if len(line) > width:
-            string = ""
-            words = re.split('(\W+)', line)
-
-            for word in words:
-                if len(word) + len(string) > width: 
-                    list.append(string)
-                    string = " "*indent
-                if string.isspace() is True and word.isspace() is True:
-                    continue
-                string += word
-        else:
-            string = line
-        list.append(string)
-    return list
-
 
 def base_stat(value):
     if value > 20: return "godly"
@@ -117,7 +44,7 @@ def build_key(keys):
 # Hit the database to find a given string.
 def g(str):
     Descriptions.hits[str] = True
-    ret = Descriptions.dict.get(str, None)
+    ret = tokens.get(str, None)
     if ret is not None:
         if isinstance(ret, tuple):
             ret = pick(ret)
@@ -197,13 +124,6 @@ def indexed_remove(keys, n, ret):
         ret = indexed_remove(copy, n-1, ret)
 
     return ret
-
-# DEBUG: Print dictionaries a bit more nicely.
-def print_dict(name, dict):
-    print "--%s--" % name
-    for k,v in dict.items():
-        print "| %s: %s" % (k,v)
-    print "--%s--" % ("-" * len(name))
 
 if __name__ == '__main__':
     print_dict("Text Database", Descriptions.dict)
