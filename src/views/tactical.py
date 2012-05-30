@@ -52,16 +52,16 @@ class MainMap(View):
         self.cursor = None
 
     def keyin(self, c):
-        if c == ord('G'):
+        if c == ord('G') or c == ord('g'):
             self.player.get_all()
             return False
 
-        if c == ord('g'):
-            if len(self.map.player.cell().items) > 1:
-                self.spawn(ItemPrompt(self.screen, self.width, self.height))
-            else:
-                self.map.player.get_all()
-            return False
+#        if c == ord('g'):
+#            if len(self.map.player.cell().items) > 1:
+#                self.spawn(ItemPrompt(self.screen, self.width, self.height))
+#            else:
+#                self.map.player.get_all()
+#            return False
 
         # TODO: Allow multiple open children.
         if not self.children:
@@ -471,6 +471,9 @@ class Inventory(View):
             # This is also a hack.
             self.player._unequip(self.selected())
 #        else: return True
+        elif c == ord('G') or c == ord('g'):
+            self.player.get_all()
+            return False
         return False
 
 class CharacterSheet(View):
