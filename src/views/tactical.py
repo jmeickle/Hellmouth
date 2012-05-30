@@ -11,7 +11,7 @@ from data.skills import skill_list
 from collections import deque
 from random import choice
 
-from generators.text import describe
+from text import *
 
 import log
 
@@ -305,7 +305,7 @@ class LogViewer(View):
                 break;
 
     def logline(self, event):
-        lines = describe.charactersheet([event], self.width)
+        lines = wrap_string([event], self.width)
 
         # Move up by that much to offset what the line function would do.
         self.y_acc -= len(lines)
@@ -441,7 +441,7 @@ class Inventory(View):
         if self.player.can_get_items():
             actions.append("(<green-black>G</>)et all")
 
-        self.cline("  %s" % describe.commas(actions))
+        self.cline("  %s" % commas(actions))
 
     # Returns the seletected item (or appearance).
     def selected(self):
@@ -507,7 +507,7 @@ class CharacterSheet(View):
 
         if actor != self.actor:
             self.actor = actor
-            self.text = describe.charactersheet(self.actor.character_sheet(), self.width)
+            self.text = wrap_string(self.actor.character_sheet(), self.width)
             self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
         offset = 0
