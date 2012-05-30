@@ -76,6 +76,12 @@ class Actor:
         # Can be run at any time, but this will at least grab the natural weapons.
         self.check_weapons()
 
+    def appearance(self):
+        if self.controlled is True:
+            return "you"
+        else:
+            return self.name
+
     # UTILITY
 
     # Get ready to act.
@@ -247,7 +253,7 @@ class Actor:
         skill = item.primary_skill
         # Weren't able to find a skill.
         if skill is None:
-            Log.add("%s couldn't be used by %s." % (item.name, self.name))
+            Log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
             self.over()
             return False
 
