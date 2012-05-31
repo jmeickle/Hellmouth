@@ -312,11 +312,16 @@ class Actor:
     def die(self):
         if dist(self.map.player.pos, self.pos) <= 10: # HACK: Shouldn't be a magic number
             log.add(describe("%s has been slain!" % self.name))
-        #if self == self.map.acting:
-        #    self.map.acting = None
-        self.map.queue.remove(self)
-        self.cell().remove(self)
-        self.alive = False
+        if self.death() is True:
+            if self == self.map.acting:
+                self.map.acting = None
+            self.map.queue.remove(self)
+            self.cell().remove(self)
+            self.alive = False
+
+    # Actions to perform on death. Return whether we actually died.
+    def death(self):
+        return self.check_dead()
 
     # STATS
 
