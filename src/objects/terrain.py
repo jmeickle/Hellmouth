@@ -17,7 +17,7 @@ class Terrain():
     def interact(self, actor):
         return False
 
-# Meat Arena
+# Generic staircase class.
 class Stairs(Terrain):
     def __init__(self, which, destination):
         Terrain.__init__(self)
@@ -28,7 +28,7 @@ class Stairs(Terrain):
         self.blocking = False
 
     def interact(self, actor):
-        self.cell.map.travel = self.destination
+        self.cell.map.go(self.destination)
         return True
 
 # Meat Arena
