@@ -26,6 +26,9 @@ WW = (-1, 0)
 offsets = [NN, EE, SS, WW]
 num_offsets = len(offsets)
 
+# Other directional information.
+ANYWHERE = None
+
 # Return the sign of a number.
 def signum(int, zero=False):
     if int < 0:
