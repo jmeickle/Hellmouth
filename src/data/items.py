@@ -434,14 +434,149 @@ item_list = {
     },
 
 }
+'''
+LEG:
+
+upper
+    padded - cuisse
+    brigandine - cuisse
+    mail - short chauss, cuisse
+    plate - cuisse
+knee
+    plate - poleyn
+lower
+    plate - schynbald
+    plate - greave
+
+upper+knee
+    mail - short chauss
+
+upper+knee+lower
+    mail - chauss
+
+CHAUSS:
+  upper, lower?, knee?
+  padded, mail
+
+CUISSE:
+  upper, knee?
+  padded, leather, plate
+
+GREAVE:
+  lower leg
+  plate
+
+SCHYNBALD (demi-greaves):
+  lower leg
+  plate (front only)
+
+SABATON/SOLLERET:
+  foot
+  plate
+
+TASSET:
+  upper
+  plate
+
+COUTER:
+  elbow
+  plate
+
+GAUNTLET: (mitten vs. finger)
+  hand
+  anything
+
+PAULDRON:
+  shoulder + armpit
+  plate
+
+SPAULDER:
+  shoulder
+  plate
+
+REREBRACE:
+  upper arm
+  splint, plate
+
+VAMBRACE:
+  lower arm
+  leather, plate
+
+BRACER:
+  lower arm
+  leather (archery)
+
+VEST:
+  torso, abdomen
+  brigandine
+
+DOUBLET:
+  torso, arms
+  brigandine
+
+GAMBESON: (arming doublet if under plate). might extend to cover thighs
+  torso, arms
+  cloth
+
+CUIRASS: (breastplate + backplate)
+  torso
+  any RIGID
+
+CORSLET:
+  torso + neck + arms + gauntlets
+
+FAULD:
+  abdomen
+  plate (?)
+
+HAUBERK:
+  torso, arms, upper legs, knee (?)
+  mail
+
+HAUBERGEON / MAIL SHIRT:
+  torso, upper arms
+  mail
+
+BIRNIE:
+torso, 
+
+Above can come in HOODED versions.
+
+CODPIECE:
+  groin
+  leather, plate
+
+COLLAR: (can be integrated into a mail shirt or worn seperate)
+  neck
+  rigid mail
+
+BEVOR:
+  neck, throat
+  plate
+
+GORGET:
+  neck, throat
+  leather, plate
+
+COIF:
+  head/neck/shoulders, or attached to mail shirt
+  mail
+
+GUSSETS:
+1) Fifteenth-century mail sleeves covering the armpits and other portions of the arm not covered by plate armor
+
+Half armor (see also corselet)
+Armor for the the torso and arms, but leaving the legs unprotected
+'''
+
 
 # Test code.
 if __name__ == '__main__':
     swords = ("broadsword", "katana")
     for sword in swords:
         stats = item_list[sword]
-        if stats.get("identical") is not None:
-            stats = item_list[stats["identical"]]
+        if stats.get("variant") is not None:
+            stats = item_list[stats["variant"]]
         sword = stats["class"]()
         for stat, value in stats.items():
             print stat, value
