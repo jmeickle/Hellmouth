@@ -1,68 +1,109 @@
-# The map, cells in the map, and terrain.
+# The map and cells in the map.
+# TODO: Not cells in the map.
 from collections import deque
-from text import commas
+from text import *
 from generators.items import generate_item
 import random
 import hex
+from data import screens
 
 class Encounter:
-    def __init__(self, exits=None):
+    def __init__(self, level):
+        # Maps don't make sense without an associated Level.
+        self.level = level
+        # We'll use the level's player by default.
+        self.player = self.level.player
+
+        # Display information.
+        self.name = None
+        self.screens = []
+
+        # Map generation parameters.
+        self.layout = None
         self.size = None
         self.center = None
-        self.level = None
-        self.name = None
-        self.exits = exits
+        self.exits = None
+        self.depth = None
+        self.entry = None # Player start point. TODO: Replace by bidirectional stairs!
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
+
+        # Default information if a cell doesn't exist.
+        # TODO: Expand!
+        self.floor = None
 
         # Action queue and current actor
         self.queue = deque()
         self.acting = None
 
-        # Event log
-        self.log = None
-
-        # Player
-        self.player = None
-        # Where the player starts
-        self.entry = None
-
         # Where we're traveling to.
-        self.travel = None
-        self.layout = None
+        self.destination = None
 
-    # Handle things that happen when the player enters the map.
-    def enter(self, player):
-        self.player = player
+    # The map portion of the game loop.
+    def loop(self):
+        # Don't continue looping if we have a destination.
+        if self.destination is not None:
+            return False
+
+        # If nobody is acting, let the first in the queue act.
+        if self.acting is None:
+            self.acting = self.queue.popleft()
+            self.acting.prepare()
+
+        # NPCs use act() until the player's turn comes up.
+        if self.acting.controlled is False:
+            self.acting.act()
+
+    # Go to another map, or if destination is False, let the level figure it out.
+    def go(self, destination):
+        self.before_leave(destination)
+
+    # By default, before_arrive tries to load the matching screen and plugs in a
+    # callback to self.arrive. Otherwise, it calls it itself.
+    def before_arrive(self):
+        entryscreen = self.level.name + ", " + self.name # HACK: Later it should choose different dict for different levels.
+        if screens.text.get(striptags(entryscreen)) is not None:
+            arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
+            self.screen(striptags(entryscreen), arguments)
+        else:
+            return self.arrive()
+
+    # Handle arriving at the map.
+    def arrive(self):
         self.player.map = self
         self.put(self.player, self.entry)
+        # HACK: Highlights should be handled a bit more nicely than this.
         if self.exits is not None:
             for exit in self.exits:
                 which, pos = exit
                 self.player.highlights[which] = pos
 
-    # Handle things that happen when the player leaves the map.
-    def leave(self, player):
-        self.player.location = None
-        self.player.highlights = {}
-        #self.player = None
+    # Do anything that needs to happen before confirming that we've left this map.
+    def before_leave(self, destination):
+        self.leave(destination)
 
+    # Do anything that needs to happen as we actually leave this map.
+    def leave(self, destination):
+        self.player.highlights = {}
+        self.destination = destination
+
+    # Call on the dark powers of the terrain generator.
     def generate_terrain(self):
         generator = self.layout(self.exits)
         cells, self.exits = generator.attempt()
         # TODO: Possibly checks for validity first
-        # TODO: Generator has a field for this.
+        # TODO: This is kind of backwards! We should be feeding this into the generator. C'est la vie.
         self.center = generator.center
         self.entry = self.center
         self.size = generator.size
         # Final step.
         self.populate(cells)
 
-    # Take a provided dict of {pos : data} and turn it into objects.
+    # Take a provided dict of {pos : (other data)} and turn it into cell objects.
     def populate(self, cells):
         for pos, contents in cells.items():
-            distance, terrain = contents
+            distance, terrain = contents # HACK: This won't always be a tuple like this.
             cell = Cell(pos, self)
             if terrain is not None:
                 cell.put_terrain(terrain)
@@ -95,6 +136,7 @@ class Encounter:
             return cell.terrain
 
     # TODO: FIGURE OUT THIS SECTION, WHAT THE FUCK
+    # TODO: It's still awful. I'm scared to touch it because so much relies on it.
     # Place an object on the map.
     def put(self, obj, pos, terrain=False):
 
@@ -122,11 +164,16 @@ class Encounter:
 
         return obj
 
-    # Decides whether a position exists.
+    # Decides whether a position is a valid one.
+    # TODO: Handle moving into nonexistent but cell-prototyped positions.
     def valid(self, pos):
         if self.cells.get(pos) is None:
             return False
         return True
+
+    # Add a screen to self.screens, which will eventually result in it being displayed.
+    def screen(self, screenname, arguments=None, screenclass=None):
+        self.screens.append((screenname, arguments, screenclass))
 
     # Print a large text version of the map.
     def dump(self, size=100, origin=(0,0)):
@@ -151,20 +198,7 @@ class Encounter:
                 sys.stdout.write("\n")
         exit()
 
-    # Advance the queue, if we can. Only returns something if we're traveling.
-    def advance(self):
-        if self.travel is not None:
-            return self.travel
-
-        # If nobody is acting, let the first in the queue act.
-        if self.acting is None:
-            self.acting = self.queue.popleft()
-            self.acting.prepare()
-
-        # NPCs act until the player's turn comes up.
-        if self.acting.controlled is False:
-            self.acting.act()
-
+# TODO: Move this into its own file.
 class Cell:
     def __init__(self, pos, parent):
         self.map = parent
@@ -192,7 +226,7 @@ class Cell:
         elif len(self.items) > 1:
             return '!', 'magenta-black'
         else:
-            return self.map.level.floor
+            return self.map.floor
 
     # TODO: Options for what to list.
     # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!

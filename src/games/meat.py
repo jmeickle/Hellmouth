@@ -5,70 +5,75 @@ from views.tactical import Window
 from views.help import HelpScreen
 from levels.meat.arena import MeatArena
 from key import *
+from data import screens
 
+# TODO: Split this into a generic game class and a meatgame meatclass
 class Game(Component):
     def __init__(self, window):
         Component.__init__(self)
+
+        # DISPLAY:
+        # Store the provided curses window.
         self.window = window
+        self.screens = []
+
+        # Whether we're interacting with maps and levels.
+        self.gameplay = True
+
+        # Generate the player, a blank level, and a blank map.
         self.player = Player()
         self.level = None
         self.map = None
 
-        # Generate the level and get screens from it.
-        screens = self.go(MeatArena)
-
-        # Main game window.
-        self.spawn(Window(self.window))
-
-        # Level-defined entry screens.
-        for screen in screens:
-            self.spawn(Screen(self.window, **screen))
-
-    def go(self, destination):
-        # HACK: Not all stairs are increasing depth, after all.
-        if isinstance(self.level, destination):
-            destination.depth += 1
-        if self.map is not None:
-            self.map.leave(self.player)
-        self.level = destination()
-        self.map = self.level.map
-        self.map.enter(self.player)
-        self.inherit()
-        # Return any entry screens defined by the level.
-        return self.level.screens
+        # Perform any actions before starting the game.
+        self.before_start()
 
     def loop(self):
-        self.alive = self.conditions()
-        if self.alive == False:
-            return
+        # Don't continue looping if the game is over.
+        if self.alive is False:
+            return False
 
-        destination = self.map.advance()
-        if destination is not None:
-            screens = self.go(destination)
-            if screens:
-                for screen in screens:
-                    self.spawn(Screen(self.window, **screen))
+        # Check whether we should keep playing.
+        if self.gameplay is True:
+            self.gameplay = self.conditions()
 
-        if self.map.acting is not None:
-            if self.map.acting.controlled is True:
-                # Draw tree.
-                self.window.clear()
-                self._draw()
-#        self.window.refresh()
+        # If we have a level, try to loop.
+        if self.gameplay is True and self.level is not None:
+            if self.level.map is not None:
+                # Pass map to our children if it has changed.
+                if self.map != self.level.map:
+                    self.map = self.level.map
+                    self.inherit()
 
-                # Keyin tree.
-                c = self.window.getch()
-                self._keyin(c)
+            # If the level has a destination set, go to it.
+            # (This might end the game.)
+            if self.level.loop() is False:
+                self.go(self.level.destination)
 
-    # Games don't have the normal keyin/_keyin function, since they need to
-    # steal input before their children can get to it.
+            # When we're in a map, we have to play nice with keyin.
+            # HACK: This is likely to break during travel at some point.
+            if self.map.acting is None or self.map.acting.controlled is False:
+                return True
 
-#    def _keyin(self, c):
-#        if self.keyin(c) is False:
-#            return False
-#        for child in reversed(self.children):
-#            if child._keyin(c) is False:
-#                return False
+            # Get screens from the level (which may have gotten some from the map.)
+            self.screens = self.level.screens
+            self.level.screens = []
+
+        # Show any screens we picked up.
+        # The screens generated first will show up first.
+        for x in range(len(self.screens)):
+            screenname, arguments, screenclass = self.screens.pop()
+            self.screen(screenname, arguments, screenclass)
+
+        # Draw tree.
+        self.window.clear()
+        self._draw()
+
+        # Keyin tree.
+        c = self.window.getch()
+        self._keyin(c)
+
+        return True
 
     def keyin(self, c):
         # Always allow help.
@@ -78,25 +83,58 @@ class Game(Component):
         # Always allow quitting.
         if c == ctrl('q'):
             self.suicide()
-        # 'Global' keypresses that work anywhere
-#        if c == ord('P'):
-#            views[0].player.attack(views[0].player)
-#        elif c == ord('g'):
-#            views[0].player.get_all()
-#        elif c == ord('d'):
-#            views[0].player.drop_all()
 
     # Returns whether we meet the conditions to keep playing.
     def conditions(self):
-        if self.map.acting is None and len(self.map.queue) == 0:
-            return False
-        if self.player.alive is False:
-            return False
+        # TODO: Move this to the map.
+        if self.map is not None:
+            if self.map.acting is None and len(self.map.queue) == 0:
+                self.before_finish()
+                return False
+            if self.player.alive is False:
+                self.before_finish()
+                return False
         return True
 
-    # 'Global' keyin.
-#    def keyin(self, c):
-#        (for quitting)
-#        self.alive = False
+    # Functions called (before/when) (starting/finishing) the game.
+    def before_start(self):
+        self.screen("meat-start", {"callback" : self.start, "footer_text": screens.footer})
 
+    def start(self):
+        # Go to the first level.
+        self.go(MeatArena)
+
+        # Spawn the main game window.
+        self.view = self.spawn(Window(self.window))
+
+    def before_finish(self):
+        self.gameplay = False
+        self.screen("meat-end", {"callback" : self.finish})
+
+    # The game is over. Do anything required before exiting.
+    def finish(self):
+        self.screen("credits", {"callback" : self.suicide})
+
+    # Go to a new level.
+    def go(self, destination):
+        # If this is called with False as a destination, no more levels.
+        # This means the game is likely over.
+        if destination is False:
+            return self.before_finish()
+
+        # Generate the level and store it.
+        self.level = destination(self.player)
+
+        # Store the generated map.
+        self.map = self.level.map
+
+    # Spawn a screen based on a screen name, attributes, and class.
+    def screen(self, screenname="blank", arguments=None, screenclass=None):
+        if screenclass == None:
+            screenclass = Screen
+
+        screendata = screens.text.get(screenname)
+        if arguments is not None:
+            screendata.update(arguments)
+        self.spawn(screenclass(self.window, **screendata))
 
