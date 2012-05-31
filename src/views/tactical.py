@@ -281,8 +281,6 @@ class LogViewer(View):
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
-        for x in range(50):
-            log.add("Test Message %s" % x)
         self.scroller = self.spawn(Scroller(log.length() - self.height))
 
     def before_draw(self):

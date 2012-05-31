@@ -6,6 +6,7 @@ from generators.items import generate_item
 import random
 import hex
 from data import screens
+import log
 
 class Encounter:
     def __init__(self, level):
@@ -63,6 +64,7 @@ class Encounter:
     # callback to self.arrive. Otherwise, it calls it itself.
     def before_arrive(self):
         entryscreen = self.level.name + ", " + self.name # HACK: Later it should choose different dict for different levels.
+        log.add("You enter %s." % entryscreen)
         if screens.text.get(striptags(entryscreen)) is not None:
             arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
             self.screen(striptags(entryscreen), arguments)
