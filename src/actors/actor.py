@@ -493,6 +493,8 @@ class Actor:
             appearance, list = cell.items.popitem()
             self._merge(appearance, list)
 
+        log.add("You pick up some items.")
+
     # TODO: Support dropping to any cell
     # 'Forcibly' drop a specific inventory item.
     # Returns false if the item wasn't found in the player's inventory.
@@ -501,6 +503,7 @@ class Actor:
             if self._unequip(item) is True:
                 self._remove(item)
                 self.cell().put(item)
+                log.add("You drop the %s"%item.appearance())
             else:
                 exit("Lost an item: it was removed, but not returned.")
         return False
@@ -637,6 +640,9 @@ class Actor:
         # Otherwise, we fail.
         else:
             return False
+            log.add("You can't equip %s right now." % item.appearance())
+
+        log.add("You equip %s." % item.appearance())
 
     # TODO: Sanity checks not handled above.
     # Return false if nothing could be equipped.
@@ -677,6 +683,9 @@ class Actor:
             for loc in locs:
                 if loc.owner == self:
                     loc.unwear(item)
+
+        log.add("You unequip %s." % item.appearance())
+
         return True
 
     # TODO: Sanity checks not handled above.
