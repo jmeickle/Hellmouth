@@ -27,9 +27,11 @@ class MapGen():
         for which, exit in self.exits.items():
             where, pos = exit
             if pos is None:
-                dist = r1d(self.size)
+                dist = r1d(self.size/2) + self.size/2 - 4
                 pos = random_pos(dist, self.center)
-            self.cells[pos] = (dist, Stairs(which, where))
+                self.cells[pos] = (dist, Stairs(which, where))
+            else:
+                self.cells[pos] = (None, Stairs(which, where))
             exits.append((which, pos))
         self.exits = exits
 
