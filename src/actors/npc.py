@@ -118,3 +118,23 @@ class MeatHydra(NPC):
         self.description = 'A hydra made from the meat of lesser beings. Each "head" is a cracked ribcage.'
 
         self.build(50)
+
+class MeatCommander(NPC):
+    def __init__(self):
+        NPC.__init__(self)
+        self.glyph = 'C'
+        self.name = 'Meat Commander'
+        self.color = 'magenta-black'
+        self.description = "This beefy champion wears a full set of bone armor decorated with dozens of veal medallions and bacon ribbons. A crown roast rests atop its noble brow."
+
+        self.build(100)
+
+class Sauceror(NPC):
+    def __init__(self):
+        NPC.__init__(self)
+        self.glyph = '@'
+        self.name = 'Sauceror'
+        self.color = 'magenta-black'
+        self.description = "A slight figure clad in dark cloth robes. Its flesh is pale and unappetizing, but its brain is perhaps the meatiest of all."
+
+        self.build(300)
