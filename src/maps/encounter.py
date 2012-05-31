@@ -30,15 +30,17 @@ class Encounter:
 
         # Where we're traveling to.
         self.travel = None
+        self.layout = None
 
     # Handle things that happen when the player enters the map.
     def enter(self, player):
         self.player = player
         self.player.map = self
         self.put(self.player, self.entry)
-        for exit in self.exits:
-            which, pos = exit
-            self.player.highlights[which] = pos
+        if self.exits is not None:
+            for exit in self.exits:
+                which, pos = exit
+                self.player.highlights[which] = pos
 
     # Handle things that happen when the player leaves the map.
     def leave(self, player):
@@ -46,8 +48,8 @@ class Encounter:
         self.player.highlights = {}
         #self.player = None
 
-    def generate_terrain(self, generate):
-        generator = generate(self.exits)
+    def generate_terrain(self):
+        generator = self.layout(self.exits)
         cells, self.exits = generator.attempt()
         # TODO: Possibly checks for validity first
         # TODO: Generator has a field for this.
