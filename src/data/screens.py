@@ -2,7 +2,8 @@ footer = "Press <green-black>Enter</> to continue. Press <green-black>'?'</> for
 footer_back = "Press <green-black>Space</> to go back. Press <green-black>'?'</> for help at any time."
 
 text = {
-"meat-1" : {
+"blank" : {},
+"meat-start" : {
     "header_left" : "<red-black>Welcome to the Meat Arena!</>",
     "body_text" : "\
 As the daze of the teleport spell fades away, you realize that you are not \
@@ -18,7 +19,7 @@ This is a grisly, gristly place. You must escape.\
 Unfortunately, the staircase leading upwards has been stuffed with stuffing. \
 The only way you can go is down.",
 },
-"meat-2" : {
+"The Meat Arena, Floor 2" : {
     "header_left" : "<red-black>A second serving</>",
     "body_text" : "\
 You trudge down the spiral ham staircase, pausing only to wipe some steak \
@@ -108,9 +109,11 @@ clearly a being both insanely powerful and powerfully insane.",
 "meat-end" : {
     "header_left" : "<red-black>...</>",
     "body_text" : "\
-The Sauceror is dead. You've sliced apart many enemies, but they haven't \
+The <meat-black>Sauceror</> is dead. You've sliced apart many enemies, but they haven't \
 stopping coming. The stench of spoiled meat is overpowering. You must escape \
 - but you can't. No one can.",
 },
-
+"credits" : {
+    "body_text" : "Thanks for playing!",
+}
 }
