@@ -159,6 +159,10 @@ class Actor:
     def cell(self):
         return self.map.cell(self.pos)
 
+    # Show a screen.
+    def screen(self, screenname, arguments=None, screenclass=None):
+        self.map.screen(screenname, arguments, screenclass)
+
     # MOVEMENT
 
     # Change actor coords directly and update the relevant cells.
