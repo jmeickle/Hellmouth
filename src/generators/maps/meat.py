@@ -40,6 +40,48 @@ class MeatTunnel(MapGen):
         MapGen.__init__(self, exits)
 
     def attempt(self):
+        cells = line(self.center, self.exits["down"][1])
+
+        # Draw the "sides" of the hall.
+        for x in range(1, 10):
+            start = add(self.center, mult(NW, x))
+            finish = add(self.exits["down"][1], mult(NE, x))
+            side_line = line(start, finish)
+            for pos in side_line:
+                if x < 7:
+                    self.cells[pos] = (None, None)
+                elif x == 7:
+                    self.cells[pos] = (None, MeatWall("outer"))
+                else:
+                    self.cells[pos] = (None, MeatWall("inner"))
+
+        for x in range(1, 10):
+            start = add(self.center, mult(SW, x))
+            finish = add(self.exits["down"][1], mult(SE, x))
+            side_line = line(start, finish)
+            for pos in side_line:
+                if x < 7:
+                    self.cells[pos] = (None, None)
+                elif x == 7:
+                    self.cells[pos] = (None, MeatWall("outer"))
+                else:
+                    self.cells[pos] = (None, MeatWall("inner"))
+
+        for x in range(len(cells)):
+            cell = cells[x]
+            self.cells[cell] = (None, None)
+            # Columns.
+            if x % 4 == 0:
+                for dir in (NW, SW):
+                    pos = add(cell, mult(dir, 3))
+                    col = area(1, pos)
+                    for pos, dist in col.items():
+                        if dist == 1:
+                            self.cells[pos] = (dist, MeatWall('outer'))
+                        else:
+                            self.cells[pos] = (dist, MeatWall('inner'))
+
+
         self.place_exits()
         self.connect_exits()
         return self.cells, self.exits
@@ -47,8 +89,50 @@ class MeatTunnel(MapGen):
 class MeatTower(MapGen):
     def __init__(self, exits=None):
         MapGen.__init__(self, exits)
+        self.size = 12
+        self.walls = 3
 
     def attempt(self):
+        hexes = area(self.size, self.center)
+
+        # Arena floor / walls
+        for pos, dist in hexes.items():
+            if dist > self.size - self.walls:
+                self.cells[pos] = (dist, MeatWall('inner'))
+            elif dist == self.size - self.walls:
+                self.cells[pos] = (dist, MeatWall('outer'))
+            else:
+                self.cells[pos] = (dist, None)
+
+        # Randomly placed columns
+        colnum = self.size / 2 + r1d6()
+        for x in range(colnum):
+            colsize = random.randint(1, 3)
+            pos = (self.center[0] + flip()*random.randint(4, self.size)-colsize, self.center[1] + flip() * random.randint(4,self.size)-colsize)
+            col = area(colsize, pos)
+            for pos, dist in col.items():
+                if dist == colsize:
+                    self.cells[pos] = (dist, MeatWall('outer'))
+                else:
+                    self.cells[pos] = (dist, MeatWall('inner'))
+
+        # Build the Sauceror's tower.
+        tower_center = add(self.center, mult(CE, 15))
+        tower = area(10, tower_center)
+        for pos, dist in tower.items():
+            if dist == 10:
+                self.cells[pos] = (dist, MeatWall('outer'))
+            elif dist > 10 - self.walls:
+                self.cells[pos] = (dist, MeatWall('inner'))
+            elif dist == 10 - self.walls:
+                self.cells[pos] = (dist, MeatWall('outer'))
+            else:
+                self.cells[pos] = (dist, None)
+
+        # Entrance to the tower.
+        for pos in area(2, add(self.center, mult(CE, 7))):
+            self.cells[pos] = (dist, None)
+
         self.place_exits()
         self.connect_exits()
         return self.cells, self.exits

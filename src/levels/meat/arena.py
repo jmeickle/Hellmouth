@@ -29,8 +29,8 @@ class MeatArena():
             self.map.layout = meat.MeatArena
         if depth == 3:
             self.map.name = "Grand Gate"
-            self.map.exits = self.exits
-            self.map.layout = meat.MeatArena
+            self.map.exits = { "down" : (MeatArena, (25, 0)) }
+            self.map.layout = meat.MeatTunnel
         if depth == 4:
             self.map.name = "Caves of Primal Meat"
             self.map.exits = self.exits
@@ -42,7 +42,7 @@ class MeatArena():
         if depth == 6:
             self.map.name = "Tower of the Sauceror"
             self.map.exits = None
-            self.map.layout = meat.MeatArena
+            self.map.layout = meat.MeatTower
 
     # Map generation.
     def generate_map(self):
