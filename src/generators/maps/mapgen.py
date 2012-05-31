@@ -31,6 +31,13 @@ class MapGen():
             exits.append((which, pos))
         self.exits = exits
 
+    def connect_exits(self):
+        # HACK: Dig line from exit to center.
+        for which, pos in self.exits:
+            cells = line(pos, self.center)
+            for cell in cells:
+                self.cells[cell] = (None, None)
+
 class MeatArena(MapGen):
     def __init__(self, exits=None):
         MapGen.__init__(self, exits)
@@ -61,6 +68,7 @@ class MeatArena(MapGen):
                     self.cells[pos] = (dist, MeatWall('inner'))
 
         self.place_exits()
+        self.connect_exits()
         return self.cells, self.exits
 
 class Cave(MapGen):
