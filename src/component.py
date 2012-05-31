@@ -3,6 +3,7 @@ import curses
 from views.color import Color
 from define import *
 import key
+import random
 
 # Component is the minimal base class. They participate in keyin and draw
 # loops, but do not have access to drawing functions.
