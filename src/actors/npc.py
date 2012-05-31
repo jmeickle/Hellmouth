@@ -77,6 +77,16 @@ class NPC(Actor):
         self.astar = ai.astar.AStar(self.map)
         self.path = self.astar.path(self.pos, self.destination)
 
+    def retarget(self):
+        if self.map.player is not None:
+        #    if random.randint(1, dist(self.pos, self.map.player.pos)) < 4:
+                self.target = self.map.player
+                self.destination = self.target.pos
+                self.repath()
+                return True
+        return False
+            
+
 # Monster definitions. TODO: Move elsewhere.
 
 class MeatSlave(NPC):
