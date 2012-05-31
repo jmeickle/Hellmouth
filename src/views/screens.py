@@ -7,12 +7,14 @@ from views.view import View
 
 # Border, heading, body text.
 class Screen(View):
-    def __init__(self, window, header_left="", header_right="", body_text="", footer_text=""):
+    def __init__(self, window, header_left="", header_right="", body_text="", footer_text="", callback=None, arguments=None):
         View.__init__(self, window, TERM_X, TERM_Y)
         self.header_left = header_left
         self.header_right = header_right
         self.body_text = body_text
         self.footer_text = footer_text
+        self.callback = callback
+        self.arguments = arguments
 
     def before_draw(self):
         self.window.clear()
@@ -44,8 +46,16 @@ class Screen(View):
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
+            self.do_callback()
             self.suicide()
         return False # Don't permit anything but continuing.
+
+    def do_callback(self):
+        if self.callback is not None:
+            if self.arguments is not None:
+                self.callback(self.arguments)
+            else:
+                self.callback()
 
 # A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
