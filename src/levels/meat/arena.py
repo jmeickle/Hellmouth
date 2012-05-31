@@ -1,5 +1,5 @@
 from dice import *
-from generators.maps import mapgen
+from generators.maps import meat
 from maps.encounter import Encounter
 from data import screens
 
@@ -20,13 +20,36 @@ class MeatArena():
     def current_depth(self):
         return self.__class__.depth
 
+    def check_depth(self):
+        depth = self.current_depth()
+
+        if depth == 1 or depth == 2:
+            self.map.name = "Meat Arena"
+            self.map.exits = self.exits
+            self.map.layout = meat.MeatArena
+        if depth == 3:
+            self.map.name = "Grand Gate"
+            self.map.exits = { "down" : (MeatArena, (25, 0)) }
+            self.map.layout = meat.MeatTunnel
+        if depth == 4:
+            self.map.name = "Caves of Primal Meat"
+            self.map.exits = self.exits
+            self.map.layout = meat.MeatArena
+        if depth == 5:
+            self.map.name = "Sauce Vats"
+            self.map.exits = self.exits
+            self.map.layout = meat.MeatArena
+        if depth == 6:
+            self.map.name = "Tower of the Sauceror"
+            self.map.exits = None
+            self.map.layout = meat.MeatTower
+
     # Map generation.
     def generate_map(self):
         self.map = Encounter()
         self.map.level = self
-        self.map.name = "MEAT ARENA"
-        self.map.exits = self.exits
-	self.map.generate_terrain(mapgen.MeatArena)
+        self.check_depth()
+	self.map.generate_terrain()
 
     # TODO: Hand this off to mapgen?
     def place_monsters(self):

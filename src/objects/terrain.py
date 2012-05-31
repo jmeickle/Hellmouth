@@ -24,7 +24,7 @@ class Stairs(Terrain):
         self.name = "staircase " + which
         self.destination = destination
         self.glyph = ">"
-        self.color = "black-red"
+        self.color = "green-black"
         self.blocking = False
 
     def interact(self, actor):

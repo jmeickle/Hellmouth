@@ -21,47 +21,28 @@ class MapGen():
 
     # Place random stairs, then set their positions in a list.
     def place_exits(self):
+        if self.exits is None:
+            return False
         exits = []
         for which, exit in self.exits.items():
             where, pos = exit
             if pos is None:
-                dist = r1d(self.size)
+                dist = r1d(self.size/2) + self.size/2 - 4
                 pos = random_pos(dist, self.center)
-            self.cells[pos] = (dist, Stairs(which, where))
+                self.cells[pos] = (dist, Stairs(which, where))
+            else:
+                self.cells[pos] = (None, Stairs(which, where))
             exits.append((which, pos))
         self.exits = exits
 
-class MeatArena(MapGen):
-    def __init__(self, exits=None):
-        MapGen.__init__(self, exits)
-        self.walls = 3
-
-    def attempt(self):
-        hexes = area(self.size, self.center)
-
-        # Arena floor / walls
-        for pos, dist in hexes.items():
-            if dist > self.size - self.walls:
-                self.cells[pos] = (dist, MeatWall('inner'))
-            elif dist == self.size - self.walls:
-                self.cells[pos] = (dist, MeatWall('outer'))
-            else:
-                self.cells[pos] = (dist, None)
-
-        # Randomly placed columns
-        colnum = self.size / 2 + r1d6()
-        for x in range(colnum):
-            colsize = random.randint(1, 3)
-            pos = (self.center[0] + flip()*random.randint(4, self.size)-colsize, self.center[1] + flip() * random.randint(4,self.size)-colsize)
-            col = area(colsize, pos)
-            for pos, dist in col.items():
-                if dist == colsize:
-                    self.cells[pos] = (dist, MeatWall('outer'))
-                else:
-                    self.cells[pos] = (dist, MeatWall('inner'))
-
-        self.place_exits()
-        return self.cells, self.exits
+    def connect_exits(self):
+        if self.exits is None:
+            return False
+        # HACK: Dig line from exit to center.
+        for which, pos in self.exits:
+            cells = line(pos, self.center)
+            for cell in cells:
+                self.cells[cell] = (None, None)
 
 class Cave(MapGen):
     def __init__(self, exits=None):
