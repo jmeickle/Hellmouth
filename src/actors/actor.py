@@ -603,39 +603,51 @@ class Actor:
 
     # Either hold or wear the item as appropriate.
     # Return false if nothing could be equipped.
-    def _equip(self, item, loc, worn, weapon):
-        if self._can_equip_item(item, loc) is False:
+    def _equip(self, item, slots, wear, weapon):
+        if self._can_equip_item(item, slots) is False:
             return False
 
-        if loc is None:
-            # TODO: Make this check alternate slots, rather than primary_slot.
-            slot = item.preferred_slot()
-            loc = self.body.locs.get(slot, self.body.primary_slot)
-
         # If worn T/F is not provided, ask the item whether it's to be worn.
-        if worn is None:
-            worn = item.can_be_worn()
+        if wear is None:
+            wear = item.can_be_worn()
 
         # If weapon T/F is not provided, ask the item whether it's a weapon.
         if weapon is None:
             weapon = item.can_be_weapon()
 
+        # Use the item's slots if provided.
+        if item.slots is not None:
+            slots = item.slots
+        # Otherwise use the preferred slot.
+        elif slots is None:
+            # TODO: Make this check alternate slots, rather than primary_slot.
+            slots = [item.preferred_slot()]
+
+        # Get the location objects for the slot.
+        locs = []
+        for slot in slots:
+          locs.append(self.body.locs.get(slot, self.body.primary_slot))
+
         # Try to wear the item, if possible and if it's not already worn.
-        if worn is True and self.worn(item) is False:
-            loc.wear(item)
+        if wear is True and self.worn(item) is False:
+            for loc in locs:
+                loc.wear(item)
             return True
 
         # Can't wear it? Ready it as a weapon, if applicable and not already readied.
         elif weapon is True and self.readied(item) is False:
             # Hold the weapon, if it needs it.
             if item.must_be_held() is True:
-                loc.hold(item)
+                for loc in locs:
+                    loc.hold(item)
             # Then ready it.
-            loc.ready(item)
+            for loc in locs:
+                loc.ready(item)
 
         # The only remaining option is to just hold the item.
         elif self.held(item) is False:
-            loc.hold(item)
+            for loc in locs:
+                loc.hold(item)
 
         # Otherwise, we fail.
         else:
