@@ -109,11 +109,34 @@ clearly a being both insanely powerful and powerfully insane.",
 "meat-end" : {
     "header_left" : "<red-black>...</>",
     "body_text" : "\
-The <meat-black>Sauceror</> is dead. You've sliced apart many enemies, but they haven't \
-stopping coming. The stench of spoiled meat is overpowering. You must escape \
-- but you can't. No one can.",
+Sorry, but it looks like that's all there is for now. Try again some other time.",
+#The <meat-black>Sauceror</> is dead. You've sliced apart many enemies, but they haven't \
+#stopping coming. The stench of spoiled meat is overpowering. You must escape \
+#- but you can't. No one can.",
 },
 "credits" : {
-    "body_text" : "Thanks for playing!",
+    "header_left" : "Thanks for trying out <red-black>Meat Arena!</>",
+    "header_right" : "Credits",
+    "body_text" : "\
+Meat Arena is a short game that I created to serve as a prototype & testing \
+suite for Hellmouth, a much longer game that I hope to release this year. Your \
+character in Hellmouth is a demonslayer who travels across Medieval Europe in \
+search of Satan's minions. While you may fit the traditional archetype of a \
+paladin blazing with the light of God, demonslayers are a varied lot: some \
+prefer to dispatch their foes with subterfuge, while others use their charisma \
+to rally peasant armies. A few dark souls even risk eternal hellfire by \
+embracing the corrupt powers of Hell.\
+<br><br>\
+You can follow Hellmouth's development at:\
+<br><br>\
+    http://eronarn.info/tag/hellmouth/ or https://github.com/Eronarn/Hellmouth\
+<br><br>\
+I want to improve Meat Arena because Hellmouth will be based on its code. I'd \
+really appreciate any feedback that you have to offer:\
+<br><br>\
+    https://twitter.com/#!/eronarn or eronarn@gmail.com\
+<br><br>\
+Thanks again for playing such a silly game!",
+    "footer_text" : "Press <green-black>Enter</> or <red-black>Ctrl-q</> to exit the game.",
 }
 }
