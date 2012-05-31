@@ -49,14 +49,16 @@ class Game(Component):
                 for screen in screens:
                     self.spawn(Screen(self.window, **screen))
 
-        # Draw tree.
-        self.window.clear()
-        self._draw()
+        if self.map.acting is not None:
+            if self.map.acting.controlled is True:
+                # Draw tree.
+                self.window.clear()
+                self._draw()
 #        self.window.refresh()
 
-        # Keyin tree.
-        c = self.window.getch()
-        self._keyin(c)
+                # Keyin tree.
+                c = self.window.getch()
+                self._keyin(c)
 
     # Games don't have the normal keyin/_keyin function, since they need to
     # steal input before their children can get to it.

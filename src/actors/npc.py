@@ -28,8 +28,7 @@ class NPC(Actor):
         assert self.controlled is not True, "A player-controlled actor tried to hit AI code."
 
         if self.target is None:
-            self.over()
-            return False
+            return self.retarget()
 
         self.attempts += 1
         if self.attempts > 10:
@@ -76,6 +75,16 @@ class NPC(Actor):
     def repath(self):
         self.astar = ai.astar.AStar(self.map)
         self.path = self.astar.path(self.pos, self.destination)
+
+    def retarget(self):
+        if self.map.player is not None:
+            if random.randint(1, dist(self.pos, self.map.player.pos)) == 1:
+                self.target = self.map.player
+                self.destination = self.target.pos
+                self.repath()
+                return True
+        return False
+            
 
 # Monster definitions. TODO: Move elsewhere.
 
