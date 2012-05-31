@@ -7,10 +7,11 @@ def main(stdscr):
 
     from games.meat import Game
     game = Game(stdscr)
-#    exit(game.__dict__)
+    loop = True
+
     # Main game loop
-    while game.alive is True:
-        game.loop()
+    while loop is True:
+        loop = game.loop()
 
 # Curses import.
 import curses
