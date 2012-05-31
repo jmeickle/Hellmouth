@@ -32,6 +32,7 @@ class MainPane(View):
     def ready(self):
         self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
         self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
+        self.spawn(Place(self.screen, STATUS_X+2, STATUS_Y, MAP_START_X, MAP_START_Y))
 
 # Smaller, right-hand pane
 class SidePane(View):
@@ -258,12 +259,20 @@ class Status(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
-         self.line(self.map.level.name, "red-black")
-         self.line(self.map.name)
+        return True
+#         self.line(self.map.level.name, "red-black")
+#         self.line(self.map.name)
 #        self.line("Pain", "red-black")
 #        self.line("Shock", "magenta-black")
 
-# Very hackish right now: events added through map...
+class Place(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y, start_x, start_y)
+
+    def draw(self):
+         self.line(self.map.level.name, "red-black")
+         self.line(self.map.name)
+
 class LogViewer(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
