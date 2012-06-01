@@ -27,6 +27,13 @@ class HitLoc:
     def appearance(self):
         return hit_locations.get(self.type)
 
+    def descendants(self):
+        descendants = [self]
+        if self.children:
+            for child in self.children:
+                descendants.extend(child.descendants())
+        return descendants
+
     # Return a list of unique items.
     def items(self):
         # DARK MAGIC
