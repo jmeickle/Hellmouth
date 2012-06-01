@@ -150,7 +150,7 @@ class HitLoc:
     def hit(self, attack, reciprocal=False):
         if reciprocal is False:
             attack["damage blocked"] = self.DR()
-            self.reciprocal(attack)
+#            self.reciprocal(attack)
         else:
             attack["reciprocal damage blocked"] = self.DR()
 
