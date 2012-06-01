@@ -238,10 +238,9 @@ class Cell:
             list.append("a %s" % self.actor.name)
         if self.terrain is not None:
             list.append("a %s" % self.terrain.name)
-        if len(self.items) == 1:
-            list.append("an item")
-        elif len(self.items) > 1:
-            list.append("some items")
+        if len(self.items) > 0:
+            for appearance, itemlist in self.items.items():
+                list.append(appearance)
         if not list:
             list.append("nothing of interest")
         return commas(list, True) # Capitalized.

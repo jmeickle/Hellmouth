@@ -73,7 +73,7 @@ class MainMap(View):
             elif c == ord('v'):
                 if self.cursor is None:
                     self.cursor = self.spawn(Cursor(self.player.pos))
-                    self.cursor.spawn(Examine(self.screen, self.width, 1, 0, self.BOTTOM))
+                    self.cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
 
         if True is True:#else:
@@ -185,6 +185,7 @@ class Examine(View):
     def draw(self):
         pos = self.parent.pos
         cell = self.map.cell(pos)
+        self.line("Press +/- to change cursor (cosmetic).")
         if cell is not None:
             string = cell.contents()
             self.line("Cursor: %s" % string)

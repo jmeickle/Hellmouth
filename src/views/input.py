@@ -4,6 +4,7 @@ from component import Component
 from views.view import View
 from define import *
 from hex import *
+from collections import deque
 
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):
@@ -101,13 +102,22 @@ class Cursor(Component):
     def __init__(self, pos, style="1hex"):
         Component.__init__(self)
         self.pos = pos
-        self.style = style
+        self.styles = deque(["1hex", "<>", "{}", "[]", "()"])
+        self.style = self.styles[0]
 
     def keyin(self, c):
         if c == ord(' '):
             self.parent.cursor = None
             self.suicide()
+        elif c == ord('-'):
+            self.styles.rotate(-1)
+            self.style = self.styles[0]
+        elif c == ord('+'):
+            self.styles.rotate(1)
+            self.style = self.styles[0]
         # TODO: Replace by hexdirs code
+        elif c == ord('5'):
+            self.scroll(CC)
         elif c == ord('7'):
             self.scroll(NW)
         elif c == ord('4'):
