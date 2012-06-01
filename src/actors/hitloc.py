@@ -27,6 +27,14 @@ class HitLoc:
     def appearance(self):
         return hit_locations.get(self.type)
 
+    def severed(self):
+        if self.status() == SEVERED:
+            return True
+        if self.parent is not None:
+            return self.parent.severed()
+        else:
+            return False
+
     def descendants(self):
         descendants = [self]
         if self.children:
@@ -77,8 +85,8 @@ class HitLoc:
     # Return the healthiness of the limb
     # TODO: Base these values on self.owner
     def status(self):
-        if sum(self.wounds) > 15:    return SEVERED
-        elif sum(self.wounds) >= 10: return CRIPPLED
+        if sum(self.wounds) > 10:    return SEVERED
+        elif sum(self.wounds) >= 6:  return CRIPPLED
         elif sum(self.wounds) > 4:   return INJURED
         elif sum(self.wounds) > 1:   return SCRATCHED
         else:                        return UNHURT
@@ -179,7 +187,7 @@ class HitLoc:
 
     # Return a color for the limb status.
     def color(self):
-        if self.status() == SEVERED:     return "black"
+        if self.severed() is True:       return "black"
         elif self.status() == CRIPPLED:  return "magenta"
         elif self.status() == INJURED:   return "red"
         elif self.status() == SCRATCHED: return "yellow"

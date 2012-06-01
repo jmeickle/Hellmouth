@@ -307,6 +307,17 @@ class Actor:
         if attack["damage done"] > 0:
             attack["location"].hurt(attack["damage done"])
             self.hp_spent += attack["damage done"]
+            # HACK: This can only be true if it was damaged just now... I think.
+            if attack["location"].severed() is True:
+                self.screen("ouch!", {"body_text" : self.limbloss(attack)})
+
+    # We just lost a limb :(
+    def limbloss(self, attack):
+        limbnames = []
+        descendants = attack["location"].descendants()
+        for descendant in descendants:
+            limbnames.append(hit_locations.get(descendant.type))
+        return "Auuuuugh! Your %s has been severed!<br><br>In total, you've lost the use of your %s." % (attack["location"].appearance(), commas(limbnames, False))
 
     # Check whether you are dead.
     def check_dead(self):
@@ -401,7 +412,13 @@ class Actor:
         if loc is None:
             subroll = r1d6()
             loc = self.body.table[("%s-%s" % (roll, subroll))]
-        return loc
+        attempts = 0
+        # HACK: This will only happen if all locs are gone and at that point it should be dead.
+        while loc.severed() is True and attempts < 100:
+            loc = self.randomloc()
+            attempts += 1
+        else:
+            return loc
 
     # TODO: Get rid of this?
     # Choose the color for a hit location.
@@ -413,8 +430,12 @@ class Actor:
             return "%s-black" % loc.color()
 
     # DR number for a location.
-    def locdr(self, loc):
-        dr = self.body.locs.get(loc, None).DR()
+    def locdr(self, slot):
+        loc = self.body.locs.get(slot, None)
+        if loc.severed() is True:
+            return " "
+
+        dr = loc.DR()
         if dr == 0:
             return " "
         elif dr < 10:
