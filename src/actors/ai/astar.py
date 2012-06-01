@@ -21,11 +21,15 @@ class AStar:
         self.closed_list = {}
         self.map = map
 
-    def add_open(self, pos, parent=None):
+    def add_open(self, pos, parent=None, blocked=False):
         cell = self.map.cell(pos)
         if cell is not None:
             # Can pass through. Use it.
-            if cell.impassable() is False:
+            if blocked is True and cell.blocked() is False:
+                node = Node(pos, parent)
+                self.open_list[pos] = node
+                return node
+            elif blocked is False and cell.impassable() is False:
                 node = Node(pos, parent)
                 self.open_list[pos] = node
                 return node
@@ -68,7 +72,7 @@ class AStar:
         curr = self.add_open(pos)
 
         for dir in dirs:
-            pos = self.add_open(add(curr.pos, dir), curr)
+            pos = self.add_open(add(curr.pos, dir), curr, True)
             if pos is not False:
                 pos.set_cost(curr.pos, dest)
 
