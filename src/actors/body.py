@@ -99,14 +99,14 @@ class Humanoid(BodyPlan):
     def paperdoll(self):
         p = self.parent
         list = []
-        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.wound('Head'), p.loccol('Head')))
+        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.locdr('Head'), p.loccol('Head')))
         list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
-        list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.wound('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.wound('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.wound('RArm')))
-        list.append(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.wound('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.wound('RHand')))
+        list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.locdr('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.locdr('RArm')))
+        list.append(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.locdr('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.locdr('RHand')))
         list.append('   <%s>.\</><%s>-</><%s>/.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
-        list.append('  %s<%s>|</>   <%s>|</>%s  ' % (p.wound('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.wound('RLeg')))
+        list.append('  %s<%s>|</>   <%s>|</>%s  ' % (p.locdr('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.locdr('RLeg')))
         list.append('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
-        list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.wound('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.wound('RFoot')))
+        list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.locdr('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.locdr('RFoot')))
         return list
 
 class Octopod(BodyPlan):

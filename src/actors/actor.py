@@ -410,6 +410,16 @@ class Actor:
         else:
             return "%s-black" % loc.color()
 
+    # DR number for a location.
+    def locdr(self, loc):
+        dr = self.body.locs.get(loc, None).DR()
+        if dr == 0:
+            return " "
+        elif dr < 10:
+            return "<cyan-black>%s</>" % dr
+        else:
+            return "<cyan-black>!</>"
+
     # Calculate how many points of wounds a location has, then return
     # it as a single character. Optional parameter: wrap the character
     # in a color tag.
