@@ -134,13 +134,17 @@ class HitLoc:
     # COMBAT
     # Ickkkk.
     def hit(self, attack):
+        attack["damage blocked"] = self.DR()
+
+    def DR(self):
+        dr = 0
+        # HACK: Use all items!
         import random
-        attack["damage blocked"] = 0
         for appearance, itemlist in self.worn.items():
             item = random.choice(itemlist)
-            attack["damage blocked"] += item.dr
-        attack["damage blocked"] += self.dr
-        attack["damage blocked"] += self.owner.DR()
+            dr += item.dr
+        dr += self.dr + self.owner.DR()
+        return dr
 
     def multiplier(self, attack):
         multipliers = {"cut" : 1.5, "imp" : 2}
