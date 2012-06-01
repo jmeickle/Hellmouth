@@ -156,11 +156,10 @@ class HitLoc:
 
     # Return a color for the limb status.
     def color(self):
-        if self.status() == SEVERED:     return "white"
+        if self.status() == SEVERED:     return "black"
         elif self.status() == CRIPPLED:  return "magenta"
         elif self.status() == INJURED:   return "red"
         elif self.status() == SCRATCHED: return "yellow"
         else:                            return "green"
 
     # TODO: Move the limb glyph code here.
-
