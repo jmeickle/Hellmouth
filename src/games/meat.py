@@ -56,7 +56,7 @@ class Game(Component):
                 return True
 
             # Get screens from the level (which may have gotten some from the map.)
-            self.screens = self.level.screens
+            self.screens.extend(self.level.screens)
             self.level.screens = []
 
         # Show any screens we picked up.

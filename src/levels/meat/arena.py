@@ -32,7 +32,7 @@ class MeatArena():
             return False
 
         # Get screens from the map.
-        self.screens = self.map.screens
+        self.screens.extend(self.map.screens)
         self.map.screens = []
 
     # Go to a specific map.
