@@ -140,7 +140,8 @@ class Actor:
             return False
 
         if self.map.cell(pos).occupied() is True:
-            return self.attack(self.map.actor(pos))
+            if self.controlled != self.map.actor(pos).controlled:
+                return self.attack(self.map.actor(pos))
         else:
             return self.move(pos)
 
