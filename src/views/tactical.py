@@ -393,16 +393,16 @@ class Inventory(View):
             for appearance, items in loc.readied.items():
                 for item in items: # Ick. Definitely need to move this printing!
                     if item.is_wielded():
-                        equipped += "%s (wielded)" % appearance
+                        equipped += "%s" % appearance # (wielded)
                     else:
-                        equipped += "%s (readied)" % appearance
+                        equipped += "%s" % appearance # (readied)
             for appearance, items in loc.held.items():
                 for item in items:
                     if not item.is_wielded():
-                        equipped += "%s (held)" % appearance
+                        equipped += "%s" % appearance # (held)
             for appearance, items in loc.worn.items():
                 for item in items:
-                    equipped += "%s (worn)" % appearance
+                    equipped += "%s" % appearance # (worn)
 
             # If we don't have a string yet:
             if len(equipped) == 0:
@@ -450,7 +450,7 @@ class Inventory(View):
 
         self.cline("  %s" % commas(actions))
 
-    # Returns the seletected item (or appearance).
+    # HACK: Returns the seletected item (or appearance).
     def selected(self):
         if self.sidescroller.index == 0 and len(self.items) > 0:
             appearance, items = self.items[self.scroller.index]
