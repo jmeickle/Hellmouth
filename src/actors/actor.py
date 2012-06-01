@@ -3,7 +3,7 @@ from random import choice
 from define import *
 from dice import *
 from hex import *
-
+from text import *
 from generators.text.describe import describe
 
 from data import skills
@@ -464,11 +464,13 @@ class Actor:
     # 'Forcibly' remove a specific inventory item (and return it).
     # Returns false if the list doesn't exist or is empty.
     def _remove(self, item):
-        list = self.inventory[item.appearance()]
-        if list is not None:
-            list.remove(item)
-            if len(list) == 0:
+        itemlist = self.inventory[item.appearance()]
+        if itemlist is not None:
+            itemlist.remove(item)
+            if len(itemlist) == 0:
                 del self.inventory[item.appearance()]
+            else:
+                self.inventory[item.appearance()] = itemlist
             return item
         else:
             return False
@@ -476,11 +478,11 @@ class Actor:
     # Remove a single item (randomly chosen) based on its appearance (and return it).
     # Returns false if the list doesn't exist or is empty.
     def remove(self, appearance):
-        list = self.inventory.get(appearance, None)
-        if list is not None:
-            item = choice(list)
-            list.remove(item)
-            if len(list) == 0:
+        itemlist = self.inventory.get(appearance, None)
+        if itemlist is not None:
+            item = choice(itemlist)
+            itemlist.remove(item)
+            if len(itemlist) == 0:
                 del self.inventory[appearance]
             return item
         else:
@@ -496,13 +498,18 @@ class Actor:
                 self.add(item)
 
     # Get everything from the current cell.
+    # HACK: Appearances might change in picking them up!
     def get_all(self): 
         cell = self.cell()
-        while len(cell.items) > 0:
-            appearance, list = cell.items.popitem()
-            self._merge(appearance, list)
+        if len(cell.items) > 0:
+            appearances = []
 
-        log.add("You pick up some items.")
+            while len(cell.items) > 0:
+                appearance, itemlist = cell.items.popitem()
+                self._merge(appearance, itemlist)
+                appearances.append(appearance)
+
+            log.add("You pick up the %s" % commas(appearances, False))
 
     # TODO: Support dropping to any cell
     # 'Forcibly' drop a specific inventory item.
@@ -512,7 +519,7 @@ class Actor:
             if self._unequip(item) is True:
                 self._remove(item)
                 self.cell().put(item)
-                log.add("You drop the %s"%item.appearance())
+                log.add("You drop the %s." % item.appearance())
             else:
                 exit("Lost an item: it was removed, but not returned.")
         return False
@@ -532,16 +539,14 @@ class Actor:
     def drop_all(self): 
         cell = self.cell()
         while len(self.inventory) > 0:
-            appearance, list = self.inventory.popitem()
-            cell._merge(appearance, list)
+            appearance, itemlist = self.inventory.popitem()
+            cell._merge(appearance, itemlist)
 
     # Tack an appearance and associated list of items from a cell into your own inventory.
-    def _merge(self, appearance, list):
-        current = self.inventory.get(appearance, None)
-        if current is not None:
-            return current.extend(list)
-        else:
-            self.inventory[appearance] = list
+    def _merge(self, appearance, itemlist):
+        current = self.inventory.get(appearance, [])
+        current.extend(itemlist)
+        self.inventory[appearance] = current
 
     # Misc. map-item checking functions
 
@@ -641,7 +646,6 @@ class Actor:
         if wear is True and self.worn(item) is False:
             for loc in locs:
                 loc.wear(item)
-            return True
 
         # Can't wear it? Ready it as a weapon, if applicable and not already readied.
         elif weapon is True and self.readied(item) is False:
@@ -660,10 +664,13 @@ class Actor:
 
         # Otherwise, we fail.
         else:
+            log.add("You can't equip the %s right now." % item.appearance())
             return False
-            log.add("You can't equip %s right now." % item.appearance())
 
-        log.add("You equip %s." % item.appearance())
+        # HACK: Remove the equipped item from inventory.
+        self._remove(item)
+        log.add("You equip the %s." % item.appearance())
+        return True
 
     # TODO: Sanity checks not handled above.
     # Return false if nothing could be equipped.
@@ -676,11 +683,23 @@ class Actor:
 
     # Can we equip a specific item?
     def _can_equip_item(self, item, loc=None):
+        # HACK: Should not proceed this far.
+        if item is False or item is None:
+            return False
+
         if item.is_worn():
             return False
 
-        # HACK:
-        if loc is not None:
+        # HACK: Prevent armor layering.
+        if item.slots is not None:
+            for slot in item.slots:
+                loc = self.body.locs[slot]
+                if len(loc.worn) > 0:
+                    return False
+
+        # HACK: Prevent wielding more than one weapon.
+        if item.can_be_weapon():
+            loc = self.body.locs[self.body.primary_slot]
             if loc.can_hold(item) is False:
                 return False
         return True
@@ -705,7 +724,9 @@ class Actor:
                 if loc.owner == self:
                     loc.unwear(item)
 
-        log.add("You unequip %s." % item.appearance())
+        # HACK: Add back to inventory after unequipping.
+        self._add(item)
+        log.add("You unequip the %s." % item.appearance())
 
         return True
 
