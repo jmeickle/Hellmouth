@@ -109,6 +109,8 @@ class Item():
     def spikes(self):
         if hasattr(self, 'spikes'):
             return self.spikes
+        else:
+            return None
 
 class Armor(Item):
     def __init__(self):
