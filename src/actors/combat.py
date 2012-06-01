@@ -62,6 +62,8 @@ class CombatAction:
                     attack["target"].hit(attack)
                     self.results["hit"][maneuver] = attack
                     # TODO: Trigger effects that depend on hitting, etc.
+                    if attack.get("reciprocal damage rolled") is not None:
+                        attack["attacker"].hit(attack, True)
 
     def cleanup(self):
         for maneuver, attack in self.results["hit"].items():

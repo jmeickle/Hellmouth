@@ -132,9 +132,12 @@ class HitLoc:
         item.worn.remove(self)
 
     # COMBAT
-    # Ickkkk.
-    def hit(self, attack):
-        attack["damage blocked"] = self.DR()
+    def hit(self, attack, reciprocal=False):
+        if reciprocal is False:
+            attack["damage blocked"] = self.DR()
+            self.reciprocal(attack)
+        else:
+            attack["reciprocal damage blocked"] = self.DR()
 
     def DR(self):
         dr = 0
@@ -145,6 +148,19 @@ class HitLoc:
             dr += item.dr
         dr += self.dr + self.owner.DR()
         return dr
+
+    # TODO: Locational and actor spikes
+    def reciprocal(self, attack):
+        # HACK: Use all items!
+        import random
+        if len(self.worn) > 0:
+            for appearance, itemlist in self.worn.items():
+                item = random.choice(itemlist)
+
+            spikes = item.spikes()
+            if spikes is not None:
+                attack["reciprocal damage rolled"] = dice(spikes)
+
 
     def multiplier(self, attack):
         multipliers = {"cut" : 1.5, "imp" : 2}

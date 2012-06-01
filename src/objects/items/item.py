@@ -105,6 +105,11 @@ class Item():
         assert self.is_readied(loc) is False, "Item wasn't worn or held, but still managed to be readied."
         return False
 
+    # Return spike damage.
+    def spikes(self):
+        if hasattr(self, 'spikes'):
+            return self.spikes
+
 class Armor(Item):
     def __init__(self):
         Item.__init__(self)

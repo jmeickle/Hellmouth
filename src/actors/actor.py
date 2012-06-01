@@ -294,8 +294,12 @@ class Actor:
         return True
 
     # Process damage when you are hit by something.
-    def hit(self, attack):
-        attack["location"] = self.randomloc()
+    def hit(self, attack, location=None):
+        if location is not None:
+            attack["location"] = self.body.locs[location]
+        else:
+            attack["location"] = self.randomloc()
+
         attack["location"].hit(attack)
         attack["location"].multiplier(attack)
         # TODO: Cap by limb, etc.

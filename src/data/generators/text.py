@@ -27,5 +27,6 @@ tokens = {
     "dmg-sever-crush-neck" : "crush the windpipe",
     "miss" : "miss",
     "def" : "defends against",
+    "spikes" : "but hits itself for",
 
 }
