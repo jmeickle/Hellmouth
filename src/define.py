@@ -89,3 +89,19 @@ secondary_attributes = ("HP", "FP", "MP", "Will", "Perception", "Speed", "Move")
 
 # Make the syntax neater for weapon definitions.
 U0 = (0, False)
+
+# TODO: Just change the internal names to be cleaner?
+hit_locations = { 
+    "Torso" : "torso",
+    "Groin" : "groin",
+    "Neck" : "neck",
+    "Head" : "head",
+    "RArm" : "right arm",
+    "LArm" : "left arm",
+    "RHand" : "right hand",
+    "LHand" : "left hand",
+    "RLeg" : "right leg",
+    "LLeg" : "left leg",
+    "RFoot" : "right foot",
+    "LFoot" : "left foot",
+}

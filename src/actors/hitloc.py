@@ -24,6 +24,9 @@ class HitLoc:
         self.readied = {}
         self.worn = {}
 
+    def appearance(self):
+        return hit_locations.get(self.type)
+
     # Return a list of unique items.
     def items(self):
         # DARK MAGIC
