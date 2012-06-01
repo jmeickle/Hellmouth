@@ -393,6 +393,7 @@ class Actor:
     
     # INJURY / HIT LOCATIONS
 
+    # TODO: Move this to body class.
     # Choose a random hit location
     def randomloc(self):
         roll = r3d6()
@@ -402,6 +403,7 @@ class Actor:
             loc = self.body.table[("%s-%s" % (roll, subroll))]
         return loc
 
+    # TODO: Get rid of this?
     # Choose the color for a hit location.
     def loccol(self, loc):
         loc = self.body.locs.get(loc, None)
