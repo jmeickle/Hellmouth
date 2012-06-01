@@ -1,11 +1,10 @@
 SHORT TERM GOALS:
-- Fix equipment bugs
-- Improve monster AI
+- Improved monster target-seeking AI
 - Improved random monster generation
 - Improved random item generation
-- Support numpads correctly across systems
 
 LONGER TERM GOALS:
+- Support numpads correctly across systems
 - Screen to spend discretionary character points
 - Fill out lifepaths so all reachable events are meaningful
 - Make lifepath events affect character stats
@@ -29,8 +28,6 @@ DISPLAY:
 
 UTILITY:
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
-- Make all pos functions accept tuple args consistently.
 
 STRUCTURE:
-- Make logging a feature of the game rather than of maps.
 - Split generators into classes
