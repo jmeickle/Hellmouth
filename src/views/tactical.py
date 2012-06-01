@@ -188,7 +188,7 @@ class Examine(View):
         self.line("Press +/- to change cursor (cosmetic).")
         if cell is not None:
             string = cell.contents()
-            self.line("Cursor: %s" % string)
+            self.line("Cursor: %s." % string)
         else:
             self.line("Cursor: There's... nothing. Nothing at all.")
 
@@ -449,7 +449,8 @@ class Inventory(View):
         if self.player.can_get_items():
             actions.append("(<green-black>G</>)et all")
 
-        self.cline("  %s" % commas(actions))
+        if actions:
+            self.cline("  %s." % commas(actions))
 
     # HACK: Returns the seletected item (or appearance).
     def selected(self):

@@ -8,7 +8,6 @@ def striptags(string):
 def commas(list, capitalize=False):
     str = ""
     spacer = " "
-    punc = "."
 
     for x in range(len(list)):
         if len(list) > 2 and x > 0:
@@ -18,7 +17,6 @@ def commas(list, capitalize=False):
         if x > 0:
             str += spacer
         str += list[x]
-    str += punc
 
     if capitalize is True:
         str = str.capitalize()

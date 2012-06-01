@@ -526,7 +526,7 @@ class Actor:
                 self._merge(appearance, itemlist)
                 appearances.append(appearance)
 
-            log.add("You pick up the %s" % commas(appearances, False))
+            log.add("You pick up the %s." % commas(appearances, False))
 
     # TODO: Support dropping to any cell
     # 'Forcibly' drop a specific inventory item.
