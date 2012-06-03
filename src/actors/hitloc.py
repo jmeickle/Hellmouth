@@ -81,11 +81,12 @@ class HitLoc:
     # Return the healthiness of the limb
     # TODO: Base these values on self.owner
     def status(self):
-        if sum(self.wounds) > 10:    return SEVERED
-        elif sum(self.wounds) >= 6:  return CRIPPLED
-        elif sum(self.wounds) > 4:   return INJURED
-        elif sum(self.wounds) > 1:   return SCRATCHED
-        else:                        return UNHURT
+        if self.severed() is True:                    return SEVERED
+        elif self.dismembered() is True:              return DISMEMBERED
+        elif self.crippled() is True:                 return CRIPPLED
+        elif sum(self.wounds) > self.owner.MaxHP()/2: return INJURED
+        elif sum(self.wounds) > 0:                    return SCRATCHED
+        else:                                         return UNHURT
 
     # Set up a parent/child relationship.
     def add_child(parent, child):
@@ -243,6 +244,7 @@ class HitLoc:
             # Store the same part object in the copy's locations.
             corpse.actor.body.locs[part.type] = part
             # Delete the part from the original actor.
+            # TODO: Just mark as severed instead?
             original.body.locs[part.type] = None
         # Put the corpse in the cell.
         original.cell().put(corpse)
@@ -250,11 +252,13 @@ class HitLoc:
     # Return a color for the limb status.
     # TODO: Move the limb glyph code here.
     def color(self):
-        if self.severed() is True:       return "black"
-        elif self.status() == CRIPPLED:  return "magenta"
-        elif self.status() == INJURED:   return "red"
-        elif self.status() == SCRATCHED: return "yellow"
-        else:                            return "green"
+        status = self.status()
+        if status == SEVERED:       return "black"
+        elif status == DISMEMBERED: return "magenta"
+        elif status == CRIPPLED:    return "red"
+        elif status == INJURED:     return "yellow"
+        elif status == SCRATCHED:   return "cyan" # TODO: Change color.
+        else:                       return "green"
 
     # Returns the damage that must be *exceeded* to cripple a limb.
     def crippling(self):
@@ -276,6 +280,7 @@ class HitLoc:
 
     # STUB: Better severed status.
     def severed(self):
+        return False
         if self.status() == SEVERED:
             return True
         if self.parent is not None:

@@ -27,7 +27,8 @@ UNHURT = 0
 SCRATCHED = 1
 INJURED = 2
 CRIPPLED = 3
-SEVERED = -1
+DISMEMBERED = 4
+SEVERED = 5
 
 # Damage types.
 damage_types = {
