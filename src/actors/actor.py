@@ -15,6 +15,8 @@ from combat import CombatAction
 import log
 from operator import itemgetter
 
+from objects.items.carrion import Corpse
+
 # Players, monsters, etc.
 class Actor:
     def __init__(self):
@@ -309,23 +311,33 @@ class Actor:
 
     # Check whether you are dead.
     def check_dead(self):
+        if self.alive is False:
+            return True
+
         if self.HP() <= -5*self.MaxHP():
             return True
 
     # Remove self from the map and the queue
     def die(self):
-        if dist(self.map.player.pos, self.pos) <= 10: # HACK: Shouldn't be a magic number
-            log.add(describe("%s has been slain!" % self.name))
         if self.death() is True:
+            self.alive = False
             if self == self.map.acting:
                 self.map.acting = None
             self.map.queue.remove(self)
             self.cell().remove(self)
-            self.alive = False
 
-    # Actions to perform on death. Return whether we actually died.
+    # *Mechanical* actions to perform on death. Return whether we actually died.
+    # For example, extra lives happen here - you die, but then come back.
     def death(self):
+        # HACK: Shouldn't be a magic number
+        if dist(self.map.player.pos, self.pos) <= 10:
+            log.add(describe("%s has been slain!" % self.name))
+        self.cell().put(self.corpse())
         return self.check_dead()
+
+    # Generate a corpse of ourselves.
+    def corpse(self):
+        return Corpse(self)
 
     # STATS
 
