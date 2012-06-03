@@ -1,5 +1,6 @@
 from define import *
 from objects.items.item import Natural
+from objects.items.carrion import PartialCorpse
 
 # Hit location
 class HitLoc:
@@ -24,16 +25,11 @@ class HitLoc:
         self.readied = {}
         self.worn = {}
 
+        # A layer can have multiple items (like several rings).
+        self.layers = [[]]
+
     def appearance(self):
         return hit_locations.get(self.type)
-
-    def severed(self):
-        if self.status() == SEVERED:
-            return True
-        if self.parent is not None:
-            return self.parent.severed()
-        else:
-            return False
 
     def descendants(self):
         descendants = [self]
@@ -147,13 +143,67 @@ class HitLoc:
         item.worn.remove(self)
 
     # COMBAT
-    def hit(self, attack, reciprocal=False):
-        if reciprocal is False:
-            attack["damage blocked"] = self.DR()
-#            self.reciprocal(attack)
-        else:
-            attack["reciprocal damage blocked"] = self.DR()
 
+    # Calculate what happens when a limb is hit, but don't actually apply the
+    # effects, in order to handle simultaneous actions.
+    def hit(self, attack):
+        # TODO: (Source, DR blocked) for messaging
+        # TODO: Damage to items.
+        # TODO: Min damage properly
+        attack["basic damage blocked"] = self.DR()
+        attack["penetrating damage"] = max(0, attack["basic damage"] - attack["basic damage blocked"])
+        attack["multiplier"] = self.multiplier(attack["damage type"])
+        # No wound is necessarily no injury.
+        if attack["penetrating damage"] <= 0:
+            attack["wound"] = 0
+            attack["injury"] = 0
+        else:
+            # Wounds are always at least one damage, but they may not cause injury.
+            attack["wound"] = max(1, int(attack["penetrating damage"] * attack["multiplier"]))
+
+            # Any hit location can suffer a major wound.
+            if attack["wound"] > self.owner.MaxHP()/2:
+                attack["major wound"] = True
+
+            # Less complicated case.
+            if self.crippling() is False:
+                attack["injury"] = attack["wound"]
+
+            # More complicated case: some hit locations can be crippled.
+            else:
+                if attack["wound"] > self.crippling():
+                    attack["major wound"] = True
+                    attack["crippled"] = True
+                    attack["crippling major wound"] = True
+                    if attack["wound"] > 2*self.crippling():
+                        attack["dismembered"] = True
+                        attack["dismembering major wound"] = True
+
+                # Further damage to a crippled limb causes wounds - but it
+                # doesn't cause further injury over the crippling amount!
+                if self.crippled() is True:
+                    attack["injury"] = 0
+
+                # Cap damage based on max crippling damage, then figure out
+                # if this attack caused crippling or dismemberment.
+                else:
+                    attack["injury"] = min(attack["wound"] + sum(self.wounds), 1 + self.crippling()) - sum(self.wounds)
+
+                    # If the wound itself wouldn't have caused crippling, but
+                    # it's pushed the limb over the edge to become crippled:
+                    if attack["wound"] + sum(self.wounds) > self.crippling():
+                        attack["crippled"] = True
+
+                    # Likewise, but for dismemberment.
+                    if attack["wound"] + sum(self.wounds) > 2*self.crippling():
+                        attack["dismembered"] = True
+                        if attack["damage type"] == "cut":
+                            attack["severed"] = True
+
+#            if attack["location"].severed() is True:
+#                self.screen("ouch!", {"body_text" : self.limbloss(attack)})
+
+    # TODO: Make this a display-only function, not for handling damage done.
     def DR(self):
         dr = 0
         # HACK: Use all items!
@@ -164,28 +214,41 @@ class HitLoc:
         dr += self.dr + self.owner.DR()
         return dr
 
-    # TODO: Locational and actor spikes
-    def reciprocal(self, attack):
-        # HACK: Use all items!
-        import random
-        if len(self.worn) > 0:
-            for appearance, itemlist in self.worn.items():
-                item = random.choice(itemlist)
-
-            spikes = item.spikes()
-            if spikes is not None:
-                attack["reciprocal damage rolled"] = dice(spikes)
-
-
-    def multiplier(self, attack):
+    # TODO: Make this more useful for display
+    def multiplier(self, type):
         multipliers = {"cut" : 1.5, "imp" : 2}
-        attack["multiplier"] = multipliers.get(attack["damage type"], 1)
+        return multipliers.get(type, 1)
 
     # Add a wound to this location.
-    def hurt(self, amt):
-        self.wounds.append(amt)
+    # TODO: Better tracking of wounds.
+    def hurt(self, attack):
+        self.wounds.append(attack["wound"])
+        # BLOOD EVERYWHERE
+        if attack.get("severed") is True:
+            self.sever()
+
+    def sever(self):
+        # Store the original.
+        original = self.owner
+        # Generate a corpse.
+        corpse = PartialCorpse(original)
+        # Get affected parts.
+        parts = self.descendants()
+        # Reset the corpse's locations.
+        corpse.actor.body.locs = {}
+        # Stick the affected parts in the corpse and change their owner.
+        for part in parts:
+            # Change the part's owner.
+            part.owner = corpse.actor
+            # Store the same part object in the copy's locations.
+            corpse.actor.body.locs[part.type] = part
+            # Delete the part from the original actor.
+            original.body.locs[part.type] = None
+        # Put the corpse in the cell.
+        original.cell().put(corpse)
 
     # Return a color for the limb status.
+    # TODO: Move the limb glyph code here.
     def color(self):
         if self.severed() is True:       return "black"
         elif self.status() == CRIPPLED:  return "magenta"
@@ -193,7 +256,33 @@ class HitLoc:
         elif self.status() == SCRATCHED: return "yellow"
         else:                            return "green"
 
-    # TODO: Move the limb glyph code here.
+    # Returns the damage that must be *exceeded* to cripple a limb.
+    def crippling(self):
+        return False
+
+    # Is the limb crippled yet?
+    def crippled(self):
+        if self.crippling() is not False:
+            if sum(self.wounds) > self.crippling():
+                return True
+        return False
+
+    # Is the limb dismembered yet?
+    def dismembered(self):
+        if self.crippling() is not False:
+            if sum(self.wounds) > 2*self.crippling():
+                return True
+        return False
+
+    # STUB: Better severed status.
+    def severed(self):
+        if self.status() == SEVERED:
+            return True
+        if self.parent is not None:
+            return self.parent.severed()
+        else:
+            return False
+
 # Arms, legs, pseudopods, etc.
 class Limb(HitLoc):
     def __init__(self, type, owner):

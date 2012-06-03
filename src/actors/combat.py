@@ -39,6 +39,7 @@ class CombatAction:
                 hits = self.hits.get(attack["target"], [])
                 hits.append((maneuver, attack))
                 self.hits[attack["target"]] = hits
+
         if len(self.hits) > 0:
             return True
 
@@ -55,18 +56,25 @@ class CombatAction:
                     self.results["defended"][maneuver] = attack
                 else:
                     # Generate damage for the attack
-                    attack["damage"] = attack["attackline"][0]
+                    attack["damage roll"] = attack["attackline"][0]
                     attack["damage type"] = attack["attackline"][1]
-                    attack["damage rolled"] = attack["attacker"].damage(attack["damage"])
-                    #attack["damage done"], attack["damage blocked"] =
-                    attack["target"].hit(attack)
+                    attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
+                    if attack.get("location") is None:
+                        attack["location"] = attack["target"].randomloc()
+                    attack["location"].hit(attack)
                     self.results["hit"][maneuver] = attack
-                    # TODO: Trigger effects that depend on hitting, etc.
-                    if attack.get("reciprocal damage rolled") is not None:
-                        attack["attacker"].hit(attack, True)
-
+    # Do everything that occurs at the *end* of this attack sequence.
+    # Examples: falling, retreating, shock, etc.
     def cleanup(self):
         for maneuver, attack in self.results["hit"].items():
+            # Cause wounds to limbs.
+            # TODO: Better tracking of wounds.
+            if attack["wound"] > 0:
+                attack["location"].hurt(attack)
+            # Cause wounds to actors.
+            if attack["injury"] > 0:
+                attack["target"].hurt(attack)
+            # Check for dead actors.
             if attack["target"].check_dead() is True:
                 attack["target"].die()
 
