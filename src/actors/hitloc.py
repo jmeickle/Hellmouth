@@ -194,3 +194,20 @@ class HitLoc:
         else:                            return "green"
 
     # TODO: Move the limb glyph code here.
+# Arms, legs, pseudopods, etc.
+class Limb(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+    # Returns the damage that must be *exceeded* to cripple a limb.
+    def crippling(self):
+        return self.owner.MaxHP()/2
+
+# Hands, feet, etc.
+class Extremity(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+    # Returns the damage that must be *exceeded* to cripple an extremity.
+    def crippling(self):
+        return self.owner.MaxHP()/3

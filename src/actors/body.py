@@ -1,4 +1,4 @@
-from hitloc import HitLoc
+from hitloc import *
 from generators import items
 
 # Body layouts - humanoid, hexapod, etc.
@@ -18,8 +18,8 @@ class BodyPlan:
 
     # Build a body from the class information.
     def build(self, owner):
-        for partname, parent, sublocation, rolls in self.parts:
-            part = HitLoc(partname, owner)
+        for partname, partclass, parent, sublocation, rolls in self.parts:
+            part = partclass(partname, owner)
             self.locs[partname] = part
 
             # Generate natural weapons.
@@ -63,24 +63,25 @@ class BodyPlan:
 class Humanoid(BodyPlan):
     # These tuples represent:
     # 1: Part name.
+    # 2: Class.
     # 2: Parent part. Only list parts that have already been listed.
     # 3: True if it's a sublocation rather than a real one.
     # 4: List representing what 3d6 rolls hit that spot.
     #    If a further d6 roll is required, use a list like:
     #        [15, [16, 1, 2, 3], 17]
     parts = (
-             ('Torso', None, False, [9, 10]),
-             ('Groin', 'Torso', False, [11]),
-             ('Neck', 'Torso', False, [17, 18]),
-             ('Head', 'Neck', False, [3, 4, 5]),
-             ('RArm', 'Torso', False, [8]),
-             ('LArm', 'Torso', False, [12]),
-             ('RHand', 'RArm', False, [15, 1, 2, 3]),
-             ('LHand', 'LArm', False, [15, 4, 5, 6],),
-             ('RLeg', 'Groin', False, [6, 7]),
-             ('LLeg', 'Groin', False, [13, 14]),
-             ('RFoot', 'RLeg', False, [[16, 1, 2, 3]]),
-             ('LFoot', 'LLeg', False, [[16, 4, 5, 6]]),
+             ('Torso', HitLoc, None, False, [9, 10]),
+             ('Groin', HitLoc, 'Torso', False, [11]),
+             ('Neck', HitLoc, 'Torso', False, [17, 18]),
+             ('Head', HitLoc, 'Neck', False, [3, 4, 5]),
+             ('RArm', Limb, 'Torso', False, [8]),
+             ('LArm', Limb, 'Torso', False, [12]),
+             ('RHand', Extremity, 'RArm', False, [15, 1, 2, 3]),
+             ('LHand', Extremity, 'LArm', False, [15, 4, 5, 6],),
+             ('RLeg', Limb, 'Groin', False, [6, 7]),
+             ('LLeg', Limb, 'Groin', False, [13, 14]),
+             ('RFoot', Extremity, 'RLeg', False, [[16, 1, 2, 3]]),
+             ('LFoot', Extremity, 'LLeg', False, [[16, 4, 5, 6]]),
     )
 
     primary_slot = 'RHand'
