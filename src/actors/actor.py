@@ -293,23 +293,11 @@ class Actor:
         self.over()
         return True
 
-    # Process damage when you are hit by something.
-    def hit(self, attack, location=None):
-        if location is not None:
-            attack["location"] = self.body.locs[location]
-        else:
-            attack["location"] = self.randomloc()
-
-        attack["location"].hit(attack)
-        attack["location"].multiplier(attack)
-        # TODO: Cap by limb, etc.
-        attack["damage done"] = max(0, int(attack["multiplier"] * (attack["damage rolled"] - attack["damage blocked"])))
-        if attack["damage done"] > 0:
-            attack["location"].hurt(attack["damage done"])
-            self.hp_spent += attack["damage done"]
-            # HACK: This can only be true if it was damaged just now... I think.
-            if attack["location"].severed() is True:
-                self.screen("ouch!", {"body_text" : self.limbloss(attack)})
+    # Take damage.
+    # TODO: Add shock, stun, knockdown, etc.
+    def hurt(self, attack):
+        self.hp_spent += attack["injury"]
+        attack["shock"] = max(attack["injury"], 4)
 
     # We just lost a limb :(
     def limbloss(self, attack):
@@ -406,19 +394,14 @@ class Actor:
 
     # TODO: Move this to body class.
     # Choose a random hit location
+    # TODO: Handle severed rerolling.
     def randomloc(self):
         roll = r3d6()
         loc = self.body.table.get(roll, None)
         if loc is None:
             subroll = r1d6()
             loc = self.body.table[("%s-%s" % (roll, subroll))]
-        attempts = 0
-        # HACK: This will only happen if all locs are gone and at that point it should be dead.
-        while loc.severed() is True and attempts < 100:
-            loc = self.randomloc()
-            attempts += 1
-        else:
-            return loc
+        return loc
 
     # TODO: Get rid of this?
     # Choose the color for a hit location.
