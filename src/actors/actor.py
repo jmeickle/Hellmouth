@@ -221,7 +221,7 @@ class Actor:
 
     # STUB Gets the level of a skill as well as any situational modifiers.
     def skill(self, skill, situational=False):
-        level, default = self.base_skills.get(skill, (None, None))
+        level, default = self.base_skills.get(skill, (0, None))
         # Didn't have it, or anything that defaults to it. So:
 #        if level is None:
 #            skill_data = skills.skill_list.get(skill)
@@ -242,6 +242,7 @@ class Actor:
         level = self.stat(traitname)
         if level is None:
             level = self.skill(traitname)
+        return level
 
     # Performs a stat or skill check.
     def sc(self, traitname):
@@ -283,15 +284,23 @@ class Actor:
         # Can have multiple items here, weirdly enough...
         itemlist = random.choice(self.weapons.values())
         item = random.choice(itemlist)
-        skill = item.primary_skill
+        attack_trait = None
+        trait_level = 0
+
+        # For now: just go with the highest, always.
+        for trait in item.attack_options.keys():
+            if self.trait(trait) > trait_level:
+                attack_trait = trait
+                trait_level = self.trait(trait)
+
         # Weren't able to find a skill.
-        if self.trait(skill) is None:
+        if attack_trait is None or trait_level == 0:
             log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
             self.over()
             return False
 
-        attack_option = random.choice(item.attack_options.get(skill).keys())
-        maneuvers.append((target, item, skill, attack_option))
+        attack_option = random.choice(item.attack_options.get(attack_trait).keys())
+        maneuvers.append((target, item, attack_trait, attack_option))
         self._attack(maneuvers)
         self.over()
         return False
