@@ -37,17 +37,18 @@ def sc(skill, mod=0):
     margin = skill + mod - roll
 
     # TODO: Handle critical success/failure numbers changing with skill.
-    if (roll <= 4) or (skill > 15 and roll <= 5) or (skill > 16 and roll <= 6):
+    if (roll <= 4) or (skill >= 15 and roll <= 5) or (skill >= 16 and roll <= 6):
         return CRIT_SUCC, margin
-    elif (roll == 18) or (roll == 17 and skill < 16) or (margin >= 10):
+    elif (roll == 18) or (roll == 17 and skill <= 15) or (margin >= 10):
         return CRIT_FAIL, margin
 
-    if margin > 0:
+    if margin >= 0:
         return SUCC, margin
     else:
         return FAIL, margin
 
 # Quick contest: attacker vs. defender
+# TODO: Implement this
 #def qc(att, att_mod, def, def_mod):
 #    att_succ, att_marg = sc(att, att_mod)
 #    def_succ, def_marg = sc(def, def_mod)
