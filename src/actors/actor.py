@@ -223,27 +223,30 @@ class Actor:
     def skill(self, skill, situational=False):
         level, default = self.base_skills.get(skill, (None, None))
         # Didn't have it, or anything that defaults to it. So:
-        if level is None:
-            skill_data = skills.skill_list.get(skill)
-            default = skill_data.get("attribute_default")
+#        if level is None:
+#            skill_data = skills.skill_list.get(skill)
+#            default = skill_data.get("attribute_default")
             # If default is False, no default from attr for that skill.
-            if default is None:
+#            if default is None:
                 # Default: -4 easy, -5 average, -6 hard
-                level = self.stat(skill_data["attribute"]) - 4 + difficulties[skill_data["difficulty"]]
-            elif default is not False:
-                level = self.stat(skill_data["attribute"]) - default
-        if situational is True:
-            return level, 0
-        else:
-            return level
+#                level = self.stat(skill_data["attribute"]) - 4 + difficulties[skill_data["difficulty"]]
+#            elif default is not False:
+#                level = self.stat(skill_data["attribute"]) - default
+#        if situational is True:
+#            return level, 0
+#        else:
+        return level
+
+    # Get a skill/stat.
+    def trait(self, traitname):
+        level = self.stat(traitname)
+        if level is None:
+            level = self.skill(traitname)
 
     # Performs a stat or skill check.
-    def sc(self, skill):
-        level = self.stat(skill)
-        mod = 0
-        # Wasn't a stat, but a skill instead.
-        if level is None:
-            level, mod = self.skill(skill, True)
+    def sc(self, traitname):
+        level = self.trait(traitname)
+        mod = 0 # TODO: Get mod.
         return sc(level, mod)
 
     # Performs a quick contest.
