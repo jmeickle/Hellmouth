@@ -15,16 +15,17 @@ generators = {
                  "Karate" : {},
             }},
             "Melee" : { "options" : {
-                "Shortsword" : {},
-                "Broadsword" : {},
                 "Axe" : {"weight": 50},
+                "Broadsword" : {},
+                "Shortsword" : {"weight" : 150},
+                "Spear" : {},
             }},
         }},
-        "magic" : { "weight" : 10, "options" : {
-            "Fire Magic" : {},
-            "Ice Magic" : {},
-            "Necromancy" : {"weight" : 10},
-        }},
+#        "magic" : { "weight" : 10, "options" : {
+#            "Fire Magic" : {},
+#            "Ice Magic" : {},
+#            "Necromancy" : {"weight" : 10},
+#        }},
     }, #</skills>
 } #</default>
 } #</generators>
