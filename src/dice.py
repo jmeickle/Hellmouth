@@ -39,10 +39,10 @@ def sc(skill, mod=0):
     # TODO: Handle critical success/failure numbers changing with skill.
     if (roll <= 4) or (skill > 15 and roll <= 5) or (skill > 16 and roll <= 6):
         return CRIT_SUCC, margin
-    elif (roll == 18) or (roll == 17 and skill < 16) or (margin >= 10):
+    elif (roll == 18) or (roll == 17 and skill < 16) or (margin <= -10):
         return CRIT_FAIL, margin
 
-    if margin > 0:
+    if margin >= 0:
         return SUCC, margin
     else:
         return FAIL, margin
