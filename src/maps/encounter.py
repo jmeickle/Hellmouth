@@ -53,8 +53,9 @@ class Encounter:
             self.acting.before_turn()
 
         # NPCs use act() until the player's turn comes up.
-        if self.acting.controlled is False:
-            self.acting.act()
+        if self.acting is not None:
+            if self.acting.controlled is False:
+                self.acting.act()
 
     # Go to another map, or if destination is False, let the level figure it out.
     def go(self, destination):
