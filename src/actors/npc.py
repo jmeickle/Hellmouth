@@ -25,6 +25,9 @@ class NPC(Actor):
 
     # AI actions. Currently: move in a random direction.
     def act(self):
+        if self != self.map.acting:
+            return False
+
         assert self.controlled is not True, "A player-controlled actor tried to hit AI code."
 
         if self.target is None:

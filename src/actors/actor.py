@@ -87,10 +87,31 @@ class Actor:
     # UTILITY
 
     # Get ready to act.
-    def prepare(self):
+    def before_turn(self):
         # HACK:
         if self.controlled is True:
             self.check_weapons()
+
+        # HACK:
+        if self.effects.get("Unconscious") is not None:
+            self.over()
+
+    def after_turn(self):
+        # Shock ends at the end of your turn.
+        # TODO: Handle getting shock in your own turn.
+        if self.effects.get("Shock") is not None:
+            del self.effects["Shock"]
+            # TODO: Real message.
+            log.add("%s shrugs off the shock." % self.appearance())
+
+        for effect, details in self.effects.items():
+            if effect == "Stun":
+                # TODO: Mental Stun
+                succ, margin = self.sc('HT')
+                # TODO: Real message.
+                log.add("%s checked HT: %s" % (self.appearance(), margin))
+                if succ > TIE:
+                    del self.effects["Stun"]
 
     # Actor generation/improvement.
     # 'unspent' determines whether to try to re-spend unspent points, as well
@@ -153,6 +174,7 @@ class Actor:
     # Mark self as done acting.
     def over(self):
         if self.map.acting == self:
+            self.after_turn()
             self.map.acting = None
             self.map.queue.append(self)
             if self.controlled is False:
@@ -215,12 +237,12 @@ class Actor:
         else:
             return level
 
-    # Performs a skill check.
+    # Performs a stat or skill check.
     def sc(self, skill):
-        level, mod = self.skill(skill, True)
-        # Is it a stat instead?
+        level = self.stat(skill)
+        mod = 0
         if level is None:
-            level = self.stat(skill)
+            level, mod = self.skill(skill, True)
         return sc(level, mod)
 
     # Performs a quick contest.
@@ -260,7 +282,7 @@ class Actor:
         skill = item.primary_skill
         # Weren't able to find a skill.
         if skill is None:
-            Log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
+            log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
             self.over()
             return False
 
@@ -299,7 +321,29 @@ class Actor:
     # TODO: Add shock, stun, knockdown, etc.
     def hurt(self, attack):
         self.hp_spent += attack["injury"]
-        attack["shock"] = max(attack["injury"], 4)
+
+        # Shock:
+        attack["shock"] = min(attack["injury"], 4)
+        # Shock from multiple sources.
+        shock = self.effects.get("Shock", 0)
+        self.effects["Shock"] = min(4, shock + attack["shock"])
+
+        # Knockdown
+        # TODO: Face/vital/etc. hits
+        if attack.get("major wound") is True:
+            succ, margin = self.sc('HT')
+            if succ < TIE:
+                attack["stun"] = True
+                self.effects["Stun"] = attack["stun"]
+                attack["knockdown"] = True
+                # TODO: Change posture
+                attack["dropped items"] = True
+                # TODO: Force dropping held items
+                if margin <= -5 or succ == CRIT_FAIL:
+                    attack["knockout"] = True
+                    self.effects["Unconscious"] = attack["knockout"]
+                    # TODO: Improve messaging
+                    log.add("%s was knocked unconscious!" % self.appearance())
 
     # We just lost a limb :(
     def limbloss(self, attack):
@@ -342,34 +386,58 @@ class Actor:
     # STATS
 
     # Retrieve actor stat.
-    def stat(self, stat):
-        val = self.attributes.get(stat)
-        # Not an attribute? Must be a calculcated stat.
-        if val is None:
-            return self.calc_stat(stat)
-        else:
-            return val
-
-    # If it wasn't found in self.stats, it must need to be calculated.
-    def calc_stat(self, stat):
+    def stat(self, stat, effective=None):
+        if not hasattr(self, stat):
+            return
         func = getattr(Actor, stat)
-        return func(self)
+        if effective is None:
+            return func(self)
+        else:
+            return func(self, effective)
 
     # Formulas for calculated stats.
+    def ST(self, effective=True):
+        ST = self.attributes.get('ST')
+        #if effective is True:
+        #    ST -= self.effects.get("Shock", 0)
+        return ST
+
+    def DX(self, effective=True):
+        DX = self.attributes.get('DX')
+        if effective is True:
+            DX -= self.effects.get("Shock", 0)
+        return DX
+
+    def IQ(self, effective=True):
+        IQ = self.attributes.get('IQ')
+        if effective is True:
+            IQ -= self.effects.get("Shock", 0)
+        return IQ
+
+    def HT(self, effective=True):
+        HT = self.attributes.get('HT')
+        #if effective is True:
+        #    HT -= self.effects.get("Shock", 0)
+        return HT
+
     def HP(self):          return self.MaxHP() - self.hp_spent
-    def MaxHP(self):       return self.stat('ST') # + levels of HP
+    def MaxHP(self):       return self.stat('ST', False) # + levels of HP
     def FP(self):          return self.MaxFP() - self.fp_spent # + levels of FP
-    def MaxFP(self):       return self.stat('HT') # + levels of FP
+    def MaxFP(self):       return self.stat('HT', False) # + levels of FP
     def MP(self):          return self.MaxMP() - self.mp_spent # + levels of MP
-    def MaxMP(self):       return self.stat('IQ') # + levels of MP, magery
+    def MaxMP(self):       return self.stat('IQ', False) # + levels of MP, magery
+
     def Will(self):        return self.stat('IQ') # + levels of Will
     def Perception(self):  return self.stat('IQ') # +levels of Per
+
     # STUB: Insert formulas
     def Move(self):        return int(self.Speed() * (1 - .2 * self.Encumbrance())) # Plus basic move
-    def Speed(self):       return self.stat('DX') + self.stat('HT') # Plus buying speed
+    def Speed(self):       return self.stat('DX', False) + self.stat('HT', False) # Plus buying speed
+
     def Dodge(self):       return self.Speed()/4 + 3# Can be modified by acrobatics, etc.
     def Block(self):       return None # STUB: depends on skill
     def Parry(self):       return None # STUB: depends on skill
+
     def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
     def Encumbrance(self): return 0 # STUB
 
