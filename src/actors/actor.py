@@ -91,8 +91,7 @@ class Actor:
     # Get ready to act.
     def before_turn(self):
         # HACK:
-        if self.controlled is True:
-            self.check_weapons()
+        self.check_weapons()
 
         # HACK:
         if self.effects.get("Unconscious") is not None:
