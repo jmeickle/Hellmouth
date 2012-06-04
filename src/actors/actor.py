@@ -152,7 +152,7 @@ class Actor:
     def recalculate_skills(self):
         skills.calculate_ranks(self)
         skills.calculate_skills(self)
-        skills.calculate_defaults(self)
+#        skills.calculate_defaults(self)
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
@@ -241,6 +241,7 @@ class Actor:
     def sc(self, skill):
         level = self.stat(skill)
         mod = 0
+        # Wasn't a stat, but a skill instead.
         if level is None:
             level, mod = self.skill(skill, True)
         return sc(level, mod)
@@ -888,14 +889,14 @@ class Actor:
             level = self.attributes[attribute]
             sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
-#        sheet.append("--Points--")
-#        for skill, points in self.points["skills"].items():
-#            sheet.append("%s: %s points" % (skill, points))
-#        sheet.append("")
-#        sheet.append("--Skill Ranks--")
-#        for skill, info in self.skills.items():
-#            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
-#        sheet.append("")
+        sheet.append("--Points--")
+        for skill, points in self.points["skills"].items():
+            sheet.append("%s: %s points" % (skill, points))
+        sheet.append("")
+        sheet.append("--Skill Ranks--")
+        for skill, info in self.skills.items():
+            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
+        sheet.append("")
         sheet.append("--Skill Levels--")
         for skill, level in self.base_skills.items():
             skill = "%s (%s/%s)" % (skill, skills.skill_list[skill]["attribute"], skills.skill_list[skill]["difficulty"])
