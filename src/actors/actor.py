@@ -81,7 +81,10 @@ class Actor:
         self.attack_option = 0
 
     def appearance(self):
-        return self.name
+#        if self.controlled is True:
+#            return "<green-black>" + self.name + "</>"
+#        else:
+            return self.name
 
     # UTILITY
     def ready(self):
