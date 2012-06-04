@@ -46,8 +46,8 @@ class Item():
     def can_be_weapon(self):
         return False
 
-    # Whether this particular weapon needs to be held to be used. True for almost everything.
-    def must_be_held(self):
+    # Whether this particular weapon needs an emmpty 'hand' to be used. True for almost everything.
+    def requires_empty_location(self):
         return False
 	
     # Whether the item is intended to be worn. Note that some objects,
@@ -135,7 +135,7 @@ class Weapon(Item):
     def can_be_weapon(self):
         return True
 
-    def must_be_held(self):
+    def requires_empty_location(self):
         return True
 
 class Broadsword(Weapon):
@@ -207,6 +207,10 @@ class Natural(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Brawling"
+
+    # HACK: Not true of all!
+    def requires_empty_location(self):
+        return True
 
 class Tool(Item):
     def __init__(self):

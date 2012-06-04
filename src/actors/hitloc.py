@@ -1,3 +1,5 @@
+import random
+
 from define import *
 from objects.items.item import Natural
 from objects.items.carrion import PartialCorpse
@@ -62,10 +64,10 @@ class HitLoc:
 
     def weapons(self, natural=True, wielded=True, improvised=False):
         found_weapons = {}
-        # HACK: Not all natural attacks will be blocked like this!
-        if natural is True and len(self.readied) == 0:
+        if natural is True:
             for appearance, weapons in self.attack_options.items():
-                found_weapons[appearance] = weapons
+                if len(self.held) == 0 or random.choice(weapons).requires_empty_location is False:
+                    found_weapons[appearance] = weapons
         if wielded is True:
             for appearance, weapons in self.readied.items():
                 found_weapons[appearance] = weapons

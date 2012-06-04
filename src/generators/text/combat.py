@@ -15,7 +15,7 @@ def combat(attack):
                 wounds.append("severed")
             else:
                 wounds.append("dismembered")
-        string = "%s @dmg-%s-%s@ %s in the %s for %s" % (attack["attacker"].appearance(), attack["damage type"], attack["attack option"], attack["target"].appearance(), attack["location"].appearance(), formula)
+        string = "%s @dmg-%s-%s@ %s in the %s for %s" % (attack["attacker"].appearance(), attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), formula)
         if wounds:
             string += " (%s!)" % commas(wounds)
     elif attack.get("defense-check") == SUCC:

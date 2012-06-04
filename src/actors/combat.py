@@ -24,7 +24,6 @@ class CombatAction:
         # Key ripostes / etc. off of maneuver (a hashable tuple)
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
-            attack["attackline"] = attack["item"].attack_options[attack["skill"]][attack["attack option"]]
 
             if self.reach(attack) is False:
                 continue
@@ -56,13 +55,14 @@ class CombatAction:
                     self.results["defended"][maneuver] = attack
                 else:
                     # Generate damage for the attack
-                    attack["damage roll"] = attack["attackline"][0]
-                    attack["damage type"] = attack["attackline"][1]
+                    attack["damage roll"] = attack["attack stats"][0]
+                    attack["damage type"] = attack["attack stats"][1]
                     attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
                     if attack.get("location") is None:
                         attack["location"] = attack["target"].randomloc()
                     attack["location"].hit(attack)
                     self.results["hit"][maneuver] = attack
+
     # Do everything that occurs at the *end* of this attack sequence.
     # Examples: falling, retreating, shock, etc.
     def cleanup(self):
@@ -74,6 +74,9 @@ class CombatAction:
             # Cause wounds to actors.
             if attack["injury"] > 0:
                 attack["target"].hurt(attack)
+#            if attack.get("effects") is not None:
+#                for effect in attack["effects"]:
+#                attack["target"]
             # Check for dead actors.
             if attack["target"].check_dead() is True:
                 attack["target"].die()
@@ -81,9 +84,9 @@ class CombatAction:
     # Check whether the attack is within the weapon's valid reach.
     def reach(self, attack, actual=False):
         distance = dist(attack["attacker"].pos, attack["target"].pos)
-        min_reach = attack["attackline"][2][0]
+        min_reach = attack["attack stats"][2][0]
         # HACK: Remove when sharing the same hex is implemented.
-        max_reach = 1+ attack["attackline"][2][-1]
+        max_reach = 1+ attack["attack stats"][2][-1]
 
         # TODO: Check current reach on weapons that require shifting distance.
         # TODO: Different return values

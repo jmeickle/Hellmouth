@@ -201,16 +201,19 @@ class Stats(View):
         for line in self.player.paperdoll():
             self.cline(line)
 
-        # Display player weapon below that.
-        self.y_acc += 1
-        attacklines = self.player.attacklines()
+        # Show the chosen weapon/attack option combination.
+        weapon, attack_option = self.player.attackline()
+        slot, appearance, trait, item = weapon
+        attack_name, attack_stats = attack_option
+        trait_level = self.player.trait(trait)
 
-        for attackline in attacklines:
-            appearance, slot, trait, trait_level, attack_option = attackline
-            attack_name, attack_stats = attack_option
-# RHand: fist punch [crush, Brawling-10]
-            self.cline("%s %s" % (appearance, attack_name))
-            self.cline("[%s %s, %s-%s]" % (self.player.damage(attack_stats[0], False), attack_stats[1], trait, trait_level))
+        # HACK: Should ask the item to display a shorter appearance.
+        self.cline("(/*) %s: %s" % (slot, appearance[:13]))
+        self.cline("     [%s-%s]" % (trait, trait_level))
+        selector = "(+-) "
+        if len(self.player.attack_options) == 1:
+            selector = " " * len(selector)
+        self.cline("%s%s %s %s" % (selector, attack_name, self.player.damage(attack_stats[0], False), attack_stats[1]))
 
         # Col 2: Combat information
         self.x_acc += 12
@@ -224,7 +227,7 @@ class Stats(View):
         self.statline('Parry')
 
         # Col 3: Stats
-        self.x_acc += 12
+        self.x_acc += 14
         self.y_acc = 0
 
         self.statline("ST")
@@ -264,6 +267,19 @@ class Stats(View):
             self.line("%s: %3d/%2d" % (label, value, self.player.stat("Max"+stat)))
         else:
             self.line("%s: %s" % (label, value))
+
+    def keyin(self, c):
+        if c == ord("+"):
+            self.player.choose_attack_option(1)
+        elif c == ord("-"):
+            self.player.choose_attack_option(-1)
+        elif c == ord("*"):
+            self.player.choose_weapon(1)
+        elif c == ord("/"):
+            self.player.choose_weapon(-1)
+        else:
+            return True
+        return False
 
 # TODO: Implement this
 class Status(View):

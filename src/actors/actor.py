@@ -75,9 +75,10 @@ class Actor:
         self.generator = None
 
         # Can be run at any time, but this will at least grab the natural weapons.
-        self.weapons = {}
-        self.weapon = None
-        self.check_weapons()
+        self.weapons = []
+        self.weapon = 0
+        self.attack_options = []
+        self.attack_option = 0
 
     def appearance(self):
         if self.controlled is True:
@@ -114,19 +115,37 @@ class Actor:
                 if succ > TIE:
                     del self.effects["Stun"]
 
+    # Display the attack line for the current combination of weapon/attack option.
     # TODO: Multiple attacks.
-    def attacklines(self):
-        attacklines = []
-        # For now: just go with the highest, always.
-        for index, weaponlist in self.weapons.items():
-            appearance, slot = index
-            item = random.choice(weaponlist)
-            for trait, attack_options in item.attack_options.items():
-                trait_level = self.trait(trait)
-                if trait_level > 0:
-                    for attack_option in attack_options.items():
-                        attacklines.append((appearance, slot, trait, trait_level, attack_option))
-        return sorted(attacklines, key=itemgetter(2))
+    def attackline(self):
+        weapon = self.weapons[self.weapon]
+        attack_option = self.attack_options[self.attack_option]
+        return weapon, attack_option
+
+    def choose_weapon(self, scroll):
+
+        assert len(self.weapons) != 0, "Had 0 weapons: %s" % self.__dict__
+
+        self.weapon += scroll
+        if self.weapon >= len(self.weapons):
+            self.weapon = 0
+        if self.weapon < 0:
+            self.weapon = len(self.weapons) - 1
+
+        weapon = self.weapons[self.weapon]
+        slot, appearance, trait, item = weapon
+        self.attack_options = sorted(item.attack_options[trait].items(), key=itemgetter(0))
+        self.choose_attack_option(0)
+
+    def choose_attack_option(self, scroll):
+
+        assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
+
+        self.attack_option += scroll
+        if self.attack_option >= len(self.attack_options):
+            self.attack_option = 0
+        if self.attack_option < 0:
+            self.attack_option = len(self.attack_options) - 1
 
     # Actor generation/improvement.
     # 'unspent' determines whether to try to re-spend unspent points, as well
@@ -287,36 +306,28 @@ class Actor:
     # COMBAT
     # Find eligible weapons.
     def check_weapons(self):
-        self.weapons = {}
-        # HACK: Only look at the primary slot.
-#        for locname, loc in self.body.locs.items():
-        loc = self.body.locs.get(self.body.primary_slot)
-        for appearance, weapons in loc.weapons().items():
-            self.weapons[(appearance, self.body.primary_slot)] = weapons
+        weapons = []
+        for slot, loc in self.body.locs.items():
+            if loc is None:
+                continue
+            for appearance, weaponlist in loc.weapons().items():
+                for weapon in weaponlist:
+                    for trait, attack_options in weapon.attack_options.items():
+                        if self.trait(trait) > 0: # HACK: Magic number!
+                            weapons.append((slot, appearance, trait, weapon))
+        self.weapons = sorted(sorted(sorted(weapons, key=itemgetter(1)), key=itemgetter(2)), key=itemgetter(0))
+        self.choose_weapon(0)
 
     # Function called to produce a simple, single attack maneuver.
     def attack(self, target):
         maneuvers = []
         # Can have multiple items here, weirdly enough...
-        itemlist = random.choice(self.weapons.values())
-        item = random.choice(itemlist)
-        attack_trait = None
-        trait_level = 0
+        weapon = self.weapons[self.weapon]
+        attack_option = self.attack_options[self.attack_option]
+        slot, appearance, trait, item = weapon
+        trait_level = self.trait(trait)
 
-        # For now: just go with the highest, always.
-        for trait in item.attack_options.keys():
-            if self.trait(trait) > trait_level:
-                attack_trait = trait
-                trait_level = self.trait(trait)
-
-        # Weren't able to find a skill.
-        if attack_trait is None or trait_level == 0:
-            log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
-            self.over()
-            return False
-
-        attack_option = random.choice(item.attack_options.get(attack_trait).keys())
-        maneuvers.append((target, item, attack_trait, attack_option))
+        maneuvers.append((target, item, trait, attack_option))
         self._attack(maneuvers)
         self.over()
         return False
@@ -327,12 +338,14 @@ class Actor:
 
         for maneuver in maneuvers:
             target, item, skill, attack_option = maneuver
+            attack_name, attack_stats = attack_option
             attacks[maneuver] = {}
             attacks[maneuver]["attacker"] = self
             attacks[maneuver]["target"] = target
             attacks[maneuver]["item"] = item
             attacks[maneuver]["skill"] = skill
-            attacks[maneuver]["attack option"] = attack_option
+            attacks[maneuver]["attack name"] = attack_name
+            attacks[maneuver]["attack stats"] = attack_stats
 
         action = CombatAction(attacks)
 
