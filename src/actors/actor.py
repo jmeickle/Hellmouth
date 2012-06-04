@@ -963,32 +963,3 @@ class Actor:
     # Paperdolls are based on body, of course.
     def paperdoll(self):
         return self.body.paperdoll()
-
-# Actor test code
-if __name__ == "__main__":
-    testactor = Actor()
-    print "Stats:", testactor.stats
-
-    print "Random movement choice:", choice(dirs)
-
-    print "Actor's parts:"
-    for index, part in testactor.body.locs.items():
-        print "Part: %s - Children: %s - Parent:%s" % (part.type, part.children, part.parent)
-
-    print "Connectivity test:"
-    start = "RFoot"
-    curr = testactor.body.locs.get(start)
-    while curr.parent is not None:
-        print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
-        curr = curr.parent
-
-    print "To-hit chart:"
-    print "\n".join("%s - %s" % (x[0], x[1].type) for x in sorted(testactor.body.table.items()))
-
-    #print "Connectivity test (Octo):"
-    #testactor.body = Octopod(testactor)
-    #start = "Arm1"
-    #curr = testactor.body.locs.get(start)
-    #while curr.parent is not None:
-    #    print "%s bone's connected to the %s bone..." % (curr.type, curr.parent.type)
-    #    curr = curr.parent
