@@ -212,8 +212,6 @@ class HitLoc:
                     # Likewise, but for dismemberment.
                     if attack["wound"] + sum(self.wounds) > 2*self.crippling():
                         attack["dismembered"] = True
-                        if attack["damage type"] == "cut":
-                            attack["severed"] = True
 
 #            if attack["location"].severed() is True:
 #                self.screen("ouch!", {"body_text" : self.limbloss(attack)})
@@ -237,8 +235,9 @@ class HitLoc:
     # TODO: Better tracking of wounds.
     def hurt(self, attack):
         self.wounds.append(attack["wound"])
+
         # BLOOD EVERYWHERE
-        if attack.get("severed") is True:
+        if attack.get("dismembering major wound") is True and attack["damage type"] == "cut":
             self.sever()
 
     def sever(self):
