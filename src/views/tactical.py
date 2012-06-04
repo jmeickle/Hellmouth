@@ -359,7 +359,7 @@ class LogViewer(View):
 
         # Otherwise, display the line(s):
         for line in lines:
-            self.line(line)
+            self.cline(line)
 
         # Since we're moving in reverse.
         self.y_acc -= len(lines)
