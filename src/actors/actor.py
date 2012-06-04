@@ -109,10 +109,10 @@ class Actor:
             if effect == "Stun":
                 # TODO: Mental Stun
                 succ, margin = self.sc('HT')
-                # TODO: Real message.
-                log.add("%s checked HT: %s" % (self.appearance(), margin))
                 if succ > TIE:
                     del self.effects["Stun"]
+                    # TODO: Real message.
+                    log.add("%s shrugs off the stun." % self.appearance())
 
     # Display the attack line for the current combination of weapon/attack option.
     # TODO: Multiple attacks.
@@ -185,6 +185,7 @@ class Actor:
     def recalculate_skills(self):
         skills.calculate_ranks(self)
         skills.calculate_skills(self)
+        # TODO: Fix default calculation.
 #        skills.calculate_defaults(self)
 
     # Do something in a dir - this could be an attack or a move.
@@ -255,6 +256,7 @@ class Actor:
     # STUB Gets the level of a skill as well as any situational modifiers.
     def skill(self, skill, situational=False):
         attribute, level = self.skills.get(skill, (None, 0))
+        # TODO: Fix attr defaulting.
         # Didn't have it, or anything that defaults to it. So:
 #        if level is None:
 #            skill_data = skills.skill_list.get(skill)
@@ -271,7 +273,7 @@ class Actor:
         if attribute is not None:
             return self.stat(attribute) + level
 
-    # Get a skill/stat.
+    # Get the actor's level in a skill/stat.
     def trait(self, traitname):
         level = self.stat(traitname)
         if level is None:
@@ -376,10 +378,11 @@ class Actor:
             if succ < TIE:
                 attack["stun"] = True
                 self.effects["Stun"] = attack["stun"]
-                attack["knockdown"] = True
+                log.add("%s was stunned!" % self.appearance())
                 # TODO: Change posture
-                attack["dropped items"] = True
+                attack["knockdown"] = True
                 # TODO: Force dropping held items
+                attack["dropped items"] = True
                 if margin <= -5 or succ == CRIT_FAIL:
                     attack["knockout"] = True
                     self.effects["Unconscious"] = attack["knockout"]
@@ -658,12 +661,10 @@ class Actor:
     # Returns false if the item wasn't found in the player's inventory.
     def _drop(self, item):
         if self._can_drop_item(item) is True:
-            if self._unequip(item) is True:
-                self._remove(item)
-                self.cell().put(item)
-                log.add("You drop the %s." % item.appearance())
-            else:
-                exit("Lost an item: it was removed, but not returned.")
+            assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
+            self._remove(item)
+            self.cell().put(item)
+            log.add("You drop the %s." % item.appearance())
         return False
 
     # TODO: Support dropping to any cell
@@ -792,7 +793,7 @@ class Actor:
         # Can't wear it? Ready it as a weapon, if applicable and not already readied.
         elif weapon is True and self.readied(item) is False:
             # Hold the weapon, if it needs it.
-            if item.must_be_held() is True:
+            if item.requires_empty_location() is True:
                 for loc in locs:
                     loc.hold(item)
             # Then ready it.
