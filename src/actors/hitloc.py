@@ -14,6 +14,14 @@ class HitLoc:
         self.wounds = []
         self.attack_options = {}
 
+        self.multipliers = {
+            "pi-" : .5,
+            "cut" : 1.5,
+            "pi+" : 1.5,
+            "imp" : 2,
+            "pi++" : 2,
+        }
+
         # Connectivity
         self.parent = None
         self.children = []
@@ -221,8 +229,7 @@ class HitLoc:
 
     # TODO: Make this more useful for display
     def multiplier(self, type):
-        multipliers = {"cut" : 1.5, "imp" : 2}
-        return multipliers.get(type, 1)
+        return self.multipliers.get(type, 1)
 
     # Add a wound to this location.
     # TODO: Better tracking of wounds.
@@ -296,6 +303,10 @@ class Limb(HitLoc):
     def __init__(self, type, owner):
         HitLoc.__init__(self, type, owner)
 
+        self.multipliers["pi++"] = 1
+        self.multipliers["pi+"] = 1
+        self.multipliers["imp"] = 1
+
     # Returns the damage that must be *exceeded* to cripple a limb.
     def crippling(self):
         return self.owner.MaxHP()/2
@@ -305,6 +316,65 @@ class Extremity(HitLoc):
     def __init__(self, type, owner):
         HitLoc.__init__(self, type, owner)
 
+        self.multipliers["pi++"] = 1
+        self.multipliers["pi+"] = 1
+        self.multipliers["imp"] = 1
+
     # Returns the damage that must be *exceeded* to cripple an extremity.
     def crippling(self):
         return self.owner.MaxHP()/3
+
+# Brain containment
+class Skull(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+        self.dr = 2
+
+        self.multipliers["tox"] = 1
+
+    # QUAD DAMAGE
+    def multiplier(self, type):
+        return self.multipliers.get(type, 4)
+
+# Internal organs.
+class Vitals(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+        self.multipliers["pi-"] = 3
+        self.multipliers["pi"] = 3
+        self.multipliers["pi+"] = 3
+        self.multipliers["pi++"] = 3
+        self.multipliers["imp"] = 3
+
+# Squishy seeing organs
+class Eye(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+        self.multipliers["tox"] = 1
+
+    # QUAD DAMAGE
+    def multiplier(self, type):
+        return self.multipliers.get(type, 4)
+
+    # Eyes are very easy to cripple.
+    def crippling(self):
+        return self.owner.MaxHP()/10
+
+# Face.
+class Face(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+        self.multipliers["corr"] = 1.5
+
+# Neck
+class Neck(HitLoc):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+        self.multipliers["cr"] = 1.5
+        self.multipliers["corr"] = 1.5
+        self.multipliers["cut"] = 2

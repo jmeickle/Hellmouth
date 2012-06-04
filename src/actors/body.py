@@ -53,7 +53,8 @@ class BodyPlan:
         screen.append("Size: %s" % self.size)
         screen.append("Shape: %s" % self.shape)
         for loc in self.locs.values():
-            screen.extend(loc.display())
+            if loc is not None:
+                screen.extend(loc.display())
         return screen
 
     # Implement this for anything that needs a paperdoll.
@@ -72,8 +73,9 @@ class Humanoid(BodyPlan):
     parts = (
              ('Torso', HitLoc, None, False, [9, 10]),
              ('Groin', HitLoc, 'Torso', False, [11]),
-             ('Neck', HitLoc, 'Torso', False, [17, 18]),
-             ('Head', HitLoc, 'Neck', False, [3, 4, 5]),
+             ('Neck', Neck, 'Torso', False, [17, 18]),
+             ('Skull', Skull, 'Neck', False, [3, 4]),
+             ('Face', Face, 'Skull', False, [5]),
              ('RArm', Limb, 'Torso', False, [8]),
              ('LArm', Limb, 'Torso', False, [12]),
              ('RHand', Extremity, 'RArm', False, [15, 1, 2, 3]),
@@ -100,7 +102,7 @@ class Humanoid(BodyPlan):
     def paperdoll(self):
         p = self.parent
         list = []
-        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Head'), p.locdr('Head'), p.loccol('Head')))
+        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Skull'), p.locdr('Skull'), p.loccol('Skull')))
         list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
         list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.locdr('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.locdr('RArm')))
         list.append(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.locdr('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.locdr('RHand')))
