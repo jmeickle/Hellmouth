@@ -313,7 +313,7 @@ class LogViewer(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.autoscroll = True
         self.events = 0
-        self.shrink = 0
+        self.shrink = 2
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
@@ -329,6 +329,7 @@ class LogViewer(View):
 
     def draw(self):
         # Start from the bottom:
+        self.x_acc = 2
         self.y_acc = self.height
         index = self.scroller.max
 
@@ -338,6 +339,7 @@ class LogViewer(View):
             self.y_acc -=1
             index += 1
 
+        everything = True
         for event in reversed(log.events()):
             index -= 1
             if index >= self.scroller.index:
@@ -345,10 +347,26 @@ class LogViewer(View):
             if self.logline(event) is False:
                 self.y_acc = self.shrink
                 self.line("[...]")
+                everything = False
                 break;
 
+        if everything is False:
+            self.x_acc = 0
+            self.y_acc = self.shrink
+            # TODO: Fix this, it's buggy!
+            proportion = float(self.scroller.index) / (1+self.scroller.max)
+            position = int(proportion * (self.height - self.y_acc - 1))        
+
+            self.line("^")
+            for x in range(self.height - self.y_acc - 1):
+                if x+1 == position:
+                    self.cline("<green-black>@</>")
+                else:
+                    self.line("|")
+            self.line("v")
+
     def logline(self, event):
-        lines = wrap_string([event], self.width)
+        lines = wrap_string([event], self.width - self.x_acc)
 
         # Move up by that much to offset what the line function would do.
         self.y_acc -= len(lines)
@@ -364,6 +382,7 @@ class LogViewer(View):
         # Since we're moving in reverse.
         self.y_acc -= len(lines)
 
+    # TODO: Fix tabbing only work when [...] or more logs.
     def keyin(self, c):
         if c == ord("\t"): # Tab
             if self.shrink > 0:
