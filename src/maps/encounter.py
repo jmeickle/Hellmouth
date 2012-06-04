@@ -50,7 +50,7 @@ class Encounter:
         # If nobody is acting, let the first in the queue act.
         if self.acting is None:
             self.acting = self.queue.popleft()
-            self.acting.prepare()
+            self.acting.before_turn()
 
         # NPCs use act() until the player's turn comes up.
         if self.acting.controlled is False:
