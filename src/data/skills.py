@@ -1,6 +1,7 @@
 from define import *
 
 # Calculate ranks in skills based on number of points spent and their difficulty.
+# TODO: Move this out of data!
 def calculate_ranks(actor):
     # Reset existing ranks.
     actor.skills = {}
