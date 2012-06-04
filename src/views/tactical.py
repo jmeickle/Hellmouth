@@ -521,10 +521,11 @@ class CharacterSheet(View):
         self.cline('You can see: %s' % actor.name)
         self.cline("-"*self.width)
 
-        if actor != self.actor:
-            self.actor = actor
-            self.text = wrap_string(self.actor.character_sheet(), self.width)
-            self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
+# Trying it out without the if for a while:
+#        if actor != self.actor:
+        self.actor = actor
+        self.text = wrap_string(self.actor.character_sheet(), self.width)
+        self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
         offset = 0
 
@@ -533,6 +534,7 @@ class CharacterSheet(View):
             offset += 1
 
         maxlines = self.height - self.y_acc
+
 # TODO: Generalize this.
         for x in range(maxlines):
             if self.y_acc+1 == self.height and self.scroller.index < self.scroller.max:
