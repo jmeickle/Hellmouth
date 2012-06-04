@@ -260,11 +260,18 @@ class Status(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
+        shock = self.player.effects.get("Shock", 0)
+        if shock > 0:
+            if shock == 4:
+                color = "magenta-black"
+            elif shock == 3:
+                color = "red-black"
+            elif shock == 2:
+                color = "yellow-black"
+            else:
+                color = "cyan-black"
+            self.line("Shock (-%s)" % shock, color)
         return True
-#         self.line(self.map.level.name, "red-black")
-#         self.line(self.map.name)
-#        self.line("Pain", "red-black")
-#        self.line("Shock", "magenta-black")
 
 class Place(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
