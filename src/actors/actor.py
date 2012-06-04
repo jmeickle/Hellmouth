@@ -236,7 +236,7 @@ class Actor:
 
     # STUB Gets the level of a skill as well as any situational modifiers.
     def skill(self, skill, situational=False):
-        level, default = self.base_skills.get(skill, (0, None))
+        attribute, level = self.skills.get(skill, (None, 0))
         # Didn't have it, or anything that defaults to it. So:
 #        if level is None:
 #            skill_data = skills.skill_list.get(skill)
@@ -250,7 +250,8 @@ class Actor:
 #        if situational is True:
 #            return level, 0
 #        else:
-        return level
+        if attribute is not None:
+            return self.stat(attribute) + level
 
     # Get a skill/stat.
     def trait(self, traitname):
@@ -798,6 +799,7 @@ class Actor:
 
         # HACK: Remove the equipped item from inventory.
         self._remove(item)
+        self.check_weapons()
         log.add("You equip the %s." % item.appearance())
         return True
 
