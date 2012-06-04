@@ -201,6 +201,17 @@ class Stats(View):
         for line in self.player.paperdoll():
             self.cline(line)
 
+        # Display player weapon below that.
+        self.y_acc += 1
+        attacklines = self.player.attacklines()
+
+        for attackline in attacklines:
+            appearance, slot, trait, trait_level, attack_option = attackline
+            attack_name, attack_stats = attack_option
+# RHand: fist punch [crush, Brawling-10]
+            self.cline("%s %s" % (appearance, attack_name))
+            self.cline("[%s %s, %s-%s]" % (self.player.damage(attack_stats[0], False), attack_stats[1], trait, trait_level))
+
         # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0

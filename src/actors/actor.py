@@ -73,9 +73,10 @@ class Actor:
         self.controlled = False
 
         self.generator = None
-        self.weapons = {}
 
         # Can be run at any time, but this will at least grab the natural weapons.
+        self.weapons = {}
+        self.weapon = None
         self.check_weapons()
 
     def appearance(self):
@@ -112,6 +113,20 @@ class Actor:
                 log.add("%s checked HT: %s" % (self.appearance(), margin))
                 if succ > TIE:
                     del self.effects["Stun"]
+
+    # TODO: Multiple attacks.
+    def attacklines(self):
+        attacklines = []
+        # For now: just go with the highest, always.
+        for index, weaponlist in self.weapons.items():
+            appearance, slot = index
+            item = random.choice(weaponlist)
+            for trait, attack_options in item.attack_options.items():
+                trait_level = self.trait(trait)
+                if trait_level > 0:
+                    for attack_option in attack_options.items():
+                        attacklines.append((appearance, slot, trait, trait_level, attack_option))
+        return sorted(attacklines, key=itemgetter(2))
 
     # Actor generation/improvement.
     # 'unspent' determines whether to try to re-spend unspent points, as well
@@ -257,16 +272,16 @@ class Actor:
         return qc(self_skill, self_mod, their_skill, their_mod)
 
     # TODO: Support armor divisors.
-    def damage(self, damage):
+    def damage(self, damage, do_roll=True):
         damage = re.split('(\w*)([+-]?\d*)', damage)
         type = damage[1]
         mod = 0
         if damage[2] != '':
             mod += int(damage[2])
         if type == "thr":
-            return dice(self.Thrust(), mod)
+            return dice(self.Thrust(), mod, do_roll)
         elif type == "sw":
-            return dice(self.Swing(), mod)
+            return dice(self.Swing(), mod, do_roll)
 
     # COMBAT
     # Find eligible weapons.
