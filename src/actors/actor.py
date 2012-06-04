@@ -931,14 +931,22 @@ class Actor:
             level = self.attributes[attribute]
             sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
-        sheet.append("--Points--")
-        for skill, points in self.points["skills"].items():
-            sheet.append("%s: %s points" % (skill, points))
+        sheet.append("--Weapons--")
+        for slot, appearance, trait, item in self.weapons:
+            sheet.append("  %s: %s" % (slot, appearance))
         sheet.append("")
-        sheet.append("--Skill Ranks--")
-        for skill, info in self.skills.items():
-            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
+        sheet.append("--Effects--")
+        for effect, details in self.effects.items():
+            sheet.append("%s: %s" % (effect, details))
         sheet.append("")
+#        sheet.append("--Points--")
+#        for skill, points in self.points["skills"].items():
+#            sheet.append("%s: %s points" % (skill, points))
+#        sheet.append("")
+#        sheet.append("--Skill Ranks--")
+#        for skill, info in self.skills.items():
+#            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
+#        sheet.append("")
         sheet.append("--Skill Levels--")
         for skill, level in self.base_skills.items():
             skill = "%s (%s/%s)" % (skill, skills.skill_list[skill]["attribute"], skills.skill_list[skill]["difficulty"])
@@ -947,11 +955,6 @@ class Actor:
             #if level[1] is not False:
             #    str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             sheet.append(str)
-
-        sheet.append("")
-        sheet.append("--Weapons--")
-        for weapon, loc in self.weapons.keys():
-            sheet.append("  %s: %s" % (loc, weapon))
 
         # Print information about your body.
         sheet.extend(self.body.display())
