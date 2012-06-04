@@ -285,7 +285,7 @@ class Actor:
         item = random.choice(itemlist)
         skill = item.primary_skill
         # Weren't able to find a skill.
-        if skill is None:
+        if self.trait(skill) is None:
             log.add("%s couldn't be used by %s." % (item.appearance(), self.name))
             self.over()
             return False
