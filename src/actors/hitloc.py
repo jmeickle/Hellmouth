@@ -79,7 +79,8 @@ class HitLoc:
         return screen
 
     # Return the healthiness of the limb
-    # TODO: Base these values on self.owner
+    # TODO: Injured status for extremities, rather than using 'major wound'.
+
     def status(self):
         if self.severed() is True:                    return SEVERED
         elif self.dismembered() is True:              return DISMEMBERED
@@ -187,6 +188,9 @@ class HitLoc:
 
                 # Cap damage based on max crippling damage, then figure out
                 # if this attack caused crippling or dismemberment.
+
+                # This *won't* cause a major wound because it represents the
+                # slow build-up of injury rather than a large wound.
                 else:
                     attack["injury"] = min(attack["wound"] + sum(self.wounds), 1 + self.crippling()) - sum(self.wounds)
 
@@ -250,7 +254,6 @@ class HitLoc:
         original.cell().put(corpse)
 
     # Return a color for the limb status.
-    # TODO: Move the limb glyph code here.
     def color(self):
         status = self.status()
         if status == SEVERED:       return "black"
