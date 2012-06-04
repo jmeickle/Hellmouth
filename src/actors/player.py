@@ -10,7 +10,7 @@ class Player(Actor):
         self.description = "Some hapless adventurer who stumbled across the arena. It looks pretty feeble."
         self.highlights = {}
 
-        self.build(150)
+        self.build(200)
         self.controlled = True
 
     # Use stairs that you are standing on.
