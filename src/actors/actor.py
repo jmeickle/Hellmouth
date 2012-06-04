@@ -81,10 +81,7 @@ class Actor:
         self.attack_option = 0
 
     def appearance(self):
-        if self.controlled is True:
-            return "you"
-        else:
-            return self.name
+        return self.name
 
     # UTILITY
     def ready(self):
