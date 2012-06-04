@@ -87,12 +87,11 @@ class Actor:
             return self.name
 
     # UTILITY
+    def ready(self):
+        self.check_weapons()
 
     # Get ready to act.
     def before_turn(self):
-        # HACK:
-        self.check_weapons()
-
         # HACK:
         if self.effects.get("Unconscious") is not None:
             self.over()

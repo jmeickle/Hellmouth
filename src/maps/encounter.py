@@ -159,6 +159,7 @@ class Encounter:
             # Update the actor
             obj.pos = pos
             obj.map = self
+            obj.ready()
 
         else:
             # Update the map
