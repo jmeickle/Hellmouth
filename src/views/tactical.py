@@ -297,6 +297,7 @@ class LogViewer(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.autoscroll = True
         self.events = 0
+        self.shrink = 0
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
@@ -326,7 +327,7 @@ class LogViewer(View):
             if index >= self.scroller.index:
                 continue
             if self.logline(event) is False:
-                self.y_acc = 0
+                self.y_acc = self.shrink
                 self.line("[...]")
                 break;
 
@@ -337,7 +338,7 @@ class LogViewer(View):
         self.y_acc -= len(lines)
 
         # Couldn't fit it all.
-        if self.y_acc < 1 and self.scroller.index != self.scroller.min:
+        if self.y_acc - self.shrink < 1 and self.scroller.index != self.scroller.min:
             return False;
 
         # Otherwise, display the line(s):
@@ -346,6 +347,13 @@ class LogViewer(View):
 
         # Since we're moving in reverse.
         self.y_acc -= len(lines)
+
+    def keyin(self, c):
+        if c == ord("\t"): # Tab
+            if self.shrink > 0:
+                self.shrink -= 5
+            else:
+                self.shrink += 5
 
 class Inventory(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
