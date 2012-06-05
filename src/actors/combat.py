@@ -104,12 +104,9 @@ class CombatAction:
     def display(self):
         lines = []
         for attack in self.results["missed"].values():
-            string = combat(attack)
-            lines.append(string)
+            lines.extend(combat(attack))
         for attack in self.results["defended"].values():
-            string = combat(attack)
-            lines.append(string)
+            lines.extend(combat(attack))
         for attack in self.results["hit"].values():
-            string = combat(attack)
-            lines.append(string)
+            lines.extend(combat(attack))
         return lines
