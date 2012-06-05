@@ -27,8 +27,8 @@ tokens = {
     "dmg-scratch-cut" : ("scratches", "grazes"),
     "dmg-injure-cut" : ("slashes", "slices"),
     "dmg-wound-cut" : ("maims", "chops"),
-    "dmg-cripple-cut" : "almost lops off",
-    "dmg-dismember-cut" : "lops off",
+    "dmg-cripple-cut" : ("brutally maims", "chops deep into", "hacks apart", "almost lops off"),
+    "dmg-dismember-cut" : ("hacks off", "slices apart", "lops off"),
 
     # Crushing damage
     "dmg-scratch-cr" : ("pokes", "jabs"),
@@ -76,6 +76,10 @@ tokens = {
 
     # Defenses.
     "def" : "defends",
+    "def-dodge" : ("dodges", "evades"),
+    "def-dodge-crit" : ("easily dodges", "easily evades"),
+    "def-parry" : ("parries", "intercepts"),
+    "def-parry-crit" : ("easily parries", "easily intercepts"),
     "def-trivial" : "trivially defends",
     "def-easy" : "easily defends",
     "def-normal" : "defends",
