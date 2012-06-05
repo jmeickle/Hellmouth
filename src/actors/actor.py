@@ -83,6 +83,8 @@ class Actor:
         self.parries = []
         self.parry = 0
 
+        self.posture = "standing"
+
     def appearance(self):
 #        if self.controlled is True:
 #            return "<green-black>" + self.name + "</>"
@@ -183,6 +185,15 @@ class Actor:
                 levels = points / trait["cost"]
                 self.attributes[attribute] = trait.get("default", 0) + min(levels, trait["max"])
 
+    # Change posture.
+    def change_posture(self, posture):
+        self.posture = posture
+
+    # Returns whether we're on the ground (either side).
+    def prone(self):
+        if self.posture == "lying prone" or self.posture == "lying face up":
+            return True
+        return False
     # Recalculate only skills (usually this will be all that changed.)
     def recalculate_skills(self):
         skills.calculate_ranks(self)
@@ -997,6 +1008,7 @@ class Actor:
         sheet.append("--Effects--")
         for effect, details in self.effects.items():
             sheet.append("%s: %s" % (effect, details))
+        sheet.append(self.posture)
         sheet.append("")
 #        sheet.append("--Points--")
 #        for skill, points in self.points["skills"].items():

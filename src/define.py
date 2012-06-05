@@ -106,3 +106,14 @@ hit_locations = {
     "RFoot" : "right foot",
     "LFoot" : "left foot",
 }
+
+postures = {
+    # Posture, melee, defense, ranged, movement cost
+    "standing" : (0, 0, 0, 0),
+    "crouching" : (-2, 0, -2, .5),
+    "kneeling" : (-2, -2, -2, 2),
+    "crawling" : (-4, -3, -2, 2),
+    "sitting" : (-2, -2, -2, None),
+    "lying prone" : (-4, -3, -2, False),
+    "lying face up" : (-4, -3, -2, False),
+}
