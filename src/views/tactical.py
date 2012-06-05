@@ -66,7 +66,7 @@ class MainMap(View):
 
         # TODO: Allow multiple open children.
         if not self.children:
-            if c == ord('I'):
+            if c == ord('I') or c == ord('i'):
                 self.spawn(Inventory(self.screen, self.width, self.height))
                 return False
 
