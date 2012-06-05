@@ -98,8 +98,8 @@ class Actor:
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
-        # HACK:
-        if self.effects.get("Unconscious") is not None:
+        # Do Nothing.
+        if self.can_maneuver() is False:
             self.over()
 
     # STUB: Things to do at the end of your turn.
@@ -192,6 +192,38 @@ class Actor:
         if self.posture == "lying prone" or self.posture == "lying face up":
             return True
         return False
+
+    # Returns whether we're conscious.
+    def conscious(self):
+        if self.effects.get("Unconscious") is not None:
+            return False
+        return True
+
+    # STUB: Figure out whether we are subject to knockdown.
+    def can_be_knocked_down(self):
+        if self.prone() is True:
+            return False
+        return True
+
+    # STUB: Figure out whether we are subject to knockout.
+    def can_be_knocked_out(self):
+        if self.conscious() is False:
+            return False
+        return True
+
+    # STUB: Figure out whether we are currently subject to stun.
+    def can_be_stunned(self):
+        if self.effects.get("Stun") is None:
+            return True
+        return False
+
+    # Get knocked down.
+    def knockdown(self):
+        if flip() == SUCC:
+            self.change_posture("lying prone")
+        else:
+            self.change_posture("lying face up")
+
     # Recalculate only skills (usually this will be all that changed.)
     def recalculate_skills(self):
         skills.calculate_ranks(self)
@@ -492,6 +524,26 @@ class Actor:
     # Generate a corpse of ourselves.
     def corpse(self):
         return Corpse(self)
+
+    # STUB: Whether the actor can take *any* actions.
+    def can_act(self):
+        if self.conscious() is False:
+            return False
+        return True
+
+    # STUB: Whether actor can take maneuvers.
+    def can_maneuver(self):
+        if self.can_act() is False:
+            return False
+        if self.effects.get("Stun") is not None:
+            return False
+        return True
+
+    # STUB: Whether actor can defend.
+    def can_defend(self):
+        if self.can_act() is False:
+            return False
+        return True
 
     # STATS
 
@@ -1013,6 +1065,13 @@ class Actor:
     def equipped(self, item):
         if self.held(item) is True or self.worn(item) is True:
             return True
+        return False
+
+    # Are we holding any items?
+    def is_holding_items(self):
+        for loc in self.body.locs.values():
+            if loc.holding() is True:
+                return True
         return False
 
     # Returns a list of lines to go into a character sheet.
