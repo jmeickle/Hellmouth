@@ -417,19 +417,24 @@ class Actor:
 
     # Choose a defense and set information about it in the attack.
     def choose_defense(self, attack):
-        retreat = False#True # Decide whether to retreat.
+        # Get possible defenses.
+        retreat = False # TODO: Decide whether to retreat.
         dodge = self.Dodge(retreat)
-        parry = self.Parry(retreat, True)[0]
-        if parry[3] > dodge:
-            attack["defense"] = "parry"
-            attack["defense level"] = parry[3]
-            attack["defense information"] = parry
-        else:
+        parries = self.Parry(retreat, True)
+        # TODO: Block
+
+        # TODO: Figure out expected number of attacks to decide whether multiple parries would be worth it.
+        if parries is not None:
+            parry = parries[0]
+            if parry[3] > dodge:
+                attack["defense"] = "parry"
+                attack["defense level"] = parry[3]
+                attack["defense information"] = parry
+
+        elif dodge is not None:
             attack["defense"] = "dodge"
             attack["defense level"] = dodge
             attack["information"] = None
-        if retreat is True:
-            attack["retreat"] = True
 
         # The default is attack["defense"] == None.
         if attack.get("defense") is not None and retreat is True:
@@ -598,22 +603,48 @@ class Actor:
 
     # STUB: Can be modified by acrobatics, etc.
     def Dodge(self, retreat=False):
-        dodge = self.Speed()/4 + 3 # /4 because no /4 in speed.
+        if self.can_defend() is False:
+            return None
+
+        status_mod = 0
+        if self.effects.get("Stun") is not None:
+            status_mod -= 4
+
+        posture_mod = postures[self.posture][1]
+
+        retreat_mod = 0
         if retreat is True:
-            dodge += 3
+            retreat_mod += 3
+
+        dodge = self.Speed()/4 + 3 + status_mod + posture_mod + retreat_mod# /4 because no /4 in speed.
         return dodge
 
-    def Block(self, retreat=False):       return None # STUB: depends on skill
+    # STUB: depends on skill
+    def Block(self, retreat=False):
+        if self.can_defend() is False:
+            return None
+        return None
 
     # STUB: Currently always returns highest parry.
     def Parry(self, retreat=False, list=False):
+        if self.can_defend() is False:
+            return None
+
+        status_mod = 0
+        if self.effects.get("Stun") is not None:
+            status_mod -= 4
+
+        posture_mod = postures[self.posture][1]
+
         parries = []
         for slot, appearance, trait, trait_level, attack_name, weapon in self.parries:
-            # Get the attack data.
+            # Get the attack data, and parry modifier from it.
             attack_data = weapon.attack_options[trait][attack_name]
             parry_mod = attack_data[3]
-            # Recalculate trait level + parry mod for this weapon.
+
+            # Recalculate trait level for this weapon.
             trait_level = self.trait(trait, False)
+
             # TODO: Check whether the skill has had points paid for it (imp. retreat)
             if retreat is True:
                 retreat_mod = 1
@@ -621,7 +652,8 @@ class Actor:
                     retreat_mod = skills.skill_list[trait].get("retreat", 1)
             else:
                 retreat_mod = 0
-            parry = 3 + trait_level/2 + parry_mod + retreat_mod
+
+            parry = 3 + trait_level/2 + parry_mod + status_mod + posture_mod + retreat_mod
             parries.append((slot, appearance, trait, parry, attack_name, weapon))
         if list is True:
             return sorted(parries, key=itemgetter(3), reverse=True)
