@@ -11,6 +11,7 @@ class Player(Actor):
         self.highlights = {}
 
         self.build(200)
+        self.attributes["ST"] += 10
         self.controlled = True
 
     # Use stairs that you are standing on.
