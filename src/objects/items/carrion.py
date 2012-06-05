@@ -27,4 +27,9 @@ class PartialCorpse(Corpse):
         Corpse.__init__(self, actor)
 
     def appearance(self):
-        return self.actor.appearance() + " " + commas(self.actor.body.locs.keys())
+        # TODO: Look up the assemblage of parts for the name of that structure.
+        # e.g., "lower body" for everything groin and below.
+        parts = []
+        for loc in self.actor.body.locs.values():
+            parts.append(loc.appearance())
+        return self.actor.appearance() + " " + commas(parts)
