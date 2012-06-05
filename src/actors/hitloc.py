@@ -39,7 +39,14 @@ class HitLoc:
         self.layers = [[]]
 
     def appearance(self):
-        return hit_locations.get(self.type)
+        appearance = hit_locations.get(self.type)
+        if self.severed() is True:
+            appearance = "severed " + appearance
+        elif self.dismembered() is True:
+            appearance = "maimed " + appearance
+        elif self.crippled() is True:
+            appearance = "crippled " + appearance
+        return appearance
 
     def descendants(self):
         descendants = [self]
