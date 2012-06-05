@@ -103,10 +103,10 @@ class Humanoid(BodyPlan):
         p = self.parent
         list = []
         list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Skull'), p.locdr('Skull'), p.loccol('Skull')))
-        list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Torso'), p.loccol('RArm')))
+        list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Neck'), p.loccol('RArm')))
         list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.locdr('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.locdr('RArm')))
-        list.append(' %s<%s>.</> <%s>-|-</> <%s>.</>%s ' % (p.locdr('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.locdr('RHand')))
-        list.append('   <%s>.\</><%s>-</><%s>/.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
+        list.append(' %s<%s>\'</> <%s>-|-</> <%s>\'</>%s ' % (p.locdr('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.locdr('RHand')))
+        list.append('   <%s>.\</><%s>=</><%s>/.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
         list.append('  %s<%s>|</>   <%s>|</>%s  ' % (p.locdr('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.locdr('RLeg')))
         list.append('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
         list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.locdr('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.locdr('RFoot')))
