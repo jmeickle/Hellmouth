@@ -32,7 +32,7 @@ class CombatAction:
             attack["attack-check"], attack["attack-margin"] = attack["attacker"].sc(attack["skill"])
 
             # Early exit.
-            if attack["attack-check"] == FAIL or attack["attack-check"] == CRIT_FAIL:
+            if attack["attack-check"] < TIE:
                 self.results["missed"][maneuver] = attack
             else:
                 hits = self.hits.get(attack["target"], [])
@@ -51,7 +51,7 @@ class CombatAction:
                 attack["defense"] = "Dodge"#preferred_defense(self.attack)
                 attack["defense-check"], attack["defense-margin"] = sc(attack["target"].stat(attack["defense"]))
 
-                if attack["defense-check"] == SUCC:
+                if attack["defense-check"] > TIE:
                     self.results["defended"][maneuver] = attack
                 else:
                     # Generate damage for the attack
