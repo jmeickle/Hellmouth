@@ -44,8 +44,9 @@ def combat(attack):
 
         # Shouting if a major wound
         # TODO: Check to not cry out
+        # TODO: Move out of this file.
         if attack.get("major wound") is not None:
-            if attack["target"].voice is not None:
+            if attack["target"].voice is not None and attack["target"].conscious() is True:
                 strings.append("%s @%s-dmg-%s@!" % (attack["target"].appearance(), attack["target"].voice, damage_level))
 
     # Hit, but the target defended.

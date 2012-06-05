@@ -99,7 +99,7 @@ class Actor:
     # STUB: Things to do before taking a turn.
     def before_turn(self):
         # Do Nothing.
-        if self.can_maneuver() is False:
+        if self.controlled is False and self.can_maneuver() is False:
             self.over()
 
     # STUB: Things to do at the end of your turn.
@@ -213,9 +213,9 @@ class Actor:
 
     # STUB: Figure out whether we are currently subject to stun.
     def can_be_stunned(self):
-        if self.effects.get("Stun") is None:
-            return True
-        return False
+        if self.effects.get("Stun") is not None:
+            return False
+        return True
 
     # Get knocked down.
     def knockdown(self):
@@ -233,10 +233,15 @@ class Actor:
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
+        if self.controlled is True and self.can_maneuver() is False:
+            log.add("%s can't take any actions.", self.appearance())
+            self.over()
+            return False
+
         pos = add(self.pos, dir)
         if self.map.valid(pos) is False:
             if self.controlled is True:
-                log.add("You can't bring yourself to dive into the yawning abyss before you.")
+                log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
         if self.map.cell(pos).occupied() is True:
@@ -481,13 +486,18 @@ class Actor:
             log.add("%s is stunned!" % self.appearance())
 
         if attack.get("dropped items") is not None:
+            self.drop_all_held()
             # TODO: Change message.
-            log.add("%s drops items!" % self.appearance())
+            log.add("%s drops its items!" % self.appearance())
 
         if attack.get("knockout") is not None:
             self.effects["Unconscious"] = attack["knockout"]
             # TODO: Improve messaging
             log.add("%s was knocked unconscious!" % self.appearance())
+
+        if attack.get("knockdown") is not None:
+            self.knockdown()
+            log.add("%s falls over!" % self.appearance())
 
         # Cause HP loss.
         self.hp_spent += attack["injury"]
@@ -832,7 +842,7 @@ class Actor:
                 self._merge(appearance, itemlist)
                 appearances.append(appearance)
 
-            log.add("You pick up the %s." % commas(appearances, False))
+            log.add("%s picks up the %s." % (self.appearance(), commas(appearances, False)))
 
     # TODO: Support dropping to any cell
     # 'Forcibly' drop a specific inventory item.
@@ -842,7 +852,7 @@ class Actor:
             assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
             self._remove(item)
             self.cell().put(item)
-            log.add("You drop the %s." % item.appearance())
+            log.add("%s drops the %s." % (self.appearance(), item.appearance()))
         return False
 
     # TODO: Support dropping to any cell
@@ -863,6 +873,14 @@ class Actor:
             appearance, itemlist = self.inventory.popitem()
             cell._merge(appearance, itemlist)
 
+    # TODO: Less hack-ish.
+    def drop_all_held(self):
+        for loc in self.body.locs.values():
+            for appearance, itemlist in loc.held.items():
+                for item in itemlist:
+                    self._unequip(item)
+                    self._drop(item)
+            
     # Tack an appearance and associated list of items from a cell into your own inventory.
     def _merge(self, appearance, itemlist):
         current = self.inventory.get(appearance, [])
@@ -985,13 +1003,13 @@ class Actor:
 
         # Otherwise, we fail.
         else:
-            log.add("You can't equip the %s right now." % item.appearance())
+            log.add("%s can't equip the %s right now." % (self.appearance(), item.appearance()))
             return False
 
         # HACK: Remove the equipped item from inventory.
         self._remove(item)
         self.check_weapons()
-        log.add("You equip the %s." % item.appearance())
+        log.add("%s equips the %s." % (self.appearance(), item.appearance()))
         return True
 
     # TODO: Sanity checks not handled above.
@@ -1049,7 +1067,7 @@ class Actor:
         self.check_weapons()
         # HACK: Add back to inventory after unequipping.
         self._add(item)
-        log.add("You unequip the %s." % item.appearance())
+        log.add("%s unequips the %s." % (self.appearance(), item.appearance()))
 
         return True
 

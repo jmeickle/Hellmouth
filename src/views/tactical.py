@@ -298,7 +298,11 @@ class Status(View):
                 color = "yellow-black"
             else:
                 color = "cyan-black"
-            self.line("Shock (-%s)" % shock, color)
+            self.line("Shock", color)
+        if self.player.effects.get("Stun") is not None:
+            self.line("Stun", "red-black")
+        if self.player.effects.get("Unconscious") is not None:
+            self.line("KO'd", "red-black")
         return True
 
 class Place(View):
