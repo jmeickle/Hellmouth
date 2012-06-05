@@ -1,7 +1,7 @@
 SHORT TERM GOALS:
-- Reenable skill system
 - Effects of status effects (stun)
-- Parries and dodges
+- Retreat decisions and retreat movement
+- Reenable defaults
 - Attribute/trait generation
 - Improved monster target-seeking AI
 - Improved random monster generation
@@ -20,7 +20,6 @@ VERY LONG TERM GOALS:
 - Remappable keys
 - Windows support
 - Improved map generation
-- Enhanced combat text generation
 - Non-combat skills
 - Scrollbar icon = player glyph
 
