@@ -27,23 +27,17 @@ def combat(attack):
         wound = ""
         punctuation = "."
 
-        # DEBUG: Explicitly list wounds
-        #wounds = []
-        if attack.get("major wound") is not None:
+        if attack.get("dismembered") is not None:
+            wound = ", horribly crippling it"
             punctuation = "!"
-        #    wounds.append("major")
-        if attack.get("crippled") is not None:
+            if attack.get("dismembering major wound") is True and attack["damage type"] == "cut":
+                attack["sever"] = True
+                wound = ", severing it"
+        elif attack.get("crippled") is not None:
             wound = ", crippling it"
             punctuation = "!"
-        #    wounds.append("crippled")
-        if attack.get("dismembered") is not None:
-            wound = ", dismembering it"
+        elif attack.get("major wound") is not None:
             punctuation = "!"
-            if attack.get("severed") is not None:
-                wound = ", severing it"
-        #        wounds.append("severed")
-        #    else:
-        #        wounds.append("dismembered")
 
         # TODO: Have other kinds of basic strings.
         strings.append("%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), wound, punctuation))
@@ -53,10 +47,6 @@ def combat(attack):
         if attack.get("major wound") is not None:
             if attack["target"].voice is not None:
                 strings.append("%s @%s-dmg-%s@!" % (attack["target"].appearance(), attack["target"].voice, damage_level))
-
-        # DEBUG:
-        #if wounds:
-        #    string += " (%s!)" % commas(wounds)
 
     # Hit, but the target defended.
     elif attack.get("defense-check") > TIE:
@@ -96,7 +86,7 @@ def combat(attack):
                 defense_level = "difficult"
                 punctuation = "!"
 
-        strings.append("%s @def-%s-%s@ against %s%s" % (attack["target"].appearance(), attack["defense"], defense_level, attack["attacker"].appearance(), punctuation))
+        strings.append("%s @def-%s-%s@ %s's %s%s" % (attack["target"].appearance(), attack["defense"], defense_level, attack["attacker"].appearance(), attack["attack name"], punctuation))
 
     # Miss!
     else:

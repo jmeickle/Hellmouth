@@ -242,7 +242,7 @@ class HitLoc:
         self.wounds.append(attack["wound"])
 
         # BLOOD EVERYWHERE
-        if attack.get("dismembering major wound") is True and attack["damage type"] == "cut":
+        if attack.get("sever") is True:
             self.sever()
 
     def sever(self):
