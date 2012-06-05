@@ -203,8 +203,9 @@ class Stats(View):
 
         # Show the chosen weapon/attack option combination.
         weapon, attack_option = self.player.attackline()
-        slot, appearance, trait, item = weapon
+        slot, appearance, trait, trait_level, item = weapon
         attack_name, attack_stats = attack_option
+        # Override this with the current value.
         trait_level = self.player.trait(trait)
 
         # HACK: Should ask the item to display a shorter appearance.

@@ -82,6 +82,7 @@ skill_list = {
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
     "defaults"   : [],
+    "retreat"    : 3,
 },
 # Melee skills
 "Shortsword" : {

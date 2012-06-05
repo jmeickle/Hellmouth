@@ -80,6 +80,8 @@ class Actor:
         self.weapon = 0
         self.attack_options = []
         self.attack_option = 0
+        self.parries = []
+        self.parry = 0
 
     def appearance(self):
 #        if self.controlled is True:
@@ -132,7 +134,7 @@ class Actor:
             self.weapon = len(self.weapons) - 1
 
         weapon = self.weapons[self.weapon]
-        slot, appearance, trait, item = weapon
+        slot, appearance, trait, trait_level, item = weapon
         self.attack_options = sorted(item.attack_options[trait].items(), key=itemgetter(0))
         self.choose_attack_option(0)
 
@@ -254,7 +256,7 @@ class Actor:
     # SKILLS
 
     # STUB Gets the level of a skill as well as any situational modifiers.
-    def skill(self, skill, situational=False):
+    def skill(self, skill, temporary=True):
         attribute, level = self.skills.get(skill, (None, 0))
         # TODO: Fix attr defaulting.
         # Didn't have it, or anything that defaults to it. So:
@@ -271,13 +273,13 @@ class Actor:
 #            return level, 0
 #        else:
         if attribute is not None:
-            return self.stat(attribute) + level
+            return self.stat(attribute, temporary) + level
 
     # Get the actor's level in a skill/stat.
-    def trait(self, traitname):
-        level = self.stat(traitname)
+    def trait(self, traitname, temporary=True):
+        level = self.stat(traitname, temporary)
         if level is None:
-            level = self.skill(traitname)
+            level = self.skill(traitname, temporary)
         return level
 
     # Performs a stat or skill check.
@@ -308,15 +310,26 @@ class Actor:
     # Find eligible weapons.
     def check_weapons(self):
         weapons = []
+        parries = []
         for slot, loc in self.body.locs.items():
             if loc is None:
                 continue
             for appearance, weaponlist in loc.weapons().items():
                 for weapon in weaponlist:
                     for trait, attack_options in weapon.attack_options.items():
-                        if self.trait(trait) > 0: # HACK: Magic number!
-                            weapons.append((slot, appearance, trait, weapon))
-        self.weapons = sorted(sorted(sorted(weapons, key=itemgetter(1)), key=itemgetter(2)), key=itemgetter(0))
+                        trait_level = self.trait(trait)
+                        if trait_level > 0: # HACK: Magic number!
+                            weapons.append((slot, appearance, trait, trait_level, weapon))
+                            for attack_name, attack_data in attack_options.items():
+                                parry_mod = attack_data[3]
+                                if parry_mod is not None:
+                                    # TODO: Handle U weapons.
+                                    parries.append((slot, appearance, trait, trait_level + parry_mod, attack_name, weapon))
+        self.weapons = sorted(weapons, key=itemgetter(3,0,2,1), reverse=True)
+        self.parries = sorted(parries, key=itemgetter(3,0,2,1), reverse=True)
+
+        # HACK: Shouldn't always reset like this.
+        self.parry = 0
         self.choose_weapon(0)
 
     # Function called to produce a simple, single attack maneuver.
@@ -325,7 +338,8 @@ class Actor:
         # Can have multiple items here, weirdly enough...
         weapon = self.weapons[self.weapon]
         attack_option = self.attack_options[self.attack_option]
-        slot, appearance, trait, item = weapon
+        slot, appearance, trait, trait_level, item = weapon
+        # Overwrite with current level of the trait.
         trait_level = self.trait(trait)
 
         maneuvers.append((target, item, trait, attack_option))
@@ -359,6 +373,22 @@ class Actor:
         action.cleanup()
         self.over()
         return True
+
+    # Choose a defense and set information about it in the attack.
+    def choose_defense(self, attack):
+        retreat = False#True # Decide whether to retreat.
+        dodge = self.Dodge(retreat)
+        parry = self.Parry(retreat, True)[0]
+        if parry[3] > dodge:
+            attack["defense"] = "parry"
+            attack["defense level"] = parry[3]
+            attack["defense information"] = parry
+        else:
+            attack["defense"] = "dodge"
+            attack["defense level"] = dodge
+            attack["information"] = None
+        if retreat is True:
+            attack["retreat"] = True
 
     # Take damage.
     # TODO: Add shock, stun, knockdown, etc.
@@ -430,37 +460,37 @@ class Actor:
     # STATS
 
     # Retrieve actor stat.
-    def stat(self, stat, effective=None):
+    def stat(self, stat, temporary=True):
         if not hasattr(self, stat):
             return
         func = getattr(Actor, stat)
-        if effective is None:
+        if temporary is True:
             return func(self)
         else:
-            return func(self, effective)
+            return func(self, temporary)
 
     # Formulas for calculated stats.
-    def ST(self, effective=True):
+    def ST(self, temporary=True):
         ST = self.attributes.get('ST')
-        #if effective is True:
+        #if temporary is True:
         #    ST -= self.effects.get("Shock", 0)
         return ST
 
-    def DX(self, effective=True):
+    def DX(self, temporary=True):
         DX = self.attributes.get('DX')
-        if effective is True:
+        if temporary is True:
             DX -= self.effects.get("Shock", 0)
         return DX
 
-    def IQ(self, effective=True):
+    def IQ(self, temporary=True):
         IQ = self.attributes.get('IQ')
-        if effective is True:
+        if temporary is True:
             IQ -= self.effects.get("Shock", 0)
         return IQ
 
-    def HT(self, effective=True):
+    def HT(self, temporary=True):
         HT = self.attributes.get('HT')
-        #if effective is True:
+        #if temporary is True:
         #    HT -= self.effects.get("Shock", 0)
         return HT
 
@@ -478,9 +508,37 @@ class Actor:
     def Move(self):        return int(self.Speed() * (1 - .2 * self.Encumbrance())) # Plus basic move
     def Speed(self):       return self.stat('DX', False) + self.stat('HT', False) # Plus buying speed
 
-    def Dodge(self):       return self.Speed()/4 + 3# Can be modified by acrobatics, etc.
-    def Block(self):       return None # STUB: depends on skill
-    def Parry(self):       return None # STUB: depends on skill
+    # STUB: Can be modified by acrobatics, etc.
+    def Dodge(self, retreat=False):
+        dodge = self.Speed()/4 + 3 # /4 because no /4 in speed.
+        if retreat is True:
+            dodge += 3
+        return dodge
+
+    def Block(self, retreat=False):       return None # STUB: depends on skill
+
+    # STUB: Currently always returns highest parry.
+    def Parry(self, retreat=False, list=False):
+        parries = []
+        for slot, appearance, trait, trait_level, attack_name, weapon in self.parries:
+            # Get the attack data.
+            attack_data = weapon.attack_options[trait][attack_name]
+            parry_mod = attack_data[3]
+            # Recalculate trait level + parry mod for this weapon.
+            trait_level = self.trait(trait, False)
+            # TODO: Check whether the skill has had points paid for it (imp. retreat)
+            if retreat is True:
+                retreat_mod = 1
+                if trait in skills.skill_list:
+                    retreat_mod = skills.skill_list[trait].get("retreat", 1)
+            else:
+                retreat_mod = 0
+            parry = 3 + trait_level/2 + parry_mod + retreat_mod
+            parries.append((slot, appearance, trait, parry, attack_name, weapon))
+        if list is True:
+            return sorted(parries, key=itemgetter(3), reverse=True)
+        else:
+            return sorted(parries, key=itemgetter(3), reverse=True)[0][3]
 
     def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
     def Encumbrance(self): return 0 # STUB
@@ -933,8 +991,8 @@ class Actor:
             sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
         sheet.append("--Weapons--")
-        for slot, appearance, trait, item in self.weapons:
-            sheet.append("  %s: %s" % (slot, appearance))
+        for slot, appearance, trait, trait_level, item in self.weapons:
+            sheet.append("  %s: %s (%s-%s)" % (slot, appearance, trait, trait_level))
         sheet.append("")
         sheet.append("--Effects--")
         for effect, details in self.effects.items():

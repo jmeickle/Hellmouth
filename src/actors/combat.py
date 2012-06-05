@@ -48,8 +48,8 @@ class CombatAction:
         for defender, hits in self.hits.items():
             for maneuver, attack in hits:
                 # Permit the actor to decide which defense they want to use.
-                attack["defense"] = "Dodge"#preferred_defense(self.attack)
-                attack["defense-check"], attack["defense-margin"] = sc(attack["target"].stat(attack["defense"]))
+                attack["target"].choose_defense(attack)
+                attack["defense-check"], attack["defense-margin"] = sc(attack["defense level"])
 
                 if attack["defense-check"] > TIE:
                     self.results["defended"][maneuver] = attack
