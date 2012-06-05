@@ -113,7 +113,7 @@ class MeatGolem(NPC):
 
     # HACK: To be removed when the advantage works.
     def DR(self):
-        return 5
+        return 3
 
 class MeatWorm(NPC):
     def __init__(self):
