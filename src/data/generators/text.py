@@ -89,6 +89,10 @@ tokens = {
     "def-crit-insane" : "defends with nothing but blind luck",
     # Misses.
     "miss" : "misses",
+    # Speech
+    "speak-dmg" : "screams in pain",
+    "screech-dmg" : "screeches in pain",
+    "roar-dmg" : "roars in pain",
     # Miscellany.
     "spikes" : "but hits itself for",
 

@@ -108,7 +108,7 @@ class MeatGolem(NPC):
         self.name = 'meat golem'
         self.color = 'blue-black'
         self.description = "A lumbering construct made of a great many pieces of spoiled meat. They appear to have been stapled together."
-
+        self.voice = None
         self.build(50)
 
     # HACK: To be removed when the advantage works.
@@ -122,6 +122,7 @@ class MeatWorm(NPC):
         self.name = 'meat worm'
         self.color = 'magenta-black'
         self.description = "This worm looks like a large stick of pepperoni. A trail of grease glistens behind it."
+        self.voice = "screech"
 
         self.build(10)
 
@@ -132,6 +133,7 @@ class MeatHydra(NPC):
         self.name = 'meat hydra'
         self.color = 'magenta-black'
         self.description = 'A hydra made from the meat of lesser beings. Each "head" is a cracked ribcage.'
+        self.voice = "roar"
 
         self.build(50)
 

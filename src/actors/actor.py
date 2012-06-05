@@ -23,6 +23,7 @@ class Actor:
         # Text information (cosmetic)
         self.name = 'Default monster'
         self.description = 'This is the description'
+        self.voice = "speak"
 
         # Appearance (cosmetic)
         self.glyph = '@'
