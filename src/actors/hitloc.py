@@ -73,7 +73,7 @@ class HitLoc:
         found_weapons = {}
         if natural is True:
             for appearance, weapons in self.attack_options.items():
-                if len(self.held) == 0 or random.choice(weapons).requires_empty_location is False:
+                if self.holding() is False or random.choice(weapons).requires_empty_location is False:
                     found_weapons[appearance] = weapons
         if wielded is True:
             for appearance, weapons in self.readied.items():
@@ -116,9 +116,16 @@ class HitLoc:
         self.sublocations.append(part)
 
     # ITEMS
+    # Return whether we're holding anything.
+    def holding(self):
+        if len(self.held) > 0:
+            return True
+        return False
+
     # STUB: Can we hold the item?
     def can_hold(self, item):
-        if len(self.held) > 0:
+        # HACK: It's possible to hold multiple items.
+        if self.holding():
             return False
         return True
 
