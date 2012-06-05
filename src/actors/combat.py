@@ -39,11 +39,7 @@ class CombatAction:
     def __init__(self, attacks):
         self.attacks = attacks
         self.hits = {}
-        self.results = {
-            "missed" : {},
-            "defended" : {},
-            "hit" : {},
-        }
+        self.results = {}
 
     # Decide which attacks are or aren't going to work, but don't actually
     # do anything to actors yet.
@@ -60,7 +56,8 @@ class CombatAction:
 
             # Early exit.
             if attack["attack-check"] < TIE:
-                self.results["missed"][maneuver] = attack
+                attack["status"] = "missed"
+                self.results[maneuver] = attack
             else:
                 hits = self.hits.get(attack["target"], [])
                 hits.append((maneuver, attack))
@@ -79,7 +76,8 @@ class CombatAction:
                 if attack.get("defense") is not None:
                     attack["defense-check"], attack["defense-margin"] = sc(attack["defense level"])
                     if attack["defense-check"] > TIE:
-                        self.results["defended"][maneuver] = attack
+                        attack["status"] = "defended"
+                        self.results[maneuver] = attack
                         continue
 
                 # Didn't defend? Generate damage for the attack.
@@ -90,22 +88,22 @@ class CombatAction:
                     attack["location"] = attack["target"].randomloc()
                 attack["location"].prepare_hurt(attack)
                 attack["target"].prepare_hurt(attack)
-                self.results["hit"][maneuver] = attack
+                attack["status"] = "hit"
+                self.results[maneuver] = attack
 
     # Do everything that occurs at the *end* of this attack sequence.
     # Examples: falling, retreating, shock, etc.
     def cleanup(self):
-        for maneuver, attack in self.results["hit"].items():
+        for maneuver, attack in self.results.items():
+            if attack.get("retreated") is True:
+                attack["target"].move(attack["retreat position"])
             # Cause wounds to limbs.
             # TODO: Better tracking of wounds.
-            if attack["wound"] > 0:
+            if attack.get("wound") > 0:
                 attack["location"].hurt(attack)
             # Cause wounds to actors.
-            if attack["injury"] > 0:
+            if attack.get("injury") > 0:
                 attack["target"].hurt(attack)
-#            if attack.get("effects") is not None:
-#                for effect in attack["effects"]:
-#                attack["target"]
             # Check for dead actors.
             if attack["target"].check_dead() is True:
                 attack["target"].die()
@@ -132,10 +130,6 @@ class CombatAction:
     # TODO: Generate a message (using text generator)
     def display(self):
         lines = []
-        for attack in self.results["missed"].values():
-            lines.extend(combat(attack))
-        for attack in self.results["defended"].values():
-            lines.extend(combat(attack))
-        for attack in self.results["hit"].values():
+        for attack in self.results.values():
             lines.extend(combat(attack))
         return lines

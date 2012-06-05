@@ -420,30 +420,45 @@ class Actor:
         self.over()
         return True
 
+    # Decide whether to retreat or not.
+    def choose_retreat(self, attack):
+        # TODO: Handle sideslips and slips
+        mode = 1
+        cells = perimeter(attack["reach"] + mode, attack["attacker"].pos)
+        options = []
+        for cell in cells:
+            if dist(self.pos, cell) == 1 and self.valid_move(cell):
+                options.append(cell)
+        if options:
+            attack["retreat position"] = random.choice(options)
+            return True
+        else:
+            return False
+
     # Choose a defense and set information about it in the attack.
     def choose_defense(self, attack):
-        # Get possible defenses.
-        retreat = False # TODO: Decide whether to retreat.
+        # Get possible defenses and retreats.
+        retreat = self.choose_retreat(attack)
         dodge = self.Dodge(retreat)
         parries = self.Parry(retreat, True)
         # TODO: Block
-
         # TODO: Figure out expected number of attacks to decide whether multiple parries would be worth it.
-        if parries is not None:
+
+        if dodge is not None:
+            attack["defense"] = "dodge"
+            attack["defense level"] = dodge
+            attack["information"] = None
+
+        if parries:
             parry = parries[0]
             if parry[3] > dodge:
                 attack["defense"] = "parry"
                 attack["defense level"] = parry[3]
                 attack["defense information"] = parry
 
-        elif dodge is not None:
-            attack["defense"] = "dodge"
-            attack["defense level"] = dodge
-            attack["information"] = None
-
         # The default is attack["defense"] == None.
         if attack.get("defense") is not None and retreat is True:
-            attack["retreat"] = True
+            attack["retreated"] = True
 
     # Decide which entire-actor effects will happen in response to injury.
     def prepare_hurt(self, attack):
