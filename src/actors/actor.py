@@ -401,34 +401,61 @@ class Actor:
         if retreat is True:
             attack["retreat"] = True
 
-    # Take damage.
-    # TODO: Add shock, stun, knockdown, etc.
-    def hurt(self, attack):
-        self.hp_spent += attack["injury"]
+        # The default is attack["defense"] == None.
+        if attack.get("defense") is not None and retreat is True:
+            attack["retreat"] = True
 
+    # Decide which entire-actor effects will happen in response to injury.
+    def prepare_hurt(self, attack):
         # Shock:
         attack["shock"] = min(attack["injury"], 4)
-        # Shock from multiple sources.
-        shock = self.effects.get("Shock", 0)
-        self.effects["Shock"] = min(4, shock + attack["shock"])
 
-        # Knockdown
-        # TODO: Face/vital/etc. hits
+        # Effects of a major wound:
         if attack.get("major wound") is True:
-            succ, margin = self.sc('HT')
-            if succ < TIE:
-                attack["stun"] = True
-                self.effects["Stun"] = attack["stun"]
-                log.add("%s was stunned!" % self.appearance())
-                # TODO: Change posture
-                attack["knockdown"] = True
+            # TODO: Face/vital/etc. hits
+            check, margin = self.sc('HT')
+            if check < TIE:
+                # Stun:
+                if self.can_be_stunned() is True:
+                    attack["stun"] = True
+
+                # Knockdown:
+                if self.can_be_knocked_down() is True: 
+                    attack["knockdown"] = True
+
+                # Disarmament:
                 # TODO: Force dropping held items
-                attack["dropped items"] = True
-                if margin <= -5 or succ == CRIT_FAIL:
-                    attack["knockout"] = True
-                    self.effects["Unconscious"] = attack["knockout"]
-                    # TODO: Improve messaging
-                    log.add("%s was knocked unconscious!" % self.appearance())
+                if self.is_holding_items() is True:
+                    attack["dropped items"] = True
+
+                # Knockout:
+                if margin <= -5 or check == CRIT_FAIL:
+                    if self.can_be_knocked_out() is True:
+                        attack["knockout"] = True
+
+    # Cause the effects decided in prepare_hurt().
+    def hurt(self, attack):
+        # Handle shock (potentially from multiple sources.)
+        if attack.get("shock") is not None:
+            shock = self.effects.get("Shock", 0)
+            self.effects["Shock"] = min(4, shock + attack["shock"])
+
+        if attack.get("stun") is not None:
+            self.effects["Stun"] = attack["stun"]
+            # TODO: Change message.
+            log.add("%s is stunned!" % self.appearance())
+
+        if attack.get("dropped items") is not None:
+            # TODO: Change message.
+            log.add("%s drops items!" % self.appearance())
+
+        if attack.get("knockout") is not None:
+            self.effects["Unconscious"] = attack["knockout"]
+            # TODO: Improve messaging
+            log.add("%s was knocked unconscious!" % self.appearance())
+
+        # Cause HP loss.
+        self.hp_spent += attack["injury"]
 
     # We just lost a limb :(
     def limbloss(self, attack):

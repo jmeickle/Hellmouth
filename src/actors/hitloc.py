@@ -172,7 +172,7 @@ class HitLoc:
 
     # Calculate what happens when a limb is hit, but don't actually apply the
     # effects, in order to handle simultaneous actions.
-    def hit(self, attack):
+    def prepare_hurt(self, attack):
         # TODO: (Source, DR blocked) for messaging
         # TODO: Damage to items.
         # TODO: Min damage properly

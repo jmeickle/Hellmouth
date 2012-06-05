@@ -88,7 +88,8 @@ class CombatAction:
                 attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
                 if attack.get("location") is None:
                     attack["location"] = attack["target"].randomloc()
-                attack["location"].hit(attack)
+                attack["location"].prepare_hurt(attack)
+                attack["target"].prepare_hurt(attack)
                 self.results["hit"][maneuver] = attack
 
     # Do everything that occurs at the *end* of this attack sequence.
