@@ -93,17 +93,19 @@ class Actor:
 
     # UTILITY
     def ready(self):
+        # HACK: We don't need to check this every turn!
         self.check_weapons()
 
-    # Get ready to act.
+    # STUB: Things to do before taking a turn.
     def before_turn(self):
         # HACK:
         if self.effects.get("Unconscious") is not None:
             self.over()
 
+    # STUB: Things to do at the end of your turn.
     def after_turn(self):
         # Shock ends at the end of your turn.
-        # TODO: Handle getting shock in your own turn.
+        # TODO: Handle the case of getting shock in your own turn.
         if self.effects.get("Shock") is not None:
             del self.effects["Shock"]
             # TODO: Real message.
@@ -112,8 +114,8 @@ class Actor:
         for effect, details in self.effects.items():
             if effect == "Stun":
                 # TODO: Mental Stun
-                succ, margin = self.sc('HT')
-                if succ > TIE:
+                check, margin = self.sc('HT')
+                if check > TIE:
                     del self.effects["Stun"]
                     # TODO: Real message.
                     log.add("%s shrugs off the stun." % self.appearance())
@@ -126,9 +128,7 @@ class Actor:
         return weapon, attack_option
 
     def choose_weapon(self, scroll):
-
         assert len(self.weapons) != 0, "Had 0 weapons: %s" % self.__dict__
-
         self.weapon += scroll
         if self.weapon >= len(self.weapons):
             self.weapon = 0
@@ -141,9 +141,7 @@ class Actor:
         self.choose_attack_option(0)
 
     def choose_attack_option(self, scroll):
-
         assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
-
         self.attack_option += scroll
         if self.attack_option >= len(self.attack_options):
             self.attack_option = 0
