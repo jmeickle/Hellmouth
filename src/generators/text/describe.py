@@ -89,13 +89,13 @@ def describe(str):
 def replace(key):
     exact = g(key)
     if exact is not None:
-        return exact
+        ret = exact
     else:
         ret = "!!!"+key+"!!!"
         keys = re.split('-',key)
         for i in range(len(keys)):
             ret = indexed_remove(keys, i, ret)
-        return ret
+    return describe(ret)
 
 # If an exact match wasn't found, recursively remove keys from the list of keys
 # to try to find a partial match using this pattern:
