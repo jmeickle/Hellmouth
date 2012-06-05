@@ -868,6 +868,7 @@ class Actor:
                 if loc.owner == self:
                     loc.unwear(item)
 
+        self.check_weapons()
         # HACK: Add back to inventory after unequipping.
         self._add(item)
         log.add("You unequip the %s." % item.appearance())
