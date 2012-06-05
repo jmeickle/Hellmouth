@@ -24,11 +24,11 @@ tokens = {
     "dmg-imp-none" : "doesn't harm",
 
     # Cutting damage
-    "dmg-scratch-cut" : ("scratches", "grazes"),
-    "dmg-injure-cut" : ("slashes", "slices"),
-    "dmg-wound-cut" : ("maims", "chops"),
-    "dmg-cripple-cut" : ("brutally maims", "chops deep into", "hacks apart", "almost lops off"),
-    "dmg-dismember-cut" : ("hacks off", "slices apart", "lops off"),
+    "dmg-scratch-cut" : ("lightly @dmg-injure-cut@", "scratches", "grazes", "nicks"),
+    "dmg-injure-cut" : ("cuts", "slashes", "slices"),
+    "dmg-wound-cut" : ("deeply @dmg-injure-cut@", "chops into", "hacks into"),
+    "dmg-cripple-cut" : ("brutally @dmg-injure-cut@", "horribly @dmg-injure-cut@", "chops deeply into", "hacks deeply into", "almost @dmg-dismember-cut@"),
+    "dmg-dismember-cut" : ("@dmg-injure-cut@ through", "hacks off", "hacks apart", "chops apart", "chops off", "lops off"),
 
     # Crushing damage
     "dmg-scratch-cr" : ("pokes", "jabs"),
@@ -91,12 +91,25 @@ tokens = {
     "def-crit-hard" : "readily defends",
     "def-crit-difficult" : "defends with nothing but luck",
     "def-crit-insane" : "defends with nothing but blind luck",
+
     # Misses.
     "miss" : "misses",
+    "miss-easy" : ("barely misses", "just misses"),
+    "miss-normal" : ("misses", "fails to hit"),
+    "miss-hard" : "badly misses",
+    "miss-difficult" : "completely misses",
+    "miss-unlucky" : "horribly misses",
+#    "miss-crit-trivial" : "",
+#    "miss-crit-easy" : "",
+#    "miss-crit-normal" : "",
+#    "miss-crit-hard" : "",
+#    "miss-crit-difficult" : "thoroughly defeats the air in front of",
+
     # Speech
     "speak-dmg" : "screams in pain",
     "screech-dmg" : "screeches in pain",
     "roar-dmg" : "roars in pain",
+
     # Miscellany.
     "spikes" : "but hits itself for",
 

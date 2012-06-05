@@ -4,7 +4,34 @@ from dice import *
 from hex import *
 from generators.text.combat import combat
 
-# For convenient reference, attack lines are structured as such:
+# KEY DEFINITIONS:
+# attacker: who launched the attack
+# target: who the attack was intended for
+# defender: who actually received the attack
+# location: which of the defender's parts was hit
+#
+# attack name: "swing", "punch", "bite", etc.
+# attack stats: the "attack line" of the (weapon x skill x attack option)
+# damage type: cr, cut, etc.
+# damage roll: the damage a weapon gets to roll, like 1d-3
+#
+# basic damage: the rolled number on a damage roll
+# basic damage blocked: amount of basic damage blocked by DR
+# penetrating damage: amount of basic damage not blocked
+# multiplier: the damage mod for that (damage type x location)
+# wound: injury to a location: (penetrating damage x multiplier)
+# injury: the amount of damage from a wound that affects HP total
+
+# major wound: whether the wound was major
+# crippling wound: whether the wound was enough to cripple in one hit
+# dismembering wound: whether the wound was enough to dismember in one hit
+# crippled: whether this attack pushed the limb over into "crippled"
+# dismembered: whether this attack pushed the limb over into "dismembered"
+# sever: whether to sever the limb during cleanup (dismembering wound + cut damage)
+
+# TODO: Definitions for everything!
+
+# For convenient reference, attack stats are structured as such:
 #     skill          name     dmg    dtype  reach parry minST hands
 #  "Broadsword" : { "swing" : ("sw+1", "cut", (1,), 0, 10, 1),
 
@@ -49,19 +76,20 @@ class CombatAction:
             for maneuver, attack in hits:
                 # Permit the actor to decide which defense they want to use.
                 attack["target"].choose_defense(attack)
-                attack["defense-check"], attack["defense-margin"] = sc(attack["defense level"])
+                if attack.get("defense") is not None:
+                    attack["defense-check"], attack["defense-margin"] = sc(attack["defense level"])
+                    if attack["defense-check"] > TIE:
+                        self.results["defended"][maneuver] = attack
+                        continue
 
-                if attack["defense-check"] > TIE:
-                    self.results["defended"][maneuver] = attack
-                else:
-                    # Generate damage for the attack
-                    attack["damage roll"] = attack["attack stats"][0]
-                    attack["damage type"] = attack["attack stats"][1]
-                    attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
-                    if attack.get("location") is None:
-                        attack["location"] = attack["target"].randomloc()
-                    attack["location"].hit(attack)
-                    self.results["hit"][maneuver] = attack
+                # Didn't defend? Generate damage for the attack.
+                attack["damage roll"] = attack["attack stats"][0]
+                attack["damage type"] = attack["attack stats"][1]
+                attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
+                if attack.get("location") is None:
+                    attack["location"] = attack["target"].randomloc()
+                attack["location"].hit(attack)
+                self.results["hit"][maneuver] = attack
 
     # Do everything that occurs at the *end* of this attack sequence.
     # Examples: falling, retreating, shock, etc.

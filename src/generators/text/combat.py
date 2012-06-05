@@ -11,9 +11,9 @@ def combat(attack):
         # formula = "%s [(%s-%s)*%s]" % (attack["injury"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
 
         # Damage level tokens
-        if attack.get("dismembering major wound") is not None:
+        if attack.get("dismembering wound") is not None:
             damage_level = "dismember"
-        elif attack.get("crippling major wound") is not None:
+        elif attack.get("crippling wound") is not None:
             damage_level = "cripple"
         elif attack.get("major wound") is not None:
             damage_level = "wound"
@@ -28,9 +28,9 @@ def combat(attack):
         punctuation = "."
 
         if attack.get("dismembered") is not None:
-            wound = ", horribly crippling it"
+            wound = ", maiming it"
             punctuation = "!"
-            if attack.get("dismembering major wound") is True and attack["damage type"] == "cut":
+            if attack.get("dismembering wound") is True and attack["damage type"] == "cut":
                 attack["sever"] = True
                 wound = ", severing it"
         elif attack.get("crippled") is not None:
@@ -90,8 +90,39 @@ def combat(attack):
 
     # Miss!
     else:
+        margin = attack["attack-margin"]
         punctuation = "."
-        strings.append("%s @miss@ %s%s" % (attack["attacker"].appearance(), attack["target"].appearance(), punctuation))
+        # Critical misses
+        if attack["attack-check"] == CRIT_FAIL:
+            miss_level = "crit-"
+            punctuation = "!"
+            if margin <= -6:
+                miss_level += "difficult"
+            elif margin <= -4:
+                miss_level += "hard"
+            elif margin <= -2:
+                miss_level += "normal"
+            elif margin <= -1:
+                miss_level += "easy"
+            # If your roll only failed because it was a crit :D
+            else:
+                miss_level += "unlucky"
+        # Normal successes
+        else:
+            if margin <= -6:
+                miss_level = "difficult"
+                punctuation = "!"
+            elif margin <= -4:
+                miss_level = "hard"
+            elif margin <= -2:
+                miss_level = "normal"
+            elif margin == -1:
+                miss_level = "easy"
+            else: # Should never happen?
+                miss_level = "unlucky"
+                punctuation = "!"
+
+        strings.append("%s @miss-%s@ %s%s" % (attack["attacker"].appearance(), miss_level, attack["target"].appearance(), punctuation))
 
     formatted = []
     for string in strings:
