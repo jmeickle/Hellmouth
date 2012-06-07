@@ -98,6 +98,10 @@ class Actor:
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
+        # Clear retreats.
+        if self.effects.get("Retreat") is not None:
+            del self.effects["Retreat"]
+
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
             self.over()
@@ -420,8 +424,20 @@ class Actor:
         self.over()
         return True
 
+    # STUB: Handle movement on a retreat.
+    def retreat(self, attack):
+        self.move(attack["retreat position"])
+
     # Decide whether to retreat or not.
     def choose_retreat(self, attack):
+        # Already retreated against this attacker - still get a bonus.
+        if self.effects.get("Retreat") == attack["attacker"]:
+            return True
+        # Already retreated, but not against this attacker. No bonus.
+        elif self.effects.get("Retreat") is not None:
+            return False
+
+        # Otherwise, we can retreat if we can find a spot to move to.
         # TODO: Handle sideslips and slips
         mode = 1
         cells = perimeter(attack["reach"] + mode, attack["attacker"].pos)
@@ -437,8 +453,10 @@ class Actor:
 
     # Choose a defense and set information about it in the attack.
     def choose_defense(self, attack):
-        # Get possible defenses and retreats.
+        # Whether to apply the retreat bonus to this attack.
         retreat = self.choose_retreat(attack)
+
+        # Get possible defenses.
         dodge = self.Dodge(retreat)
         parries = self.Parry(retreat, True)
         # TODO: Block
@@ -458,7 +476,8 @@ class Actor:
 
         # The default is attack["defense"] == None.
         if attack.get("defense") is not None and retreat is True:
-            attack["retreated"] = True
+            attack["retreat target"] = attack["attacker"]
+            self.effects["Retreat"] = attack["retreat target"]
 
     # Decide which entire-actor effects will happen in response to injury.
     def prepare_hurt(self, attack):

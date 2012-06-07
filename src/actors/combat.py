@@ -95,8 +95,8 @@ class CombatAction:
     # Examples: falling, retreating, shock, etc.
     def cleanup(self):
         for maneuver, attack in self.results.items():
-            if attack.get("retreated") is True:
-                attack["target"].move(attack["retreat position"])
+            if attack.get("retreat position") is not None:
+                attack["target"].retreat(attack)
             # Cause wounds to limbs.
             # TODO: Better tracking of wounds.
             if attack.get("wound") > 0:
