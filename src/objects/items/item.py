@@ -7,6 +7,8 @@ class Item():
         # Flavor
         self.name = "debugger"
         self.description = "Debug description"
+        self.glyph = "?"
+        self.color = "red-black"
 
         # Basic characteristics
         self.size = None
@@ -117,6 +119,7 @@ class Armor(Item):
     def __init__(self):
         Item.__init__(self)
         self.material = Bone
+        self.glyph = "["
 
     def can_be_worn(self):
         return True
@@ -128,6 +131,8 @@ class Weapon(Item):
     def __init__(self):
         Item.__init__(self)
         self.material = Bone
+        self.glyph = "/"
+        self.color = "cyan-black"
 
         # Combat-only stats
         self.primary_skill = None # Primary skill, for descriptions - there can be others.
@@ -216,7 +221,3 @@ class Natural(Weapon):
 class Tool(Item):
     def __init__(self):
         Item.__init__(self)
-
-class Glove(Armor):
-    def __init__(self):
-        Armor.__init__(self)

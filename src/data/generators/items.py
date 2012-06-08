@@ -1,16 +1,16 @@
 generators = {
-"default_weapons" : {
+"weapons" : { "options" : {
     "long swords" : { "weight" : 10, "options" : {
         "broadsword" : { "options" : {
-            "broadsword" : {}
+            "broadsword" : {},
             "thrusting broadsword" : {"weight" : 50},
         }},
         "bastard sword" : { "weight" : 50, "options" : {
-            "bastard sword" : {}
+            "bastard sword" : {},
             "thrusting bastard sword" : {"weight" : 50},
         }},
         "greatsword" : { "weight" : 20, "options" : {
-            "greatsword" : {}
+            "greatsword" : {},
             "thrusting greatsword" : {"weight" : 50},
         }},
     }}, #</long swords>
@@ -37,6 +37,6 @@ generators = {
         "long spear" : { "weight" : 20},
     }}, #</spears>
 
-}, #</default_weapons>
+}}, #</weapons>
 
 } #</generators>

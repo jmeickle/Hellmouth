@@ -328,7 +328,6 @@ item_list = {
 
 # Unarmed-augmentors.
     "brass knuckles" : {
-        "class" : Glove,
         "cost" : 10,
         "weight" : .25,
         "attack_options" : {

@@ -1,5 +1,7 @@
 from dice import *
 from generators.maps import meat
+from generators.items import ItemGenerator, generate_item
+from data.generators.items import generators
 from maps.encounter import Encounter
 from data import screens
 from hex import *
@@ -74,6 +76,9 @@ class MeatArena():
         # Monster placement.
         self.place_monsters()
 
+        # Loot placement.
+        self.place_items(destination)
+
     # Configure the map. (Here, we use destination as a depth parameter.)
     def configure_map(self, destination):
         self.map.depth = destination
@@ -119,3 +124,10 @@ class MeatArena():
             monster = monster()
             monster.generate_equipment()
             self.map.put(monster, (self.map.center[0] + flip()*random.randint(1, self.map.size), self.map.center[1] + flip() * random.randint(1,self.map.size)))
+
+    def place_items(self, depth):
+        item_count = r1d6() + 3 + depth
+        generator = ItemGenerator(generators)
+        for x in range(item_count):
+            item = generator.random_item("weapons")
+            random.choice(self.map.cells.values()).put(item)

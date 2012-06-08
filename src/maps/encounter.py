@@ -2,7 +2,6 @@
 # TODO: Not cells in the map.
 from collections import deque
 from text import *
-from generators.items import generate_item
 import random
 import hex
 from data import screens
@@ -110,11 +109,6 @@ class Encounter:
             cell = Cell(pos, self)
             if terrain is not None:
                 cell.put_terrain(terrain)
-
-            # TODO: Replace this test code with something better.
-            if random.randint(1, 10) == 1:
-                for x in range(random.randint(1, 3)):
-                    cell.put(generate_item(random.choice(("shortsword", "spear", "thrusting broadsword", "armor", "gloves", "boots", "leggings"))))
 
             self.cells[pos] = cell
 
@@ -226,7 +220,10 @@ class Cell:
         elif self.terrain is not None:
             return self.terrain.glyph, self.terrain.color
         elif len(self.items) == 1:
-            return '?', 'magenta-black'
+            # TODO: Ick!
+            for itemlist in self.items.values():
+                item = random.choice(itemlist)
+                return item.glyph, item.color
         elif len(self.items) > 1:
             return '!', 'magenta-black'
         else:

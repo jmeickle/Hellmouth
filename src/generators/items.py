@@ -6,7 +6,6 @@ from generators.generator import Generator
 class EquipmentGenerator(Generator):
     def __init__(self, choices):
         Generator.__init__(self, choices)
-        self.amount = None
 
     def generate_equipment(self, loadout_name):
         loadout_choice, loadout_data = self.choose(loadout_name)
@@ -25,6 +24,15 @@ class EquipmentGenerator(Generator):
             equipment.append(generate_item(item, options))
         return equipment
 
+class ItemGenerator(Generator):
+    def __init__(self, choices):
+        Generator.__init__(self, choices)
+
+    def random_item(self, type):
+        type_key, type_data = self.choose(type)
+        return generate_item(type_key, type_data)
+
+# TODO: Figure out where to move this.
 def generate_item(item_name, options=None):
     item_stats = items.item_list.get(item_name)
 
