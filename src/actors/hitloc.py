@@ -199,9 +199,9 @@ class HitLoc:
             else:
                 if attack["wound"] > self.crippling():
                     attack["major wound"] = True
-                    attack["crippling major wound"] = True
+                    attack["crippling wound"] = True
                     if attack["wound"] > 2*self.crippling():
-                        attack["dismembering major wound"] = True
+                        attack["dismembering wound"] = True
 
                 # Further damage to a crippled limb causes wounds - but it
                 # doesn't cause further injury over the crippling amount!
