@@ -11,15 +11,18 @@ generators = {
         "melee" : { "options" : {
             "Unarmed" : { "weight" : 10, "options" : {
                  "Brawling" : {},
-                 "Judo" : {},
-                 "Karate" : {},
-            }},
+            }}, # </Unarmed>
             "Melee" : { "options" : {
-                "Axe" : {"weight": 50},
-                "Broadsword" : {},
+                "Axe/Mace" : {"weight": 50},
+                "Broadsword" : {"weight" : 300},
+                "Flail" : {"weight" : 0},
+                "Knife" : {"weight" : 0},
+                "Polearm" : {"weight": 50},
                 "Shortsword" : {"weight" : 150},
-                "Spear" : {},
-            }},
+                "Spear" : {"weight" : 150},
+                "Staff" : {"weight" : 50},
+                "Two-Handed Sword" : {"weight" : 50},
+            }}, # </Melee>
         }},
 #        "magic" : { "weight" : 10, "options" : {
 #            "Fire Magic" : {},

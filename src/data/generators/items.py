@@ -1,6 +1,6 @@
 generators = {
 "weapons" : { "options" : {
-    "long swords" : { "weight" : 10, "options" : {
+    "long swords" : { "options" : {
         "broadsword" : { "options" : {
             "broadsword" : {},
             "thrusting broadsword" : {"weight" : 50},
@@ -15,16 +15,27 @@ generators = {
         }},
     }}, #</long swords>
 
-    "short swords" : { "weight" : 30, "options" : {
+    "short swords" : { "weight" : 150, "options" : {
         "shortsword" : {},
         "dagger" : { "weight": 30},
     }}, #</short swords>
 
-    "axes" : { "weight" : 10, "options" : {
+    "axes" : { "weight" : 50, "options" : {
         "hatchet" : { "weight" : 50},
         "axe" : {},
         "greataxe" : { "weight" : 20},
     }}, #</axes>
+
+    "flails" : { "weight" : 30, "options" : {
+        "morningstar" : {},
+        "flail" : {"weight" : 30},
+    }}, #</flails>
+
+    "knives" : { "weight" : 20, "options" : {
+        "small knife" : {"weight" : 50},
+        "large knife" : {},
+        "dagger" : {"weight" : 50},
+    }}, #</knives>
 
     "maces" : { "weight" : 75, "options" : {
         "small mace" : { "weight" : 50},
@@ -32,10 +43,20 @@ generators = {
         "maul" : { "weight" : 20},
     }}, #</maces>
 
+    "polearms" : { "weight" : 75, "options" : {
+        "glaive" : {},
+        "halberd" : {},
+        "poleaxe" : {},
+    }}, #</polearms>
+
     "spears" : { "options" : {
         "spear" : {},
         "long spear" : { "weight" : 20},
     }}, #</spears>
+
+    "staves" : { "weight" : 25, "options" : {
+        "quarterstaff" : {},
+    }}, #</staves>
 
 }}, #</weapons>
 

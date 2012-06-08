@@ -158,7 +158,7 @@ item_list = {
             "Axe/Mace" : { "swing" : ("sw+2", "cut", (1,), U0, 11, 1),}
         },
     },
-    "great axe" : {
+    "greataxe" : {
         "class" : Axe,
         "cost" : 100,
         "weight" : 8,
@@ -260,8 +260,10 @@ item_list = {
         "cost" : 100,
         "weight" : 8,
         "attack_options" : {
-            "Polearm" : { "swing" : ("sw+3", "cut", (2,3), U0, 11, 3),},
-            "Polearm" : { "thrust" : ("thr+3", "imp", (1,2,3), U0, 11, 2),},
+            "Polearm" : {
+                "chop" : ("sw+3", "cut", (2,3), U0, 11, 3),
+                "thrust" : ("thr+3", "imp", (1,2,3), U0, 11, 2),
+            },
         },
     },
     "halberd" : {
@@ -269,9 +271,11 @@ item_list = {
         "cost" : 150,
         "weight" : 12,
         "attack_options" : {
-            "Polearm" : { "swing" : ("sw+5", "cut", (2,3), U0, 13, 3),},
-            "Polearm" : { "swing" : ("sw+4", "imp", (2,3), U0, 13, 3),},
-            "Polearm" : { "thrust" : ("thr+3", "imp", (1,2,3), U0, 12, 2),},
+            "Polearm" : {
+                "chop" : ("sw+5", "cut", (2,3), U0, 13, 3),
+                "swing" : ("sw+4", "imp", (2,3), U0, 13, 3),
+                "thrust" : ("thr+3", "imp", (1,2,3), U0, 12, 2),
+            },
         },
     },
     "poleaxe" : {
@@ -279,8 +283,10 @@ item_list = {
         "cost" : 120,
         "weight" : 10,
         "attack_options" : {
-            "Polearm" : { "swing" : ("sw+4", "cut", (2,3), U0, 12, 3),},
-            "Polearm" : { "thrust" : ("sw+4", "cr", (2,3), U0, 12, 3),},
+            "Polearm" : {
+                "chop" : ("sw+4", "cut", (2,3), U0, 12, 3),
+                "thrust" : ("sw+4", "cr", (2,3), U0, 12, 3),
+            },
         },
     },
 
@@ -294,7 +300,8 @@ item_list = {
         "attack_options" : {
             "Spear"   : {
                 "thrust" : ("thr+2", "imp", (1,), 0, 9, 1),
-                "thrust" : ("thr+3", "imp", (1,2), 0, 9, 2),
+# TODO: 1H vs. 2H
+#                "thrust" : ("thr+3", "imp", (1,2), 0, 9, 2),
             },
         },
     },
@@ -305,7 +312,8 @@ item_list = {
         "attack_options" : {
             "Spear"   : {
                 "thrust" : ("thr+2", "imp", (2,3), U0, 10, 1),
-                "thrust" : ("thr+3", "imp", (2,3), 0, 10, 2),
+# TODO: 1H vs. 2H
+#                "thrust" : ("thr+3", "imp", (2,3), 0, 10, 2),
             },
         },
     },
