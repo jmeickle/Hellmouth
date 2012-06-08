@@ -12,6 +12,7 @@ from collections import deque
 from random import choice
 
 from text import *
+from operator import itemgetter, attrgetter
 
 import log
 
@@ -406,7 +407,7 @@ class Inventory(View):
     # Stored here for convenience.
     def before_draw(self):
         self.items = self.player.list_carried()
-        self.slots = self.player.body.locs.items()
+        self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
 
         # Tabbing! (Very hackish/simple.)
         if self.sidescroller.index == 0:
@@ -455,7 +456,7 @@ class Inventory(View):
         self.cline("Equipped")
         self.y_acc += 1
         for x in range(len(self.slots)):
-            locname, loc = self.slots[x]
+            loc = self.slots[x]
             equipped = ""
             for appearance, items in loc.readied.items():
                 for item in items: # Ick. Definitely need to move this printing!
@@ -475,11 +476,13 @@ class Inventory(View):
             if len(equipped) == 0:
                     equipped = "Nothing"
 
+            colon = "%s:" % loc.appearance()
+
             # Highlights.
             if self.sidescroller.index == 1 and x == self.scroller.index:
-                self.cline("%6s: <green-black>%s</a>" % (locname, equipped))
+                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
             else:
-                self.cline("%6s: %s" % (locname, equipped))
+                self.cline("%-11s %s" % (colon, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
@@ -493,7 +496,7 @@ class Inventory(View):
                 actions.append("(<green-black>e</>)quip")
 
         elif self.sidescroller.index == 1:
-            locname, loc = self.slots[self.scroller.index]
+            loc = self.slots[self.scroller.index]
             #for item in loc.items():
             # Hackish! Pop a random element from the set.
             items = loc.items()
@@ -524,7 +527,7 @@ class Inventory(View):
             appearance, items = self.items[self.scroller.index]
             return appearance
         elif self.sidescroller.index == 1:
-            locname, loc = self.slots[self.scroller.index]
+            loc = self.slots[self.scroller.index]
             #for item in loc.items():
             # Hackish! Pop a random element from the set.
             items = loc.items()
