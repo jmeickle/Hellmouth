@@ -97,6 +97,8 @@ hit_locations = {
     "Groin" : "groin",
     "Neck" : "neck",
     "Head" : "head",
+    "Skull" : "skull",
+    "Face" : "face",
     "RArm" : "right arm",
     "LArm" : "left arm",
     "RHand" : "right hand",
