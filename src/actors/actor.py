@@ -553,6 +553,7 @@ class Actor:
         if attack.get("knockout") is not None:
             self.effects["Unconscious"] = attack["knockout"]
             # TODO: Improve messaging
+            self.screen("KO")
             log.add("%s is knocked unconscious!" % self.appearance())
 
         if attack.get("knockdown") is not None:

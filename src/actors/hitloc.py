@@ -227,9 +227,6 @@ class HitLoc:
                     if attack["wound"] + sum(self.wounds) > 2*self.crippling():
                         attack["dismembered"] = True
 
-#            if attack["location"].severed() is True:
-#                self.screen("ouch!", {"body_text" : self.limbloss(attack)})
-
     # TODO: Make this a display-only function, not for handling damage done.
     def DR(self):
         dr = 0
@@ -253,6 +250,9 @@ class HitLoc:
         # BLOOD EVERYWHERE
         if attack.get("severing wound") is True:
             self.sever()
+            if owner.controlled is True:
+                owner.screen("ouch", {"body_text" : owner.limbloss(attack)})
+
 
     def sever(self):
         # Store the original.

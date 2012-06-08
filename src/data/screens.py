@@ -3,7 +3,12 @@ footer_back = "Press <green-black>Space</> to go back. Press <green-black>'?'</>
 
 text = {
 "blank" : {},
-"ouch!" : {"header_left" : "<red-black>Ouch!</>", "footer_text" : footer},
+"ouch" : {"header_left" : "<red-black>Ouch!</>", "footer_text" : footer},
+"KO" : {
+    "header_left" : "<red-black>KO'd!</>",
+    "body_text" : "After being wounded, you couldn't hang on to consciousness. After that, the end came swiftly...",
+    "footer_text" : footer
+},
 "meat-start" : {
     "header_left" : "<red-black>Welcome to the Meat Arena!</>",
     "body_text" : "\
