@@ -1187,11 +1187,6 @@ class Actor:
         if chargen is False:
             sheet.append(self.description)
             sheet.append("")
-        sheet.append("--Attributes--")
-        for attribute in primary_attributes:
-            level = self.attributes[attribute]
-            sheet.append("%s: %s" % (attribute, level))
-        sheet.append("")
         sheet.append("--Weapons--")
         for slot, appearance, trait, trait_level, item in self.weapons:
             sheet.append("  %s: %s (%s-%s)" % (slot, appearance, trait, trait_level))
@@ -1200,6 +1195,11 @@ class Actor:
         for effect, details in self.effects.items():
             sheet.append("%s: %s" % (effect, details))
         sheet.append(self.posture)
+        sheet.append("")
+        sheet.append("--Attributes--")
+        for attribute in primary_attributes:
+            level = self.attributes[attribute]
+            sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
 #        sheet.append("--Points--")
 #        for skill, points in self.points["skills"].items():

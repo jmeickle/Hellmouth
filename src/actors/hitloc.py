@@ -83,16 +83,16 @@ class HitLoc:
     # Information about this location.
     def display(self):
         screen = []
-        screen.append("%s:" % self.type)
+        screen.append("%s:" % self.appearance())
         for k, v in self.worn.items():
-            screen.append(k)
+            screen.append("  %s (worn)" % k)
         for k, v in self.held.items():
-            screen.append(k)
+            screen.append("  %s (held)" % k)
         for k, v in self.readied.items():
-            screen.append(k)
+            screen.append("  %s (ready)" % k)
         if len(self.attack_options) > 0:
             for weapon in self.attack_options.keys():
-                screen.append("  %s" % weapon)# (%s)" % (weapon, object))
+                screen.append("  %s (weapon)" % weapon)
         return screen
 
     # Return the healthiness of the limb
