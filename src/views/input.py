@@ -86,7 +86,7 @@ class Cursor(Component):
         "<>"  : [("<", WW), (">", EE)],
         "{}"  : [("{", WW), ("}", EE)],
         "[]"  : [("[", WW), ("]", EE)],
-        "()"  : [("[", WW), ("]", EE)],
+        "()"  : [("(", WW), (")", EE)],
         # TODO: Make 1hex prettier using unicode.
         "1hex" : [("^", NN), ("v", SS), ("|", EE), ("|", WW)],
         "2hex" : [
