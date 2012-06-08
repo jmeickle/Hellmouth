@@ -388,6 +388,9 @@ class Actor:
                             for attack_name, attack_data in attack_options.items():
                                 parry_mod = attack_data[3]
                                 if parry_mod is not None:
+                                    # HACK: Handle balanced status.
+                                    if isinstance(parry_mod, tuple):
+                                        parry_mod, balanced = parry_mod
                                     # TODO: Handle U weapons.
                                     parries.append((slot, appearance, trait, trait_level + parry_mod, attack_name, weapon))
         self.weapons = sorted(weapons, key=itemgetter(3,0,2,1), reverse=True)
