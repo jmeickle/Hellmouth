@@ -1,4 +1,5 @@
 import random
+from objects.items.modifiers import *
 
 # Items.
 class Item():
@@ -17,7 +18,7 @@ class Item():
 
         # Construction
         self.quality = None
-        self.material = "meat"
+        self.material = None
 
         # References. These just need to be lists, not dicts, because we don't care about the appearances involved.
         self.held = []
@@ -26,7 +27,7 @@ class Item():
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
     def appearance(self):
-        return "%s %s" % (self.material, self.name)
+        return "%s %s" % (self.material.appearance, self.name)
 
     # STUB: Preferred slot for this kind of item.
     def preferred_slot(self):
@@ -115,6 +116,7 @@ class Item():
 class Armor(Item):
     def __init__(self):
         Item.__init__(self)
+        self.material = Bone
 
     def can_be_worn(self):
         return True
@@ -125,8 +127,7 @@ class Armor(Item):
 class Weapon(Item):
     def __init__(self):
         Item.__init__(self)
-
-        self.material = "bone"
+        self.material = Bone
 
         # Combat-only stats
         self.primary_skill = None # Primary skill, for descriptions - there can be others.

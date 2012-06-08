@@ -1,9 +1,4 @@
-class Meat:
-    def func(self):
-        return False
-class Cheap:
-    def func(self):
-        return False
+from objects.items.modifiers import *
 
 generators = {
 
