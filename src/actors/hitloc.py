@@ -38,6 +38,8 @@ class HitLoc:
         # A layer can have multiple items (like several rings).
         self.layers = [[]]
 
+        self.sorting = 0
+
     def appearance(self):
         appearance = hit_locations.get(self.type)
         if self.severed() is True:

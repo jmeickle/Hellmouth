@@ -1,5 +1,6 @@
 from hitloc import *
 from generators import items
+from operator import attrgetter
 
 # Body layouts - humanoid, hexapod, etc.
 class BodyPlan:
@@ -18,8 +19,9 @@ class BodyPlan:
 
     # Build a body from the class information.
     def build(self, owner):
-        for partname, partclass, parent, sublocation, rolls in self.parts:
+        for order, partname, partclass, parent, sublocation, rolls in self.parts:
             part = partclass(partname, owner)
+            part.sorting = order
             self.locs[partname] = part
 
             # Generate natural weapons.
@@ -50,9 +52,9 @@ class BodyPlan:
         screen = []
         screen.append("")
         screen.append("--Body--")
-        screen.append("Size: %s" % self.size)
-        screen.append("Shape: %s" % self.shape)
-        for loc in self.locs.values():
+#        screen.append("Size: %s" % self.size)
+#        screen.append("Shape: %s" % self.shape)
+        for loc in sorted(sorted(self.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting")):
             if loc is not None:
                 screen.extend(loc.display())
         return screen
@@ -63,27 +65,28 @@ class BodyPlan:
 
 class Humanoid(BodyPlan):
     # These tuples represent:
-    # 1: Part name.
-    # 2: Class.
-    # 2: Parent part. Only list parts that have already been listed.
-    # 3: True if it's a sublocation rather than a real one.
-    # 4: List representing what 3d6 rolls hit that spot.
+    # 1: Sorting order (lowest first).
+    # 2: Part name.
+    # 3: Class.
+    # 4: Parent part. Only list parts that have already been listed.
+    # 5: True if it's a sublocation rather than a real one.
+    # 6: List representing what 3d6 rolls hit that spot.
     #    If a further d6 roll is required, use a list like:
     #        [15, [16, 1, 2, 3], 17]
     parts = (
-             ('Torso', HitLoc, None, False, [9, 10]),
-             ('Groin', HitLoc, 'Torso', False, [11]),
-             ('Neck', Neck, 'Torso', False, [17, 18]),
-             ('Skull', Skull, 'Neck', False, [3, 4]),
-             ('Face', Face, 'Skull', False, [5]),
-             ('RArm', Limb, 'Torso', False, [8]),
-             ('LArm', Limb, 'Torso', False, [12]),
-             ('RHand', Extremity, 'RArm', False, [15, 1, 2, 3]),
-             ('LHand', Extremity, 'LArm', False, [15, 4, 5, 6],),
-             ('RLeg', Limb, 'Groin', False, [6, 7]),
-             ('LLeg', Limb, 'Groin', False, [13, 14]),
-             ('RFoot', Extremity, 'RLeg', False, [[16, 1, 2, 3]]),
-             ('LFoot', Extremity, 'LLeg', False, [[16, 4, 5, 6]]),
+             (2, 'Torso', HitLoc, None, False, [9, 10]),
+             (1, 'Neck', Neck, 'Torso', False, [17, 18]),
+             (1, 'Skull', Skull, 'Neck', False, [3, 4]),
+             (1, 'Face', Face, 'Skull', False, [5]),
+             (3, 'RArm', Limb, 'Torso', False, [8]),
+             (3, 'LArm', Limb, 'Torso', False, [12]),
+             (4, 'RHand', Extremity, 'RArm', False, [15, 1, 2, 3]),
+             (4, 'LHand', Extremity, 'LArm', False, [15, 4, 5, 6],),
+             (5, 'Groin', HitLoc, 'Torso', False, [11]),
+             (6, 'RLeg', Limb, 'Groin', False, [6, 7]),
+             (6, 'LLeg', Limb, 'Groin', False, [13, 14]),
+             (7, 'RFoot', Extremity, 'RLeg', False, [[16, 1, 2, 3]]),
+             (7, 'LFoot', Extremity, 'LLeg', False, [[16, 4, 5, 6]]),
     )
 
     primary_slot = 'RHand'
