@@ -13,7 +13,6 @@ class EquipmentGenerator(Generator):
 
         # Return false if there's no match.
         if loadout_choice is None:
-#            exit("%s, %s" % (loadout_name, loadout_data))
             return False
 
         # Copy information about the loadout and get the name of the item to generate.

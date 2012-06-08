@@ -4,31 +4,26 @@ from dice import *
 class Generator:
     def __init__(self, choices):
         self.choices = choices # See test code for an example of structure.
-        self.amount = r1d6 # Default points per choice made.
         self.weight = 100 # Default weight.
 
     # Pick from the weighted list(s).
-    def choose(self, type, current=None):
-        if current is None:
-            current = self.choices.get(type)
-            if current is None:
-                return (None, 0)
+    def choose(self, choice, choices=None):
+        if choices is None:
+            choices = self.choices
 
-        choice = None
-        sum = reduce(lambda x, y: x+y.get("weight", self.weight), current.values(), 0)
+        choice_details = choices[choice]
+        options = choice_details.get("options")
+        if options is None:
+            #exit("Choice: %s, choice_details: %s"%(choice, choice_details))
+            return choice, choice_details
+
+        sum = reduce(lambda x, y: x+y.get("weight", self.weight), options.values(), 0)
         weighting = random.randint(1, sum)
 
-        for k, v in current.items():
+        for k, v in options.items():
             weighting -= v.get("weight", self.weight)
             if weighting <= 0:
-                options = v.get("options")
-                if options is None:
-                    if self.amount is not None:
-                        return k, v.get("amount", self.amount())
-                    else:
-                        return k, v
-                else:
-                    return self.choose(type, options)
+                return self.choose(k, options)
 
 # Test code.
 if __name__ == "__main__":

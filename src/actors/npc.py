@@ -99,6 +99,8 @@ class MeatSlave(NPC):
         self.color = 'yellow-black'
         self.description = "A pitiful wretch who long ago abandoned all hope of escaping the arena. It has covered itself in lunchmeat to hide its scent from the other occupants."
 
+        self.loadouts = ["light armor"]
+
         self.build(5)
 
 class MeatGolem(NPC):

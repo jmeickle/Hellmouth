@@ -5,7 +5,8 @@ from dice import *
 from hex import *
 from text import *
 from generators.text.describe import describe
-from generators import items
+from generators.items import EquipmentGenerator
+import data
 
 from data import skills
 from data import traits
@@ -75,6 +76,7 @@ class Actor:
         self.controlled = False
 
         self.generator = "default"
+        self.loadouts = None
 
         # Can be run at any time, but this will at least grab the natural weapons.
         self.weapons = []
@@ -92,15 +94,18 @@ class Actor:
 #        else:
             return self.name
 
-    def generate_equipment(self, loadouts=("default_armor", "default_weapons")):
-        equipment = []
-        from generators.items import EquipmentGenerator
-        from data.generators.equipment import generators
-        for loadout in loadouts:
-            generator = EquipmentGenerator(generators)
-            equipment.extend(generator.generate_equipment(loadout))
+    # Generate, add to inventory, and equip some generated items.
+    def generate_equipment(self, loadouts=None):
+        if loadouts is None:
+            if self.loadouts is not None:
+                loadouts = self.loadouts
+            else:
+                return False
 
-#        exit(equipment)
+        equipment = []
+        for loadout in loadouts:
+            generator = EquipmentGenerator(data.generators.equipment.generators)
+            equipment.extend(generator.generate_equipment(loadout))
 
         for item in equipment:
             self._add(item)

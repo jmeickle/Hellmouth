@@ -30,7 +30,10 @@ def spend_points(actor, points=None):
     while points > 0 and tries < allowed:
         tries += 1
         type = random.choice(point_types)
-        choice, cost = generator.choose(type)
+        if generator.choices.get(type) is None:
+            continue
+        choice, choice_details = generator.choose(type, generator.choices)
+        cost = r1d6()
         if choice is None:
             continue
         if cost <= points:
