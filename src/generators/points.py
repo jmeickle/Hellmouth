@@ -4,15 +4,16 @@ import random
 
 from define import *
 from dice import *
-from data.generators import points
+from data.generators.points import generators
+from generators.generator import Generator
 
 def spend_points(actor, points=None):
     # If we didn't feed in a number of points, we're using the actor's
     # starting points. The alternative is that we're improving the actor.
     if actor.generator is not None:
         generator = Generator(generators[actor.generator])
-    else:
-        generator = Generator()
+#    else:
+#        generator = Generator()
 
     if points is None:
         points = actor.points["total"]
