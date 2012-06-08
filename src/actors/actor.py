@@ -1200,7 +1200,7 @@ class Actor:
         sheet.append("--Effects--")
         for effect, details in self.effects.items():
             sheet.append("%s: %s" % (effect, details))
-        sheet.append(self.posture)
+        sheet.append("Posture: %s" % self.posture)
         sheet.append("")
         sheet.append("--Attributes--")
         for attribute in primary_attributes:
@@ -1219,7 +1219,7 @@ class Actor:
         for skill, level in self.base_skills.items():
             skill = "%s (%s/%s)" % (skill, skills.skill_list[skill]["attribute"], skills.skill_list[skill]["difficulty"])
             level = level[0]
-            str = "%-20s- %2s" % (skill, level)
+            str = "%-25s- %2s" % (skill, level)
             #if level[1] is not False:
             #    str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
             sheet.append(str)
