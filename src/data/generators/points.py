@@ -7,7 +7,7 @@
 generators = {
 # Default generator, used if none is provided.
 "default" : {
-    "skills" : {
+    "skills" : { "options" : {
         "melee" : { "options" : {
             "Unarmed" : { "weight" : 10, "options" : {
                  "Brawling" : {},
@@ -26,6 +26,6 @@ generators = {
 #            "Ice Magic" : {},
 #            "Necromancy" : {"weight" : 10},
 #        }},
-    }, #</skills>
+    }}, #</skills>
 } #</default>
 } #</generators>
