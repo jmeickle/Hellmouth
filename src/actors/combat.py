@@ -111,7 +111,8 @@ class CombatAction:
     # Check whether the attack is within the weapon's valid reach.
     def reach(self, attack, actual=False):
         distance = dist(attack["attacker"].pos, attack["target"].pos)
-        min_reach = attack["attack stats"][2][0]
+        # HACK: Remove when attacking at multiple ranges is implemented.
+        min_reach = 0 #attack["attack stats"][2][0]
         # HACK: Remove when sharing the same hex is implemented.
         max_reach = 1+ attack["attack stats"][2][-1]
 
