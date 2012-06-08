@@ -328,22 +328,25 @@ class Actor:
     # STUB Gets the level of a skill as well as any situational modifiers.
     def skill(self, skill, temporary=True):
         attribute, level = self.skills.get(skill, (None, 0))
-        # TODO: Fix attr defaulting.
-        # Didn't have it, or anything that defaults to it. So:
-#        if level is None:
-#            skill_data = skills.skill_list.get(skill)
-#            default = skill_data.get("attribute_default")
-            # If default is False, no default from attr for that skill.
-#            if default is None:
-                # Default: -4 easy, -5 average, -6 hard
-#                level = self.stat(skill_data["attribute"]) - 4 + difficulties[skill_data["difficulty"]]
-#            elif default is not False:
-#                level = self.stat(skill_data["attribute"]) - default
-#        if situational is True:
-#            return level, 0
-#        else:
+
         if attribute is not None:
             return self.stat(attribute, temporary) + level
+
+        # TODO: Fix attr defaulting.
+        # Didn't have it, or anything that defaults to it. So:
+        else:
+            skill_data = skills.skill_list.get(skill)
+            default = skill_data.get("attribute_default")
+            # If default is False, no default from attr for that skill.
+            if default is False:
+                return False
+            elif default is None:
+                # Default: -4 easy, -5 average, -6 hard
+                level = - 4 + difficulties[skill_data["difficulty"]]
+            else:
+                level = default
+
+            return self.stat(skill_data["attribute"], temporary) + level
 
     # Get the actor's level in a skill/stat.
     def trait(self, traitname, temporary=True):

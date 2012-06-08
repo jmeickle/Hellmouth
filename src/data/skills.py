@@ -62,35 +62,48 @@ def calculate_defaults(actor):
 # 'defaults' (list of tuples): An associated skill and the penalty when defaulting from it.
 skill_list = {
 # Unarmed skills
+"Boxing" : {
+    "type"       : "Unarmed",
+    "attribute"  : "DX",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "retreat"    : 3,
+    "defaults"   : [],
+    "attribute_default" : False
+},
 "Brawling" : {
     "type"       : "Unarmed",
     "attribute"  : "DX",
     "difficulty" : "E",
     "text"       : "Hit stuff good",
     "defaults"   : [],
+    "attribute_default" : False
 },
 "Judo" : {
     "type"       : "Unarmed",
     "attribute"  : "DX",
     "difficulty" : "H",
     "text"       : "Hit stuff good",
-    "defaults"   : [("Brawling", -3)],
+    "retreat"    : 3,
+    "defaults"   : [],
+    "attribute_default" : False
 },
 "Karate" : {
     "type"       : "Unarmed",
     "attribute"  : "DX",
     "difficulty" : "VH",
     "text"       : "Hit stuff good",
-    "defaults"   : [],
     "retreat"    : 3,
+    "defaults"   : [],
+    "attribute_default" : False
 },
 # Melee skills
-"Shortsword" : {
+"Axe/Mace" : {
     "type"       : "Melee",
     "attribute"  : "DX",
     "difficulty" : "A",
     "text"       : "Hit stuff good",
-    "defaults"   : [],
+    "defaults"   : [("Flail", -4)],
 },
 "Broadsword" : {
     "type"       : "Melee",
@@ -99,19 +112,54 @@ skill_list = {
     "text"       : "Hit stuff good",
     "defaults"   : [("Shortsword", -2), ("Two-Handed Sword", -4)],
 },
-"Axe" : {
+"Flail" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "H",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Axe/Mace", -4)]
+},
+"Knife" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "E",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Shortsword", -3)]
+},
+"Polearm" : {
     "type"       : "Melee",
     "attribute"  : "DX",
     "difficulty" : "A",
     "text"       : "Hit stuff good",
-    "defaults"   : [],
+    "defaults"   : [("Spear", -4), ("Staff", -4)],
+},
+"Shortsword" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Knife", -4), ("Broadsword", -2)],
 },
 "Spear" : {
     "type"       : "Melee",
     "attribute"  : "DX",
     "difficulty" : "A",
     "text"       : "Hit stuff good",
-    "defaults"   : [],
+    "defaults"   : [("Polearm", -4), ("Staff", -2)],
+},
+"Staff" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Polearm", -4), ("Spear", -2)],
+},
+"Two-Handed Sword" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Broadsword", -4)]
 },
 # Magic skills
 "Fire Magic" : {
