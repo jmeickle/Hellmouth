@@ -708,6 +708,9 @@ class Actor:
             # Get the attack data, and parry modifier from it.
             attack_data = weapon.attack_options[trait][attack_name]
             parry_mod = attack_data[3]
+            # HACK: Weapon balance.
+            if isinstance(parry_mod, tuple):
+                parry_mod, balanced = parry_mod
 
             # Recalculate trait level for this weapon.
             trait_level = self.trait(trait, False)
