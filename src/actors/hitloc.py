@@ -94,7 +94,7 @@ class HitLoc:
             screen.append("  %s (ready)" % k)
         if len(self.attack_options) > 0:
             for weapon in self.attack_options.keys():
-                screen.append("  %s (weapon)" % weapon)
+                screen.append("  %s (natural)" % weapon)
         return screen
 
     # Return the healthiness of the limb
