@@ -10,7 +10,7 @@ trait_list = {
 "DX" : {
     "type"       : "attribute",
     "text"       : "How speedy you are.",
-    "cost"       : 10,
+    "cost"       : 20,
     "max"        : 20,
     "default"    : 10,
 }, 
