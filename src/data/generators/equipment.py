@@ -2,37 +2,52 @@ from objects.items.modifiers import *
 
 generators = {
 
-"default_armor" : {
-#    "full" : {"weight" : 50},
-#    "body" : {},
-    "partial" : {"options" : {
-        "torso" : {
+# Armor.
+"light armor" : { "options" : {
+    "body" : { "weight" : 10, "options" : {
+        "bone" : {
+            "weight" : 10,
+            "material" : Bone,
+            "construction" : Thin,
+            "quality" : Cheap,
+            "items" : ["armor", "leggings", "gloves", "boots"]
+        },
+        "meat" : {
             "material" : Meat,
             "quality" : Cheap,
-            "items" : ["breastplate"],
+            "items" : ["armor", "leggings", "gloves", "boots"]
         },
-        "upper body" : {
-            "weight" : 50,
+    }}, # </body>
+    "partial" : { "options" : {
+        "bone" : {
+            "weight" : 10,
+            "material" : Bone,
+            "construction" : Thin,
+            "quality" : Cheap,
+            "items" : ["armor", "leggings"]
+        },
+        "meat" : {
             "material" : Meat,
             "quality" : Cheap,
-            "items" : ["breastplate", "arms", "gauntlets"],
+            "items" : ["armor", "leggings"]
         },
-    }}, #</partial>
-},
-"default_weapons" : {
-    "long swords" : { "weight" : 10, "options" : {
-        "broadsword" : { "options" : {
-            "broadsword" : {},
-            "thrusting broadsword" : {"weight" : 50},
-        }},
-        "bastard sword" : { "weight" : 50, "options" : {
-            "bastard sword" : {},
-            "thrusting bastard sword" : {"weight" : 50},
-        }},
-        "greatsword" : { "weight" : 20, "options" : {
-            "greatsword" : {},
-            "thrusting greatsword" : {"weight" : 50},
-        }},
-    }}, #</long swords>
-}
+    }}, # </partial>
+}}, # </light armor>
+
+# Weapons.
+
+"long swords" : { "weight" : 10, "options" : {
+    "broadsword" : { "options" : {
+        "broadsword" : {},
+        "thrusting broadsword" : {"weight" : 50},
+    }},
+    "bastard sword" : { "weight" : 50, "options" : {
+        "bastard sword" : {},
+        "thrusting bastard sword" : {"weight" : 50},
+    }},
+    "greatsword" : { "weight" : 20, "options" : {
+        "greatsword" : {},
+        "thrusting greatsword" : {"weight" : 50},
+    }},
+}}, #</long swords>
 }

@@ -1,13 +1,15 @@
 # Materials
-
 class Meat:
     appearance = "meat"
 
 class Bone:
     appearance = "bone"
 
-# Quality
+# Construction
+class Thin:
+    appearance = "thin"
 
+# Quality
 class Cheap:
     appearance = "cheap"
 
