@@ -251,7 +251,7 @@ class HitLoc:
         self.wounds.append(attack["wound"])
 
         # BLOOD EVERYWHERE
-        if attack.get("sever") is True:
+        if attack.get("severing wound") is True:
             self.sever()
 
     def sever(self):
@@ -271,7 +271,7 @@ class HitLoc:
             corpse.actor.body.locs[part.type] = part
             # Delete the part from the original actor.
             # TODO: Just mark as severed instead?
-            original.body.locs[part.type] = None
+            del original.body.locs[part.type]
         # Put the corpse in the cell.
         original.cell().put(corpse)
 

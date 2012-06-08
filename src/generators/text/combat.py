@@ -32,7 +32,7 @@ def combat(attack):
             wound = ", maiming it"
             punctuation = "!"
             if attack.get("dismembering wound") is True and attack["damage type"] == "cut":
-                attack["sever"] = True
+                attack["severing wound"] = True
                 wound = ", severing it"
         elif attack.get("crippled") is not None:
             wound = ", crippling it"
