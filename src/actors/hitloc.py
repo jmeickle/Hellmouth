@@ -83,7 +83,7 @@ class HitLoc:
     # Information about this location.
     def display(self):
         screen = []
-        screen.append("%s:" % self.appearance())
+        screen.append("<%s-black>%s:</>" % (self.color(), self.appearance()))
         for k, v in self.worn.items():
             screen.append("  %s (worn)" % k)
         for k, v in self.held.items():
