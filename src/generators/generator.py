@@ -1,6 +1,8 @@
+from dice import *
+
 # Helper class to make choices from a weighted list.
 class Generator:
-    def __init__(self, choices=points.generators["default"]):
+    def __init__(self, choices):
         self.choices = choices # See test code for an example of structure.
         self.amount = r1d6 # Default points per choice made.
         self.weight = 100 # Default weight.
@@ -21,7 +23,10 @@ class Generator:
             if weighting <= 0:
                 options = v.get("options")
                 if options is None:
-                    return k, v.get("amount", self.amount())
+                    if self.amount is not None:
+                        return k, v.get("amount", self.amount())
+                    else:
+                        return k, v
                 else:
                     return self.choose(type, options)
 

@@ -5,6 +5,7 @@ from dice import *
 from hex import *
 from text import *
 from generators.text.describe import describe
+from generators import items
 
 from data import skills
 from data import traits
@@ -73,7 +74,7 @@ class Actor:
         # Whether this thing accepts keyboard control currently
         self.controlled = False
 
-        self.generator = None
+        self.generator = "default"
 
         # Can be run at any time, but this will at least grab the natural weapons.
         self.weapons = []
@@ -90,6 +91,20 @@ class Actor:
 #            return "<green-black>" + self.name + "</>"
 #        else:
             return self.name
+
+    def generate_equipment(self, loadouts=("default_armor", "default_weapons")):
+        equipment = []
+        from generators.items import EquipmentGenerator
+        from data.generators.equipment import generators
+        for loadout in loadouts:
+            generator = EquipmentGenerator(generators)
+            equipment.extend(generator.generate_equipment(loadout))
+
+#        exit(equipment)
+
+        for item in equipment:
+            self._add(item)
+            self._equip(item)
 
     # UTILITY
     def ready(self):
@@ -990,7 +1005,7 @@ class Actor:
 
     # Either hold or wear the item as appropriate.
     # Return false if nothing could be equipped.
-    def _equip(self, item, slots, wear, weapon):
+    def _equip(self, item, slots=None, wear=None, weapon=None):
         if self._can_equip_item(item, slots) is False:
             return False
 
@@ -1048,8 +1063,8 @@ class Actor:
 
     # TODO: Sanity checks not handled above.
     # Return false if nothing could be equipped.
-    def equip(self, appearance, loc=None, worn=None, weapon=None):
-        return self._equip(self.item(appearance), loc, worn, weapon)
+    def equip(self, appearance, slots=None, wear=None, weapon=None):
+        return self._equip(self.item(appearance), slots, wear, weapon)
 
     # Can we equip an item of a specific appearance?
     def can_equip_item(self, appearance, loc=None):

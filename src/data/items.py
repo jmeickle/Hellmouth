@@ -481,6 +481,20 @@ item_list = {
         "slots" : ["RFoot", "LFoot"]
     },
 
+    "breastplate" : {
+        "class" : Armor,
+        "dr" : 5,
+        "slots" : ["Torso"]
+    },
+    "arms" : {
+        "class" : Armor,
+        "dr" : 1,
+        "slots" : ["RArm", "LArm"]
+    },
+    "gauntlets" : {
+        "variant" : "gloves",
+        "dr" : 2,
+    },
 }
 '''
 LEG:

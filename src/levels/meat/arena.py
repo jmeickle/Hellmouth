@@ -117,4 +117,5 @@ class MeatArena():
         for x in range(num_mons):
             monster = random.choice(monsters)
             monster = monster()
+            monster.generate_equipment()
             self.map.put(monster, (self.map.center[0] + flip()*random.randint(1, self.map.size), self.map.center[1] + flip() * random.randint(1,self.map.size)))
