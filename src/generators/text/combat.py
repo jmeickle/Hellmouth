@@ -10,7 +10,7 @@ def combat(attack):
         # DEBUG:
         # formula = "%s [(%s-%s)*%s]" % (attack["injury"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
 
-        if attack.get("retreated") is True:
+        if attack.get("retreat position") is not None:
             strings.append("%s tries to jump back!" % attack["target"].appearance())
 
         # Damage level tokens
@@ -90,7 +90,7 @@ def combat(attack):
                 defense_level = "difficult"
                 punctuation = "!"
 
-        if attack.get("retreated") is True:
+        if attack.get("retreat position") is not None:
             defense_level += "-retreat"
 
         strings.append("%s @def-%s-%s@ %s's %s%s" % (attack["target"].appearance(), attack["defense"], defense_level, attack["attacker"].appearance(), attack["attack name"], punctuation))
