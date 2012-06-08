@@ -211,7 +211,12 @@ class Stats(View):
 
         # HACK: Should ask the item to display a shorter appearance.
         self.cline("(/*) %s: %s" % (slot, appearance[:13]))
-        self.cline("     [%s-%s]" % (trait, trait_level))
+
+        color = "white-black"
+        if self.player.base_skills.get(trait) is None:
+            color = "red-black"
+
+        self.cline("     [<%s>%s-%s</>]" % (color, trait, trait_level))
         selector = "(+-) "
         if len(self.player.attack_options) == 1:
             selector = " " * len(selector)
