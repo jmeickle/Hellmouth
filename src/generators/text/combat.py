@@ -7,8 +7,6 @@ def combat(attack):
 
     # Hit and did 0 or more points of injury.
     if attack.get("injury") is not None:
-        # DEBUG:
-        # formula = "%s [(%s-%s)*%s]" % (attack["injury"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
 
         if attack.get("retreat position") is not None:
             strings.append("%s tries to jump back!" % attack["target"].appearance())
@@ -43,7 +41,13 @@ def combat(attack):
             punctuation = "!"
 
         # TODO: Have other kinds of basic strings.
-        strings.append("%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), wound, punctuation))
+        string = "%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), wound, punctuation)
+
+        # DEBUG:
+        formula = "%s, [%s = (%s-%s)*%s]" % (attack["injury"], attack["wound"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
+        string += " {"+formula+"}"
+
+        strings.append(string)
 
         # Shouting if a major wound
         # TODO: Check to not cry out
