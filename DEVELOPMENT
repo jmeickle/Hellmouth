@@ -1,8 +1,5 @@
-Hellmouth is open source, and patches are appreciated.
+(Somewhat deprecated!)
 
-Check out the TODO for what you can help on, or get in touch with me.
-
----
 Folder structure:
 
 /actor: Code for actors (both the player and NPCs).
