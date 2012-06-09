@@ -40,7 +40,7 @@ The gaping cavity at the end of the tunnel opens into another \
 level much like the first. It looks like you'll have to keep looking for an \
 exit from this bizarre place!",
 },
-"meat-3" : {
+"The Grand Gate" : {
     "header_left" : "<red-black>The Grand Gate</>",
     "body_text" : "\
 Even before you round the stairs, it is clear that this level is different \

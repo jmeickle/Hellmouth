@@ -317,7 +317,8 @@ class Place(View):
 
     def draw(self):
          self.line(self.map.level.name, "red-black")
-         self.line(self.map.name)
+         if self.map.name:
+             self.line(self.map.name)
 
 class LogViewer(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):

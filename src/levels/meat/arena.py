@@ -91,13 +91,14 @@ class MeatArena():
         if self.map.depth == 1:
             self.map.exits = { "down" : (self.map.depth+1, ANYWHERE) }
         if self.map.depth == 2:
-            self.map.exits = { "down" : (False, ANYWHERE) }
+            self.map.exits = { "down" : (self.map.depth+1, ANYWHERE) }
 
 # TODO: Move these to other level classes.
-#        if depth == 3:
-#            self.map.name = "Grand Gate"
-#            self.map.exits = { "down" : (MeatArena, (25, 0)) }
-#            self.map.layout = meat.MeatTunnel
+        if self.map.depth == 3:
+            self.name = "The Grand Gate"
+            self.map.name = None
+            self.map.exits = { "down" : (MeatArena, (25, 0)) }
+            self.map.layout = meat.MeatTunnel
 #        if depth == 4:
 #            self.map.name = "Caves of Primal Meat"
 #            self.map.exits = self.exits
