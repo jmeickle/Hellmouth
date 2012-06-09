@@ -80,7 +80,7 @@ tokens = {
     "def-dodge-retreat" : ("leaps back from", "jumps away from"),
     "def-dodge-crit" : ("easily dodges", "easily evades"),
     "def-parry" : ("parries", "intercepts"),
-    "def-parry-retreat" : ("retreats from", "gives ground against"),
+    "def-parry-retreat" : ("backs away while parrying", "performs a retreating parry against"),
     "def-parry-crit" : ("easily parries", "easily intercepts"),
     "def-trivial" : "trivially defends against",
     "def-easy" : "easily defends against",
