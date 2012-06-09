@@ -1012,7 +1012,6 @@ class Actor:
         for loc in self.body.locs.values():
             for appearance, itemlist in loc.held.items():
                 for item in itemlist:
-                    self._unequip(item)
                     self._drop(item)
             
     # Tack an appearance and associated list of items from a cell into your own inventory.
@@ -1143,7 +1142,9 @@ class Actor:
         # HACK: Remove the equipped item from inventory.
         self._remove(item)
         self.check_weapons()
-        log.add("%s equips the %s." % (self.appearance(), item.appearance()))
+        # HACK: Later add a flag.
+        if self.controlled is True:
+            log.add("%s equips the %s." % (self.appearance(), item.appearance()))
         return True
 
     # TODO: Sanity checks not handled above.
@@ -1201,7 +1202,9 @@ class Actor:
         self.check_weapons()
         # HACK: Add back to inventory after unequipping.
         self._add(item)
-        log.add("%s unequips the %s." % (self.appearance(), item.appearance()))
+        # HACK: Later, make this a flag
+        if self.controlled is True:
+            log.add("%s unequips the %s." % (self.appearance(), item.appearance()))
 
         return True
 
