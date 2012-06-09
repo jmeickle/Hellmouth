@@ -46,7 +46,7 @@ tokens = {
 
     # Swung impaling damage
     "dmg-scratch-imp-swing" : ("grazes", "rips at"),
-    "dmg-injure-imp-swing" : "gouges", "shallowly @dmg-wound-imp-swing@",
+    "dmg-injure-imp-swing" : ("gouges", "shallowly @dmg-wound-imp-swing@"),
     "dmg-wound-imp-swing" : ("impales", "penetrates"),
     "dmg-cripple-imp-swing" : ("deeply @dmg-wound-imp-swing@"),
     "dmg-dismember-imp-swing" : "@dmg-wound-imp-swing@ its weapon through",
