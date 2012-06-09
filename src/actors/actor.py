@@ -327,12 +327,20 @@ class Actor:
 
     # Try to move based on an input direction. Return whether it worked.
     def move(self, pos):
-        if self.valid_move(pos):
+        if self.can_move(pos):
             self.go(pos)
             self.over()
             return True
         else:
             return False
+
+    # Whether we can actually move to a pos.
+    def can_move(self, pos):
+        if self.can_walk() is False:
+            return False
+        if self.valid_move(pos) is False:
+            return False
+        return True
 
     # Check move validity.
     def valid_move(self, pos):
@@ -640,6 +648,15 @@ class Actor:
         if self.can_act() is False:
             return False
         if self.effects.get("Stun") is not None:
+            return False
+        return True
+
+    # STUB: Whether actor can walk.
+    def can_walk(self):
+        if self.can_act() is False:
+            return False
+        # HACK
+        if self.prone() is True:
             return False
         return True
 
