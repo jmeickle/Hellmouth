@@ -1,15 +1,16 @@
 SHORT TERM GOALS:
-- Improved monster target-seeking AI
+- Bug fixes
 
 LONGER TERM GOALS:
-- Support numpads correctly across systems
-- Screen to spend discretionary character points
-- Fill out lifepaths so all reachable events are meaningful
 - Make lifepath events affect character stats
-- Dialogue screens
-- Reenable defaults
+- Fill out lifepaths so all reachable events are meaningful
+- Screen to spend discretionary character points
+- Support numpads correctly across systems
+- Reenable skill defaults
+- Improved monster target-seeking AI
 
 VERY LONG TERM GOALS:
+- Dialogue screens
 - LOS algo
 - Save/load game
 - Remappable keys
@@ -17,6 +18,10 @@ VERY LONG TERM GOALS:
 - Improved map generation
 - Non-combat skills
 - Scrollbar icon = player glyph
+- Item damage
+- Tactical combat pane
+- Close combat
+- Weapon reach
 
 MISC:
 
@@ -31,3 +36,10 @@ UTILITY:
 STRUCTURE:
 - Split generators into classes
 - Switch to using decorators for printing functions
+
+KNOWN BUGS:
+- Scrollbar display
+- Item duplication on dropping
+- Stair pathing
+- Still able to hit severed parts
+- Refresh screen properly on level change.
