@@ -147,7 +147,9 @@ class MeatCommander(NPC):
         self.color = 'magenta-black'
         self.description = "This beefy champion wears a full set of bone armor decorated with dozens of veal medallions and bacon ribbons. A crown roast rests atop its noble brow."
 
-        self.build(100)
+        self.generator = "elite"
+        self.build(300)
+        self.loadouts = ["heavy weapon", "heavy armor"]
 
 class Sauceror(NPC):
     def __init__(self):

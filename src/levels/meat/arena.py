@@ -114,6 +114,13 @@ class MeatArena():
 
     # TODO: Hand this off to mapgen?
     def place_monsters(self, depth):
+        if depth == 3:
+            from actors.npc import MeatCommander
+            monster = MeatCommander()
+            monster.generate_equipment()
+            self.map.put(monster, (25, 0))
+            return True
+
         # Define NPCs to be placed
         from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
         monsters = [MeatSlave] * 10#MeatWorm, MeatGolem, MeatHydra]

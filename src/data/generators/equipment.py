@@ -3,6 +3,15 @@ from objects.items.modifiers import *
 generators = {
 
 # Armor.
+"heavy armor" : { "options" : {
+    "body" : { "options" : {
+        "bone" : {
+            "material" : Bone,
+            "construction" : Thick,
+            "items" : ["armor", "leggings", "gauntlets", "boots"]
+        },
+    }}, # </body>
+}}, # </heavy armor>
 "light armor" : { "options" : {
     "body" : { "weight" : 10, "options" : {
         "bone" : {
@@ -50,9 +59,23 @@ generators = {
         "thrusting greatsword" : {"weight" : 50},
     }},
 }}, #</long swords>
+
 "knives" : { "weight" : 20, "options" : {
     "small knife" : {"weight" : 50},
     "large knife" : {},
     "dagger" : {"weight" : 50},
 }}, #</knives>
+
+# A heavy weapon. Big! Strong!
+"heavy weapon" : { "weight" : 10, "options" : {
+    "greatsword" : {},
+    "greataxe" : {},
+    "flail" : {},
+    "maul" : {},
+    "warhammer" : {},
+    "glaive" : {},
+    "halberd" : {},
+    "poleaxe" : {},
+    "scythe" : {},
+}}, #</heavy weapon>
 }
