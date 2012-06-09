@@ -19,7 +19,9 @@ def combat(attack):
         # HACK: Torsos and the like can't be crippled, but should still
         # display gorier damage messages when hit for large amounts of damage.
         # TODO: Replace this with better information (e.g., overpenetration)
-        elif attack["wound"] >= attack["location"].MaxHP():
+        elif attack["wound"] > 2 * attack["target"].MaxHP():
+            damage_level = "dismember"
+        elif attack["wound"] > attack["target"].MaxHP():
             damage_level = "cripple"
         elif attack.get("major wound") is not None:
             damage_level = "wound"

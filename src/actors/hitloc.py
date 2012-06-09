@@ -39,6 +39,7 @@ class HitLoc:
         self.layers = [[]]
 
         self.sorting = 0
+        self.crippleable = True
 
     def appearance(self):
         appearance = hit_locations.get(self.type)
@@ -101,12 +102,20 @@ class HitLoc:
     # TODO: Injured status for extremities, rather than using 'major wound'.
 
     def status(self):
-        if self.severed() is True:                    return SEVERED
-        elif self.dismembered() is True:              return DISMEMBERED
-        elif self.crippled() is True:                 return CRIPPLED
-        elif sum(self.wounds) > self.owner.MaxHP()/2: return INJURED
-        elif sum(self.wounds) > 0:                    return SCRATCHED
-        else:                                         return UNHURT
+        wounds = sum(self.wounds)
+        if wounds == 0:
+            return UNHURT
+        elif self.crippleable is True:
+            if self.severed() is True:                    return SEVERED
+            elif self.dismembered() is True:              return DISMEMBERED
+            elif self.crippled() is True:                 return CRIPPLED
+            elif sum(self.wounds) > 1:                    return INJURED
+            else:                                         return SCRATCHED
+        else:
+            if wounds > self.owner.MaxHP() * 2:           return DISMEMBERED
+            elif wounds > self.owner.MaxHP():             return CRIPPLED
+            elif wounds > self.owner.MaxHP() / 2:         return INJURED
+            else:                                         return SCRATCHED
 
     # Set up a parent/child relationship.
     def add_child(parent, child):
@@ -322,6 +331,8 @@ class Limb(HitLoc):
         self.multipliers["pi+"] = 1
         self.multipliers["imp"] = 1
 
+        self.crippleable = True
+
     # Returns the damage that must be *exceeded* to cripple a limb.
     def crippling(self):
         return self.owner.MaxHP()/2
@@ -334,6 +345,8 @@ class Extremity(HitLoc):
         self.multipliers["pi++"] = 1
         self.multipliers["pi+"] = 1
         self.multipliers["imp"] = 1
+
+        self.crippleable = True
 
     # Returns the damage that must be *exceeded* to cripple an extremity.
     def crippling(self):
