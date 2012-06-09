@@ -74,7 +74,7 @@ class MeatArena():
 	self.map.generate_terrain()
 
         # Monster placement.
-        self.place_monsters()
+        self.place_monsters(destination)
 
         # Loot placement.
         self.place_items(destination)
@@ -112,10 +112,16 @@ class MeatArena():
 #            self.map.layout = meat.MeatTower
 
     # TODO: Hand this off to mapgen?
-    def place_monsters(self):
+    def place_monsters(self, depth):
         # Define NPCs to be placed
         from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
-        monsters = [MeatSlave, MeatSlave, MeatSlave, MeatSlave, MeatWorm, MeatWorm, MeatGolem, MeatHydra] 
+        monsters = [MeatSlave] * 10#MeatWorm, MeatGolem, MeatHydra]
+        for x in range(depth * 3):
+            monsters.append(MeatWorm)
+        for x in range(depth * 2):
+            monsters.append(MeatGolem)
+        for x in range(depth * 1):
+            monsters.append(MeatHydra)
 
         # Place monsters
         num_mons = self.map.size / 2 + r3d6()
