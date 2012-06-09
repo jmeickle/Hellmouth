@@ -168,26 +168,36 @@ class Axe(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
+        self.glyph = "{"
+        self.color = "red-black"
 
 class Mace(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
+        self.glyph = "{"
+        self.color = "yellow-black"
 
 class Pick(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
+        self.glyph = "{"
+        self.color = "red-black"
 
 class Hammer(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
+        self.glyph = "{"
+        self.color = "yellow-black"
 
 class Club(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Broadsword"
+        self.glyph = "/"
+        self.color = "yellow-black"
 
 class Flail(Weapon):
     def __init__(self):
@@ -198,16 +208,22 @@ class Pollaxe(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Polearm"
+        self.glyph = "|"
+        self.color = "red-black"
 
 class Spear(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Spear"
+        self.glyph = "|"
+        self.color = "yellow-black"
 
 class Staff(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Staff"
+        self.glyph = "|"
+        self.color = "green-black"
 
 class Natural(Weapon):
     def __init__(self):
