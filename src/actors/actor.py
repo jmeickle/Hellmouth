@@ -853,13 +853,15 @@ class Actor:
     def loccol(self, loc):
         loc = self.body.locs.get(loc, None)
         if loc is None:
-            return "white-black"
+            return "black-black"
         else:
             return "%s-black" % loc.color()
 
     # DR number for a location.
     def locdr(self, slot):
         loc = self.body.locs.get(slot, None)
+        if loc is None:
+            return " "
         if loc.severed() is True:
             return " "
 
@@ -869,7 +871,7 @@ class Actor:
         elif dr < 10:
             return "<cyan-black>%s</>" % dr
         else:
-            return "<cyan-black>!</>"
+            return "<cyan-black>+</>"
 
     # Calculate how many points of wounds a location has, then return
     # it as a single character. Optional parameter: wrap the character
