@@ -88,16 +88,14 @@ class MeatArena():
         self.map.floor = (".", "white-black")
         self.map.layout = meat.MeatArena
 
-        if self.map.depth == 1:
-            self.map.exits = { "down" : (self.map.depth+1, ANYWHERE) }
-        if self.map.depth == 2:
+        if self.map.depth < 5:
             self.map.exits = { "down" : (self.map.depth+1, ANYWHERE) }
 
-# TODO: Move these to other level classes.
-        if self.map.depth == 3:
+        # TODO: Move these to other level classes.
+        if self.map.depth == 5:
             self.name = "The Grand Gate"
             self.map.name = None
-            self.map.exits = { "down" : (MeatArena, (25, 0)) }
+            self.map.exits = {}# "down" : (MeatArena, (25, 0)) }
             self.map.layout = meat.MeatTunnel
 #        if depth == 4:
 #            self.map.name = "Caves of Primal Meat"
@@ -114,7 +112,7 @@ class MeatArena():
 
     # TODO: Hand this off to mapgen?
     def place_monsters(self, depth):
-        if depth == 3:
+        if depth == 5:
             from actors.npc import MeatCommander
             monster = MeatCommander()
             monster.generate_equipment()
