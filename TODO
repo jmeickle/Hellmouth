@@ -30,3 +30,4 @@ UTILITY:
 
 STRUCTURE:
 - Split generators into classes
+- Switch to using decorators for printing functions
