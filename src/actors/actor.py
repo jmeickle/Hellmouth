@@ -254,6 +254,7 @@ class Actor:
         # TODO: Improve messaging
         log.add("%s is knocked unconscious!" % self.appearance())
         self.effects["Unconscious"] = True
+        self.drop_all_held()
         self.knockdown()
 
     # Get knocked down.
@@ -567,8 +568,6 @@ class Actor:
 
         if attack.get("dropped items") is not None:
             self.drop_all_held()
-            # TODO: Change message.
-            log.add("%s drops its items!" % self.appearance())
 
         if attack.get("stun") is not None and self.conscious() is True:
             self.effects["Stun"] = attack["stun"]
@@ -1009,10 +1008,14 @@ class Actor:
 
     # TODO: Less hack-ish.
     def drop_all_held(self):
+        if self.is_holding_items() is False:
+            return False
         for loc in self.body.locs.values():
             for appearance, itemlist in loc.held.items():
                 for item in itemlist:
                     self._drop(item)
+        # TODO: Change message.
+        log.add("%s drops its items!" % self.appearance())
             
     # Tack an appearance and associated list of items from a cell into your own inventory.
     def _merge(self, appearance, itemlist):
