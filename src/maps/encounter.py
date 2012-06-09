@@ -244,7 +244,7 @@ class Cell:
                 list.append(appearance)
         if not list:
             list.append("nothing of interest")
-        return commas(list, True) # Capitalized.
+        return commas(list)
 
     # ITEMS
 
