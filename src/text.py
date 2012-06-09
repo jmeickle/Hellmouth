@@ -28,7 +28,7 @@ def wrap_string(text, width, indent=1):
     for line in text:
         if len(line) > width:
             string = ""
-            words = re.split('(\W+)', line)
+            words = re.split('(\s+)', line)
 
             for word in words:
                 if len(word) + len(string) > width: 
