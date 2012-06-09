@@ -20,7 +20,7 @@ tokens = {
     "dmg-none-burn" : "barely singes",
     "dmg-none-cut" : "doesn't scratch",
     "dmg-none-cr" : "glances off",
-    "dmg-none-pi" : "fails to penetrate",
+    "dmg-none-pi" : "fails to pierce",
     "dmg-none-imp" : "fails to penetrate",
 
     # Cutting damage
@@ -45,18 +45,18 @@ tokens = {
     #"dmg-dismember-pi" : "",
 
     # Swung impaling damage
-    "dmg-scratch-imp-swing" : "grazes",
-    "dmg-injure-imp-swing" : "gouges",
-    "dmg-wound-imp-swing" : "impales",
-    "dmg-cripple-imp-swing" : "buries its weapon in",
-    "dmg-dismember-imp-swing" : "buries its weapon to the hilt in",
+    "dmg-scratch-imp-swing" : ("grazes", "rips at"),
+    "dmg-injure-imp-swing" : "gouges", "shallowly @dmg-wound-imp-swing@",
+    "dmg-wound-imp-swing" : ("impales", "penetrates"),
+    "dmg-cripple-imp-swing" : ("deeply @dmg-wound-imp-swing@"),
+    "dmg-dismember-imp-swing" : "@dmg-wound-imp-swing@ its weapon through",
 
     # Thrusting impaling damage
-    "dmg-scratch-imp-thrust" : "pricks",
-    "dmg-injure-imp-thrust" : ("stabs into", "stabs"),
-    "dmg-wound-imp-thrust" : ("skewers", "impales"),
-    "dmg-cripple-imp-thrust" : "buries its weapon into",
-    "dmg-dismember-imp-thrust" : "buries its weapon to the hilt in",
+    "dmg-scratch-imp-thrust" : ("pricks", "pokes", "sticks"),
+    "dmg-injure-imp-thrust" : ("shallowly @dmg-wound-imp-thrust@", "stabs into", "stabs", "jabs"),
+    "dmg-wound-imp-thrust" : ("impales", "penetrates"),
+    "dmg-cripple-imp-thrust" : ("perforates", "skewers", "deeply @dmg-wound-imp-thrust@"),
+    "dmg-dismember-imp-thrust" : ("@dmg-wound-imp-thrust@ its weapon through", "buries its weapon to the hilt in"),
 
     # Special attacks
 
@@ -72,7 +72,7 @@ tokens = {
     "dmg-injure-bite" : "chomps on",
     "dmg-wound-bite" : "bites into",
     "dmg-cripple-bite" : ("bites deeply into", "takes a bite out of"),
-    "dmg-dismember-cr-punch" : ("bites off", "bites through"),
+    "dmg-dismember-cr-bite" : ("bites off", "bites through"),
 
     # Defenses.
     "def" : "defends",
