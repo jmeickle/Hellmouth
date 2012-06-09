@@ -6,7 +6,7 @@ text = {
 "ouch" : {"header_left" : "<red-black>Ouch!</>", "footer_text" : footer},
 "KO" : {
     "header_left" : "<red-black>KO'd!</>",
-    "body_text" : "After being wounded, you couldn't hang on to consciousness. After that, the end came swiftly...",
+    "body_text" : "You've slipped into unconsciousness thanks to your wounds. That doesn't bode well for your survival...",
     "footer_text" : footer
 },
 "meat-start" : {
