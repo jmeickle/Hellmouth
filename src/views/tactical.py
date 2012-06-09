@@ -309,6 +309,10 @@ class Status(View):
             self.line("Stun", "red-black")
         if self.player.effects.get("Unconscious") is not None:
             self.line("KO'd", "red-black")
+        if self.player.reeling() is True:
+            self.line("Reeling", "red-black")
+        if self.player.exhausted() is True:
+            self.line("Exh", "yellow-black")
         return True
 
 class Place(View):
