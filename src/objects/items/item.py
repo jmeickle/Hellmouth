@@ -21,6 +21,7 @@ class Item():
         # Construction
         self.quality = None
         self.material = None
+        self.construction = None
 
         # References. These just need to be lists, not dicts, because we don't care about the appearances involved.
         self.held = []
@@ -43,6 +44,15 @@ class Item():
     def damage(self, amt):
         return False
 
+    def DR(self):
+        dr = self.dr
+        if self.construction:
+            dr += self.construction.dr
+        if self.material:
+            dr += self.material.dr
+        if self.quality:
+            dr += self.quality.dr
+        return dr
     # Whether the item is intended to be used as a weapon. Note that
     # some objects, like torches or shields, fit into this category
     # despite not being 'weapon' objects.

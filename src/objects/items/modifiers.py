@@ -1,22 +1,32 @@
-# Materials
-class Meat:
-    appearance = "meat"
+class Modifier:
+    dr = 0
 
-class Bone:
+# Materials
+class Meat(Modifier):
+    appearance = "meat"
+    dr = 1
+
+class Bone(Modifier):
     appearance = "bone"
+    dr = 2
 
 # Construction
-class Thin:
+class Thin(Modifier):
     appearance = "thin"
+    dr = -1
+
+class Thick(Modifier):
+    appearance = "thick"
+    dr = 1
 
 # Quality
-class Cheap:
+class Cheap(Modifier):
     appearance = "cheap"
 
-class Fine:
+class Fine(Modifier):
     appearance = "fine"
 
-class VeryFine:
+class VeryFine(Modifier):
     appearance = "very fine"
 
 

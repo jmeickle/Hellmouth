@@ -234,7 +234,7 @@ class HitLoc:
         import random
         for appearance, itemlist in self.worn.items():
             item = random.choice(itemlist)
-            dr += item.dr
+            dr += item.DR()
         dr += self.dr + self.owner.DR()
         return dr
 
