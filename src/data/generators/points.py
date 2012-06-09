@@ -29,6 +29,16 @@ generators = {
 #            "Ice Magic" : {},
 #            "Necromancy" : {"weight" : 10},
 #        }},
-    }}, #</skills>
-} #</default>
-} #</generators>
+    }}, # </skills>
+}, # </default>
+# Meat slave generator.
+"slave" : {
+    "traits" : { "options" : {
+        "ST" : {"multiplier" : 3},
+        "HT" : {"multiplier" : 3},
+    }}, # </traits>
+    "skills" : { "options" : {
+        "Knife" : {},
+    }}, # </skills>
+} # </slave>
+} # </generators>

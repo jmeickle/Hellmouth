@@ -50,4 +50,9 @@ generators = {
         "thrusting greatsword" : {"weight" : 50},
     }},
 }}, #</long swords>
+"knives" : { "weight" : 20, "options" : {
+    "small knife" : {"weight" : 50},
+    "large knife" : {},
+    "dagger" : {"weight" : 50},
+}}, #</knives>
 }
