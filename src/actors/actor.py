@@ -122,6 +122,11 @@ class Actor:
         if self.effects.get("Retreat") is not None:
             del self.effects["Retreat"]
 
+        if self.HP() < 0:
+            check, margin = self.sc('HT', self.MaxHP() / self.HP())
+            if check < TIE:
+                self.knockout()
+
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
             self.over()
@@ -132,8 +137,6 @@ class Actor:
         # TODO: Handle the case of getting shock in your own turn.
         if self.effects.get("Shock") is not None:
             del self.effects["Shock"]
-            # TODO: Real message.
-            log.add("%s shrugs off the shock." % self.appearance())
 
         for effect, details in self.effects.items():
             if effect == "Stun":
@@ -142,7 +145,8 @@ class Actor:
                 if check > TIE:
                     del self.effects["Stun"]
                     # TODO: Real message.
-                    log.add("%s shrugs off the stun." % self.appearance())
+                    if self.conscious() is True:
+                        log.add("%s shrugs off the stun." % self.appearance())
 
     # Display the attack line for the current combination of weapon/attack option.
     # TODO: Multiple attacks.
@@ -241,12 +245,27 @@ class Actor:
             return False
         return True
 
+    # Get knocked out (and also knocked down.)
+    def knockout(self):
+        if self.can_be_knocked_out() is False:
+            return False
+        if self.controlled is True:
+            self.screen("KO")
+        self.effects["Unconscious"] = True
+        self.knockdown()
+        # TODO: Improve messaging
+        log.add("%s is knocked unconscious!" % self.appearance())
+
     # Get knocked down.
     def knockdown(self):
+        if self.can_be_knocked_down() is False:
+            return False
         if flip() == SUCC:
             self.change_posture("lying prone")
         else:
             self.change_posture("lying face up")
+        # TODO: Improve messaging
+        log.add("%s falls over!" % self.appearance())
 
     # Recalculate only skills (usually this will be all that changed.)
     def recalculate_skills(self):
@@ -258,7 +277,7 @@ class Actor:
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         if self.controlled is True and self.can_maneuver() is False:
-            log.add("%s can't take any actions.", self.appearance())
+            log.add("%s can't take any actions." % self.appearance())
             self.over()
             return False
 
@@ -356,10 +375,9 @@ class Actor:
         return level
 
     # Performs a stat or skill check.
-    def sc(self, traitname):
+    def sc(self, traitname, modifier=0):
         level = self.trait(traitname)
-        mod = 0 # TODO: Get mod.
-        return sc(level, mod)
+        return sc(level, modifier)
 
     # Performs a quick contest.
     def qc(self, them, skill):
@@ -456,6 +474,9 @@ class Actor:
 
     # Decide whether to retreat or not.
     def choose_retreat(self, attack):
+        # No sleep-dodging!
+        if self.can_act() is False:
+            return False
         # Already retreated against this attacker - still get a bonus.
         if self.effects.get("Retreat") == attack["attacker"]:
             return True
@@ -551,17 +572,22 @@ class Actor:
             log.add("%s drops its items!" % self.appearance())
 
         if attack.get("knockout") is not None:
-            self.effects["Unconscious"] = attack["knockout"]
-            # TODO: Improve messaging
-            self.screen("KO")
-            log.add("%s is knocked unconscious!" % self.appearance())
+            self.knockout()
 
         if attack.get("knockdown") is not None:
             self.knockdown()
-            log.add("%s falls over!" % self.appearance())
 
         # Cause HP loss.
+        hp = self.HP()
         self.hp_spent += attack["injury"]
+
+        if self.HP() < -self.MaxHP():
+            death_checks_made = (min(0,hp) - 1)/self.MaxHP() + 1
+            death_checks = (self.HP()-1)/self.MaxHP() + 1
+            for death_check in range(-1*(death_checks - death_checks_made)):
+                check, margin = self.sc('HT')
+                if check < TIE:
+                    self.alive = False
 
     # We just lost a limb :(
     def limbloss(self, attack):
@@ -636,8 +662,9 @@ class Actor:
     # Formulas for calculated stats.
     def ST(self, temporary=True):
         ST = self.attributes.get('ST')
-        #if temporary is True:
-        #    ST -= self.effects.get("Shock", 0)
+        if temporary is True:
+            if self.exhausted() is True:
+                ST = (ST + 1) / 2
         return ST
 
     def DX(self, temporary=True):
@@ -669,8 +696,25 @@ class Actor:
     def Perception(self):  return self.stat('IQ') # +levels of Per
 
     # STUB: Insert formulas
-    def Move(self):        return int(self.Speed() * (1 - .2 * self.Encumbrance())) # Plus basic move
-    def Speed(self):       return self.stat('DX', False) + self.stat('HT', False) # Plus buying speed
+    def Move(self):
+
+        # TODO: Buying basic move.
+        move = int(self.Speed() * (1 - .2 * self.Encumbrance()))
+
+        # Penalty from reeling: halve move.
+        if self.reeling() is True:
+            move = (move + 1) / 2
+
+        # Penalty from exhaustion: halve move.
+        if self.exhausted() is True:
+            move = (move + 1) / 2
+
+        return move
+
+    def Speed(self):
+        # TODO: buying speed
+        speed = self.stat('DX', False) + self.stat('HT', False)
+        return speed
 
     # STUB: Can be modified by acrobatics, etc.
     def Dodge(self, retreat=False):
@@ -688,6 +732,15 @@ class Actor:
             retreat_mod += 3
 
         dodge = self.Speed()/4 + 3 + status_mod + posture_mod + retreat_mod# /4 because no /4 in speed.
+
+        # Penalty from reeling: halve dodge.
+        if self.reeling() is True:
+            dodge = (dodge + 1) / 2
+
+        # Penalty from exhaustion: halve dodge.
+        if self.exhausted() is True:
+            dodge = (dodge + 1) / 2
+
         return dodge
 
     # STUB: depends on skill
@@ -754,6 +807,20 @@ class Actor:
     # STUB: Return body-wide damage resistance.
     def DR(self):
         return 0
+
+    # Whether you're so injured as to be reeling.
+    def reeling(self):
+        if self.HP() < self.MaxHP()/3:
+            return True
+        else:
+            return False
+
+    # Whether you're so fatigued as to be exhausted.
+    def exhausted(self):
+        if self.FP() < self.MaxFP()/3:
+            return True
+        else:
+            return False
 
     # UI / DIALOGUE
     # STUB:
