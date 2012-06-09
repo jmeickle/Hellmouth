@@ -37,12 +37,9 @@ class BodyPlan:
 
             # Add the location to the hit location chart.
             for roll in rolls:
-                if isinstance(roll, list) is True:
-                    base = roll[0]
-                    for x in range(len(roll)):
-                        if x == 0:
-                            continue;
-                        subroll = roll[x]
+                if isinstance(roll, tuple) is True:
+                    base, subrolls = roll
+                    for subroll in subrolls:
                         self.table["%s-%s" % (base, subroll)] = part
                 else:
                     self.table[roll] = part
@@ -80,13 +77,13 @@ class Humanoid(BodyPlan):
              (1, 'Face', Face, 'Skull', False, [5]),
              (3, 'RArm', Limb, 'Torso', False, [8]),
              (3, 'LArm', Limb, 'Torso', False, [12]),
-             (4, 'RHand', Extremity, 'RArm', False, [15, 1, 2, 3]),
-             (4, 'LHand', Extremity, 'LArm', False, [15, 4, 5, 6],),
+             (4, 'RHand', Extremity, 'RArm', False, [(15, (1, 2, 3))]),
+             (4, 'LHand', Extremity, 'LArm', False, [(15, (4, 5, 6))]),
              (5, 'Groin', HitLoc, 'Torso', False, [11]),
              (6, 'RLeg', Limb, 'Groin', False, [6, 7]),
              (6, 'LLeg', Limb, 'Groin', False, [13, 14]),
-             (7, 'RFoot', Extremity, 'RLeg', False, [[16, 1, 2, 3]]),
-             (7, 'LFoot', Extremity, 'LLeg', False, [[16, 4, 5, 6]]),
+             (7, 'RFoot', Extremity, 'RLeg', False, [(16, (1, 2, 3))]),
+             (7, 'LFoot', Extremity, 'LLeg', False, [(16, (4, 5, 6))]),
     )
 
     primary_slot = 'RHand'
