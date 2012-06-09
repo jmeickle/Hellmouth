@@ -6,7 +6,7 @@ class Player(Actor):
         Actor.__init__(self)
         self.glyph = '@'
         self.name = 'adventurer'
-        self.color = 'cyan-black'
+        self.color = 'cyan'
         self.description = "Some hapless adventurer who stumbled across the arena. It looks pretty feeble."
         self.highlights = {}
 

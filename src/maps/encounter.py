@@ -218,7 +218,13 @@ class Cell:
     # TODO: improve this function greatly
     def draw(self):
         if self.actor is not None:
-            return self.actor.glyph, self.actor.color
+            glyph = self.actor.glyph
+            color = self.actor.color
+            if self.actor.conscious() is True:
+                color += "-black"
+            else:
+                color += "-white"
+            return glyph, color
         elif self.terrain is not None:
             return self.terrain.glyph, self.terrain.color
         elif len(self.items) == 1:
