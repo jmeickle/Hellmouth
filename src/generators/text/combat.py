@@ -49,8 +49,8 @@ def combat(attack):
         string = "%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), wound, punctuation)
 
         # DEBUG:
-        formula = "%s, [%s = (%s-%s)*%s]" % (attack["injury"], attack["wound"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
-        string += " {"+formula+"}"
+        #formula = "%s, [%s = (%s-%s)*%s]" % (attack["injury"], attack["wound"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
+        #string += " {"+formula+"}"
 
         strings.append(string)
 
