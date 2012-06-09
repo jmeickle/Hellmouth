@@ -16,10 +16,10 @@ class HelpScreen(Screen):
         self.cline("-"*(self.width))
         self.cline(help.entry["commands"])
         self.y_acc = self.BOTTOM
-        self.cline(screens.footer_back)
+        self.cline(screens.footer)#_back)
         return False
 
     def keyin(self, c):
-        if c == ord(' '):
+        if c == ord('\n'):
             self.suicide()
         return False
