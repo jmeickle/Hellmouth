@@ -985,7 +985,7 @@ class Actor:
             assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
             self._remove(item)
             self.cell().put(item)
-            log.add("%s drops the %s." % (self.appearance(), item.appearance()))
+            log.add("%s drops a %s." % (self.appearance(), item.appearance()))
         return False
 
     # TODO: Support dropping to any cell
@@ -1015,7 +1015,7 @@ class Actor:
                 for item in itemlist:
                     self._drop(item)
         # TODO: Change message.
-        log.add("%s drops its items!" % self.appearance())
+        #log.add("%s drops its items!" % self.appearance())
             
     # Tack an appearance and associated list of items from a cell into your own inventory.
     def _merge(self, appearance, itemlist):
