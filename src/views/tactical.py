@@ -244,13 +244,9 @@ class Stats(View):
         self.line("")
         self.statline("Will")
         self.statline("Perception")
-        self.line("")
-        self.statline("Move")
-        self.statline("Speed")
-
-        # Combat Log
-        self.x_acc = 0
-        self.y_acc += 1
+#        self.line("")
+#        self.statline("Move")
+#        self.statline("Speed")
 
         # Don't delete! Probably will reuse this for a 'health' screen.
         #self.line("Wounds:")
