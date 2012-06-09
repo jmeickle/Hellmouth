@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import copy
 
 from objects.items.item import Item
 from text import *
@@ -18,7 +18,7 @@ class Corpse(Item):
         #self.slots = None
 
         self.actor = copy(actor)
-        self.actor.body = deepcopy(actor.body)
+        self.actor.body = copy(actor.body)
 
     def appearance(self):
         return self.actor.appearance() + " corpse"
