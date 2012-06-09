@@ -122,7 +122,7 @@ class Actor:
         if self.effects.get("Retreat") is not None:
             del self.effects["Retreat"]
 
-        if self.HP() < 0:
+        if self.conscious() is True and self.HP() < 0:
             check, margin = self.sc('HT', self.MaxHP() / self.HP())
             if check < TIE:
                 # TODO: Improve messaging
