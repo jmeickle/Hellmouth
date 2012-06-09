@@ -151,7 +151,7 @@ class MeatCommander(NPC):
         self.description = "This beefy champion wears a full set of bone armor decorated with dozens of veal medallions and bacon ribbons. A crown roast rests atop its noble brow."
 
         self.generator = "elite"
-        self.build(300)
+        self.build(700)
         self.loadouts = ["heavy weapon", "heavy armor"]
 
 class Sauceror(NPC):
