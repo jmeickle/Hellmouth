@@ -125,7 +125,7 @@ class MeatArena():
             monsters.append(MeatHydra)
 
         # Place monsters
-        num_mons = self.map.size / 2 + r3d6()
+        num_mons = sum(roll(r1d6, depth))
         for x in range(num_mons):
             monster = random.choice(monsters)
             monster = monster()
