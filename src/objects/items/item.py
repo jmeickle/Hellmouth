@@ -153,16 +153,19 @@ class Shortsword(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Shortsword"
+        self.glyph = ","
 
 class Knife(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Knife"
+        self.glyph = ","
 
 class Dagger(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Knife"
+        self.glyph = ","
 
 class Axe(Weapon):
     def __init__(self):
@@ -176,7 +179,7 @@ class Mace(Weapon):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
-        self.color = "yellow-black"
+        self.color = "blue-black"
 
 class Pick(Weapon):
     def __init__(self):
@@ -190,7 +193,7 @@ class Hammer(Weapon):
         Weapon.__init__(self)
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
-        self.color = "yellow-black"
+        self.color = "blue-black"
 
 class Club(Weapon):
     def __init__(self):
@@ -203,6 +206,8 @@ class Flail(Weapon):
     def __init__(self):
         Weapon.__init__(self)
         self.primary_skill = "Flail"
+        self.glyph = "{"
+        self.color = "cyan-black"
 
 class Pollaxe(Weapon):
     def __init__(self):
