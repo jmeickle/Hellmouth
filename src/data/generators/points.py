@@ -14,14 +14,16 @@ generators = {
             }}, # </Unarmed>
             "Melee" : { "options" : {
                 "Axe/Mace" : {"weight": 50},
-                "Broadsword" : {"weight" : 300},
-                "Flail" : {"weight" : 0},
-                "Knife" : {"weight" : 0},
+                "Broadsword" : {"weight" : 200},
+                "Flail" : {"weight" : 25},
+                "Knife" : {"weight" : 25},
                 "Polearm" : {"weight": 50},
                 "Shortsword" : {"weight" : 150},
                 "Spear" : {"weight" : 150},
                 "Staff" : {"weight" : 50},
-                "2H Sword" : {"weight" : 50},
+                "2H Axe/Mace" : {"weight" : 50},
+                "2H Flail" : {"weight" : 25},
+                "2H Sword" : {"weight" : 200},
             }}, # </Melee>
         }},
 #        "magic" : { "weight" : 10, "options" : {
@@ -40,5 +42,35 @@ generators = {
     "skills" : { "options" : {
         "Knife" : {},
     }}, # </skills>
-} # </slave>
+}, # </slave>
+
+# Feral/wild monster generator.
+"wild" : {
+    "traits" : { "options" : {
+        "ST" : {"multiplier" : 6},
+        "DX" : {"multiplier" : 3},
+        "HT" : {"multiplier" : 6},
+    }}, # </traits>
+    "skills" : { "options" : {
+        "Brawling" : {},
+    }}, # </skills>
+}, # </wild>
+
+# Elite monsters.
+"elite" : {
+    "traits" : { "options" : {
+        "ST" : {"multiplier" : 6},
+        "DX" : {"multiplier" : 6},
+        "HT" : {"multiplier" : 6},
+    }}, # </traits>
+    "skills" : { "options" : {
+        "Axe/Mace" : {},
+        "Flail" : {},
+        "Polearm" : {},
+        "2H Axe/Mace" : {},
+        "2H Flail" : {},
+        "2H Sword" : {},
+    }}, # </skills>
+} # </elite>
+
 } # </generators>
