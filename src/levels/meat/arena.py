@@ -122,11 +122,11 @@ class MeatArena():
         # Define NPCs to be placed
         from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
         monsters = [MeatSlave] * 10#MeatWorm, MeatGolem, MeatHydra]
-        for x in range(depth * 3):
+        for x in range(depth-1 * 3):
             monsters.append(MeatWorm)
-        for x in range(depth * 2):
+        for x in range(depth-1 * 2):
             monsters.append(MeatGolem)
-        for x in range(depth * 1):
+        for x in range(depth-1 * 1):
             monsters.append(MeatHydra)
 
         # Place monsters
