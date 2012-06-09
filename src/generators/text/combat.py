@@ -18,9 +18,9 @@ def combat(attack):
             damage_level = "cripple"
         elif attack.get("major wound") is not None:
             damage_level = "wound"
-        elif attack["injury"] > 1:
+        elif attack["wound"] > 1:
             damage_level = "injure"
-        elif attack["injury"] == 1:
+        elif attack["wound"] == 1:
             damage_level = "scratch"
         else:
             damage_level = "none"
