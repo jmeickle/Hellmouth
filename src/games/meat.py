@@ -109,7 +109,7 @@ class Game(Component):
 
     def before_finish(self):
         self.gameplay = False
-        self.screen("meat-end", {"callback" : self.finish})
+        self.screen("meat-end")#, {"callback" : self.finish})
 
     # The game is over. Do anything required before exiting.
     def finish(self):

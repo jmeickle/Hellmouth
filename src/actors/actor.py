@@ -277,7 +277,10 @@ class Actor:
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         if self.controlled is True and self.can_maneuver() is False:
-            log.add("%s can't take any actions." % self.appearance())
+            if self.alive is False:
+                log.add("%s is dead. Press Ctrl-q to quit the game." % self.appearance())
+            else:
+                log.add("%s can't act in its current state." % self.appearance())
             self.over()
             return False
 
