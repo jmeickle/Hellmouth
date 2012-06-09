@@ -63,7 +63,9 @@ class Encounter:
     # By default, before_arrive tries to load the matching screen and plugs in a
     # callback to self.arrive. Otherwise, it calls it itself.
     def before_arrive(self):
-        entryscreen = self.level.name + ", " + self.name # HACK: Later it should choose different dict for different levels.
+        entryscreen = self.level.name
+        if self.name is not None:
+            entryscreen  += ", " + self.name # HACK: Later it should choose different dict for different levels.
         log.add("You enter %s." % entryscreen)
         if screens.text.get(striptags(entryscreen)) is not None:
             arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
