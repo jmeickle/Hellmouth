@@ -33,7 +33,7 @@ def spend_points(actor, points=None):
         if generator.choices.get(type) is None:
             continue
         choice, choice_details = generator.choose(type, generator.choices)
-        cost = r1d6()
+        cost = r1d6() * choice_details.get("multiplier", 1)
         if choice is None:
             continue
         if cost <= points:
