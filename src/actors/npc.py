@@ -162,4 +162,5 @@ class Sauceror(NPC):
         self.color = 'magenta'
         self.description = "A slight figure clad in dark cloth robes. Its flesh is pale and unappetizing, but its brain is perhaps the meatiest of all."
 
-        self.build(300)
+        self.generator = "sauceror"
+        self.build(400)
