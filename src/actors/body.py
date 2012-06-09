@@ -80,10 +80,10 @@ class Humanoid(BodyPlan):
              (4, 'RHand', Extremity, 'RArm', False, [(15, (1, 2, 3))]),
              (4, 'LHand', Extremity, 'LArm', False, [(15, (4, 5, 6))]),
              (5, 'Groin', HitLoc, 'Torso', False, [11]),
-             (6, 'RLeg', Limb, 'Groin', False, [6, 7]),
-             (6, 'LLeg', Limb, 'Groin', False, [13, 14]),
-             (7, 'RFoot', Extremity, 'RLeg', False, [(16, (1, 2, 3))]),
-             (7, 'LFoot', Extremity, 'LLeg', False, [(16, (4, 5, 6))]),
+             (6, 'RLeg', Leg, 'Groin', False, [6, 7]),
+             (6, 'LLeg', Leg, 'Groin', False, [13, 14]),
+             (7, 'RFoot', Foot, 'RLeg', False, [(16, (1, 2, 3))]),
+             (7, 'LFoot', Foot, 'LLeg', False, [(16, (4, 5, 6))]),
     )
 
     primary_slot = 'RHand'

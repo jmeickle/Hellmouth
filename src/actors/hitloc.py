@@ -258,12 +258,11 @@ class HitLoc:
 
         # BLOOD EVERYWHERE
         if attack.get("severing wound") is True:
-            self.sever()
+            self.sever(attack)
             if self.owner.controlled is True:
                 self.owner.screen("ouch", {"body_text" : self.owner.limbloss(attack)})
 
-
-    def sever(self):
+    def sever(self, attack):
         # Store the original.
         original = self.owner
         # Generate a corpse.
@@ -337,6 +336,14 @@ class Limb(HitLoc):
     def crippling(self):
         return self.owner.MaxHP()/2
 
+class Leg(Limb):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+    def sever(self, attack):
+        self.owner.knockdown()
+        Limb.sever(self, attack)
+
 # Hands, feet, etc.
 class Extremity(HitLoc):
     def __init__(self, type, owner):
@@ -351,6 +358,14 @@ class Extremity(HitLoc):
     # Returns the damage that must be *exceeded* to cripple an extremity.
     def crippling(self):
         return self.owner.MaxHP()/3
+
+class Foot(Extremity):
+    def __init__(self, type, owner):
+        HitLoc.__init__(self, type, owner)
+
+    def sever(self, attack):
+        self.owner.knockdown()
+        Extremity.sever(self, attack)
 
 # Brain containment
 class Skull(HitLoc):
