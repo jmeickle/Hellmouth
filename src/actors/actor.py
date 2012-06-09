@@ -125,6 +125,8 @@ class Actor:
         if self.HP() < 0:
             check, margin = self.sc('HT', self.MaxHP() / self.HP())
             if check < TIE:
+                # TODO: Improve messaging
+                log.add("%s passes out." % self.appearance())
                 self.knockout()
 
         # Do Nothing.
@@ -251,8 +253,6 @@ class Actor:
             return False
         if self.controlled is True:
             self.screen("KO")
-        # TODO: Improve messaging
-        log.add("%s is knocked unconscious!" % self.appearance())
         self.effects["Unconscious"] = True
         self.drop_all_held()
         self.knockdown()
@@ -569,6 +569,8 @@ class Actor:
     # Cause the effects decided in prepare_hurt().
     def hurt(self, attack):
         if attack.get("knockout") is not None:
+            # TODO: Improve messaging
+            log.add("%s is knocked unconscious!" % self.appearance())
             self.knockout()
 
         if attack.get("knockdown") is not None:
