@@ -251,10 +251,10 @@ class Actor:
             return False
         if self.controlled is True:
             self.screen("KO")
-        self.effects["Unconscious"] = True
-        self.knockdown()
         # TODO: Improve messaging
         log.add("%s is knocked unconscious!" % self.appearance())
+        self.effects["Unconscious"] = True
+        self.knockdown()
 
     # Get knocked down.
     def knockdown(self):
@@ -556,26 +556,26 @@ class Actor:
 
     # Cause the effects decided in prepare_hurt().
     def hurt(self, attack):
-        # Handle shock (potentially from multiple sources.)
-        if attack.get("shock") is not None:
-            shock = self.effects.get("Shock", 0)
-            self.effects["Shock"] = min(4, shock + attack["shock"])
+        if attack.get("knockout") is not None:
+            self.knockout()
 
-        if attack.get("stun") is not None:
-            self.effects["Stun"] = attack["stun"]
-            # TODO: Change message.
-            log.add("%s is stunned!" % self.appearance())
+        if attack.get("knockdown") is not None:
+            self.knockdown()
 
         if attack.get("dropped items") is not None:
             self.drop_all_held()
             # TODO: Change message.
             log.add("%s drops its items!" % self.appearance())
 
-        if attack.get("knockout") is not None:
-            self.knockout()
+        if attack.get("stun") is not None and self.conscious() is True:
+            self.effects["Stun"] = attack["stun"]
+            # TODO: Change message.
+            log.add("%s is stunned!" % self.appearance())
 
-        if attack.get("knockdown") is not None:
-            self.knockdown()
+        # Handle shock (potentially from multiple sources.)
+        if attack.get("shock") is not None:
+            shock = self.effects.get("Shock", 0)
+            self.effects["Shock"] = min(4, shock + attack["shock"])
 
         # Cause HP loss.
         hp = self.HP()
