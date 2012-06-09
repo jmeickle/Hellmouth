@@ -20,10 +20,11 @@ class MeatArena(MapGen):
                 self.cells[pos] = (dist, None)
 
         # Randomly placed columns
-        colnum = self.size / 2 + r1d6()
+        colnum = self.size + r3d6()
+        positions = random_area(self.size, self.center, colnum)
         for x in range(colnum):
-            colsize = random.randint(1, 3)
-            pos = (self.center[0] + flip()*random.randint(4, self.size)-colsize, self.center[1] + flip() * random.randint(4,self.size)-colsize)
+            colsize = random.choice((1, 1, 1, 2, 2, 3, 4))
+            pos = positions.pop()
             col = area(colsize, pos)
             for pos, dist in col.items():
                 if dist == colsize:
