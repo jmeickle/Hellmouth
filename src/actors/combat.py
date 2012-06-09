@@ -114,7 +114,7 @@ class CombatAction:
         # HACK: Remove when attacking at multiple ranges is implemented.
         min_reach = 0 #attack["attack stats"][2][0]
         # HACK: Remove when sharing the same hex is implemented.
-        max_reach = 1+ attack["attack stats"][2][-1]
+        max_reach = max(1, attack["attack stats"][2][-1])
 
         # TODO: Check current reach on weapons that require shifting distance.
         # TODO: Different return values
