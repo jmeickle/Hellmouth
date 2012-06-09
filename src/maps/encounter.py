@@ -225,7 +225,7 @@ class Cell:
                 item = random.choice(itemlist)
                 return item.glyph, item.color
         elif len(self.items) > 1:
-            return '!', 'magenta-black'
+            return '+', 'red-black'
         else:
             return self.map.floor
 
