@@ -17,11 +17,11 @@ tokens = {
     # No-ops
     # TODO: Remove this after attacks look at pre-DR damage
     "dmg-none" : "doesn't harm",
-    "dmg-none-burn" : "doesn't harm",
-    "dmg-none-cut" : "doesn't harm",
-    "dmg-none-cr" : "doesn't harm",
-    "dmg-none-pi" : "doesn't harm",
-    "dmg-none-imp" : "doesn't harm",
+    "dmg-none-burn" : "barely singes",
+    "dmg-none-cut" : "doesn't scratch",
+    "dmg-none-cr" : "glances off",
+    "dmg-none-pi" : "fails to penetrate",
+    "dmg-none-imp" : "fails to penetrate",
 
     # Cutting damage
     "dmg-scratch-cut" : ("lightly @dmg-injure-cut@", "scratches", "grazes", "nicks"),
