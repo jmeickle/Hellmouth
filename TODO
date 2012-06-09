@@ -1,8 +1,5 @@
 SHORT TERM GOALS:
-- Reenable defaults
-- Attribute/trait generation
 - Improved monster target-seeking AI
-- Improved random monster generation
 
 LONGER TERM GOALS:
 - Support numpads correctly across systems
@@ -10,6 +7,7 @@ LONGER TERM GOALS:
 - Fill out lifepaths so all reachable events are meaningful
 - Make lifepath events affect character stats
 - Dialogue screens
+- Reenable defaults
 
 VERY LONG TERM GOALS:
 - LOS algo
