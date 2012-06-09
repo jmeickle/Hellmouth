@@ -622,6 +622,7 @@ class Actor:
             if self == self.map.acting:
                 self.map.acting = None
             self.map.queue.remove(self)
+            self.drop_all()
             self.cell().remove(self)
 
     # *Mechanical* actions to perform on death. Return whether we actually died.
@@ -1000,11 +1001,10 @@ class Actor:
     # 'Forcibly' drop a specific inventory item.
     # Returns false if the item wasn't found in the player's inventory.
     def _drop(self, item):
-        if self._can_drop_item(item) is True:
-            assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
-            self._remove(item)
-            self.cell().put(item)
-            log.add("%s drops a %s." % (self.appearance(), item.appearance()))
+        assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
+        self._remove(item)
+        self.cell().put(item)
+        log.add("%s drops a %s." % (self.appearance(), item.appearance()))
         return False
 
     # TODO: Support dropping to any cell
@@ -1020,10 +1020,10 @@ class Actor:
 
     # Drop everything to the current cell.
     def drop_all(self): 
-        cell = self.cell()
-        while len(self.inventory) > 0:
-            appearance, itemlist = self.inventory.popitem()
-            cell._merge(appearance, itemlist)
+        for loc in self.body.locs.values():
+            for appearance, itemlist in loc.held.items():
+                for item in itemlist:
+                    self._drop(item)
 
     # TODO: Less hack-ish.
     def drop_all_held(self):
