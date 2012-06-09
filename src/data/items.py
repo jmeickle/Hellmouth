@@ -466,13 +466,13 @@ item_list = {
 
     "armor" : {
         "class" : Armor,
-        "dr" : 1,
+        "dr" : 2,
         "slots" : ["Neck", "Torso", "RArm", "LArm"]
     },
 
     "leggings" : {
         "class" : Armor,
-        "dr" : 1,
+        "dr" : 2,
         "slots" : ["RLeg", "LLeg", "Groin"]
     },
 
@@ -484,7 +484,7 @@ item_list = {
 
     "boots" : {
         "class" : Armor,
-        "dr" : 1,
+        "dr" : 2,
         "slots" : ["RFoot", "LFoot"]
     },
 
@@ -492,11 +492,6 @@ item_list = {
         "class" : Armor,
         "dr" : 5,
         "slots" : ["Torso"]
-    },
-    "arms" : {
-        "class" : Armor,
-        "dr" : 1,
-        "slots" : ["RArm", "LArm"]
     },
     "gauntlets" : {
         "variant" : "gloves",
