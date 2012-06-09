@@ -250,8 +250,8 @@ class HitLoc:
         # BLOOD EVERYWHERE
         if attack.get("severing wound") is True:
             self.sever()
-            if owner.controlled is True:
-                owner.screen("ouch", {"body_text" : owner.limbloss(attack)})
+            if self.owner.controlled is True:
+                self.owner.screen("ouch", {"body_text" : self.owner.limbloss(attack)})
 
 
     def sever(self):
