@@ -416,63 +416,15 @@ item_list = {
 # TODO: A ton of demonic strikers. Tails, wings, etc.
 # TODO: Shield bashes.
 
-    "thick bone armor" : {
-        "material" : "thick bone",
-        "variant" : "armor",
-        "dr" : 4,
-    },
-
-    "thick bone leggings" : {
-        "material" : "thick bone",
-        "variant" : "armor",
-        "dr" : 4,
-    },
-
-    "thick bone gloves" : {
-        "material" : "thick bone",
-        "variant" : "armor",
-        "dr" : 4,
-    },
-
-    "thick bone boots" : {
-        "material" : "thick bone",
-        "variant" : "armor",
-        "dr" : 4,
-    },
-
-    "bone armor" : {
-        "material" : "bone",
-        "variant" : "armor",
-        "dr" : 2,
-    },
-
-    "bone leggings" : {
-        "material" : "bone",
-        "variant" : "armor",
-        "dr" : 2,
-    },
-
-    "bone gloves" : {
-        "material" : "bone",
-        "variant" : "armor",
-        "dr" : 2,
-    },
-
-    "bone boots" : {
-        "material" : "bone",
-        "variant" : "armor",
-        "dr" : 2,
-    },
-
     "armor" : {
         "class" : Armor,
-        "dr" : 2,
+        "dr" : 1,
         "slots" : ["Neck", "Torso", "RArm", "LArm"]
     },
 
     "leggings" : {
         "class" : Armor,
-        "dr" : 2,
+        "dr" : 1,
         "slots" : ["RLeg", "LLeg", "Groin"]
     },
 
@@ -484,7 +436,7 @@ item_list = {
 
     "boots" : {
         "class" : Armor,
-        "dr" : 2,
+        "dr" : 1,
         "slots" : ["RFoot", "LFoot"]
     },
 
