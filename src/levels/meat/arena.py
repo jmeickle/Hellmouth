@@ -130,12 +130,15 @@ class MeatArena():
             monsters.append(MeatHydra)
 
         # Place monsters
-        num_mons = sum(roll(r1d6, depth))
-        for x in range(num_mons):
+        num_mons = sum(roll(r1d6, depth+1))
+        cells = area(self.map.size, self.map.center).keys()
+        while num_mons > 0:
             monster = random.choice(monsters)
             monster = monster()
             monster.generate_equipment()
-            self.map.put(monster, (self.map.center[0] + flip()*random.randint(1, self.map.size), self.map.center[1] + flip() * random.randint(1,self.map.size)))
+            pos = random.choice(cells)
+            if self.map.put(monster, pos) is not False:
+                num_mons -= 1
 
     def place_items(self, depth):
         item_count = r1d6() + 3 + depth
