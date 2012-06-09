@@ -37,13 +37,13 @@ item_list = {
         "class" : Broadsword,
         "cost" : 650,
         "weight" : 5,
-        "primary_skill" : "Two-Handed Sword",
+        "primary_skill" : "2H Sword",
         "attack_options" : {
             "Broadsword" : {
                 "swing"  : ("sw+1", "cut", (1,2), U0, 11, 1),
                 "thrust" : ("thr+1", "cr", (2,), U0, 11, 1),
             },
-            "Two-Handed Sword" : {
+            "2H Sword" : {
                 "swing"  : ("sw+2", "cut", (1,2), 0, 10, 2),
                 "thrust" : ("thr+2", "cr", (2,), 0, 10, 2),
             },
@@ -53,13 +53,13 @@ item_list = {
         "class" : Broadsword,
         "cost" : 750,
         "weight" : 5,
-        "primary_skill" : "Two-Handed Sword",
+        "primary_skill" : "2H Sword",
         "attack_options" : {
             "Broadsword" : {
                 "swing"  : ("sw+1", "cut", (1,2), U0, 11, 1),
                 "thrust" : ("thr+2", "imp", (2,), U0, 11, 1),
             },
-            "Two-Handed Sword" : {
+            "2H Sword" : {
                 "swing"  : ("sw+2", "cut", (1,2), 0, 10, 2),
                 "thrust" : ("thr+3", "imp", (2,), 0, 10, 2),
             },
@@ -69,9 +69,9 @@ item_list = {
         "class" : Broadsword,
         "cost" : 800,
         "weight" : 7,
-        "primary_skill" : "Two-Handed Sword",
+        "primary_skill" : "2H Sword",
         "attack_options" : {
-            "Two-Handed Sword" : {
+            "2H Sword" : {
                 "swing"  : ("sw+3", "cut", (1,2), 0, 12, 2),
                 "thrust" : ("thr+2", "cr", (2,), 0, 12, 2),
             },
@@ -81,9 +81,9 @@ item_list = {
         "class" : Broadsword,
         "cost" : 900,
         "weight" : 7,
-        "primary_skill" : "Two-Handed Sword",
+        "primary_skill" : "2H Sword",
         "attack_options" : {
-            "Two-Handed Sword" : {
+            "2H Sword" : {
                 "swing"  : ("sw+3", "cut", (1,2), 0, 12, 2),
                 "thrust" : ("thr+3", "imp", (2,), 0, 12, 2),
             },
@@ -162,9 +162,9 @@ item_list = {
         "class" : Axe,
         "cost" : 100,
         "weight" : 8,
-        "primary_skill" : "Two-Handed Axe/Mace",
+        "primary_skill" : "2H Axe/Mace",
         "attack_options" : {
-            "Two-Handed Axe/Mace" : { "swing" : ("sw+3", "cut", (1,2), U0, 12, 3),}
+            "2H Axe/Mace" : { "swing" : ("sw+3", "cut", (1,2), U0, 12, 3),}
         },
     },
 # Maces.
@@ -197,18 +197,18 @@ item_list = {
         "class" : Hammer,
         "cost" : 80,
         "weight" : 12,
-        "primary_skill" : "Two-Handed Axe/Mace",
+        "primary_skill" : "2H Axe/Mace",
         "attack_options" : {
-            "Two-Handed Axe/Mace" : { "swing"  : ("sw+4", "cr", (1,2), U0, 12, 3),},
+            "2H Axe/Mace" : { "swing"  : ("sw+4", "cr", (1,2), U0, 12, 3),},
         },
     },
     "warhammer" : {
         "class" : Hammer,
         "cost" : 100,
         "weight" : 7,
-        "primary_skill" : "Two-Handed Axe/Mace",
+        "primary_skill" : "2H Axe/Mace",
         "attack_options" : {
-            "Two-Handed Axe/Mace" : { "swing" : ("sw+3", "imp", (1,2), U0, 12, 3),},
+            "2H Axe/Mace" : { "swing" : ("sw+3", "imp", (1,2), U0, 12, 3),},
         },
     },
 
@@ -249,9 +249,9 @@ item_list = {
         "class" : Flail,
         "cost" : 100,
         "weight" : 8,
-        "primary_skill" : "Two-Handed Flail",
+        "primary_skill" : "2H Flail",
         "attack_options" : {
-            "Two-Handed Flail" : { "swing" : ("sw+4", "cr", (1,2), U0, 13, 2),},
+            "2H Flail" : { "swing" : ("sw+4", "cr", (1,2), U0, 13, 2),},
         },
     },
 # Long battlefield polearms.
@@ -327,7 +327,7 @@ item_list = {
                 "swing" : ("sw+2", "cr", (1,2), 2, 7, 2),
                 "thrust" : ("thr+2", "cr", (1,2), 2, 7, 2),
             },
-            "Two-Handed Sword"   : {
+            "2H Sword"   : {
                 "swing" : ("sw+2", "cr", (1,2), 0, 9, 2),
                 "thrust" : ("thr+1", "cr", (2,), 0, 9, 2),
             },
@@ -368,7 +368,7 @@ item_list = {
         "cost" : 15,
         "weight" : 5,
         "attack_options" : {
-            "Two-Handed Axe/Mace" : {
+            "2H Axe/Mace" : {
                 "swing"  : ("sw+2", "cut", (1,), U0, 11, 3),
                 "swing"  : ("sw", "imp", (1,), U0, 11, 3),
             },

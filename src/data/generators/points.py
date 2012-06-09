@@ -21,7 +21,7 @@ generators = {
                 "Shortsword" : {"weight" : 150},
                 "Spear" : {"weight" : 150},
                 "Staff" : {"weight" : 50},
-                "Two-Handed Sword" : {"weight" : 50},
+                "2H Sword" : {"weight" : 50},
             }}, # </Melee>
         }},
 #        "magic" : { "weight" : 10, "options" : {

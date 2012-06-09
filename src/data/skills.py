@@ -110,7 +110,7 @@ skill_list = {
     "attribute"  : "DX",
     "difficulty" : "A",
     "text"       : "Hit stuff good",
-    "defaults"   : [("Shortsword", -2), ("Two-Handed Sword", -4)],
+    "defaults"   : [("Shortsword", -2), ("2H Sword", -4)],
 },
 "Flail" : {
     "type"       : "Melee",
@@ -154,7 +154,21 @@ skill_list = {
     "text"       : "Hit stuff good",
     "defaults"   : [("Polearm", -4), ("Spear", -2)],
 },
-"Two-Handed Sword" : {
+"2H Axe/Mace" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "A",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("Polearm", -4), ("2H Flail", -4)]
+},
+"2H Flail" : {
+    "type"       : "Melee",
+    "attribute"  : "DX",
+    "difficulty" : "H",
+    "text"       : "Hit stuff good",
+    "defaults"   : [("2H Axe/Mace", -4)]
+},
+"2H Sword" : {
     "type"       : "Melee",
     "attribute"  : "DX",
     "difficulty" : "A",
