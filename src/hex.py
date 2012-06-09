@@ -69,9 +69,25 @@ def distance(x1, y1, x2, y2):
         distance = abs(dx) + abs(dy)
     return distance
 
-# Generate a perimeter around an origin and return a random point on it.
-def random_pos(dist, origin=CC):
-    return random.choice(perimeter(dist))
+# Generate a perimeter around an origin and return random points on it.
+def random_perimeter(dist, origin=CC, choices=1):
+    cells = perimeter(dist, origin)
+    points = []
+    for x in range(choices):
+        choice = random.choice(cells)
+        cells.remove(choice)
+        points.append(choice)
+    return points
+
+# Generate a perimeter around an origin and return random points on it.
+def random_area(dist, origin=CC, choices=1):
+    cells = area(dist, origin)
+    points = []
+    for x in range(choices):
+        choice = random.choice(cells.keys())
+        del cells[choice]
+        points.append(choice)
+    return points
 
 # Turns out this is slower. Xom laughs.
 def _area(rank, pos, dir, left=False, right=True, curr=0):
