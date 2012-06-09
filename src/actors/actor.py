@@ -1023,9 +1023,9 @@ class Actor:
     # Drop everything to the current cell.
     def drop_all(self): 
         for loc in self.body.locs.values():
-            for appearance, itemlist in loc.held.items():
-                for item in itemlist:
-                    self._drop(item)
+            itemlist = loc.items()
+            while itemlist:
+                self._drop(itemlist.pop())
 
     # TODO: Less hack-ish.
     def drop_all_held(self):
