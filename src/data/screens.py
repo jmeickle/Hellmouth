@@ -112,13 +112,28 @@ very air drips with eldritch grease.\
 This must be the home of the Sauceror that the Meat Commander spoke of. It is \
 clearly a being both insanely powerful and powerfully insane.",
 },
-"meat-end" : {
+"meat-death" : {
     "header_left" : "<red-black>...</>",
     "body_text" : "\
-Sorry, but it looks like that's all there is for now. Try again some other time.",
+You've been slain! How terrible!\
+<br>\
+<br>\
+Unfortunately, that's all there is for now. You can press <green-black>'v'</> \
+to look around the map. When you decide to quit, press <red-black>Ctrl-q</>.",
 #The <meat-black>Sauceror</> is dead. You've sliced apart many enemies, but they haven't \
 #stopping coming. The stench of spoiled meat is overpowering. You must escape \
 #- but you can't. No one can.",
+},
+"meat-end" : {
+    "header_left" : "<red-black>The end...?</>",
+    "body_text" : "\
+The gate is even more imposing now that you're stand before it, but you find \
+yourself excited rather than terrified. You breathe in deeply and catch a faint \
+whiff of the hickory-smoked scent of adventure that lies just beyond the portal.\
+<br>\
+<br>\
+Unfortunately, the creator of the Meat Arena has left it locked, and you don't \
+have a key. Your journey is well-done.",
 },
 "credits" : {
     "header_left" : "Thanks for trying out <red-black>Meat Arena!</>",
@@ -128,10 +143,10 @@ Meat Arena is a short game that I created to serve as a prototype & testing \
 suite for Hellmouth, a much longer game that I hope to release this year. Your \
 character in Hellmouth is a demonslayer who travels across Medieval Europe in \
 search of Satan's minions. While you may fit the traditional archetype of a \
-paladin blazing with the light of God, demonslayers are a varied lot: some \
-prefer to dispatch their foes with subterfuge, while others use their charisma \
-to rally peasant armies. A few dark souls even risk eternal hellfire by \
-embracing the corrupt powers of Hell.\
+paladin blazing with the light of God, demonslayers are a varied lot, and \
+others prefer to dispatch their foes with subterfuge or use their charisma to \
+rally peasant armies. A few dark souls even risk eternal damnation by \
+embracing the corrupt powers of Hell...\
 <br><br>\
 You can follow Hellmouth's development at:\
 <br><br>\
@@ -143,6 +158,6 @@ really appreciate any feedback that you have to offer:\
     https://twitter.com/#!/eronarn or eronarn@gmail.com\
 <br><br>\
 Thanks again for playing such a silly game!",
-    "footer_text" : "Press <green-black>Enter</> or <red-black>Ctrl-q</> to exit the game.",
+    "footer_text" : "Press <green-black>Enter</> to exit the game.",
 }
 }

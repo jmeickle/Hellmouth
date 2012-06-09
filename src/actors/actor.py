@@ -626,6 +626,8 @@ class Actor:
             self.map.queue.remove(self)
             self.drop_all()
             self.cell().remove(self)
+            if self.controlled is True:
+                self.screen("meat-death")
 
     # *Mechanical* actions to perform on death. Return whether we actually died.
     # For example, extra lives happen here - you die, but then come back.

@@ -82,7 +82,7 @@ class Game(Component):
 
         # Always allow quitting.
         if c == ctrl('q'):
-            self.suicide()
+            self.finish()
 
     # Returns whether we meet the conditions to keep playing.
     def conditions(self):
@@ -99,6 +99,7 @@ class Game(Component):
     # Functions called (before/when) (starting/finishing) the game.
     def before_start(self):
         self.screen("meat-start", {"callback" : self.start, "footer_text": screens.footer})
+        self.spawn(HelpScreen(self.window))
 
     def start(self):
         # Go to the first level.
@@ -137,4 +138,3 @@ class Game(Component):
         if arguments is not None:
             screendata.update(arguments)
         self.spawn(screenclass(self.window, **screendata))
-
