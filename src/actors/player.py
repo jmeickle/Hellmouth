@@ -10,8 +10,10 @@ class Player(Actor):
         self.description = "Some hapless adventurer who stumbled across the arena. It looks pretty feeble."
         self.highlights = {}
 
+        self.points["traits"]["DX"] += 100
+        self.points["traits"]["ST"] += 100
         self.build(200)
-        self.attributes["ST"] += 10
+        self.recalculate()
         self.controlled = True
 
     # Use stairs that you are standing on.
