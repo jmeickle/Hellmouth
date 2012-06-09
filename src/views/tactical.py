@@ -186,7 +186,10 @@ class Examine(View):
     def draw(self):
         pos = self.parent.pos
         cell = self.map.cell(pos)
-        self.line("Press +/- to change cursor (cosmetic).")
+        if not self.children:
+            self.line("Space: Exit. Enter: Inspect. +/-: Style.")
+        else:
+            self.line("Space: Stop Inspecting. +/-: Cursor style.")
         if cell is not None:
             string = cell.contents()
             self.line("Cursor: %s." % string)
