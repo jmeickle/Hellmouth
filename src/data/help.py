@@ -7,7 +7,7 @@ Commands: \
 <green-black>Space</> means cancel or go back.\
 <br>\
 <br>\
-You can move your character with the <green-black>hex keys (7/9/4/6/1/4/5)</> on your number \
+You can move your character with the <green-black>hex keys (7/9/4/6/1/3/5)</> on your number \
 pad. These keys are also used for navigating hexagonal menus.\
 <br>\
 <br>\
