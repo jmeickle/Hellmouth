@@ -66,8 +66,9 @@ class Game(Component):
             self.screen(screenname, arguments, screenclass)
 
         # Draw tree.
-        self.window.clear()
+        self.window.erase()
         self._draw()
+        self.window.refresh()
 
         # Keyin tree.
         c = self.window.getch()
