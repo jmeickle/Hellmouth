@@ -33,7 +33,10 @@ class Cell:
                 glyph = actor.glyph
                 color = actor.color
                 if actor.conscious() is True:
-                    color += "-black"
+                    if len(self.actors) > 1 and all is False:
+                        color += "-magenta"
+                    else:
+                        color += "-black"
                 else:
                     color += "-white"
                 glyphs.append((glyph, color, actor.subposition))
