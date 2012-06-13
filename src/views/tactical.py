@@ -146,14 +146,6 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
-        if len(self.player.highlights) > 0:
-            for highlight, pos in self.player.highlights.items():
-                if dist(self.center, pos) > self.viewrange:
-                    cells = line(self.center, pos, self.viewrange+1)
-                    cell = cells.pop()
-                    glyph, col = "*", "green-black"
-                    self.hd(cell, glyph, col)
-
         cells = area(self.viewrange, self.center)
 
         for cell in cells:
@@ -165,6 +157,15 @@ class MainMap(View):
                 col = "magenta-black"
                 # If we ever want to print something for missing cells.
                 #self.hd(cell, glyph, col)
+
+        if len(self.player.highlights) > 0:
+            for highlight, pos in self.player.highlights.items():
+                if dist(self.center, pos) > self.viewrange:
+                    cells = line(self.center, pos, self.viewrange+2)
+                    cell = cells.pop()
+                    glyph, col = "*", "green-black"
+                    self.hd(cell, glyph, col)
+
 
 
 # A single line of text at the bottom of the screen describing what your
