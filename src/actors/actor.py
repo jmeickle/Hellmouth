@@ -261,7 +261,7 @@ class Actor:
     def knockdown(self):
         if self.can_be_knocked_down() is False:
             return False
-        if flip() == SUCC:
+        if coin() == SUCC:
             self.change_posture("lying prone")
         else:
             self.change_posture("lying face up")

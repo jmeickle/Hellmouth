@@ -109,7 +109,7 @@ class MeatTower(MapGen):
         colnum = self.size / 2 + r1d6()
         for x in range(colnum):
             colsize = random.randint(1, 3)
-            pos = (self.center[0] + flip()*random.randint(4, self.size)-colsize, self.center[1] + flip() * random.randint(4,self.size)-colsize)
+            pos = (self.center[0] + coin()*random.randint(4, self.size)-colsize, self.center[1] + coin() * random.randint(4,self.size)-colsize)
             col = area(colsize, pos)
             for pos, dist in col.items():
                 if dist == colsize:

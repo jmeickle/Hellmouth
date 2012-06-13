@@ -8,11 +8,17 @@ FAIL = -1
 CRIT_FAIL = -2
 
 # Basic coinflip
-def flip():
+def coin(bool=False):
     if random.randint(0, 1) == 1:
-        return SUCC
+        if bool is True:
+            return True
+        else:
+            return SUCC
     else:
-        return FAIL
+        if bool is True:
+            return False
+        else:
+            return FAIL
 
 # Roll an n-sized die.
 def r1d(n):
