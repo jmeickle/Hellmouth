@@ -49,8 +49,10 @@ class MainMap(View):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
         # -1 to account for 0,0 start
-        self.viewport = (int(y/2)-1, int(y/2)-1)
-        self.viewrange = 10
+        self.viewport_pos = (int(y/2)-1, int(y/2)-1)
+        self.viewport_rank = 10
+        self.zoom = self.viewport_rank
+
         self.cursor = None
 
     def keyin(self, c):
@@ -104,7 +106,7 @@ class MainMap(View):
         # Three sets of coords are involved:
         x, y = pos
         c_x, c_y = self.center
-        v_x, v_y = self.viewport
+        v_x, v_y = self.viewport_pos
 
         # Offsets from the viewport center
         off_x = x - c_x
@@ -122,7 +124,7 @@ class MainMap(View):
         # Four sets of coords are involved:
         x, y = pos
         c_x, c_y = self.center
-        v_x, v_y = self.viewport
+        v_x, v_y = self.viewport_pos
         d_x, d_y = dir
 
         # Offsets from the viewport center
@@ -136,7 +138,7 @@ class MainMap(View):
         try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
         except curses.error: pass
 
-    # Accepts viewrange offsets to figure out what part of the map is visible.
+    # Accepts viewport_rank offsets to figure out what part of the map is visible.
     def get_glyph(self, pos):
         return self.map.cell(pos).draw()
 
