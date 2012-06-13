@@ -9,8 +9,15 @@ class Cell:
 
         # Stuff inside the cell
         self.actor = None
+        self.actors = []
         self.terrain = None
         self.items = {}
+
+    # Return a random actor.
+    def random_actor(self):
+        if not self.actors:
+            return
+        return random.choice(self.actors)
 
     # STUB
     def put_terrain(self, terrain):
@@ -20,13 +27,14 @@ class Cell:
     # Return a glyph to display for this cell.
     # TODO: improve this function greatly
     def draw(self):
-        if self.actor is not None:
-            glyph = self.actor.glyph
-            color = self.actor.color
-            if self.actor.conscious() is True:
-                color += "-black"
-            else:
-                color += "-white"
+        if self.actors:# is not None:
+            for actor in self.actors:
+                glyph = actor.glyph
+                color = actor.color
+                if actor.conscious() is True:
+                    color += "-black"
+                else:
+                    color += "-white"
             return glyph, color
         elif self.terrain is not None:
             return self.terrain.glyph, self.terrain.color
@@ -44,8 +52,9 @@ class Cell:
     # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!
     def contents(self):
         list = []
-        if self.actor is not None:
-            list.append("a %s" % self.actor.name)
+        if self.actors:
+            for actor in self.actors:
+                list.append("a %s" % actor.appearance())
         if self.terrain is not None:
             list.append("a %s" % self.terrain.name)
         if len(self.items) > 0:
@@ -125,10 +134,7 @@ class Cell:
             exit("Tried to place a non-object")
 
         if terrain is False:
-            if self.actor is None:
-                self.actor = obj
-            else:
-                return False
+            self.actors.append(obj)
         else:
             if self.terrain is None:
                 self.terrain = obj
@@ -139,13 +145,13 @@ class Cell:
 
     # Stub, for eventually handling multiple things
     def remove(self, obj):
-        self.actor = None
+        self.actors.remove(obj)
 
     # MOVEMENT
 
     # Return whether the cell has a creature in it.
     def occupied(self):
-        if self.actor is not None:
+        if self.actors:
             return True
         return False
 

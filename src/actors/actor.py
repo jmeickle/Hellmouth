@@ -291,11 +291,12 @@ class Actor:
                 log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
-        if self.map.cell(pos).occupied() is True:
-            if self.controlled != self.map.actor(pos).controlled:
-                return self.attack(self.map.actor(pos))
+        if self.map.cell(pos).occupied() is True and self.controlled is False:
+            for actor in self.map.actors(pos):
+                if self.controlled != actor.controlled:
+                    return self.attack(actor)
         else:
-            return self.move(pos)
+            return self.move(pos, dir)
 
         self.over()
         return False
@@ -326,8 +327,8 @@ class Actor:
         self.cell().add(self)
 
     # Try to move based on an input direction. Return whether it worked.
-    def move(self, pos):
-        if self.can_move(pos):
+    def move(self, pos, dir=None):
+        if self.can_move(pos) or dir:
             self.go(pos)
             self.over()
             return True

@@ -118,13 +118,13 @@ class Encounter:
     def cell(self, pos):
         return self.cells.get(pos)
 
-    # Return an actor at a pos tuple.
-    def actor(self, pos):
+    # Return a list of actors at a pos tuple.
+    def actors(self, pos):
         cell = self.cell(pos)
         if cell is None:
-            return None
+            return []
         else:
-            return cell.actor
+            return cell.actors
 
     # Return terrain at a pos tuple.
     def terrain(self, pos):
