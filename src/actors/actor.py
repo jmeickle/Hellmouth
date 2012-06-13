@@ -287,11 +287,12 @@ class Actor:
             return False
 
         # Within-hex attacks.
-        actors = self.cell().intervening_actors(self.subposition, dir)
-        if actors:
-            for actor in actors:
-                if self.controlled != actor.controlled:
-                    return self.attack(actor)
+        if self.preferred_reach(0) is True:
+            actors = self.cell().intervening_actors(self.subposition, dir)
+            if actors:
+                for actor in actors:
+                    if self.controlled != actor.controlled:
+                        return self.attack(actor)
 
         pos = add(self.pos, dir)
         if self.map.valid(pos) is False:
@@ -299,15 +300,15 @@ class Actor:
                 log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
-        if self.map.cell(pos).occupied() is True and self.controlled is False:
+
+        if self.map.cell(pos).occupied() is True:
             for actor in self.map.actors(pos):
                 if self.controlled != actor.controlled:
-                    return self.attack(actor)
-        else:
-            return self.move(pos, dir)
+                    if self.preferred_reach(1) is True:
+                        return self.attack(actor)
 
-        self.over()
-        return False
+        # The only option left.
+        return self.move(pos, dir)
 
     # Mark self as done acting.
     def over(self):
