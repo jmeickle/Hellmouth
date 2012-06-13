@@ -614,6 +614,16 @@ class Actor:
                 if check < TIE:
                     self.alive = False
 
+    # Returns true if the currently preferred weapon has reach.
+    def preferred_reach(self, dist):
+        preferred_attack = self.attack_options[self.attack_option]
+        min_reach = preferred_attack[1][2][0]
+        max_reach = preferred_attack[1][2][-1]
+        if dist >= min_reach and dist <= max_reach:
+            return True
+        else:
+            return False
+
     # We just lost a limb :(
     def limbloss(self, attack):
         limbnames = []
