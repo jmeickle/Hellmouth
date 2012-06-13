@@ -40,7 +40,8 @@ class MapGen():
             return False
         # HACK: Dig line from exit to center.
         for which, pos in self.exits:
-            cells = line(pos, self.center)
+            cells = line(self.center, pos)
+            cells.pop()
             for cell in cells:
                 self.cells[cell] = (None, None)
 
