@@ -363,7 +363,7 @@ class Actor:
             return False
 
         # Cell content checking:
-        if self.map.cell(pos).blocked() is True:
+        if self.map.cell(pos).blocked(dir) is True:
             return False
 
         return True
