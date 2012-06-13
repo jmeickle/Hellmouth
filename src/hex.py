@@ -126,9 +126,6 @@ def perimeter(rank, origin=CC):
         pos = next
     return hexes
 
-def process(x, y):
-    print "X: %s, Y: %s" % (x, y)
-
 def line(pos1, pos2, max=None):
     line = []
 
@@ -186,8 +183,6 @@ def line(pos1, pos2, max=None):
             else:
                 y += yone
             line.append((x,y))
-
-    print pos1, pos2
     return line
 
 # TODO: Clean this the fuck up.
