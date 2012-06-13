@@ -43,43 +43,38 @@ class SideScroller(Scroller):
             return True
         return False
 
-# Cycling selector.
-class Selector():
-    def __init__(self, parent, choices=None, initial=0):
-        self.parent = parent
-        self.choices = choices
-        self.choice = initial
+# Primary cycling selector, controlled with + and -.
+class Selector(Scroller):
+    def keyin(self, c):
+        if c == ord('+'): self.scroll(1)
+        elif c == ord('-'): self.scroll(-1)
+        else:
+            return True
+        return False
 
     # Jump to a specific value, if it's valid.
-    def jump(self, choice):
-        if choice < len(self.choices):
-            self.choice = choice
+    def scroll_to(self, choice):
+        if choice <= self.max and choice >= self.min:
+            self.index = choice
 
-    # Scroll in either direction.
-    def scroll(self, amt=1):
-        self.choice += amt
-        if self.choice < 0:
-            self.choice = self.choices-1
-        elif self.choice >= len(self.choices):
-            self.choice = 0
+    # Scroll, but loop back if necessary.
+    def scroll(self, amt):
+        self.index += amt
+        if self.min is not None:
+            if self.index < self.min:
+                self.index = self.max
+        if self.max is not None:
+            if self.index > self.max:
+                self.index = self.min
 
-    def choose(self):
-        if self.choices is None:
-            self.parent.callback()
+# Primary cycling selector, controlled with / and *.
+class SecondarySelector(Selector):
+    def keyin(self, c):
+        if c == ord('/'): self.scroll(1)
+        elif c == ord('*'): self.scroll(-1)
         else:
-            self.parent.callback(self.choice)
-
-#    def fire(self, arg):
-#        if self.action is not None:
-#            self.action(arg)
-
-#    def toggle(self, action, text):
-#        if self.action == action:
-#            self.action = None
-#            self.text = None
-#        else:
-#            self.action = action
-#            self.text = text
+            return True
+        return False
 
 class Cursor(Component):
     styles = {
@@ -109,12 +104,6 @@ class Cursor(Component):
         if c == ord(' '):
             self.parent.cursor = None
             self.suicide()
-        elif c == ord('-'):
-            self.styles.rotate(-1)
-            self.style = self.styles[0]
-        elif c == ord('+'):
-            self.styles.rotate(1)
-            self.style = self.styles[0]
         # TODO: Replace by hexdirs code
         elif c == ord('5'):
             self.scroll(CC)
@@ -136,6 +125,7 @@ class Cursor(Component):
     # Move the cursor (hexagonally).
     def scroll(self, dir):
         self.pos = add(self.pos, dir)
+        self.resize()
 
     def draw(self):
         color = self.color()
@@ -147,7 +137,7 @@ class Cursor(Component):
 #                for glyph, offset in Cursor.styles[self.style]:
 #                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
 
-        for glyph, offset in Cursor.styles[self.style]:
+        for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
             self.parent.offset_hd(self.pos, offset, glyph, color)
 
     # This is a function so that the cursor color can change in response to
@@ -157,18 +147,26 @@ class Cursor(Component):
     def color(self):
         cell = self.map.cell(self.pos)
         if cell is not None:
-            if cell.actor is not None:
-                return cell.actor.cursor_color()
+            if cell.actors:
+                return cell.actors[self.selector.index].cursor_color()
             else:
                 if cell.terrain or cell.items:
                     return "yellow-black"
                 else:
                     return "magenta-black"
 
-    # Seems silly, but this lets the cursor be passed on automatically to
-    # children of it. (This can't be done during spawn, of course.)
     def ready(self):
+        # Seems silly, but this lets the cursor be passed on automatically to
+        # children of it. (This can't be done during spawn, of course.)
         self.cursor = self
+        self.selector = self.spawn(Selector())
+        self.secondary = self.spawn(SecondarySelector(len(self.styles)-1))
+        self.resize()
+
+    # Resize based on features.
+    def resize(self):
+        actors = self.map.actors(self.pos)
+        self.selector.resize(len(actors)-1)
 
 # Generic prompt.
 class Prompt(View):
