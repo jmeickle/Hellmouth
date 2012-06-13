@@ -62,10 +62,12 @@ class MainMap(View):
 
         if c == ord('}'):
             self.zoom = 2
+            self.inherit()
             return False
 
         if c == ord('{'):
             self.zoom = self.viewport_rank
+            self.inherit()
             return False
 
 #        if c == ord('g'):
@@ -147,8 +149,8 @@ class MainMap(View):
         except curses.error: pass
 
     # Accepts viewport_rank offsets to figure out what part of the map is visible.
-    def get_glyph(self, pos):
-        return self.map.cell(pos).draw()
+    def get_glyph(self, pos, subpositions=False):
+        return self.map.cell(pos).draw(subpositions)
 
     def draw(self):
         if self.cursor is not None:
@@ -159,7 +161,7 @@ class MainMap(View):
         cells = area(self.zoom, self.center)
         for cell, distance in cells.items():
             if self.map.valid(cell) is not False:
-                glyph, col = self.get_glyph(cell)
+                glyph, col, subposition = self.get_glyph(cell)
             else:
                 glyph = ','
                 col = "red-black"
@@ -169,7 +171,6 @@ class MainMap(View):
             else:
                 diff = sub(cell, self.center)
                 pos = add(self.center, mult(diff, 4))
-                self.hd(pos, glyph, col)
                 # HACK: Move this into some generalized hex border function.
                 faces = {NW: ("/", WW), NE : ("\\", EE), CE : ("|", EE), SE : ("/", EE), SW: ("\\",  WW), CW: ("|", WW)}
                 for dir in dirs:
@@ -179,6 +180,8 @@ class MainMap(View):
                     self.offset_hd(point, offset, face, "white-black")
                     # NOTE: Interesting effect!
                     #self.hd(add(pos, mult(dir, 2)), faces[dir], "white-black")
+                for glyph, col, subposition in self.get_glyph(cell, True):
+                    self.hd(add(pos, subposition), glyph, col)
 
         if len(self.player.highlights) > 0:
             for highlight, pos in self.player.highlights.items():

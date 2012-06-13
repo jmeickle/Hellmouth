@@ -1,5 +1,5 @@
 import random
-import hex
+from hex import *
 from text import *
 
 class Cell:
@@ -26,8 +26,9 @@ class Cell:
 
     # Return a glyph to display for this cell.
     # TODO: improve this function greatly
-    def draw(self):
-        if self.actors:# is not None:
+    def draw(self, all=False):
+        glyphs = []
+        if self.actors:
             for actor in self.actors:
                 glyph = actor.glyph
                 color = actor.color
@@ -35,18 +36,22 @@ class Cell:
                     color += "-black"
                 else:
                     color += "-white"
-            return glyph, color
+                glyphs.append((glyph, color, actor.subposition))
         elif self.terrain is not None:
-            return self.terrain.glyph, self.terrain.color
+            glyphs.append((self.terrain.glyph, self.terrain.color, CC))
         elif len(self.items) == 1:
             # TODO: Ick!
             for itemlist in self.items.values():
                 item = random.choice(itemlist)
-                return item.glyph, item.color
+                glyphs.append((item.glyph, item.color, CC))
         elif len(self.items) > 1:
-            return '+', 'red-black'
+            glyphs.append(('+', 'red-black', CC))
         else:
-            return self.map.floor
+            glyphs.append(self.map.floor + (CC,))
+        if all is False:
+            return glyphs[0]
+        else:
+            return glyphs
 
     # TODO: Options for what to list.
     # TODO: This should go through the 'describe' functions; it should only be returning information, not strings!
@@ -155,6 +160,32 @@ class Cell:
             return True
         return False
 
+    # A list of actors that are blocking movement out of a hex.
+    def intervening_actors(self, subposition, dir):
+        actors = []
+
+        # You can always move out in the direction you're in.
+        if subposition == dir:
+            return actors
+
+        opposite = flip(subposition)
+        for actor in self.actors:
+            # Centrally-located actors block four spots in total.
+            if subposition != CC and actor.subposition == CC:
+                blocked = (CC, opposite, rot(opposite, 1), rot(opposite, -1))
+            # Everyone else blocks one.
+            else:
+                blocked = (actor.subposition,)
+            if dir in blocked:
+                actors.append(actor)
+        return actors
+
+    # Whether it's possible to enter a hex from a given direction.
+    def accessible_from(self, dir):
+        for actor in self.actors:
+            if actor.subposition == dir:
+                return False
+
     # Return whether the cell has blocking terrain in it.
     def impassable(self):
         if self.terrain is not None:
@@ -163,8 +194,11 @@ class Cell:
         return False
 
     # Return whether the cell is passable
-    def blocked(self):
-        if self.occupied() is True or self.impassable() is True:
+    def blocked(self, dir=CC):
+        if self.impassable() is True:
             return True
+        if self.occupied() is True:
+            if self.accessible_from(dir) is True:
+                return True
         return False
 

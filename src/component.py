@@ -31,6 +31,8 @@ class Component():
                 self.cursor = self.parent.cursor
             if hasattr(self.parent, 'map'):
                 self.map = self.parent.map
+            if hasattr(self.parent, 'zoom'):
+                self.zoom = self.parent.zoom
             if hasattr(self.parent, 'player'):
                 self.player = self.parent.player
 

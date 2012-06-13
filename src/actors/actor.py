@@ -46,6 +46,7 @@ class Actor:
         # Positioning information
         self.map = None
         self.pos = None
+        self.subposition = CC
 
         # More static information: points spent on your character
         self.points = {
@@ -285,6 +286,13 @@ class Actor:
             self.over()
             return False
 
+        # Within-hex attacks.
+        actors = self.cell().intervening_actors(self.subposition, dir)
+        if actors:
+            for actor in actors:
+                if self.controlled != actor.controlled:
+                    return self.attack(actor)
+
         pos = add(self.pos, dir)
         if self.map.valid(pos) is False:
             if self.controlled is True:
@@ -321,30 +329,34 @@ class Actor:
     # MOVEMENT
 
     # Change actor coords directly and update the relevant cells.
-    def go(self, pos):
+    def go(self, pos, dir=CC):
+        if self.map.cell(pos).occupied() is True:
+            self.subposition = flip(dir)
+        else:
+            self.subposition = CC
         self.cell().remove(self)
         self.pos = pos
         self.cell().add(self)
 
     # Try to move based on an input direction. Return whether it worked.
-    def move(self, pos, dir=None):
-        if self.can_move(pos) or dir:
-            self.go(pos)
+    def move(self, pos, dir=CC):
+        if self.can_move(pos, dir):
+            self.go(pos, dir)
             self.over()
             return True
         else:
             return False
 
     # Whether we can actually move to a pos.
-    def can_move(self, pos):
+    def can_move(self, pos, dir=CC):
         if self.can_walk() is False:
             return False
-        if self.valid_move(pos) is False:
+        if self.valid_move(pos, dir) is False:
             return False
         return True
 
     # Check move validity.
-    def valid_move(self, pos):
+    def valid_move(self, pos, dir=CC):
         # Map border checking:
         if self.map.valid(pos) is False:
             return False

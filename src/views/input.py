@@ -4,7 +4,6 @@ from component import Component
 from views.view import View
 from define import *
 from hex import *
-from collections import deque
 
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):
@@ -94,11 +93,17 @@ class Cursor(Component):
         ],
     }
 
-    def __init__(self, pos, style="1hex"):
+# Makes a cool hex-y radial menu thing. Useless for now.
+#        if self.style == "2hex":
+#            for dir in dirs:
+#                dir = (dir[0]*3, dir[1]*3)
+#                for glyph, offset in Cursor.styles[self.style]:
+#                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
+
+    def __init__(self, pos):
         Component.__init__(self)
         self.pos = pos
-        self.styles = deque(["1hex", "<>", "{}", "[]", "()"])
-        self.style = self.styles[0]
+        self.styles = ["[]", "1hex", "<>", "{}", "()"]
 
     def keyin(self, c):
         if c == ord(' '):
@@ -128,32 +133,22 @@ class Cursor(Component):
         self.resize()
 
     def draw(self):
-        color = self.color()
-
-# Makes a cool hex-y radial menu thing. Useless for now.
-#        if self.style == "2hex":
-#            for dir in dirs:
-#                dir = (dir[0]*3, dir[1]*3)
-#                for glyph, offset in Cursor.styles[self.style]:
-#                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
-
-        for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
-            self.parent.offset_hd(self.pos, offset, glyph, color)
-
-    # This is a function so that the cursor color can change in response to
-    # the hex that it's targeting.
-
-    # TODO: ask the cells how they want to be drawn, instead.
-    def color(self):
-        cell = self.map.cell(self.pos)
+        pos = self.pos
+        cell = self.map.cell(pos)
         if cell is not None:
             if cell.actors:
-                return cell.actors[self.selector.index].cursor_color()
+                actor = cell.actors[self.selector.index]
+                color = actor.cursor_color()
+                # HACK: Magic number
+                if self.zoom == 2:
+                    pos = add(pos, actor.subposition)
+            elif cell.terrain or cell.items:
+                color = "yellow-black"
             else:
-                if cell.terrain or cell.items:
-                    return "yellow-black"
-                else:
-                    return "magenta-black"
+                color = "magenta-black"
+
+        for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
+            self.parent.offset_hd(pos, offset, glyph, color)
 
     def ready(self):
         # Seems silly, but this lets the cursor be passed on automatically to
