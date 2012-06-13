@@ -44,6 +44,10 @@ def rot(dir, turns=1):
     end = (start+turns) % num_dirs
     return dirs[end]
 
+# Alias for 3 rotations.
+def flip(dir):
+    return rot(dir, 3)
+
 # Add a hex dir to a hex pos.
 def add(pos, dir):
     return pos[0] + dir[0], pos[1] + dir[1]
