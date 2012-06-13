@@ -25,11 +25,10 @@ class NPC(Actor):
 
     # AI actions. Currently: move in a random direction.
     def act(self):
-        if self != self.map.acting:
-            return False
-
+        assert self == self.map.acting, "An actor tried to act when not the acting actor."
         assert self.controlled is not True, "A player-controlled actor tried to hit AI code."
 
+        repath = False
         if self.target is None:
             return self.retarget()
 
@@ -39,7 +38,9 @@ class NPC(Actor):
             return False
 
         self.distance = dist(self.pos, self.target.pos)
-        repath = False
+        if self.preferred_reach(self.distance) is True:
+            self.do(sub(self.target.pos, self.pos))
+            return False
 
         # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         if self.distance > 1 and self.path is False:
@@ -55,31 +56,34 @@ class NPC(Actor):
                 self.destination = self.target.pos
                 self.repath()
 
-        if self.path is not False:
-            if self.path: # i.e., a list with entries
-                pos = self.path.pop()
-                dir = sub(pos, self.pos)
-                if self.map.cell(pos).blocked() is True:
-                    for alt_dir in arc(dir):
-                        alt_pos = add(self.pos, alt_dir)
-                        if self.map.cell(alt_pos).blocked(alt_dir) is False:
-                            dir = alt_dir
-                            break
+            # i.e., a list with no entries
+        if not self.path:
+            self.path = False # Remove the empty list
+        else:
+            pos = self.path.pop()
+            dir = sub(pos, self.pos)
+            if self.map.cell(pos).blocked() is True:
+                for alt_dir in arc(dir):
+                    alt_pos = add(self.pos, alt_dir)
+                    # Prefer unoccupied cells, but accept sharing.
+                    if self.map.cell(alt_pos).occupied() is False:
+                        dir = alt_dir
+                        break
+                    elif self.map.cell(alt_pos).blocked(alt_dir) is False:
+                        dir = alt_dir
 
-                if self.do(dir) is False:
-                    # Chance to flat out abandon the path
-                    if r1d6() == 6:
-                        self.path = False
-                    else:
-                        # Try again
-                        self.path.append(pos)
-            else:
-                self.path = False # Remove the empty list
+            if self.do(dir) is False:
+                # Chance to flat out abandon the path
+                if r1d6() == 6:
+                    self.path = False
+                else:
+                    # Try again
+                    self.path.append(pos)
 
         # This should only happen if stuff is adjacent and without a path.
-        else:
-            dir = sub(self.target.pos, self.pos)
-            self.do(dir)
+#        else:
+#            dir = sub(self.target.pos, self.pos)
+#            self.do(dir)
 
     # Reset A* and generate a new path.
     def repath(self):
