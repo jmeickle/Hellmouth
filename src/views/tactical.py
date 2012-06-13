@@ -60,6 +60,14 @@ class MainMap(View):
             self.player.get_all()
             return False
 
+        if c == ord('}'):
+            self.zoom = 2
+            return False
+
+        if c == ord('{'):
+            self.zoom = self.viewport_rank
+            return False
+
 #        if c == ord('g'):
 #            if len(self.map.player.cell().items) > 1:
 #                self.spawn(ItemPrompt(self.screen, self.width, self.height))
@@ -148,27 +156,37 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
-        cells = area(self.viewrange, self.center)
-
-        for cell in cells:
+        cells = area(self.zoom, self.center)
+        for cell, distance in cells.items():
             if self.map.valid(cell) is not False:
                 glyph, col = self.get_glyph(cell)
+            else:
+                glyph = ','
+                col = "red-black"
+            # HACK: Multiple-zoom-level system.
+            if self.zoom == self.viewport_rank:
                 self.hd(cell, glyph, col)
             else:
-                glyph = 'X'
-                col = "magenta-black"
-                # If we ever want to print something for missing cells.
-                #self.hd(cell, glyph, col)
+                diff = sub(cell, self.center)
+                pos = add(self.center, mult(diff, 4))
+                self.hd(pos, glyph, col)
+                # HACK: Move this into some generalized hex border function.
+                faces = {NW: ("/", WW), NE : ("\\", EE), CE : ("|", EE), SE : ("/", EE), SW: ("\\",  WW), CW: ("|", WW)}
+                for dir in dirs:
+                    point = add(pos, dir)
+                    self.hd(point, ".", "white-black")
+                    face, offset = faces[dir]
+                    self.offset_hd(point, offset, face, "white-black")
+                    # NOTE: Interesting effect!
+                    #self.hd(add(pos, mult(dir, 2)), faces[dir], "white-black")
 
         if len(self.player.highlights) > 0:
             for highlight, pos in self.player.highlights.items():
-                if dist(self.center, pos) > self.viewrange:
-                    cells = line(self.center, pos, self.viewrange+2)
+                if dist(self.center, pos) > self.viewport_rank:
+                    cells = line(self.center, pos, self.viewport_rank+2)
                     cell = cells.pop()
                     glyph, col = "*", "green-black"
                     self.hd(cell, glyph, col)
-
-
 
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
