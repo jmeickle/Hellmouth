@@ -101,29 +101,51 @@ def _area(rank, pos, dir, left=False, right=True, curr=0):
     return hexes
 
 # Generate a dict of hex position : distance, including the start position.
-def area(rank, origin=CC):
-    hexes = {origin : 0}
+def area(rank, origin=CC, info=True):
+    hexes = {}
+    # +1 to account for needing both == 0 and == rank.
+    for x in range(rank+1):
+        for hex in perimeter(x, origin, info):
+            if info is True:
+                hex, data = hex
+                hexes[hex] = data
+            else:
+                hexes[hex] = True
+    return hexes
+
+    # Older method, could be good but needs work:
     #for dir in dirs:
     #    hexes.extend(_area(rank, add(origin, dir), dir, True))
     #return hexes
-    for Y in range(-rank, rank+1):
-        for X in range(-rank, rank+1):
-            offset = (X,Y)
-            hex = add(origin, offset)
-            distance = dist(origin, hex)
-            if distance <= rank:
-                hexes[hex] = distance
-    return hexes
+
+# Oldest method. Crude!
+#    for Y in range(-rank, rank+1):
+#        for X in range(-rank, rank+1):
+#            offset = (X,Y)
+#            hex = add(origin, offset)
+#            distance = dist(origin, hex)
+#            if distance <= rank:
+#                hexes[hex] = distance
+#    return hexes
 
 # Hexes on the edge of an area.
-def perimeter(rank, origin=CC):
-    assert rank > 0, "Rank 0 hexes don't have a perimeter."
+def perimeter(rank, origin=CC, info=False):
     hexes = []
-    pos = add(origin, mult(SW, rank))
-    for dir in dirs:
-        next = add(pos, mult(dir, rank))
-        hexes.extend(line(pos, next))
-        pos = next
+    if rank == 0:
+        data = origin
+        if info is True:
+            data = (data, 0)
+        hexes.append(data)
+    else:
+        pos = add(origin, mult(SW, rank))
+        for dir in dirs:
+            next = add(pos, mult(dir, rank))
+            for hex in line(pos, next):
+                data = hex
+                if info is True:
+                    data = (data, rank)
+                hexes.append(data)
+            pos = next
     return hexes
 
 def line(pos1, pos2, max=None):
