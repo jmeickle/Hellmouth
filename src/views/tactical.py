@@ -208,9 +208,9 @@ class Examine(View):
         pos = self.parent.pos
         cell = self.map.cell(pos)
         if not self.children:
-            self.line("Space: Exit. Enter: Inspect. +/-: Style.")
+            self.line("Space: Exit. Enter: Inspect. */: Style.")
         else:
-            self.line("Space: Stop Inspecting. +/-: Cursor style.")
+            self.line("Space: Stop Inspecting. /*: Cursor style.")
         if cell is not None:
             string = cell.contents()
             self.line("Cursor: %s." % string)
@@ -591,7 +591,8 @@ class CharacterSheet(View):
         self.text = []
 
     def ready(self):
-        self.scroller = self.spawn(Scroller(0))
+        self.scroller = self.spawn(Scroller())
+        self.sidescroller = self.spawn(SideScroller())
 
     def keyin(self, c):
         if c == ord(' '):
@@ -603,19 +604,23 @@ class CharacterSheet(View):
     def draw(self):
         self.border(" ")
         pos = self.cursor.pos
-        actor = self.map.actor(pos)
+        actors = self.map.actors(pos)
 
         # Abort early if no actor.
-        if actor is None:
+        if not actors:
             self.cline("There's nothing interesting here.")
             return False
 
-        self.cline('You can see: %s' % actor.name)
+        self.actor = actors[self.cursor.selector.index]
+
+        if len(actors) > 1:
+            scroller = "<green-black>"
+        else:
+            scroller = "<red-black>"
+
+        self.cline('%s(+-)</> %s' % (scroller, self.actor.appearance()))
         self.cline("-"*self.width)
 
-# Trying it out without the if for a while:
-#        if actor != self.actor:
-        self.actor = actor
         self.text = wrap_string(self.actor.character_sheet(), self.width)
         self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
