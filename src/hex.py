@@ -50,6 +50,15 @@ def rot(dir, turns=1):
 def flip(dir):
     return rot(dir, 3)
 
+# Return hexes along an arc.
+def arc(dir, wide=False):
+    if wide is True:
+        arc_directions = dirs[:]
+        arc_directions.remove(dir)
+    else:
+        arc_directions = [pos, add(pos, rot(pos, 1)), add(pos, rot(pos, -1))]
+    return arc_directions
+
 # Add a hex dir to a hex pos.
 def add(pos, dir):
     return pos[0] + dir[0], pos[1] + dir[1]
