@@ -40,6 +40,8 @@ def signum(int, zero=False):
 
 # Return a direction to face in after a number of turns right.
 def rot(dir, turns=1):
+    if dir == CC:
+        return dir
     start = rotation[dir]
     end = (start+turns) % num_dirs
     return dirs[end]
