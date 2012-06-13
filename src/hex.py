@@ -298,8 +298,8 @@ if __name__ == "__main__":
         x, y = steps[step]
         map[y][x] = step+1
   
-    map[pos2[1]][pos2[0]] = "^"
-    map[pos1[1]][pos1[0]] = "$"
+    map[pos2[1]][pos2[0]] = "$"
+    map[pos1[1]][pos1[0]] = "^"
 
     for Y in range(height):
         sys.stdout.write(" " * Y)
