@@ -189,9 +189,9 @@ def line(pos1, pos2, max=None):
                     y += yone
             else:
                 x += xone
-            line.append((x,y))
             if max and len(line) >= max:
                 break
+            line.append((x,y))
     else:
         while x != pos2[0] or y != pos2[1]:
             factor += dx
@@ -206,9 +206,9 @@ def line(pos1, pos2, max=None):
                     x += xone
             else:
                 y += yone
-            line.append((x,y))
             if max and len(line) >= max:
                 break
+            line.append((x,y))
     return line
 
 # TODO: Clean this the fuck up.
