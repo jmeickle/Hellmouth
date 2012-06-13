@@ -292,6 +292,7 @@ class Actor:
             if actors:
                 for actor in actors:
                     if self.controlled != actor.controlled:
+                        self.over()
                         return self.attack(actor)
 
         pos = add(self.pos, dir)
@@ -305,9 +306,11 @@ class Actor:
             for actor in self.map.actors(pos):
                 if self.controlled != actor.controlled:
                     if self.preferred_reach(1) is True:
+                        self.over()
                         return self.attack(actor)
 
         # The only option left.
+        self.over()
         return self.move(pos, dir)
 
     # Mark self as done acting.
@@ -343,7 +346,6 @@ class Actor:
     def move(self, pos, dir=CC):
         if self.can_move(pos, dir):
             self.go(pos, dir)
-            self.over()
             return True
         else:
             return False
@@ -463,9 +465,7 @@ class Actor:
         trait_level = self.trait(trait)
 
         maneuvers.append((target, item, trait, attack_option))
-        self._attack(maneuvers)
-        self.over()
-        return False
+        return self._attack(maneuvers)
 
     # Use attack maneuvers to do an attack.
     def _attack(self, maneuvers):
@@ -491,7 +491,6 @@ class Actor:
         for line in action.display():
             log.add(line)
         action.cleanup()
-        self.over()
         return True
 
     # STUB: Handle movement on a retreat.
