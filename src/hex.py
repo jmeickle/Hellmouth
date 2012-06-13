@@ -126,35 +126,69 @@ def perimeter(rank, origin=CC):
         pos = next
     return hexes
 
+def process(x, y):
+    print "X: %s, Y: %s" % (x, y)
+
 def line(pos1, pos2, max=None):
-    pos = pos1
-    steps = []
-    while pos != pos2:
-        if max is not None:
-            if len(steps) >= max:
-                break
+    line = []
 
-        diff = sub(pos2, pos)
-        diff_x, diff_y = diff
+    dx, dy = sub(pos2, pos1)
+    sig = (signum(dx) != signum(dy))
 
-        dir_x = signum(diff_x, True)
-        dir_y = signum(diff_y, True)
+    if dx < 0:
+        xone = -1
+    else:
+        xone = 1
 
-        if dir_x == dir_y:
-            if diff_x > diff_y:
-                dir_y = 0
-            elif diff_x < diff_y:
-                dir_x = 0
-            else:
-                if random.randint(0,1) == 0:
-                    dir_x = 0
+    if dy < 0:
+        yone = -1
+    else:
+        yone = 1
+
+    if dx % 2 != 0:
+        dx *= 2
+        dy *= 2
+
+    dx = abs(dx)
+    dy = abs(dy)
+    factor = dx/2
+
+    x, y = pos1
+    line.append((x, y))
+
+    if dx >= dy:
+        while x != pos2[0] or y != pos2[1]:
+            factor += dy
+            if factor >= dx:
+                factor -= dx
+                if sig is True:
+                    x += xone
+                    y += yone
                 else:
-                    dir_y = 0
+                    x += xone
+                    line.append((x,y))
+                    y += yone
+            else:
+                x += xone
+            line.append((x,y))
+    else:
+        while x != pos2[0] or y != pos2[1]:
+            factor += dx
+            if factor >= dy:
+                factor -= dy
+                if sig is True:
+                    y += yone
+                    x += xone
+                else:
+                    y += yone
+                    line.append((x,y))
+                    x += xone
+            else:
+                y += yone
+            line.append((x,y))
 
-        dir = (dir_x, dir_y)
-        pos = add(pos, dir)
-        steps.append(pos)
-    return steps
+    print pos1, pos2
+    return line
 
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
