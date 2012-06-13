@@ -55,11 +55,18 @@ class NPC(Actor):
                 self.destination = self.target.pos
                 self.repath()
 
-        if self.distance > 1 and self.path is not False:
+        if self.path is not False:
             if self.path: # i.e., a list with entries
                 pos = self.path.pop()
                 dir = sub(pos, self.pos)
-                if not self.do(dir):
+                if self.map.cell(pos).blocked() is True:
+                    for alt_dir in arc(dir):
+                        alt_pos = add(self.pos, alt_dir)
+                        if self.map.cell(alt_pos).blocked(alt_dir) is False:
+                            dir = alt_dir
+                            break
+
+                if self.do(dir) is False:
                     # Chance to flat out abandon the path
                     if r1d6() == 6:
                         self.path = False
