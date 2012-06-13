@@ -197,28 +197,3 @@ class Encounter:
                 sys.stdout.write(line)
                 sys.stdout.write("\n")
         exit()
-
-if __name__ == '__main__':
-    # Basic test: make a map and print it
-    size = 50
-    map = Encounter(size)
-    #hexes = hex.area(map.rank)
-    #for hex in hexes:
-    #    map.cells[hex] = None
-
-    # Prepare the map.
-    map.loadmap()
-
-    #print map.cells
-    print len(map.cells)
-    #print map.cells
-    # More advanced: add an actor   
-    #from actor import Actor
-    #map.put(Actor(), (0, 0))
-    #print map.cells[0][0].actor.name
-
-    #for y in range(-15, 15):
-    #    str = ""
-    #    for x in range(-15, 15):
-    #        str += map.cells.get((x,y), "x")
-    #    print "%s%s" % (" " * (y%2), str)
