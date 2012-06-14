@@ -56,7 +56,7 @@ def arc(dir, wide=False):
         arc_directions = dirs[:]
         arc_directions.remove(dir)
     else:
-        arc_directions = [pos, add(pos, rot(pos, 1)), add(pos, rot(pos, -1))]
+        arc_directions = [dir, rot(dir, 1), rot(dir, -1)]
     return arc_directions
 
 # Add a hex dir to a hex pos.
