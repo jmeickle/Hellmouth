@@ -296,16 +296,17 @@ class Actor:
             self.over()
             return False
 
-        # Within-hex attacks.
-        if self.preferred_reach(0) is True:
-            actors = self.cell().intervening_actors(self.subposition, dir)
-            if actors:
-                for actor in actors:
-                    if self.controlled != actor.controlled:
-                        self.over()
-                        return self.attack(actor)
+        # Actors that are in our cell.
+        # HACK: Need to fix this function to not include self.
+        actors = self.cell().intervening_actors(self.subposition, dir)
 
-        # Doing something in another hex. Which one?
+        # Within-hex attacks.
+        if actors and self.preferred_reach(0) is True:
+            for actor in actors:
+                if self.controlled != actor.controlled:
+                    return self.attack(actor)
+
+        # Otherwise, doing something in another hex. Which one?
         pos = add(self.pos, dir)
 
         # Range 1 bump-attacks.
@@ -313,17 +314,16 @@ class Actor:
             for actor in self.map.actors(pos):
                 if self.controlled != actor.controlled:
                     if self.preferred_reach(1) is True:
-                        self.over()
                         return self.attack(actor)
-                    # Can't attack at range 1 or range 0. Abort.
-                    # TODO: Test (polearms!)
-                    elif self.preferred_reach(0) is False:
-                        return False
 
         # Check for invalid hexes.
         if self.map.valid(pos) is False:
             if self.controlled is True:
                 log.add("It would be a long, long way down into that yawning abyss.")
+            return False
+
+        # Can't move if there are intervening actors.
+        if actors:
             return False
 
         # The only option left.
