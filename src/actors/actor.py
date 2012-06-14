@@ -295,19 +295,26 @@ class Actor:
                         self.over()
                         return self.attack(actor)
 
+        # Doing something in another hex. Which one?
         pos = add(self.pos, dir)
-        if self.map.valid(pos) is False:
-            if self.controlled is True:
-                log.add("It would be a long, long way down into that yawning abyss.")
-            return False
 
-
+        # Range 1 bump-attacks.
         if self.map.cell(pos).occupied() is True:
             for actor in self.map.actors(pos):
                 if self.controlled != actor.controlled:
                     if self.preferred_reach(1) is True:
                         self.over()
                         return self.attack(actor)
+                    # Can't attack at range 1 or range 0. Abort.
+                    # TODO: Test (polearms!)
+                    elif self.preferred_reach(0) is False:
+                        return False
+
+        # Check for invalid hexes.
+        if self.map.valid(pos) is False:
+            if self.controlled is True:
+                log.add("It would be a long, long way down into that yawning abyss.")
+            return False
 
         # The only option left.
         self.over()
