@@ -4,6 +4,7 @@ from component import Component
 from views.view import View
 from define import *
 from hex import *
+from key import *
 
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):
@@ -106,7 +107,19 @@ class Cursor(Component):
         self.styles = ["[]", "1hex", "<>", "{}", "()"]
 
     def keyin(self, c):
-        if c == ord(' '):
+        # TODO: Dup code.
+        pos = self.pos
+        cell = self.map.cell(pos)
+        if cell is not None:
+            if cell.actors:
+                actor = cell.actors[self.selector.index]
+                for command in actor.list_commands():
+                    if chr(c) in commands[command]:
+                        self.player.perform(command, actor)
+                        return False
+        if chr(c) in commands[CMD_SCROLL]:
+            self.scroll(hexkeys(c))
+        elif c == ord(' '):
             self.parent.cursor = None
             self.suicide()
         # TODO: Replace by hexdirs code
