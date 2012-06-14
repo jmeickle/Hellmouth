@@ -3,6 +3,7 @@ from random import choice
 from define import *
 from dice import *
 from hex import *
+from key import *
 from text import *
 from generators.text.describe import describe
 from generators.items import EquipmentGenerator
@@ -88,6 +89,10 @@ class Actor:
         self.parry = 0
 
         self.posture = "standing"
+        self.commands = {
+            CMD_ATTACK : self.attack,
+            CMD_ATTACK : self.attack,
+        }
 
     def appearance(self):
 #        if self.controlled is True:
@@ -276,6 +281,11 @@ class Actor:
         # TODO: Fix default calculation.
 #        skills.calculate_defaults(self)
 
+    # Perform a command.
+    def perform(self, command, target):
+        action = self.commands.get(command)
+        return action(target)
+
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         if self.controlled is True and self.can_maneuver() is False:
@@ -317,8 +327,9 @@ class Actor:
             return False
 
         # The only option left.
-        self.over()
-        return self.move(pos, dir)
+        if self.can_move(pos, dir):
+            self.over()
+            return self.move(pos, dir)
 
     # Mark self as done acting.
     def over(self):
@@ -472,6 +483,7 @@ class Actor:
         trait_level = self.trait(trait)
 
         maneuvers.append((target, item, trait, attack_option))
+        self.over()
         return self._attack(maneuvers)
 
     # Use attack maneuvers to do an attack.
@@ -700,6 +712,12 @@ class Actor:
         if self.can_act() is False:
             return False
         return True
+
+    def list_commands(self):
+        commands = []
+        commands.append(CMD_ATTACK)
+        commands.append(CMD_TALK)
+        return commands
 
     # STATS
 
