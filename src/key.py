@@ -1,5 +1,17 @@
 # TODO: Define a dict of keys/actions for remappable keys.
 from define import *
+from hex import *
+
+CMD_ATTACK = "attack"
+CMD_TALK = "talk"
+CMD_MOVE = "move"
+CMD_SCROLL = "scroll"
+
+commands = {}
+commands[CMD_ATTACK] = ("a",)
+commands[CMD_TALK] = ("t",)
+commands[CMD_MOVE] = ("1", "3", "4", "6", "7", "9", "5")
+commands[CMD_SCROLL] = commands[CMD_MOVE]
 
 # Return the corresponding control-modified key.
 def ctrl(c):
