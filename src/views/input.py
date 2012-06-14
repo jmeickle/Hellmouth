@@ -114,29 +114,14 @@ class Cursor(Component):
             if cell.actors:
                 actor = cell.actors[self.selector.index]
                 for command in actor.list_commands():
-                    if chr(c) in commands[command]:
+                    if cmd(c, command):
                         self.player.perform(command, actor)
                         return False
-        if chr(c) in commands[CMD_SCROLL]:
+        if cmd(c, CMD_HEX):
             self.scroll(hexkeys(c))
-        elif c == ord(' '):
+        elif cmd(c, CMD_CANCEL):
             self.parent.cursor = None
             self.suicide()
-        # TODO: Replace by hexdirs code
-        elif c == ord('5'):
-            self.scroll(CC)
-        elif c == ord('7'):
-            self.scroll(NW)
-        elif c == ord('4'):
-            self.scroll(CW)
-        elif c == ord('1'):
-            self.scroll(SW)
-        elif c == ord('9'):
-            self.scroll(NE)
-        elif c == ord('6'):
-            self.scroll(CE)
-        elif c == ord('3'):
-            self.scroll(SE)
         else: return True
         return False
 
