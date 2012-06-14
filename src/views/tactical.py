@@ -232,12 +232,26 @@ class Stats(View):
         # Show the chosen weapon/attack option combination.
         weapon, attack_option = self.player.attackline()
         slot, appearance, trait, trait_level, item = weapon
-        attack_name, attack_stats = attack_option
         # Override this with the current value.
         trait_level = self.player.trait(trait)
+        attack_name, attack_stats = attack_option
+
+        # Print reach
+        # TODO: Move to weapon display function.
+        reach = ""
+        for dist in attack_stats[2]:
+            if reach:
+                reach += ","
+            if dist == 0:
+                reach += "C"
+            else:
+                reach += "%s" % dist
+            # TODO: selected reach for variable weaons
+                #reach += "*"
+        reach = "(%s)" % reach
 
         # HACK: Should ask the item to display a shorter appearance.
-        self.cline("(/*) %s: %s" % (slot, appearance[:13]))
+        self.cline("(/*) %s: %s" % (slot, appearance[:20]))
 
         color = "white-black"
         if self.player.base_skills.get(trait) is None:
@@ -247,7 +261,7 @@ class Stats(View):
         selector = "(+-) "
         if len(self.player.attack_options) == 1:
             selector = " " * len(selector)
-        self.cline("%s%s %s %s" % (selector, attack_name, self.player.damage(attack_stats[0], False), attack_stats[1]))
+        self.cline("%s%s %s %s %s" % (selector, attack_name, self.player.damage(attack_stats[0], False), attack_stats[1], reach))
 
         # Col 2: Combat information
         self.x_acc += 12
