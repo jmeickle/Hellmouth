@@ -234,12 +234,11 @@ class Stats(View):
         slot, appearance, trait, trait_level, item = weapon
         # Override this with the current value.
         trait_level = self.player.trait(trait)
-        attack_name, attack_stats = attack_option
 
         # Print reach
         # TODO: Move to weapon display function.
         reach = ""
-        for dist in attack_stats[2]:
+        for dist in attack_option[3]:
             if reach:
                 reach += ","
             if dist == 0:
@@ -251,17 +250,18 @@ class Stats(View):
         reach = "(%s)" % reach
 
         # HACK: Should ask the item to display a shorter appearance.
-        self.cline("(/*) %s: %s" % (slot, appearance[:20]))
+        self.cline("(/*) %s: %s" % (self.player.body.locs[slot].appearance(), appearance[:20]))
 
         color = "white-black"
         if self.player.base_skills.get(trait) is None:
             color = "red-black"
 
-        self.cline("     [<%s>%s-%s</>]" % (color, trait, trait_level))
-        selector = "(+-) "
-        if len(self.player.attack_options) == 1:
-            selector = " " * len(selector)
-        self.cline("%s%s %s %s %s" % (selector, attack_name, self.player.damage(attack_stats[0], False), attack_stats[1], reach))
+        self.cline("%s, <%s>%s-%s</>" % (self.player.body.locs[slot].appearance(), color, trait, trait_level))
+
+        selector = ""
+        if len(self.player.attack_options) > 1:
+            selector = "(+-) "
+        self.cline("%5s%s %s %s %s" % (selector, attack_option[0], self.player.damage(attack_option[1], False), attack_option[2], reach))
 
         # Col 2: Combat information
         self.x_acc += 12

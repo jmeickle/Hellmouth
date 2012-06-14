@@ -173,8 +173,8 @@ class Actor:
 
         weapon = self.weapons[self.weapon]
         slot, appearance, trait, trait_level, item = weapon
-        self.attack_options = sorted(item.attack_options[trait].items(), key=itemgetter(0))
-        self.choose_attack_option(0)
+        self.attack_options = item.attack_options[trait]
+        self.attack_option = 0
 
     def choose_attack_option(self, scroll):
         assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
@@ -457,14 +457,14 @@ class Actor:
                         trait_level = self.trait(trait)
                         if trait_level > 0: # HACK: Magic number!
                             weapons.append((slot, appearance, trait, trait_level, weapon))
-                            for attack_name, attack_data in attack_options.items():
-                                parry_mod = attack_data[3]
+                            for attack_data in attack_options:
+                                parry_mod = attack_data[4]
                                 if parry_mod is not None:
                                     # HACK: Handle balanced status.
                                     if isinstance(parry_mod, tuple):
                                         parry_mod, balanced = parry_mod
                                     # TODO: Handle U weapons.
-                                    parries.append((slot, appearance, trait, trait_level + parry_mod, attack_name, weapon))
+                                    parries.append((slot, appearance, trait, trait_level + parry_mod, attack_data, weapon))
         self.weapons = sorted(weapons, key=itemgetter(3,0,2,1), reverse=True)
         self.parries = sorted(parries, key=itemgetter(3,0,2,1), reverse=True)
 
@@ -483,23 +483,34 @@ class Actor:
         trait_level = self.trait(trait)
 
         maneuvers.append((target, item, trait, attack_option))
-        self.over()
-        return self._attack(maneuvers)
+
+        if self._attack(maneuvers) is True:
+            self.over()
+            return True
 
     # Use attack maneuvers to do an attack.
     def _attack(self, maneuvers):
         attacks = {}
 
         for maneuver in maneuvers:
+            # NOTE: This will fail when rapid strikes come into play, of course!
+            # Same target, item, skill, *and* attack option.
             target, item, skill, attack_option = maneuver
-            attack_name, attack_stats = attack_option
+            distance = dist(self.pos, target.pos)
+            if self.reach(distance, attack_option) is False:
+                continue
             attacks[maneuver] = {}
             attacks[maneuver]["attacker"] = self
             attacks[maneuver]["target"] = target
+            attacks[maneuver]["distance"] = dist(self.pos, target.pos)
             attacks[maneuver]["item"] = item
             attacks[maneuver]["skill"] = skill
-            attacks[maneuver]["attack name"] = attack_name
-            attacks[maneuver]["attack stats"] = attack_stats
+            attacks[maneuver]["attack name"] = attack_option[0]
+            attacks[maneuver]["attack stats"] = attack_option[1:]
+
+        # Couldn't reach with any of our desired attacks.
+        if len(attacks) == 0:
+            return False
 
         action = CombatAction(attacks)
 
@@ -636,8 +647,12 @@ class Actor:
     # Returns true if the currently preferred weapon has reach.
     def preferred_reach(self, dist):
         preferred_attack = self.attack_options[self.attack_option]
-        min_reach = preferred_attack[1][2][0]
-        max_reach = preferred_attack[1][2][-1]
+        return self.reach(dist, preferred_attack)
+
+    # Returns true if the provided weapon has appropriate reach.
+    def reach(self, dist, attack_option):
+        min_reach = attack_option[3][0]
+        max_reach = attack_option[3][-1]
         if dist >= min_reach and dist <= max_reach:
             return True
         else:
@@ -833,10 +848,9 @@ class Actor:
         posture_mod = postures[self.posture][1]
 
         parries = []
-        for slot, appearance, trait, trait_level, attack_name, weapon in self.parries:
-            # Get the attack data, and parry modifier from it.
-            attack_data = weapon.attack_options[trait][attack_name]
-            parry_mod = attack_data[3]
+        for slot, appearance, trait, trait_level, attack_data, weapon in self.parries:
+            # Get the parry modifier from the attack data.
+            parry_mod = attack_data[4]
             # HACK: Weapon balance.
             if isinstance(parry_mod, tuple):
                 parry_mod, balanced = parry_mod
@@ -853,7 +867,7 @@ class Actor:
                 retreat_mod = 0
 
             parry = 3 + trait_level/2 + parry_mod + status_mod + posture_mod + retreat_mod
-            parries.append((slot, appearance, trait, parry, attack_name, weapon))
+            parries.append((slot, appearance, trait, parry, attack_data, weapon))
         if list is True:
             return sorted(parries, key=itemgetter(3), reverse=True)
         else:

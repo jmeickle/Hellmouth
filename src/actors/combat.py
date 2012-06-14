@@ -48,8 +48,9 @@ class CombatAction:
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
 
-            if self.reach(attack) is False:
-                continue
+# TODO: Remove?
+#            if self.reach(attack) is False:
+#                continue
 
             # Attack roll
             attack["attack-check"], attack["attack-margin"] = attack["attacker"].sc(attack["skill"])
@@ -112,8 +113,8 @@ class CombatAction:
     # Check whether the attack is within the weapon's valid reach.
     def reach(self, attack, actual=False):
         distance = dist(attack["attacker"].pos, attack["target"].pos)
-        min_reach = attack["attack stats"][2][0]
-        max_reach = attack["attack stats"][2][-1]
+        min_reach = attack["attack stats"][3][0]
+        max_reach = attack["attack stats"][3][-1]
 
         # TODO: Check current reach on weapons that require shifting distance.
         # TODO: Different return values
