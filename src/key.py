@@ -4,15 +4,23 @@ from hex import *
 
 CMD_ATTACK = "attack"
 CMD_TALK = "talk"
-CMD_MOVE = "move"
-CMD_SCROLL = "scroll"
+CMD_HEX = "hex directions"
+CMD_RECT = "rectangular directions"
+CMD_CONFIRM = "confirm or submit"
+CMD_CANCEL = "cancel or go back"
 
 commands = {}
 commands[CMD_ATTACK] = ("a",)
 commands[CMD_TALK] = ("t",)
-commands[CMD_MOVE] = ("1", "3", "4", "6", "7", "9", "5")
-commands[CMD_SCROLL] = commands[CMD_MOVE]
+commands[CMD_HEX] = ("1", "3", "4", "6", "7", "9", "5")
+commands[CMD_CANCEL] = (' ',)
 
+def cmd(c, command):
+    if c <= 256:
+        c = chr(c)
+    if c in commands[command]:
+        return True
+    return False
 # Return the corresponding control-modified key.
 def ctrl(c):
     return ord(c) - 96
