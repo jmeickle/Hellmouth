@@ -112,6 +112,33 @@ class Humanoid(BodyPlan):
         list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.locdr('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.locdr('RFoot')))
         return list
 
+class Vermiform(BodyPlan):
+    # These tuples represent:
+    # 1: Sorting order (lowest first).
+    # 2: Part name.
+    # 3: Class.
+    # 4: Parent part. Only list parts that have already been listed.
+    # 5: True if it's a sublocation rather than a real one.
+    # 6: List representing what 3d6 rolls hit that spot.
+    #    If a further d6 roll is required, use a list like:
+    #        [15, [16, 1, 2, 3], 17]
+    parts = (
+             (2, 'Torso', HitLoc, None, False, range(9, 18+1)),
+             (1, 'Neck', Neck, 'Torso', False, [6, 7, 8]),
+             (1, 'Skull', Skull, 'Neck', False, [3, 4]),
+             (1, 'Face', Face, 'Skull', False, [5]),
+    )
+
+    primary_slot = None
+
+    weapons = {
+        'Skull' : ("sharp teeth",),
+    }
+
+    def __init__(self, parent):
+        BodyPlan.__init__(self, parent)
+        self.build(parent)
+
 class Octopod(BodyPlan):
     # See Humanoid for a description.
     parts = (

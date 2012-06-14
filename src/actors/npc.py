@@ -6,6 +6,7 @@
 from actor import Actor
 import ai.astar
 from hex import *
+import body
 
 class NPC(Actor):
     def __init__(self):
@@ -132,6 +133,7 @@ class MeatGolem(NPC):
 class MeatWorm(NPC):
     def __init__(self):
         NPC.__init__(self)
+        self.body = body.Vermiform(self)
         self.glyph = '~'
         self.name = 'meat worm'
         self.color = 'magenta'
