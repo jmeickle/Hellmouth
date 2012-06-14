@@ -174,11 +174,12 @@ class Cell:
         opposite = flip(subposition)
         for actor in self.actors:
             # Centrally-located actors block four spots in total.
-            if subposition != CC and actor.subposition == CC:
-                blocked = (CC, opposite, rot(opposite, 1), rot(opposite, -1))
+            if actor.subposition == CC:
+                blocked = [CC]
+                blocked.extend(arc(opposite))
             # Everyone else blocks one.
             else:
-                blocked = (actor.subposition,)
+                blocked = [actor.subposition]
             if dir in blocked:
                 actors.append(actor)
         return actors
