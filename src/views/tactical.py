@@ -520,8 +520,8 @@ class Inventory(View):
                     equipped += "%s" % appearance # (worn)
 
             # If we don't have a string yet:
-            if len(equipped) == 0:
-                    equipped = "Nothing"
+            if not equipped:
+                continue
 
             colon = "%s:" % loc.appearance()
 
