@@ -37,4 +37,3 @@ def hexkeys(c):
         return SE
     elif c == ord('5'):
         return CC
-    return None
