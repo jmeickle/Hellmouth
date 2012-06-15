@@ -98,10 +98,22 @@ class Humanoid(BodyPlan):
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build(parent)
-
     def paperdoll(self):
         p = self.parent
         list = []
+
+# Small size:
+############
+#    [ ]   #
+#  .--+--. #
+#  | = = | #
+#  ' -|- ' #
+#   .\=/.  #
+#   |   |  #
+#   |   |  #
+#  --   -- #
+############
+
         list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Skull'), p.locdr('Skull'), p.loccol('Skull')))
         list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Neck'), p.loccol('RArm')))
         list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.locdr('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.locdr('RArm')))
@@ -138,6 +150,33 @@ class Vermiform(BodyPlan):
     def __init__(self, parent):
         BodyPlan.__init__(self, parent)
         self.build(parent)
+    def paperdoll(self):
+        p = self.parent
+        list = []
+
+# Small paperdoll:
+############
+#   _____  #
+#  / __ n\ #
+# / /  \  \#
+#/t/   /s o#
+#\ \   \/\/#
+# \ \___// #
+#  \____/  #
+#          #
+############
+# n = neck
+# s = skull
+# t = torso
+        list.append('  <%s> _____</>  ' % p.loccol('Torso'))
+        list.append('  <%s>/ __</> %s<%s>\</> ' % (p.loccol('Torso'), p.locdr('Neck'), p.loccol('Neck')))
+        list.append(' <%s>/ /</>  <%s>\</>  <%s>\</>' % (p.loccol('Torso'), p.loccol('Neck'), p.loccol('Skull')))
+        list.append('<%s>/</>%s<%s>/</>   <%s>/</>%s o' % (p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('Skull'), p.locdr('Skull')))
+        list.append('<%s>\ \</>   <%s>\/\/</>' % (p.loccol('Torso'), p.loccol('Face')))
+        list.append('<%s> \ \___//</> ' % p.loccol('Torso'))
+        list.append('<%s>  \____/</>  ' % p.loccol('Torso'))
+        list.append('')
+        return list
 
 class Octopod(BodyPlan):
     # See Humanoid for a description.
@@ -159,3 +198,159 @@ class Octopod(BodyPlan):
         BodyPlan.__init__(self, parent)
         self.build(parent)
 
+# WIP:
+# Winged Humanoid
+#/-\ [ ] /-\
+#| .--+--. |
+#/ | = = | \
+#  ' -|- ' 
+#   .\=/.  
+#   |   |  
+#   |   |  
+#  --   -- 
+
+# Quadruped
+#/-\ [ ] /-\
+#| .--+--. |
+#/ | = = | \
+#  ' -|- ' 
+#   .\=/.  
+#   |   |  
+#   |   |  
+#  --   -- 
+           X
+# *Taur
+#     ( )   
+#  , .-|-. ,
+#  \/ = = \|
+#   ___-\-  
+#.:(______)
+#: |\   |  \
+# / |   |  / 
+#"  "   "  "
+           X
+
+# Snaketaur
+#    ( )   
+#  .--|--. ,
+# /  = =  \|
+# \,  -\-   
+# ___ \ \ \  
+#// _) | \ \
+#\\____/ | |
+# \_______/
+
+# Humanoid
+#    ( )
+#  .--|--.
+# /  = =  \
+# \  -|-   | 
+#  '.\-/.  ' 
+#   |    \ 
+#   |    / 
+#  _|   /_ 
+
+# Winged Humanoid
+           X
+#/-\     /-\
+#|,,\( )/,,|
+#/ .--|--. \
+# /  = =  \ 
+#/   -|-   \ 
+#`  .\-/.  '
+#  /     \ 
+#  _\   /_ 
+
+# Avian
+#/-\  __ /-\
+#|,,\/o_\,,|
+#|,,/  \),,|
+#/,,|   /,,\
+#,, |   | ,,
+#,  .\ /.  ,
+#  / |\  \  
+#,`, |_\ ,`,
+
+# Spidertaur
+# /` ( )   
+# \.--+--. ,
+#  __ = = \|
+# /  \_-\-  
+# \/_/_/_/)
+# /\/\/\/\
+#| |\|\|\ \
+
+# Arachnoid-
+#__  /^\  __
+# _\(   )/_
+#/ \\\ /// \
+# __\) (/__
+#/ /( ::)\ \
+#| | \;;/ || 
+#\ \     / /   
+#    
+
+# Humanoid
+#    ( )
+#  .--|--.
+# /  = =  \
+# \  -|-   | 
+#  '.\-/.  ' 
+#   |    \ 
+#   |    / 
+#  _|   /_ 
+
+# ??? 
+#0    o   0
+#,,'`',`'',`',,
+#`',,   ,'`,'` o
+# O  `'' 0
+
+# Devil
+#/-\ ( ) /-\
+#| .'-|-'. |
+#'/  = = | '
+# \, -|- \,   
+# `'.\-/. '`
+#   \ | / 
+#   / v \
+#  m     m
+
+# Devil
+# /\ ( ) /\
+#/ .>-|-<. \
+#^/  = = |^^ 
+# \, -|- \,   
+# `'.\-/.' `
+#   \ | / 
+#   / v \
+#  n     n
+
+# Octopod
+#     _   
+# _  /4)   _ 
+#(3\ \ _  /5)
+# _ \ / \/ 
+#(2) (   )__ 
+# \__/\w/  6)
+# __/ /  \_    
+#(1  (8   7)
+#
+
+# Hexapod---
+#       _
+# ___  / __ 
+#/   \_\/__\
+#\___/  \_ \
+#  __\__/ \
+# / /|  \_/
+#  / |  { }
+
+# ___      
+#/   \  __   
+#\___/_/ __
+# __/  \/__
+#/ _\__/   \
+# / / / \  
+#/ |  \_/
+#     { }
