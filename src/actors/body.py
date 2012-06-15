@@ -337,6 +337,16 @@ class Octopod(BodyPlan):
 #(1  (8   7)
 #
 
+# Much better octopod
+#     _   _
+# _  / ) ( )
+#( \ \___ \
+# _ \(   )/_
+#( ) (   o) )
+# \__/\, /\  
+# __/ /``  )     
+#(   (    (
+
 # Hexapod---
 #       _
 # ___  / __ 
