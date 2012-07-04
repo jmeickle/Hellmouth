@@ -875,10 +875,12 @@ class Actor:
 
             parry = 3 + trait_level/2 + parry_mod + status_mod + posture_mod + retreat_mod
             parries.append((slot, appearance, trait, parry, attack_data, weapon))
+
         if list is True:
             return sorted(parries, key=itemgetter(3), reverse=True)
         else:
-            return sorted(parries, key=itemgetter(3), reverse=True)[0][3]
+            if parries:
+                return sorted(parries, key=itemgetter(3), reverse=True)[0][3]
 
     def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
     def Encumbrance(self): return 0 # STUB
