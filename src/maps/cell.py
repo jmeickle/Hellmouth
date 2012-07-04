@@ -163,32 +163,31 @@ class Cell:
             return True
         return False
 
-    # A list of actors that are blocking movement out of a hex.
+    # A list of actors that are blocking movement within a hex.
     def intervening_actors(self, subposition, dir):
         actors = []
 
-        # You can always move out in the direction you're in.
-        if subposition == dir:
-            return actors
-
-        opposite = flip(subposition)
         for actor in self.actors:
+            # You can always move out of a subposition you're in.
+            if subposition == actor.subposition:
+                continue
+
+            blocked = []
             # Centrally-located actors block four spots in total.
             if actor.subposition == CC:
                 blocked = [CC]
-                blocked.extend(arc(opposite))
-            # Everyone else blocks one.
+                blocked.extend(arc(flip(subposition)))
             else:
-                blocked = [actor.subposition]
+                blocked.extend(arc(actor.subposition))
             if dir in blocked:
                 actors.append(actor)
         return actors
 
     # Whether it's possible to enter a hex from a given direction.
     def accessible_from(self, dir):
-        for actor in self.actors:
-            if actor.subposition == dir:
-                return False
+        if self.intervening_actors(flip(dir), dir):
+            return False
+        return True
 
     # Return whether the cell has blocking terrain in it.
     def impassable(self):
