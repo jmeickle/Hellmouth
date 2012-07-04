@@ -70,9 +70,9 @@ class MainMap(View):
             self.inherit()
             return False
 
-#        if c == ord('g'):
+        if c == ord('N'):
 #            if len(self.map.player.cell().items) > 1:
-#                self.spawn(ItemPrompt(self.screen, self.width, self.height))
+                self.spawn(TextPrompt(self.screen, self.width, self.height))
 #            else:
 #                self.map.player.get_all()
 #            return False
