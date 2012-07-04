@@ -152,16 +152,47 @@ def perimeter(rank, origin=CC, info=False):
             data = (data, 0)
         hexes.append(data)
     else:
-        pos = add(origin, mult(SW, rank))
+        pos = add(origin, mult(SE, rank))
         for dir in dirs:
-            next = add(pos, mult(dir, rank))
-            for hex in line(pos, next):
+            for hex in cardinal_line(pos, dir, rank):
                 data = hex
                 if info is True:
                     data = (data, rank)
                 hexes.append(data)
-            pos = next
+            pos = hexes.pop()
+            hexes.append(pos)
     return hexes
+
+# Hexes on the edge of an area.
+def fov_perimeter(rank, origin=CC, info=False):
+    hexes = []
+    if rank == 0:
+        data = origin
+        if info is True:
+            data = (data, 0)
+        hexes.append(data)
+    else:
+        pos = add(origin, mult(SE, rank))
+
+        for dir in [NE, NW, CW, SW, SE, CE]:
+            data = pos
+            if info is True:
+                data = (data, rank)
+            hexes.append(data)
+            for hex in cardinal_line(pos, dir, rank):
+                data = hex
+                if info is True:
+                    data = (data, rank)
+                hexes.append(data)
+            pos = hexes.pop()
+    return hexes
+
+def cardinal_line(pos, dir, distance):
+    cells = []
+    for index in range(distance):
+        pos = add(pos, dir)
+        cells.append(pos)
+    return cells
 
 def line(pos1, pos2, max=None):
     line = []
