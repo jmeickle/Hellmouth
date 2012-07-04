@@ -306,7 +306,15 @@ class Actor:
                 if self.controlled != actor.controlled:
                     return self.attack(actor)
 
-        # Otherwise, doing something in another hex. Which one?
+        # Can't move if there are intervening actors in that direction.
+        if actors:
+            return False
+        # HACK
+        else:
+            self.subposition = CC
+
+        # OK, nobody in the way. We're doing something in another hex.
+        # Which one?
         pos = add(self.pos, dir)
 
         # Range 1 bump-attacks.
@@ -320,10 +328,6 @@ class Actor:
         if self.map.valid(pos) is False:
             if self.controlled is True:
                 log.add("It would be a long, long way down into that yawning abyss.")
-            return False
-
-        # Can't move if there are intervening actors.
-        if actors:
             return False
 
         # The only option left.
@@ -353,7 +357,10 @@ class Actor:
     # Change actor coords directly and update the relevant cells.
     def go(self, pos, dir=CC):
         if self.map.cell(pos).occupied() is True:
+            actors = self.map.cell(pos).actors
             self.subposition = flip(dir)
+            for actor in actors:
+                actor.subposition = dir
         else:
             self.subposition = CC
         self.cell().remove(self)
