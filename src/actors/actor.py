@@ -542,7 +542,7 @@ class Actor:
         # Otherwise, we can retreat if we can find a spot to move to.
         # TODO: Handle sideslips and slips
         mode = 1
-        cells = perimeter(attack["reach"] + mode, attack["attacker"].pos)
+        cells = perimeter(attack["distance"] + mode, attack["attacker"].pos)
         options = []
         for cell in cells:
             if dist(self.pos, cell) == 1 and self.valid_move(cell):
