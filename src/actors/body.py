@@ -218,7 +218,6 @@ class Octopod(BodyPlan):
 #   |   |  
 #   |   |  
 #  --   -- 
-           X
 # *Taur
 #     ( )   
 #  , .-|-. ,
@@ -228,7 +227,6 @@ class Octopod(BodyPlan):
 #: |\   |  \
 # / |   |  / 
 #"  "   "  "
-           X
 
 # Snaketaur
 #    ( )   
@@ -251,7 +249,6 @@ class Octopod(BodyPlan):
 #  _|   /_ 
 
 # Winged Humanoid
-           X
 #/-\     /-\
 #|,,\( )/,,|
 #/ .--|--. \
