@@ -63,7 +63,11 @@ class NPC(Actor):
         else:
             pos = self.path.pop()
             dir = sub(pos, self.pos)
-            if self.map.cell(pos).blocked() is True:
+            # HACK
+            if dir not in dirs:
+                self.path.append(pos)
+                dir = CC
+            elif self.map.cell(pos).blocked(dir) is True:
                 for alt_dir in arc(dir):
                     alt_pos = add(self.pos, alt_dir)
                     # Prefer unoccupied cells, but accept sharing.
