@@ -1,11 +1,11 @@
 from hex import *
 
-# Math!
-
+# Constants for turns function.
 LEFT = 1
 RIGHT = -1
 STRAIGHT = 0
 
+# Generate the vertices for a hexagon.
 def setup_vertices(cells):
     hexagons = []
     for cell in cells:
@@ -16,19 +16,17 @@ def setup_vertices(cells):
         hexagons.append((cell, vertices))
     return hexagons
 
+# Determine which side a point is on.
 def turns(pos1, pos2, pos3):
     cross = (pos2[0]-pos1[0]) * (pos3[1]-pos1[1]) - (pos3[0]-pos1[0]) * (pos2[1]-pos1[1])
-#    print pos1, pos2, pos3
     if cross > 0:
-#        print "LEFT", cross
         return LEFT
     elif abs(cross) < .01:
-#        print "STRAIGHT", cross
         return STRAIGHT
     else:
-#        print "RIGHT", cross
         return RIGHT
 
+# TODO: Determine whether a hexagon is intersected by a line from pos1 to pos2.
 #def intersects(cell, pos1, pos2):
 
 #    vertex = vertex()
@@ -50,8 +48,8 @@ def turns(pos1, pos2, pos3):
 #      return false;
 #   }
 
-# Returns whether a cell is to a given side.
-def arc_side(center, vertices, arc, side):
+# Returns whether a cell is to a given side of an arc.
+def arc_side(center, arc, vertices, side):
     for i in range(6):
         if turns(center, arc, vertices[i]) == side:
             return True
@@ -71,11 +69,13 @@ class FOV:
         self.cells.append(setup_vertices(fov_perimeter(1, self.center)))
         vertices = self.cells[0][0][1]
         self.arcs = []
+        self.arcs.append(Arc(self, 0, 1, vertices[1], vertices[0]))
 #        self.arcs.append(Arc(self, 0, 1, vertices[3], vertices[1]))
 #        self.arcs.append(Arc(self, 1, 2, vertices[1], vertices[3]))
-        self.arcs.append(Arc(self, 2, 3, vertices[1], vertices[0]))
+#        self.arcs.append(Arc(self, 2, 3, vertices[1], vertices[0]))
         self.visible = {}
 
+    # Calculate whether you can see the hexes at rank.
     def calculate(self, rank=1):
         for arc in self.arcs:
             for index in range(arc.start, arc.stop+1):
@@ -129,7 +129,7 @@ class Arc:
         if self.cw[1] <= self.center[1] and self.ccw[1] <= self.center[1]:
             while (start > 0):
                 pos, vertices = self.parent.cells[rank+1][start-1]
-                if arc_side(self.center, vertices, self.cw, RIGHT) is False:
+                if arc_side(self.center, self.cw, vertices, RIGHT) is False:
  #                   if pos not in self.parent.visible:
  #                       self.parent.visible[pos] = "+"
                     break
@@ -137,7 +137,7 @@ class Arc:
         else:
             while start > (rank+1)*3:
                 pos, vertices = self.parent.cells[rank+1][start-1]
-                if arc_side(self.center, vertices, self.cw, RIGHT) is False:
+                if arc_side(self.center, self.cw, vertices, RIGHT) is False:
  #                   if pos not in self.parent.visible:
  #                       self.parent.visible[pos] = "-"
                     break
@@ -154,7 +154,7 @@ class Arc:
         if self.cw[1] <= self.center[1] and self.ccw[1] <= self.center[1]:
             while stop < (rank+1) * 3 - 1:
                 pos, vertices = self.parent.cells[rank+1][stop+1]
-                if arc_side(self.center, vertices, self.ccw, LEFT) is False:
+                if arc_side(self.center, self.ccw, vertices, LEFT) is False:
 #                    if pos not in self.parent.visible:
 #                        self.parent.visible[pos] = "A"
                     break
@@ -162,7 +162,7 @@ class Arc:
         else:
             while stop < (rank+1) * 6 - 1:
                 pos, vertices = self.parent.cells[rank+1][stop+1]
-                if arc_side(self.center, vertices, self.ccw, LEFT) is False:
+                if arc_side(self.center, self.ccw, vertices, LEFT) is False:
 #                    if pos not in self.parent.visible:
 #                        self.parent.visible[pos] = "B"
                     break
@@ -195,8 +195,8 @@ class Arc:
             else:
                 break
 
-#        if self.empty():
-#            return arcs
+        if self.empty():
+            return arcs
       
 #      // now, the arc has been appropriately contracted on both ends.
 #      // We also have to run through interior points and split the arc
@@ -226,73 +226,31 @@ class Arc:
 
         return arcs
 
+    # Contract an arc in the CW direction.
     def contractCW(self, vertices):
+        best_cw = self.cw
         for index in range(6):
-            if turns(self.center, self.cw, vertices[index]) == RIGHT:
-                self.cw = vertices[index]
+            if turns(self.center, best_cw, vertices[index]) == RIGHT:
+                best_cw = vertices[index]
+        self.cw = best_cw
 
+    # Contract an arc in the CCW direction.
     def contractCCW(self, vertices):
+        best_ccw = self.ccw
         for index in range(6):
-            if turns(self.center, self.ccw, vertices[index]) == LEFT:
-                self.ccw = vertices[index]
+            if turns(self.center, best_ccw, vertices[index]) == LEFT:
+                best_ccw = vertices[index]
+        self.cw = best_ccw
 
- #  // Contracts the clockwise arm of the arc to exclude the given hexagon 
- #  // Note that left & right are reversed because our y-coordinates
- #  // increase downward
- #  public void contractC(Hexagon hc,Hexagon h) {
- #     int i;
- #     double bestcx,bestcy;
- #     bestcx = cx; bestcy = cy;
- #     for (i=0;i<6;i++) {
- #        if (Hexagon.turns(hc.cx,hc.cy,bestcx,bestcy,h.x[i],h.y[i])==Hexagon.RIGHT) {
- #           bestcx = h.x[i];
- #           bestcy = h.y[i];
- #        }
- #     }
- #     cx = bestcx;
- #     cy = bestcy;
- #  }
-
- #  // Contracts the counter-clockwise arm of the arc to exclude the given hexagon.
- #  // Again, left & right are reversed.
- #  public void contractCC(Hexagon hc,Hexagon h) {
- #     int i;
- #     double bestccx,bestccy;
- #     bestccx = ccx; bestccy = ccy;
- #     for (i=0;i<6;i++) {
- #        if (Hexagon.turns(hc.cx,hc.cy,bestccx,bestccy,h.x[i],h.y[i])==Hexagon.LEFT) {
- #           bestccx = h.x[i];
- #           bestccy = h.y[i];
- #        }
- #     }
- #     ccx = bestccx;
- #     ccy = bestccy;
- #  }
-
+    # Determine whether an arc is empty.
     def empty(self):
+        if turns(self.center, self.cw, self.ccw) != RIGHT:
+            return True
+        if self.start > self.stop:
+            return True
         return False
- #  // returns true if the arc can contain nothing.  To handle numerical
- #  // imprecision/error, this also rejects very thin arcs.
- #  public boolean emptyArc(HexGrid hg) {
- #     if (hs>he || Hexagon.turns(hg.hc.cx,hg.hc.cy,cx,cy,ccx,ccy)!=Hexagon.RIGHT)
- #        return true;
- #     // to deal with numerical error, we should also purge any arcs
- #     // which are very small (angle).  The code below purges arcs
- #     // with interior angles of less than about 0.01 degrees.  This doesn't
- #     // have to be done, and the below calculation is probably not
- #     // the best way to do it anyway, but it looks better with it.
- #     double cosA,b2,c2,a2,d;
- #     b2 = euclideanDistance2(hg.hc.cx,hg.hc.cy,cx,cy);
- #     c2 = euclideanDistance2(hg.hc.cx,hg.hc.cy,ccx,ccy);
- #     a2 = euclideanDistance2(cx,cy,ccx,ccy);
- #     d = Math.sqrt(b2)*Math.sqrt(c2)*2;
- #     if (d==0) return true;    // degenerate case--an arm lies on the centre
- #     cosA = (b2+c2-a2)/d;
- #     if (cosA>0.99999998) return true;
- #     return false;
- #  }
-   
 
+# Test code.
 if __name__ == '__main__':
     # Generate map
     mapsize = 20
@@ -308,14 +266,11 @@ if __name__ == '__main__':
         y = random.randint(0, mapsize-1)
         map[(x,y)] = False
 
+    # Generate FOV map.
     center = (mapsize/2, mapsize/2)
     fov = FOV(center, map)
     fov.calculate()
-#    print fov.arcs[0].__dict__
-#    exit()
-    # Print a simple map.
-#    fov_perimeter = fov_perimeter(3, center)
-#    exit(fov_perimeter)
+
     import sys
     for y in range(mapsize):
         sys.stdout.write(" " * y)
@@ -325,7 +280,7 @@ if __name__ == '__main__':
                 sys.stdout.write("@")
             elif fov.visible.get((x,y)) is True:
                 if map[(x,y)] is False:
-                    sys.stdout.write("X")
+                    sys.stdout.write("T")
                 else:
                     sys.stdout.write(".")
             elif fov.visible.get((x,y)) is not None:
@@ -333,6 +288,6 @@ if __name__ == '__main__':
             elif map[(x,y)] is False:
                 sys.stdout.write("x")
             else:
-                sys.stdout.write("?")
+                sys.stdout.write("~")
         sys.stdout.write("\n")
 print len(fov.arcs)
