@@ -65,60 +65,68 @@ class FOV:
     def __init__(self, center, map):
         self.center = center
         self.map = map
+        # List of cell ranks; list of cells in a rank; tuple of pos, vertices.
         self.cells = [setup_vertices([self.center])]
         self.cells.append(setup_vertices(fov_perimeter(1, self.center)))
         vertices = self.cells[0][0][1]
+        # Starting arcs.
         self.arcs = []
-        self.arcs.append(Arc(self, 0, 1, vertices[1], vertices[0]))
+        self.arcs.append(Arc(self, 0, 1, (vertices[0][0], self.center[1]), (self.center[0], vertices[2][1])))
+#        self.arcs.append(Arc(self, 2, 3, (self.center[0], vertices[2][1]), (vertices[3][0], self.center[1])))
+#        self.arcs.append(Arc(self, 0, 1, (vertices[0][0], self.center[1]), (self.center[0], vertices[2][1])))
+#      alist = new Arc(0,hc.x[0],hc.cy,1,hc.cx,hc.y[2]);
+#      alist.next = new Arc(2,hc.cx,hc.y[2],3,hc.x[3],hc.cy);
+#      alist.next.next = new Arc(3,hc.x[3],hc.cy,4,hc.cx,hc.y[5]);
+#      alist.next.next.next = new Arc(5,hc.cx,hc.y[5],6,hc.x[0],hc.cy);
+
+#        self.arcs.append(Arc(self, 0, 1, (1,0), (0,1)))
+#vertices[0], vertices[1]))
+#        self.arcs.append(Arc(self, 0, 1, vertices[1], vertices[0]))
 #        self.arcs.append(Arc(self, 0, 1, vertices[3], vertices[1]))
 #        self.arcs.append(Arc(self, 1, 2, vertices[1], vertices[3]))
 #        self.arcs.append(Arc(self, 2, 3, vertices[1], vertices[0]))
+        # Visible cells.
         self.visible = {}
 
-    # Calculate whether you can see the hexes at rank.
+    # Calculate the next set of arcs.
     def calculate(self, rank=1):
+        # Generate the vertices for the next rank.
+        self.cells.append(setup_vertices(fov_perimeter(rank+1, self.center)))
+
+        # All hexes at the current rank are marked as visible.
         for arc in self.arcs:
             for index in range(arc.start, arc.stop+1):
-                # Set this cell as visible/seen.
                 pos, vertices = self.cells[rank][index]
                 if pos not in self.visible:
                     self.visible[pos] = True
 
-        self.cells.append(setup_vertices(fov_perimeter(rank+1, self.center)))
-
+#        self.cells.append(setup_vertices(fov_perimeter(rank+1, self.center)))
         remaining_arcs = []
         for arc in self.arcs:
-            arc.expand(rank-1)
-            remaining_arcs.extend(arc.process(rank))
+            remaining_arcs.extend(arc.split(rank))
+        self.arcs = remaining_arcs
 
-        if remaining_arcs and rank < 10:
-            self.arcs = remaining_arcs
+        for arc in self.arcs:
+            arc.expand(rank)
+
+        # Debug.
+        if self.arcs and rank < 10:
             self.calculate(rank+1)
 
 class Arc:
     def __init__(self, parent, start, stop, cw, ccw):
-        self.parent = parent
-        self.center = self.parent.center
-        self.start = start # Starting hexagon.
-        self.stop = stop # Stop at this hexagon.
+        self.parent = parent # Parent hexagon
+        self.center = self.parent.center # Point the arc is centered at
+        self.start = start # Starting hexagon index.
+        self.stop = stop # Stopping hexagon index.
         self.cw = cw # Clockwise arm.
         self.ccw = ccw # Counterclockwise arm.
 
     def expand(self, rank):
-
-#   // given a HexGrid, this expands the current arc out one radius unit,
-#   // respecting the arc limits (r is presumed to be the existing radius)
-#   void expandArc(HexGrid hg,int r) {
-#      // we have to calculate the new indices of the next outer bubble.
-#      // to accomodate partially-visible hexagons, we have to verify the
-#      // starting and ending hexagon.
-#      // Note that we switch calls to leftOfArc and rightOfArc.  This is
-#      // because our y-coord increases downward
-
-        # Which general face of the hex, and which position along 
-        # that face.
-        face = self.start / (max(rank, 1))
-        position = self.start % (max(rank, 1))
+        # Which general face of the hex.
+        face = self.start / rank #(max(rank, 1))
+        # Which position along that face.
+        position = self.start % rank #(max(rank, 1))
 
         # Limit maximum size of arcs.
         if position == 0 and (face == 0 or face == 3):
@@ -126,102 +134,96 @@ class Arc:
         else:
             start = face * (rank+1) + position + 1
 
-        if self.cw[1] <= self.center[1] and self.ccw[1] <= self.center[1]:
+        if self.ccw[1] <= self.center[1] and self.cw[1] <= self.center[1]:
             while (start > 0):
                 pos, vertices = self.parent.cells[rank+1][start-1]
                 if arc_side(self.center, self.cw, vertices, RIGHT) is False:
- #                   if pos not in self.parent.visible:
- #                       self.parent.visible[pos] = "+"
                     break
                 start -= 1
         else:
             while start > (rank+1)*3:
                 pos, vertices = self.parent.cells[rank+1][start-1]
                 if arc_side(self.center, self.cw, vertices, RIGHT) is False:
- #                   if pos not in self.parent.visible:
- #                       self.parent.visible[pos] = "-"
                     break
                 start -= 1
 
-        face = self.stop / (max(rank, 1))
-        position = self.stop % (max(rank, 1))
+        face = self.stop / rank
+        position = self.stop % rank
 
         if position == 0 and (face == 0 or face == 3):
             stop = face * (rank+1)
         else:
             stop = face * (rank+1) + position - 1
 
-        if self.cw[1] <= self.center[1] and self.ccw[1] <= self.center[1]:
-            while stop < (rank+1) * 3 - 1:
+        if self.ccw[1] <= self.center[1] and self.cw[1] <= self.center[1]:
+            while stop < (rank+1) * 3:
+                if stop >= len(self.parent.cells[rank+1]):
+                    exit("%s" % stop)
                 pos, vertices = self.parent.cells[rank+1][stop+1]
                 if arc_side(self.center, self.ccw, vertices, LEFT) is False:
-#                    if pos not in self.parent.visible:
-#                        self.parent.visible[pos] = "A"
                     break
                 stop += 1
         else:
-            while stop < (rank+1) * 6 - 1:
+            while stop < (rank+1) * 6:
                 pos, vertices = self.parent.cells[rank+1][stop+1]
                 if arc_side(self.center, self.ccw, vertices, LEFT) is False:
-#                    if pos not in self.parent.visible:
-#                        self.parent.visible[pos] = "B"
                     break
                 stop += 1
+
         self.start = start
         self.stop = stop
 
-    def process(self, rank):
+    def split(self, rank):
         arcs = []
-
-        for index in range(self.start, self.stop+1):
-            if index >= len(self.parent.cells[rank]):
-                exit("%s, %s, %s" % (len(self.parent.cells[rank]), self.start, self.stop))
-            pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is False:
+        while self.start <= self.stop:
+#for index in range(self.start, self.stop+1):
+#            if index >= len(self.parent.cells[rank]):
+#                exit("%s, %s, %s" % (len(self.parent.cells[rank]), self.start, self.stop))
+            pos, vertices = self.parent.cells[rank][self.start]
+            clear = self.parent.map.get(pos)
+            if clear is True:
+                self.parent.visible[pos] = True
+                break
+            else:
                 self.contractCW(vertices)
-                self.parent.visible[pos] = "/"
-            else:
-                break
+#                self.parent.visible[pos] = "o"
+                self.start += 1
 
-        for index in reversed(range(self.start, self.stop+1)):
-            #if index >= len(self.parent.cells[rank]):#rank*6:
-            #    exit("%s, %s" % (self.start, self.stop))
-            pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is False:
+        while self.stop >= self.start:
+            pos, vertices = self.parent.cells[rank][self.stop]
+            clear = self.parent.map.get(pos)
+            if clear is True:
+                self.parent.visible[pos] = True
+                break
+            else:
                 self.contractCCW(vertices)
-                self.parent.visible[pos] = "\\"
-            else:
-                break
+#                self.parent.visible[pos] = "e"
+                self.stop -= 1
 
-        if self.empty():
+        # Arc doesn't contain anything; abort.
+        if self.is_empty() is True:
             return arcs
-      
-#      // now, the arc has been appropriately contracted on both ends.
-#      // We also have to run through interior points and split the arc
-#      // if we find obstacles.
+
+#        exit()
+        # Handle an obstacle that splits an arc in two (or more).      
         for index in range(self.start+1, self.stop):
             pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is False:
-                self.parent.visible[pos] = "!"
-           # // split arc into two pieces; the first is our original arc
-           # // and it stops just before this obstacle.  The second is the
-           # // is a newly allocated arc for the rest of the original arc.
-            #// We terminate this arc, and then call this method recursively
-          #  // on the new arc, but only after contracting both away from
-          #  // the obstacle separating them.  This may cause either to
-          #  // become an empty arc.
-                # TODO: Check whether chosen vertex matters?
+            clear = self.parent.map.get(pos)
+            if clear is True:
+                continue
+            else:
+                # Create a child.
+#                self.parent.visible[pos] = "!"
                 child = Arc(self.parent, index+1, self.stop, vertices[0], self.ccw)
-                child.contractCW(vertices)
                 self.stop = index - 1
+                child.contractCW(vertices)
                 self.contractCCW(vertices)
-                if child.empty() is False:
-                    arcs.extend(child.process(rank))
-  
-        if self.empty() is False:
+                # Return the arcs potentially split off from our child.
+                if child.is_empty() is False:
+                    arcs.extend(child.split(rank))
+
+        # Return ourself too if we're not empty.
+        if self.is_empty() is False:
             arcs.append(self)
 
         return arcs
@@ -233,6 +235,7 @@ class Arc:
             if turns(self.center, best_cw, vertices[index]) == RIGHT:
                 best_cw = vertices[index]
         self.cw = best_cw
+        arclist[(self, self.cw)] = True
 
     # Contract an arc in the CCW direction.
     def contractCCW(self, vertices):
@@ -241,12 +244,14 @@ class Arc:
             if turns(self.center, best_ccw, vertices[index]) == LEFT:
                 best_ccw = vertices[index]
         self.cw = best_ccw
+        arclist[(self, self.ccw)] = True
 
     # Determine whether an arc is empty.
-    def empty(self):
-        if turns(self.center, self.cw, self.ccw) != RIGHT:
-            return True
+    def is_empty(self):
+        return False
         if self.start > self.stop:
+            return True
+        if turns(self.center, self.cw, self.ccw) != RIGHT:
             return True
         return False
 
@@ -269,7 +274,7 @@ if __name__ == '__main__':
     # Generate FOV map.
     center = (mapsize/2, mapsize/2)
     fov = FOV(center, map)
-    fov.calculate()
+    fov.calculate(1)
 
     import sys
     for y in range(mapsize):
@@ -279,15 +284,19 @@ if __name__ == '__main__':
             if center == (x,y):
                 sys.stdout.write("@")
             elif fov.visible.get((x,y)) is True:
+                # Visible and blocks something.
                 if map[(x,y)] is False:
-                    sys.stdout.write("T")
+                    sys.stdout.write("!")
+                # Visible and clear.
                 else:
                     sys.stdout.write(".")
+            # Visible, but...
             elif fov.visible.get((x,y)) is not None:
                 sys.stdout.write(fov.visible.get((x,y)))
-            elif map[(x,y)] is False:
-                sys.stdout.write("x")
+            # Not visible.
             else:
-                sys.stdout.write("~")
+                if map[(x,y)] is False:
+                    sys.stdout.write(",")
+                else:
+                    sys.stdout.write(" ")
         sys.stdout.write("\n")
-print len(fov.arcs)
