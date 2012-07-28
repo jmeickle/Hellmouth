@@ -228,96 +228,107 @@ class Arc:
 if __name__ == '__main__':
     import pygame
     pygame.init()
-    window = pygame.display.set_mode((1000, 1000))
     pygame.display.set_caption('Hex FOV Test')
+
+    window = pygame.display.set_mode((1000, 1000))
     
+    font = pygame.font.Font('freesansbold.ttf', 10)
+
+    colors = {}
+    colors['red'] = pygame.Color(255, 0, 0)
+    colors['green'] = pygame.Color(0, 255, 0)
+    colors['blue'] = pygame.Color(0, 0, 255)
+    colors['yellow'] = pygame.Color(255, 255, 0)
+    colors['cyan'] = pygame.Color(0, 255, 255)
+    colors['magenta'] = pygame.Color(255, 0, 255)
+    colors['white'] = pygame.Color(255, 255, 255)
+    colors['grey'] = pygame.Color(128, 128, 128)
+
+    # Screen position to draw to, given a map position.
     def draw_pos(pos):
         return pos[0]*50, pos[1]*50
 
-    pygame_colors = {}
-    pygame_colors['red'] = pygame.Color(255, 0, 0)
-    pygame_colors['green'] = pygame.Color(0, 255, 0)
-    pygame_colors['blue'] = pygame.Color(0, 0, 255)
-    pygame_colors['yellow'] = pygame.Color(255, 255, 0)
-    pygame_colors['cyan'] = pygame.Color(0, 255, 255)
-    pygame_colors['magenta'] = pygame.Color(255, 0, 255)
-    pygame_colors['white'] = pygame.Color(255, 255, 255)
-    pygame_colors['grey'] = pygame.Color(128, 128, 128)
-
-    font = pygame.font.Font('freesansbold.ttf', 10)
-
+    # Type something out to the screen.
     def type(msg, pos):
-        message = font.render(msg, False, pygame_colors['white'])
+        message = font.render(msg, False, colors['white'])
         message_rect = message.get_rect()
         message_rect.topleft = add(pos, (-10, -15))
         window.blit(message, message_rect)
 
+    # Draw a hex.
     def draw_hex(hex):
         center, edges = hex
         vertices = []
         for x in range(6):
             vertices.append(add(center, vertex_positions[x]))
-        pygame.draw.circle(window, pygame_colors['grey'], draw_pos(center), 1, 0)
-        #type("(%s,%s)" % center, draw_pos(center))
+        pygame.draw.circle(window, colors['grey'], draw_pos(center), 1, 0)
+        type("(%s,%s)" % center, draw_pos(center))
         for i in range(6):
-            pygame.draw.line(window, pygame_colors['grey'], draw_pos(vertices[i]), draw_pos(vertices[(i+1)%6]), 1)
-        pygame.display.update()
+            pygame.draw.line(window, colors['grey'], draw_pos(vertices[i]), draw_pos(vertices[(i+1)%6]), 1)
 
+    mapsize = 20
+    center = (mapsize/2, mapsize/2)
 
     # Generate map
-    mapsize = 20
-    map = {}
-    for x in range(mapsize):
-        for y in range(mapsize):
-            map[(x,y)] = True
+    def generatemap():
+        map = {}
+        for x in range(mapsize):
+            for y in range(mapsize):
+                map[(x,y)] = True
 
-    # Set up random blocking columns
-    import random
-    for column in range(mapsize):
-        x = random.randint(0, mapsize-1)
-        y = random.randint(0, mapsize-1)
-        map[(x,y)] = False
-    #pygame.draw.circle(window, pygame_colors['grey'], draw_pos((x,y)), 12, 0)
+        # Set up random blocking columns
+        import random
+        for column in range(mapsize):
+            x = random.randint(0, mapsize-1)
+            y = random.randint(0, mapsize-1)
+            map[(x,y)] = False
+        return map
+    #pygame.draw.circle(window, colors['grey'], draw_pos((x,y)), 12, 0)
 
     # Generate FOV map.
-    center = (mapsize/2, mapsize/2)
+    map = generatemap()
     fov = FOV(center, map)
     fov.calculate()
 
-    #pygame.draw.circle(window, pygame_colors['magenta'], draw_pos(center), 6, 0)
-    #pygame.display.update()
-    import sys
-    for y in range(mapsize):
-        sys.stdout.write(" " * y)
-        for x in range(mapsize):
-            sys.stdout.write(" ")
-            if center == (x,y):
-                sys.stdout.write("@")
-            elif fov.visible.get((x,y)):# is True:
-                if map[(x,y)] is False:
-                    sys.stdout.write("T")
+    def mapdraw():
+        #pygame.draw.circle(window, colors['magenta'], draw_pos(center), 6, 0)
+        #pygame.display.update()
+        import sys
+        for y in range(mapsize):
+            sys.stdout.write(" " * y)
+            for x in range(mapsize):
+                sys.stdout.write(" ")
+                if center == (x,y):
+                    sys.stdout.write("@")
+                elif fov.visible.get((x,y)):# is True:
+                    if map[(x,y)] is False:
+                        sys.stdout.write("T")
+                    else:
+                        sys.stdout.write(".")
+                        pygame.draw.circle(window, colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
+                elif fov.visible.get((x,y)) is not None:
+                    sys.stdout.write(fov.visible.get((x,y)))
+                elif map[(x,y)] is False:
+                    sys.stdout.write("x")
                 else:
-                    sys.stdout.write(".")
-                    pygame.draw.circle(window, pygame_colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
-            elif fov.visible.get((x,y)) is not None:
-                sys.stdout.write(fov.visible.get((x,y)))
-            elif map[(x,y)] is False:
-                sys.stdout.write("x")
-            else:
-                sys.stdout.write("~")
-        sys.stdout.write("\n")
+                    sys.stdout.write("~")
+            sys.stdout.write("\n")
+        sys.stdout.write("\n\n")
+        pygame.display.update()
 
-    pygame.display.update()
-
-#while True is True:
-#    for event in pygame.event.get():
-#        if event.type == KEYDOWN:
+    while True is True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                map = generatemap()
+                fov = FOV(center, map)
+                fov.calculate()
+                mapdraw()
 #        for x in range(len(self.cells[rank])):
 #            pos, vertices = self.cells[rank][x]
 #            type("%s"%x, draw_pos(pos))
 #        for arc in self.arcs:
-#            pygame.draw.line(window, pygame_colors['yellow'], draw_pos(arc.center), draw_pos(arc.cw), 1)
-#            pygame.draw.circle(window, pygame_colors['yellow'], draw_pos(arc.cw), 2, 0)
-#            pygame.draw.line(window, pygame_colors['cyan'], draw_pos(arc.center), draw_pos(arc.ccw), 1)
-#            pygame.draw.circle(window, pygame_colors['cyan'], draw_pos(arc.ccw), 2, 0)
-#            pygame.draw.line(window, pygame_colors['red'], draw_pos(arc.cw), draw_pos(arc.ccw), 1)
+#            pygame.draw.line(window, colors['yellow'], draw_pos(arc.center), draw_pos(arc.cw), 1)
+#            pygame.draw.circle(window, colors['yellow'], draw_pos(arc.cw), 2, 0)
+#            pygame.draw.line(window, colors['cyan'], draw_pos(arc.center), draw_pos(arc.ccw), 1)
+#            pygame.draw.circle(window, colors['cyan'], draw_pos(arc.ccw), 2, 0)
+#            pygame.draw.line(window, colors['red'], draw_pos(arc.cw), draw_pos(arc.ccw), 1)
