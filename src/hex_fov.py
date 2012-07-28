@@ -264,50 +264,48 @@ if __name__ == '__main__':
         pygame.display.update()
 
 
-        # Generate map
-        mapsize = 20
-        map = {}
-        for x in range(mapsize):
-            for y in range(mapsize):
-                map[(x,y)] = True
-
-        # Set up random blocking columns
-        import random
-        for column in range(mapsize):
-    #        continue
-            x = random.randint(0, mapsize-1)
-            y = random.randint(0, mapsize-1)
-            map[(x,y)] = False
-            pygame.draw.circle(window, pygame_colors['grey'], draw_pos((x,y)), 12, 0)
-
-        # Generate FOV map.
-        center = (mapsize/2, mapsize/2)
-        fov = FOV(center, map)
-        fov.calculate()
-
-        pygame.draw.circle(window, pygame_colors['magenta'], draw_pos(center), 6, 0)
-        pygame.display.update()
-        import sys
+    # Generate map
+    mapsize = 20
+    map = {}
+    for x in range(mapsize):
         for y in range(mapsize):
-            sys.stdout.write(" " * y)
-            for x in range(mapsize):
-                sys.stdout.write(" ")
-                if center == (x,y):
-                    sys.stdout.write("@")
-                elif fov.visible.get((x,y)):# is True:
-                    if map[(x,y)] is False:
-                        sys.stdout.write("T")
-                    else:
-                        sys.stdout.write(".")
-                        pygame.draw.circle(window, pygame_colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
-                elif fov.visible.get((x,y)) is not None:
-                    sys.stdout.write(fov.visible.get((x,y)))
-                elif map[(x,y)] is False:
-                    sys.stdout.write("x")
+            map[(x,y)] = True
+
+    # Set up random blocking columns
+    import random
+    for column in range(mapsize):
+        x = random.randint(0, mapsize-1)
+        y = random.randint(0, mapsize-1)
+        map[(x,y)] = False
+    #pygame.draw.circle(window, pygame_colors['grey'], draw_pos((x,y)), 12, 0)
+
+    # Generate FOV map.
+    center = (mapsize/2, mapsize/2)
+    fov = FOV(center, map)
+    fov.calculate()
+
+    #pygame.draw.circle(window, pygame_colors['magenta'], draw_pos(center), 6, 0)
+    #pygame.display.update()
+    import sys
+    for y in range(mapsize):
+        sys.stdout.write(" " * y)
+        for x in range(mapsize):
+            sys.stdout.write(" ")
+            if center == (x,y):
+                sys.stdout.write("@")
+            elif fov.visible.get((x,y)):# is True:
+                if map[(x,y)] is False:
+                    sys.stdout.write("T")
                 else:
-                    sys.stdout.write("~")
-            sys.stdout.write("\n")
-    print len(fov.arcs)
+                    sys.stdout.write(".")
+                    pygame.draw.circle(window, pygame_colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
+            elif fov.visible.get((x,y)) is not None:
+                sys.stdout.write(fov.visible.get((x,y)))
+            elif map[(x,y)] is False:
+                sys.stdout.write("x")
+            else:
+                sys.stdout.write("~")
+        sys.stdout.write("\n")
 
     pygame.display.update()
 
