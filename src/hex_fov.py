@@ -36,6 +36,14 @@ vertex_positions = [
     (-ONE_THIRD, -ONE_THIRD),
 ]
 
+edge_positions = [
+(.5, -.5),
+(.5, 0),
+(0, .5),
+(-.5, .5),
+(-.5, 0),
+(0, -.5)
+]
 font = pygame.font.Font('freesansbold.ttf', 10)
 
 def type(msg, pos):
@@ -45,7 +53,10 @@ def type(msg, pos):
     window.blit(message, message_rect)
 
 def draw_hex(hex):
-    center, vertices = hex
+    center, edges = hex
+    vertices = []
+    for x in range(6):
+        vertices.append(add(center, vertex_positions[x]))
     pygame.draw.circle(window, pygame_colors['grey'], draw_pos(center), 1, 0)
     #type("(%s,%s)" % center, draw_pos(center))
     for i in range(6):
@@ -72,6 +83,21 @@ def setup_vertices(cells):
         draw_hex(hexagon)
     return hexagons
 
+# Generate the vertices for a hexagon.
+def setup_edges(cells):
+    hexagons = []
+    for cell in cells:
+        vertices = []
+        for x in range(6):
+            vertices.append(add(cell, edge_positions[x]))
+#            vertex = mult(add(dirs[x%6], dirs[(x+1)%6]), .333)
+#            vertices.append(add(cell, vertex))
+        hexagons.append((cell, vertices))
+#    exit(hexagons)
+    for hexagon in hexagons:
+        draw_hex(hexagon)
+    return hexagons
+
 # Determine which side a point is on.
 def turns(pos1, pos2, pos3):
     cross = (pos2[0]-pos1[0]) * (pos3[1]-pos1[1]) - (pos3[0]-pos1[0]) * (pos2[1]-pos1[1])
@@ -88,7 +114,7 @@ def arc_side(center, arc, vertices, side):
         direction = turns(center, arc, vertices[i])
         if direction == side:# or direction == STRAIGHT:
             matches += 1
-    if matches > 2:
+    if matches > 3:
         return True
     return False
 
@@ -100,10 +126,12 @@ class FOV:
         self.cells.append(setup_vertices(fov_perimeter(1, self.center)))
         vertices = self.cells[0][0][1]
         self.arcs = []
-        self.arcs.append(Arc(self, 1, 2, vertices[0], vertices[2]))
+        self.arcs.append(Arc(self, 0, 2, add(self.center,edge_positions[5]), add(self.center,edge_positions[1])))#vertices[5], vertices[1]))
+# WORKS:        self.arcs.append(Arc(self, 1, 2, vertices[0], vertices[2]))
 #        self.arcs.append(Arc(self, 2, 3, vertices[1], vertices[3]))
 # WORKS:        self.arcs.append(Arc(self, 3, 4, vertices[2], vertices[4]))
 #        self.arcs.append(Arc(self, 4, 5, vertices[3], vertices[5]))
+# WORKS:        self.arcs.append(Arc(self, 4, 5, vertices[3], vertices[5]))
 
 
 #        self.arcs = [Arc(self, 1, 2, vertices[0], vertices[2])]
@@ -203,7 +231,7 @@ class Arc:
 #        if position == 0:
 #            start = face * (rank+1)
 #        else:
-        start = face * (rank+1) + position + rank % 2 + 1# + 1# + 1# + 4# + 1# - 1# + 1# - 1#+ 1
+        start = face * (rank+1) + position + rank % 2# + 1# + 1# + 1# + 4# + 1# - 1# + 1# - 1#+ 1
 
 #        if face == 0 or face == 3:
 #            start -= 1
@@ -243,7 +271,7 @@ class Arc:
  #       if position == 0:
  #           stop = face * (rank+1)
  #       else:
-        stop = face * (rank+1) + position + rank % 2# + 1# - rank/4 + 1#+ 1#- 1# - rank# + 4#- rank#- 1# - 1# + 1#- 1
+        stop = face * (rank+1) + position# + rank % 2# + 1# - rank/4 + 1#+ 1#- 1# - rank# + 4#- rank#- 1# - 1# + 1#- 1
 
 #        if face == 0 or face == 3:
 #            stop -= 1
