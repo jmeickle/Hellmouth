@@ -172,9 +172,9 @@ def fov_perimeter(rank, origin=CC, info=False):
             data = (data, 0)
         hexes.append(data)
     else:
-        pos = add(origin, mult(SE, rank))
+        pos = add(origin, mult(NW, rank))
 
-        for dir in [NE, NW, CW, SW, SE, CE]:
+        for dir in [CE, SE, SW, CW, NW, NE]:
             data = pos
             if info is True:
                 data = (data, rank)
