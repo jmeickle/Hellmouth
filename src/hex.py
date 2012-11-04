@@ -3,6 +3,7 @@ import random
 
 from define import *
 from dice import *
+from math import *
 
 # Direction constants.
 #
@@ -35,15 +36,6 @@ offsets = [NN, EE, SS, WW]
 
 # Other direction constants.
 ANYWHERE = None
-
-# Return the sign of a number.
-def signum(int, zero=False):
-    if int < 0:
-        return -1
-    elif int == 0 and zero is True:
-        return 0
-    else:
-        return 1
 
 # Return a direction to face in after a number of turns right.
 def rot(dir, turns=1):
