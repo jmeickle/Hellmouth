@@ -1,32 +1,39 @@
+# Functions for making hexes easier to use.
 import random
 
 from define import *
 from dice import *
 
-# Functions for making hexes easier to use.
-# Directional stuff
-# Center!
-CC = (0,0)
+# Direction constants.
+#
+#   NW    NE
+#     /  \
+# CW | CC | CE
+#     \  /
+#   SW    SE
 
+CC = (0,0)
 NW = (0, -1)
 NE = (1, -1)
 CE = (1, 0)
 SE = (0, 1)
 SW = (-1, 1)
 CW = (-1, 0)
+
+# TODO: Make this cleaner.
 dirs = [NW, NE, CE, SE, SW, CW]
 rotation = {NW: 0, NE: 1, CE: 2, SE: 3, SW: 4, CW: 5}
-num_dirs = len(dirs)
 
-# Offset directions. These only make sense in the context of rendering!
+# Offset direction constants.
+# These only make sense in the context of rendering, where they are used to
+# show content to the 'sides' of a hex.
 NN = (0, -1)
 EE = (1, 0)
 SS = (0, 1)
 WW = (-1, 0)
 offsets = [NN, EE, SS, WW]
-num_offsets = len(offsets)
 
-# Other directional information.
+# Other direction constants.
 ANYWHERE = None
 
 # Return the sign of a number.
@@ -46,11 +53,11 @@ def rot(dir, turns=1):
     end = (start+turns) % num_dirs
     return dirs[end]
 
-# Alias for 3 rotations.
+# Alias for rotating 180 degrees (3 rotations).
 def flip(dir):
     return rot(dir, 3)
 
-# Return hexes along an arc.
+# Return a list of hexes along an arc.
 def arc(dir, wide=False):
     if wide is True:
         arc_directions = dirs[:]
@@ -59,22 +66,23 @@ def arc(dir, wide=False):
         arc_directions = [dir, rot(dir, 1), rot(dir, -1)]
     return arc_directions
 
-# Add a hex dir to a hex pos.
+# Add two coordinates.
 def add(pos, dir):
     return pos[0] + dir[0], pos[1] + dir[1]
 
-# Subtract two tuples.
+# Subtract two coordinates.
 def sub(pos1, pos2):
     return pos1[0] - pos2[0], pos1[1] - pos2[1]
 
-# Multiply a tuple by an int.
+# Multiply a coordinate (typically a direction) by an integer.
 def mult(pos, int):
     return pos[0] * int, pos[1] * int
 
-# Calculate hex distance with two hex positions.
+# Calculate hexagonal distance between two coordinates.
 def dist(pos1, pos2):
     return distance(pos1[0], pos1[1], pos2[0], pos2[1])
 
+# Calculate hexagonal distance between two pairs of X, Y coordinates.
 def distance(x1, y1, x2, y2):
     dx = x1 - x2
     dy = y1 - y2
