@@ -57,6 +57,38 @@ class Screen(View):
             else:
                 self.callback()
 
+# A basic menu screen. You have some options and may choose one of them.
+class MenuScreen(Screen):
+    def __init__(self, window, **args):
+        Screen.__init__(self, window)
+        self.choices = args.get("choices", [])
+        self.selector = Selector(self, self.choices)
+
+    def color(self):
+        return "green-black"
+
+    def draw(self):
+        self.border(" ")
+        title = "<%s>%s</>" % (self.color(), self.title)
+        padding = (self.width - len(self.title))/2
+        heading = "%s%s%s" % (" "*padding, title, " "*padding)
+        self.cline(heading)
+        self.x_acc -= 2
+        self.cline("-"*(self.x))
+        self.x_acc += 2
+        return False
+
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord('\n'):
+            self.callback()
+        else:
+            dir = key.hexkeys(c)
+            if dir == CC:
+                self.selector.jump(6)
+            elif dir is not None:
+                self.selector.jump(rotation[dir])
+        return False # Don't permit anything but continuing.
+
 # A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
     def __init__(self, window, choices=None, callback=None):

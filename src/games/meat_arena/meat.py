@@ -1,7 +1,7 @@
 # MEAT ARENA is a testing arena for Hellmouth, and a minigame in its own right.
 from src.lib.actors.player import Player
 from src.lib.util.component import Component
-from src.lib.views.screens import Screen
+from src.lib.views.screens import Screen, MenuScreen
 from src.lib.views.tactical import Window
 from src.lib.views.help import HelpScreen
 from src.games.meat_arena.levels.arena import MeatArena
@@ -102,6 +102,7 @@ class Game(Component):
     def before_start(self):
         self.screen("meat-start", {"callback" : self.start, "footer_text": screens.footer})
         self.spawn(HelpScreen(self.window))
+        self.screen("blank", None, MenuScreen)
 
     def start(self):
         # Go to the first level.
