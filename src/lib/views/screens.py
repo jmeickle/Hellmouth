@@ -2,22 +2,30 @@
 import curses
 
 from src.lib.util.define import *
+from src.lib.util import key
 from src.lib.util.text import *
+from src.lib.views.input import *
 from src.lib.views.view import View
 
 # Border, heading, body text.
 class Screen(View):
-    def __init__(self, window, header_left="", header_right="", body_text="", footer_text="", callback=None, arguments=None):
+    def __init__(self, window, **args):
         View.__init__(self, window, TERM_X, TERM_Y)
-        self.header_left = header_left
-        self.header_right = header_right
-        self.body_text = body_text
-        self.footer_text = footer_text
-        self.callback = callback
-        self.arguments = arguments
+
+        self.title = args.get("title", "")       
+        self.header_left = args.get("header_left", "")
+        self.header_right = args.get("header_right", "")
+        self.body_text = args.get("body_text", "")
+        self.footer_text = args.get("footer_text", "")
+        self.callback = args.get("callback", self.suicide)
+        self.arguments = args.get("arguments", None)
 
     def before_draw(self):
         self.window.clear()
+
+    # Reasonable default color.
+    def color(self):
+            return "white-black"
 
     # TODO: Function to make drawing headings a bit more generalizable
     def draw(self):
