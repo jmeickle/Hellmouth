@@ -58,7 +58,7 @@ def arc(dir, wide=False):
         arc_directions = [dir, rot(dir, 1), rot(dir, -1)]
     return arc_directions
 
-# Add two coordinates.
+# Add two tuples (typically, add a hex dir to a hex pos).
 def add(pos, dir):
     return pos[0] + dir[0], pos[1] + dir[1]
 
