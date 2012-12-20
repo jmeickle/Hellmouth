@@ -207,8 +207,12 @@ class FOV:
         self.visible = {}
 
         # The center cell's vertices, to generate arcs from.
-        cell = setup_hexagons([self.center], vertex_positions)
-        vertices = cell[0][1]
+        #cell = setup_hexagons([self.origin], vertex_positions)
+        #vertices = cell[0][1]
+        vertices = setup_hexagons([self.origin], vertex_positions)[0][1]
+
+        # Center cell's subtriangle centers
+        centers = setup_hexagons([self.origin], center_positions)[0][1]
 
         # Arcs are defined as parent, start hex, stop hex, cw arm vertex, ccw arm vertex.
         self.arcs = []
