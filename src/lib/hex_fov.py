@@ -189,19 +189,19 @@ def setup_hexagons(cells, positions):
 
 # Field of view instance.
 class FOV:
-    def __init__(self, center, map, range = 20, checkpoints = center_positions):
+    def __init__(self, center, map, dist = 8, checkpoints = center_positions):
         # See notes at the top:
-        self.center = center # The REAL coordinate.
-        self.origin = mult(center, 6) # The FOV algorithm coordinate.
+        self.origin = center # The REAL coordinate.
+        self.center = mult(center, 6) # The FOV algorithm coordinate.
 
         self.map = map
-        self.range = range
+        self.dist = dist
 
         # Which checkpoints to use - can be triangle centers, edges, or vertices.
         self.checkpoints = checkpoints
 
         # Cells traversed by the algorithm. Starts with the center hex.
-        self.cells = [setup_hexagons([self.center], self.checkpoints)]
+        self.cells = [setup_hexagons([self.origin], self.checkpoints)]
 
         # Cells found visible by the algorithm.
         self.visible = {}
@@ -221,7 +221,7 @@ class FOV:
     # Get a hexagonal perimeter in the proper order for the algorithm.
     def perimeter(self, rank):
         cells = []
-        corner = add(self.center, mult(NW, rank))
+        corner = add(self.origin, mult(NW, rank))
         for dir in [CE, SE, SW, CW, NW, NE]:
             cells.append(corner)
             for cell in cardinal_line(corner, rank, dir):
@@ -246,14 +246,17 @@ class FOV:
 
         # Continue to calculate if there are more arcs.
         if self.arcs:
-            if rank < self.range:
+            if rank < self.dist:
                 self.calculate(rank+1)
+            # else:
+            #     for arc in self.arcs:
+            #         print arc.__dict__
 
 # A FOV arc.
 class Arc:
-    def __init__(self, parent, start, stop, cw, ccw):
+    def __init__(self, parent, center, start, stop, cw, ccw):
         self.parent = parent
-        self.center = self.parent.origin
+        self.center = center
         self.start = start # Starting hexagon.
         self.stop = stop # Stop at this hexagon.
         self.cw = cw # Clockwise arm.
