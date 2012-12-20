@@ -106,12 +106,12 @@ from hex import *
 
 # Vertices:
 vertex_positions = [
+(2, -4),  # NW-NE
 (4, -2),  # NE-CE
 (2, 2),   # CE-SE
 (-2, 4),  # SE-SW
 (-4, 2),  # SW-CW
 (-2, -2), # CW-NW
-(2, -4),  # NW-NE
 ]
 
 # Edges:
