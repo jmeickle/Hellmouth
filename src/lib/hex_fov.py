@@ -231,12 +231,19 @@ class FOV:
             for cell in cardinal_line(corner, rank, dir):
                 cells.append(cell)
             corner = cells.pop()
+        if __debug__:
+            peri.append(cells)
         return cells
 
     # Calculate whether you can see the hexes at the given rank.
     def calculate(self, rank=1):
         # Set up the next rank of cells.
         self.cells.append(setup_hexagons(self.perimeter(rank), self.checkpoints))
+
+        if __debug__:
+            cw_arcs.append([])
+            ccw_arcs.append([])
+            visited_hexes.append({})
 
         # Expand the arcs into them.
         for arc in self.arcs:
