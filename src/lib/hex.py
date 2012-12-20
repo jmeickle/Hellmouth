@@ -5,6 +5,10 @@ from define import *
 from dice import *
 from math import *
 
+#
+# Hexagonal coordinate system definitions.
+#
+
 # Direction constants.
 #
 #   NW    NE
@@ -13,29 +17,45 @@ from math import *
 #     \  /
 #   SW    SE
 
+# No location
+ANYWHERE = None
+
+# Center
 CC = (0,0)
+
+# Northwest
 NW = (0, -1)
+# Northeast
 NE = (1, -1)
+# East
 CE = (1, 0)
+# Southeast
 SE = (0, 1)
+# Southwest
 SW = (-1, 1)
+# West
 CW = (-1, 0)
 
-# TODO: Make this cleaner.
+# List of directions
 dirs = [NW, NE, CE, SE, SW, CW]
+# Rotation helper dict
 rotation = {NW: 0, NE: 1, CE: 2, SE: 3, SW: 4, CW: 5}
 
-# Offset direction constants.
-# These only make sense in the context of rendering, where they are used to
-# show content to the 'sides' of a hex.
-NN = (0, -1)
-EE = (1, 0)
-SS = (0, 1)
-WW = (-1, 0)
-offsets = [NN, EE, SS, WW]
+#
+# Offset directions for rendering.
+#
 
-# Other direction constants.
-ANYWHERE = None
+# North
+NN = (0, -1)
+# "Half" east
+EE = (1, 0)
+# South
+SS = (0, 1)
+#"Half" west
+WW = (-1, 0)
+
+# List of offsets.
+offsets = [NN, EE, SS, WW]
 
 # Return a direction to face in after a number of turns right.
 def rot(dir, turns=1):
@@ -189,11 +209,12 @@ def fov_perimeter(rank, origin=CC, info=False):
 
 def cardinal_line(pos, dir, distance):
     cells = []
-    for index in range(distance):
+    for index in range(dist):
         pos = add(pos, dir)
         cells.append(pos)
     return cells
 
+# Get the hexes along a Bresenham line.
 def line(pos1, pos2, max=None):
     line = []
 
