@@ -153,110 +153,133 @@ def turns(pos1, pos2, pos3):
     cross = (pos2[0]-pos1[0]) * (pos3[1]-pos1[1]) - (pos3[0]-pos1[0]) * (pos2[1]-pos1[1])
     if cross > 0:
         return LEFT
-    # TODO: Determine what a good float margin of error is.
-    elif cross == 0: # abs(cross) < .001:
+    elif cross == 0:
         return STRAIGHT
     else:
         return RIGHT
 
-# Determine whether more than half of a hex is to a given side of an arm of an arc.
-def arc_side(center, arc_arm, vertices, side):
+# Determine whether a hex is to be treated as to one side of an arc's arm.
+def arc_side(center, arc_arm, checkpoints, side, checks=1):
     matches = 0
     for i in range(6):
-        direction = turns(center, arc_arm, vertices[i])
-        if direction == side:
+        direction = turns(center, arc_arm, checkpoints[i])
+        if direction == side or direction == STRAIGHT:
             matches += 1
-    if matches > 3:
+    if matches > checks:
         return True
     return False
 
-# Generate the vertices for a hexagon.
-def setup_vertices(cells):
+# Generate the checkpoints for a hexagon.
+def setup_checkpoints(cell, positions):
+    checkpoints = []
+    for x in range(6):
+        checkpoints.append(add(cell, positions[x]))
+    return checkpoints
+
+# Generate the checkpoints for a list of hexagons.
+def setup_hexagons(cells, positions):
     hexagons = []
     for cell in cells:
-        vertices = []
+        cell = mult(cell, 6)
+        checkpoints = []
         for x in range(6):
-            vertices.append(add(cell, vertex_positions[x]))
-        hexagons.append((cell, vertices))
+            checkpoints.append(add(cell, positions[x]))
+        hexagons.append((cell, checkpoints))
     return hexagons
-
-# Generate the edges for a hexagon.
-def setup_edges(cells):
-    hexagons = []
-    for cell in cells:
-        edges = []
-        for x in range(6):
-            edges.append(add(cell, edge_positions[x]))
-        hexagons.append((cell, edges))
-    return hexagons
-
 
 # Field of view instance.
 class FOV:
-    def __init__(self, center, map):
-        self.center = center
+    def __init__(self, center, map, checkpoints = vertex_positions):
+        # See notes at the top:
+        self.center = center # The REAL coordinate.
+        self.origin = mult(center, 6) # The FOV algorithm coordinate.
+
         self.map = map
-        self.cells = [setup_vertices([self.center])]
-        self.cells.append(setup_vertices(fov_perimeter(1, self.center)))
-        vertices = self.cells[0][0][1]
-        self.arcs = []
-        self.arcs.append(Arc(self, 0, 2, add(self.center,edge_positions[5]), add(self.center,edge_positions[1])))#vertices[5], vertices[1]))
-# WORKS:        self.arcs.append(Arc(self, 1, 2, vertices[0], vertices[2]))
-#        self.arcs.append(Arc(self, 2, 3, vertices[1], vertices[3]))
-# WORKS:        self.arcs.append(Arc(self, 3, 4, vertices[2], vertices[4]))
-#        self.arcs.append(Arc(self, 4, 5, vertices[3], vertices[5]))
-# WORKS:        self.arcs.append(Arc(self, 4, 5, vertices[3], vertices[5]))
+
+        # Which checkpoints to use - can be triangle centers, edges, or vertices.
+        self.checkpoints = checkpoints
+
+        # Cells traversed by the algorithm. Starts with the center hex.
+        self.cells = [setup_hexagons([self.center], self.checkpoints)]
+#        self.cells.append(setup_hexagons(dirs, self.checkpoints))
+
+        # Cells found visible by the algorithm.
         self.visible = {}
+
+        # The center cell's vertices, to generate arcs from.
+        cell = setup_hexagons([self.center], vertex_positions)
+        vertices = cell[0][1]
+
+        # Arcs are defined as parent, start hex, stop hex, cw arm vertex, ccw arm vertex.
+        self.arcs = []
+
+        # Define the initial three arcs that LOS is split into.
+        self.arcs.append(Arc(self, 0, 1, vertices[4], vertices[0])) # NW through NE.
+#        self.arcs.append(Arc(self, 2, 3, vertices[0], vertices[2])) # CE through SE.
+#        self.arcs.append(Arc(self, 4, 5, vertices[2], vertices[4])) # SW through CW.
+#        print cell
+#        print vertices
+
+    # Get a hexagonal perimeter in the proper order for the algorithm.
+    def perimeter(self, rank):
+        cells = []
+        corner = add(self.center, mult(NW, rank))
+        for dir in [CE, SE, SW, CW, NW, NE]:
+            cells.append(corner)
+            for cell in cardinal_line(corner, rank, dir):
+                cells.append(cell)
+            corner = cells.pop()
+        return cells
 
     # Calculate whether you can see the hexes at the given rank.
     def calculate(self, rank=1):
-        # Set up arcs.
-        self.cells.append(setup_vertices(fov_perimeter(rank+1, self.center)))
+        # Set up the next rank of cells.
+        self.cells.append(setup_hexagons(self.perimeter(rank), self.checkpoints))
 
-        # Extend arcs.
+        # Expand the arcs into them.
+        for arc in self.arcs:
+            arc.expand(rank)
+
+        # Process the expanded arcs.
         remaining = []
         for arc in self.arcs:
             remaining.extend(arc.process(rank))
         self.arcs = remaining
 
         # Continue to calculate if there are more arcs.
-        if self.arcs and rank < 7:
-            for arc in self.arcs:
-                arc.expand(rank)
-
-            self.calculate(rank+1)
+        if self.arcs:
+            if rank < 7:
+                self.calculate(rank+1)
 
 # A FOV arc.
 class Arc:
     def __init__(self, parent, start, stop, cw, ccw):
         self.parent = parent
-        self.center = self.parent.center
+        self.center = self.parent.origin
         self.start = start # Starting hexagon.
         self.stop = stop # Stop at this hexagon.
         self.cw = cw # Clockwise arm.
         self.ccw = ccw # Counterclockwise arm.
 
     def expand(self, rank):
+        # Which general face of the hex, and which position along that face.
+        face = self.start / max(1, rank - 1)
+        position = self.start % max(1, rank - 1)
+        start = face * rank + position + 1
 
-        # Which general face of the hex, and which position along 
-        # that face.
-        face = self.start / rank
-        position = self.start % rank
-        start = face * (rank+1) + position + rank % 2
-
-        while start > 0:
-            pos, vertices = self.parent.cells[rank+1][start-1]
+        while start >= 0 or start < rank * 6 - rank % 2:
+            pos, vertices = self.parent.cells[rank][start-1]
             if arc_side(self.center, self.cw, vertices, RIGHT) is True:
                 break
             start -= 1
 
         face = self.stop / rank
         position = self.stop % rank
-        stop = face * (rank+1) + position# + rank % 2# + 1# - rank/4 + 1#+ 1#- 1# - rank# + 4#- rank#- 1# - 1# + 1#- 1
+        stop = face * rank + position
 
-        while stop < rank+1 * 6 - 1:
-            pos, vertices = self.parent.cells[rank+1][stop+1]
-            if arc_side(self.center, self.ccw, vertices, LEFT) is True:#RUE:#False:#False:
+        while stop < rank * 6 - 1:
+            pos, vertices = self.parent.cells[rank][stop+1]
+            if arc_side(self.center, self.ccw, vertices, LEFT) is True:
                 break
             stop += 1
 
@@ -315,7 +338,20 @@ class Arc:
 
         return arcs
 
+    # TODO: Remove asymmetry
     # Contract an arc in the CW direction.
+    # def contractCW(self, vertices):
+    #     best_cw = self.cw
+    #     for index in range(6):
+    #         matches = 0
+    #     for i in range(6):
+    #         direction = turns(center, arc_arm, checkpoints[i])
+    #         if direction == side or direction == STRAIGHT:
+    #             matches += 1
+    #     if matches > checks:
+    #         return True
+    #     return False
+
     def contractCW(self, vertices):
         best_cw = self.cw
         for index in range(6):
@@ -381,7 +417,7 @@ if __name__ == '__main__':
         for i in range(6):
             pygame.draw.line(window, colors['grey'], draw_pos(vertices[i]), draw_pos(vertices[(i+1)%6]), 1)
 
-    mapsize = 20
+    mapsize = 30
     center = (mapsize/2, mapsize/2)
 
     # Generate map
@@ -415,21 +451,21 @@ if __name__ == '__main__':
                 sys.stdout.write(" ")
                 if center == (x,y):
                     sys.stdout.write("@")
-                elif fov.visible.get((x,y)):# is True:
+                elif fov.visible.get((x*6,y*6)):# is True:
                     if map[(x,y)] is False:
                         sys.stdout.write("T")
                     else:
                         sys.stdout.write(".")
-                        pygame.draw.circle(window, colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
-                elif fov.visible.get((x,y)) is not None:
-                    sys.stdout.write(fov.visible.get((x,y)))
+                        #pygame.draw.circle(window, colors[fov.visible.get((x,y))], draw_pos((x,y)), 2, 0)
+                elif fov.visible.get((x*6,y*6)) is not None:
+                    sys.stdout.write(fov.visible.get((x*6,y*6)))
                 elif map[(x,y)] is False:
                     sys.stdout.write("x")
                 else:
                     sys.stdout.write("~")
             sys.stdout.write("\n")
         sys.stdout.write("\n\n")
-        pygame.display.update()
+        #pygame.display.update()
 
     while True is True:
         for event in pygame.event.get():
