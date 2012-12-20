@@ -104,110 +104,9 @@ def distance(x1, y1, x2, y2):
         distance = abs(dx) + abs(dy)
     return distance
 
-# Generate a perimeter around an origin and return random points on it.
-def random_perimeter(dist, origin=CC, choices=1):
-    cells = perimeter(dist, origin)
-    points = []
-    for x in range(choices):
-        choice = random.choice(cells)
-        cells.remove(choice)
-        points.append(choice)
-    return points
-
-# Generate a perimeter around an origin and return random points on it.
-def random_area(dist, origin=CC, choices=1):
-    cells = area(dist, origin)
-    points = []
-    for x in range(choices):
-        choice = random.choice(cells.keys())
-        del cells[choice]
-        points.append(choice)
-    return points
-
-# Turns out this is slower. Xom laughs.
-def _area(rank, pos, dir, left=False, right=True, curr=0):
-    hexes = [pos]
-    if curr < rank:
-        hexes.extend(_area(rank, add(pos, dir), dir, False, False, curr+1))
-        if right is True:
-            hexes.extend(_area(rank, add(pos, rot(dir)), dir, left, right, curr+1))
-        if left is True:
-            hexes.extend(_area(rank, add(pos, rot(dir, 5)), dir, left, right, curr+1))
-    return hexes
-
-# Generate a dict of hex position : distance, including the start position.
-def area(rank, origin=CC, info=True):
-    hexes = {}
-    # +1 to account for needing both == 0 and == rank.
-    for x in range(rank+1):
-        for hex in perimeter(x, origin, info):
-            if info is True:
-                hex, data = hex
-                hexes[hex] = data
-            else:
-                hexes[hex] = True
-    return hexes
-
-    # Older method, could be good but needs work:
-    #for dir in dirs:
-    #    hexes.extend(_area(rank, add(origin, dir), dir, True))
-    #return hexes
-
-# Oldest method. Crude!
-#    for Y in range(-rank, rank+1):
-#        for X in range(-rank, rank+1):
-#            offset = (X,Y)
-#            hex = add(origin, offset)
-#            distance = dist(origin, hex)
-#            if distance <= rank:
-#                hexes[hex] = distance
-#    return hexes
-
-# Hexes on the edge of an area.
-def perimeter(rank, origin=CC, info=False):
-    hexes = []
-    if rank == 0:
-        data = origin
-        if info is True:
-            data = (data, 0)
-        hexes.append(data)
-    else:
-        pos = add(origin, mult(SE, rank))
-        for dir in dirs:
-            for hex in cardinal_line(pos, dir, rank):
-                data = hex
-                if info is True:
-                    data = (data, rank)
-                hexes.append(data)
-            pos = hexes.pop()
-            hexes.append(pos)
-    return hexes
-
-# Hexes on the edge of an area.
-def fov_perimeter(rank, origin=CC, info=False):
-    hexes = []
-    if rank == 0:
-        data = origin
-        if info is True:
-            data = (data, 0)
-        hexes.append(data)
-    else:
-        pos = add(origin, mult(NW, rank))
-
-        for dir in [CE, SE, SW, CW, NW, NE]:
-            data = pos
-            if info is True:
-                data = (data, rank)
-            hexes.append(data)
-            for hex in cardinal_line(pos, dir, rank):
-                data = hex
-                if info is True:
-                    data = (data, rank)
-                hexes.append(data)
-            pos = hexes.pop()
-    return hexes
-
-def cardinal_line(pos, dir, distance):
+# Get the hexes along a cardinal direction.
+def cardinal_line(origin, dist, dir):
+    pos = origin
     cells = []
     for index in range(dist):
         pos = add(pos, dir)
@@ -277,6 +176,70 @@ def line(pos1, pos2, max=None):
                 break
             line.append((x,y))
     return line
+
+
+# A generic shape. Can be anything; only requires a center.
+class Shape():
+    def __init__(center):
+        self.center = center
+
+# A hexagon, which is the hexgrid equivalent of a square.
+#
+# The radius is the number of full hexes from the center to the edge, like so:
+#
+#  2 2 2
+# 2 1 1 2
+#2 1 0 1 2
+# 2 1 1 2
+#  2 2 2
+
+class Hexagon(Shape):
+    def __init__(center, radius=1):
+        Shape.__init__(self, center)
+        self.rank = rank
+        self.cells = self.area(center, radius - 1)
+
+    # Find all hexes at a given distance.
+    def perimeter(center, radius):
+        hexes = []
+        corner = add(origin, mult(SE, radius))
+        for dir in dirs:
+            for hex in cardinal_line(corner, radius, dir):
+                hexes.append((hex, rank))
+            corner = hexes[-1]
+        return hexes
+
+    # Find all hexes up to a given radius.
+    def area(center, radius):
+        hexes = [(center, 0)]
+        for r in range(radius+1):
+            for hex in perimeter(origin, r):
+                if info is True:
+                    hex, data = hex
+                    hexes[hex] = data
+                else:
+                    hexes[hex] = True
+        return hexes
+
+    # Return a number of random points on a perimeter.
+    def random_perimeter(center, radius, choices=1):
+        cells = perimeter(dist, origin)
+        points = []
+        for x in range(choices):
+            choice = random.choice(cells)
+            cells.remove(choice)
+            points.append(choice)
+        return points
+
+    # Return a number of random points on an area.
+    def random_area(center, radius, choices=1):
+        cells = area(dist, origin)
+        points = []
+        for x in range(choices):
+            choice = random.choice(cells.keys())
+            del cells[choice]
+            points.append(choice)
+        return points
 
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
