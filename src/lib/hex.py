@@ -90,6 +90,10 @@ def sub(pos1, pos2):
 def mult(pos, int):
     return pos[0] * int, pos[1] * int
 
+# Divide a tuple by an int.
+def div(pos, int):
+    return pos[0] / int, pos[1] / int
+
 # Calculate hexagonal distance between two coordinates.
 def dist(pos1, pos2):
     return distance(pos1[0], pos1[1], pos2[0], pos2[1])
