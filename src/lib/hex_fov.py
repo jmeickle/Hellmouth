@@ -189,12 +189,13 @@ def setup_hexagons(cells, positions):
 
 # Field of view instance.
 class FOV:
-    def __init__(self, center, map, checkpoints = vertex_positions):
+    def __init__(self, center, map, range = 20, checkpoints = center_positions):
         # See notes at the top:
         self.center = center # The REAL coordinate.
         self.origin = mult(center, 6) # The FOV algorithm coordinate.
 
         self.map = map
+        self.range = range
 
         # Which checkpoints to use - can be triangle centers, edges, or vertices.
         self.checkpoints = checkpoints
@@ -248,7 +249,7 @@ class FOV:
 
         # Continue to calculate if there are more arcs.
         if self.arcs:
-            if rank < 7:
+            if rank < self.range:
                 self.calculate(rank+1)
 
 # A FOV arc.
