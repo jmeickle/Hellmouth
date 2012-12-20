@@ -1,32 +1,147 @@
 from hex import *
 
-# PLEASE DON'T KILL ME
-ONE_THIRD = float(1)/3
-TWO_THIRD = float(2)/3
+# In this algorithm, hexagons can be referenced in two ways. The first way is
+# unique to this algorithm, and involves referring to them by the order they
+# would be reached if traveling around that rank. For example:
+#
+# NW
+#     0   1   2
+#   11  0   1   3
+# 10  5   0   2   4
+#   9   4   3   5
+#     8   7   6
+#               SE
+#
+# Note that in this arrangement, the northwestern most hex will always be 0.
+#
+# As elsewhere, we also use a hexagonal grid with two axes. The x-axis
+# functions as it would on a square grid, while the y-axis is 'skewed' such
+# that moving along it also results in 'horizontal' movement:
+#
+#       -y
+#  \   \   \   \ 
+#   \   \   \   \
+# ---\---\---\---\---
+#     \   \   \   \ 
+#      \   \   \   \
+# -x ---\---O---\---\--- +x
+#        \   \   \   \ 
+#         \   \   \   \
+#       ---\---\---\---\---
+#           \   \   \   \
+#            \   \   \   \
+#                  +y
+#
+# Since we represent everything in (x,y) coordinates, a zoomed-in hexagon looks
+# like this when its vertices, edge midpoints, etc. are given coordinates:
+#
+#           /.\                  / \
+# y-axis   / . \                /   \
+#   \\    /  .  \              /     \
+#   ||   /   .   \ (.5,-.5)   /       \
+#    \\ /    .    O          /         \
+#     \\     .     \        /           \
+#     ||     .      \      /             \
+#    / \\    .       \    /               \
+#   /   \\   .        \  /                 \
+#  /.   ||   .     (.33,-.66)               \
+#  |  .  \\  .    .    ||                   |
+#  |    . \\ .  .      ||                   |
+#  |      .||..        ||                   |
+# ===========O=======(0,.5)=======O=========|==
+#  |       (0,0)       ||       (0,1)       |  x-axis
+#  |      .  .\\.      ||                   |
+#  |    .    . \\ .    ||                   |
+#  |  .      .  ||  .  ||                   |
+#  |.        .  \\ (.33,.33)                |
+#  \     O   .   \\    /\                   /
+#   \(-.33,.33)  ||   /  \                 /
+#    \       .   \\  /    \               /
+#     \      .    \\/      \             /
+#      \     .    ||        \           /
+#       \    .    \\         \         /
+#        \   .   / \\         \       /
+#         \  .  /  ||          \     /
+#          \ . /   \\           \   /
+#           \./     \\           \ /
+#
+# Representing this requires floating point math, which would break symmetry in
+# this algorithm due to rounding errors. However, every interesting point can
+# be achieved with a divisor of 1, 2, or 3. This means that multiplying all
+# values by 6 results in a pure-integer representation of the same information:
+#
+#           /.\                  / \
+# y-axis   / . \                /   \
+#   \\    /  .  \              /     \
+#   ||   /   .   \ (3,-3)     /       \
+#    \\ /    .    O          /         \
+#     \\     .     \        /           \
+#     ||     .      \      /             \
+#    / \\    .       \    /               \
+#   /   \\   .        \  /                 \
+#  /.   ||   .       (2,-4)                 \
+#  |  .  \\  .    .    ||                   |
+#  |    . \\ .  .      ||                   |
+#  |      .||..        ||                   |
+# ===========O========(0,3)=======O=========|==
+#  |       (0,0)       ||       (0,6)       |  x-axis
+#  |      .  .\\.      ||                   |
+#  |    .    . \\ .    ||                   |
+#  |  .      .  ||  .  ||                   |
+#  |.        .  \\    (2,2)                 |
+#  \     O   .   \\    /\                   /
+#   \(-2,2)  .   ||   /  \                 /
+#    \       .   \\  /    \               /
+#     \      .    \\/      \             /
+#      \     .    ||        \           /
+#       \    .    \\         \         /
+#        \   .   / \\         \       /
+#         \  .  /  ||          \     /
+#          \ . /   \\           \   /
+#           \./     \\           \ /
+#
+# Indexing by multiples of 6 would be intensely irritating, so instead it is
+# only done when needed (i.e., in this algorithm). Everywhere else in the code,
+# the first hexagon to the right of (0,0) will be (0,1).
 
+# Vertices:
 vertex_positions = [
-    #NW
-    (ONE_THIRD, -TWO_THIRD),
-    #NE
-    ( TWO_THIRD, -ONE_THIRD),
-    #CE
-    ( ONE_THIRD,  ONE_THIRD),
-    #SE
-    (-ONE_THIRD,  TWO_THIRD),
-    #SW
-    (-TWO_THIRD,  ONE_THIRD),
-    #CW
-    (-ONE_THIRD, -ONE_THIRD),
+(4, -2),  # NE-CE
+(2, 2),   # CE-SE
+(-2, 4),  # SE-SW
+(-4, 2),  # SW-CW
+(-2, -2), # CW-NW
+(2, -4),  # NW-NE
 ]
 
+# Edges:
 edge_positions = [
-(.5, -.5),
-(.5, 0),
-(0, .5),
-(-.5, .5),
-(-.5, 0),
-(0, -.5)
+(0, -3), # NW
+(3, -3), # NE
+(3, 0),  # CE
+(0, 3),  # SE
+(-3, 3), # SW
+(-3, 0), # CW
 ]
+
+# Subtriangle centers:
+center_positions = [
+(0, -2), # NW
+(2, -2), # NE
+(2, 0),  # CE
+(0, 2),  # SE
+(-2, 2), # SW
+(-2, 0), # CW
+]
+
+# TODO: Define these bitmasks
+# CC
+# NW
+# NE
+# CE
+# SE
+# SW
+# CW
 
 # Constants for turns function.
 LEFT = 1
