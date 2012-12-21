@@ -218,9 +218,9 @@ class FOV:
         self.arcs = []
 
         # Define the initial three arcs that LOS is split into.
-        self.arcs.append(Arc(self, 0, 1, vertices[4], vertices[0])) # NW through NE.
-        self.arcs.append(Arc(self, 2, 3, vertices[0], vertices[2])) # CE through SE.
-        self.arcs.append(Arc(self, 4, 5, vertices[2], vertices[4])) # SW through CW.
+        self.arcs.append(Arc(self, centers[1], 1, 1, vertices[0], vertices[1])) # NW through NE.
+#        self.arcs.append(Arc(self, 2, 3, vertices[0], vertices[2])) # CE through SE.
+#        self.arcs.append(Arc(self, 4, 5, vertices[2], vertices[4])) # SW through CW.
 
     # Get a hexagonal perimeter in the proper order for the algorithm.
     def perimeter(self, rank):
