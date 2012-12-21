@@ -412,7 +412,7 @@ if __name__ == '__main__':
     center = (mapsize/2, mapsize/2)
 
     # Screen position to draw to, given a map position.
-    def draw_pos(pos, scale=30):
+    def draw_pos(pos, scale=20):
         x, y = pos
         c_x, c_y = center
         v_x, v_y = view_ctr
@@ -441,7 +441,7 @@ if __name__ == '__main__':
         vertices = []
         for i in range(6):
             subtriangle_pos = pos[0] + float(center_positions[i][0]) / 6, pos[1] + float(center_positions[i][1]) / 6
-            pygame.draw.circle(window, colors['green'], draw_pos(subtriangle_pos), 1, 0)
+            pygame.draw.circle(window, colors['grey'], draw_pos(subtriangle_pos), 1, 0)
             vertices.append((pos[0] + float(vertex_positions[i][0]) / 6, pos[1] + float(vertex_positions[i][1]) / 6))
         for i in range(6):
             pygame.draw.line(window, colors['grey'], draw_pos(vertices[i-1]), draw_pos(vertices[i]), 1)
