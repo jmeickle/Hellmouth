@@ -281,7 +281,7 @@ class Arc:
 
         while start >= 0 or start < rank * 6 - rank:
             pos, checkpoints = self.parent.cells[rank][start-1]
-            if arc_side(self.center, self.cw, checkpoints, RIGHT) is True:
+            if arc_side(self.center, self.cw, checkpoints, LEFT) is False:
                 break
             start -= 1
 
@@ -291,7 +291,7 @@ class Arc:
 
         while stop < rank * 6 - 1:
             pos, checkpoints = self.parent.cells[rank][stop+1]
-            if arc_side(self.center, self.ccw, checkpoints, LEFT) is True:
+            if arc_side(self.center, self.ccw, checkpoints, RIGHT) is False:
                 break
             stop += 1
 
