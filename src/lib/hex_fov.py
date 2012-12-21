@@ -189,7 +189,7 @@ def setup_hexagons(cells, positions):
 
 # Field of view instance.
 class FOV:
-    def __init__(self, center, map, dist = 8, checkpoints = center_positions):
+    def __init__(self, center, map, dist = 25, checkpoints = center_positions):
         # See notes at the top:
         self.origin = center # The REAL coordinate.
         self.center = mult(center, 6) # The FOV algorithm coordinate.
@@ -459,7 +459,7 @@ if __name__ == '__main__':
     center = (mapsize/2, mapsize/2)
 
     # Screen position to draw to, given a map position.
-    def draw_pos(pos, scale=20):
+    def draw_pos(pos, scale=10):
         x, y = pos
         c_x, c_y = center
         v_x, v_y = view_ctr
