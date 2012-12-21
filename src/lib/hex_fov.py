@@ -216,7 +216,12 @@ class FOV:
         self.arcs = []
 
         # Define the initial three arcs that LOS is split into.
-        self.arcs.append(Arc(self, centers[1], 1, 1, vertices[0], vertices[1])) # NW through NE.
+        cw = vertices[0]
+        ccw = vertices[1]
+        self.arcs.append(Arc(self, centers[1], 1, 1, cw, ccw))
+        if __debug__:
+            cw_arcs[0].append((centers[1], cw))
+            ccw_arcs[0].append((centers[1], ccw))
 #        self.arcs.append(Arc(self, 2, 3, vertices[0], vertices[2])) # CE through SE.
 #        self.arcs.append(Arc(self, 4, 5, vertices[2], vertices[4])) # SW through CW.
 
