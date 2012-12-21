@@ -159,7 +159,7 @@ def turns(pos1, pos2, pos3):
         return RIGHT
 
 # Determine whether a hex is to be treated as to one side of an arc's arm.
-def arc_side(center, arc_arm, checkpoints, side, checks=1):
+def arc_side(center, arc_arm, checkpoints, side, checks=3):
     matches = 0
     for i in range(6):
         direction = turns(center, arc_arm, checkpoints[i])
@@ -300,9 +300,14 @@ class Arc:
         for index in range(self.start, self.stop+1):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
+            if __debug__:
+                hits = visited_hexes[rank].get(index, 0)
+                visited_hexes[rank][index] = hits+1
             if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCW(checkpoints)
                 self.start += 1
+                if __debug__:
+                    cw_arcs[rank].append((self.center, self.cw))
             else:
                 break
 
@@ -310,9 +315,15 @@ class Arc:
         for index in reversed(range(self.start, self.stop+1)):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
+            if __debug__:
+                hits = visited_hexes[rank].get(index, 0)
+                visited_hexes[rank][index] = hits+1
+
             if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCCW(checkpoints)
                 self.stop -= 1
+                if __debug__:
+                    ccw_arcs[rank].append((self.center, self.ccw))
             else:
                 break
 
@@ -327,8 +338,12 @@ class Arc:
             if self.parent.map.get(div(pos, 6)) is False:
                 child = Arc(self.parent, self.center, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(checkpoints)
+                if __debug__:
+                    cw_arcs[rank].append((self.center, self.cw)) 
                 self.stop = index - 1
                 self.contractCCW(checkpoints)
+                if __debug__:
+                    ccw_arcs[rank].append((self.center, self.ccw))
                 if child.empty() is False:
                     arcs.extend(child.process(rank))
 
@@ -345,7 +360,7 @@ class Arc:
             if turns(self.center, best_cw, checkpoints[index]) == LEFT:
                 best_cw = checkpoints[index]
         self.cw = best_cw
-
+ 
     # Contract an arc in the CCW direction.
     def contractCCW(self, checkpoints):
         best_ccw = self.ccw
