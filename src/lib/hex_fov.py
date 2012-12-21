@@ -259,9 +259,6 @@ class FOV:
         if self.arcs:
             if rank < self.dist:
                 self.calculate(rank+1)
-            # else:
-            #     for arc in self.arcs:
-            #         print arc.__dict__
 
 # A FOV arc.
 class Arc:
