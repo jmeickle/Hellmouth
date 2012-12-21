@@ -353,7 +353,7 @@ class Arc:
                 child = Arc(self.parent, self.center, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(checkpoints)
                 if __debug__:
-                    cw_arcs[rank].append((self.center, self.cw)) 
+                    cw_arcs[rank].append((child.center, child.cw)) 
                 self.stop = index - 1
                 self.contractCCW(checkpoints)
                 if __debug__:
