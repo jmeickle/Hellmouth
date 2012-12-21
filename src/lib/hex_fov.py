@@ -303,11 +303,14 @@ class Arc:
 
         # Contract the clockwise arm of the arc until a non-blocked hex is found.
         for index in range(self.start, self.stop+1):
+
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
             if __debug__:
                 hits = visited_hexes[rank].get(index, 0)
                 visited_hexes[rank][index] = hits+1
+
+            # Check whether to contract the arc
             if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCW(checkpoints)
                 self.start += 1
@@ -324,6 +327,7 @@ class Arc:
                 hits = visited_hexes[rank].get(index, 0)
                 visited_hexes[rank][index] = hits+1
 
+            # Check whether to contract the arc
             if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCCW(checkpoints)
                 self.stop -= 1
@@ -343,6 +347,8 @@ class Arc:
             if __debug__:
                 hits = visited_hexes[rank].get(index, 0)
                 visited_hexes[rank][index] = hits+1
+
+            # Check whether to split the arc
             if self.parent.map.get(div(pos, 6)) is False:
                 child = Arc(self.parent, self.center, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(checkpoints)
@@ -361,20 +367,56 @@ class Arc:
 
         return arcs
 
-    # Contract an arc in the CW direction.
-    def contractCW(self, checkpoints):
-        best_cw = self.cw
-        for index in range(6):
-            if turns(self.center, best_cw, checkpoints[index]) == LEFT:
-                best_cw = checkpoints[index]
-        self.cw = best_cw
+    # # Contract an arc in the CW direction.
+    # def contractCW(self, checkpoints):
+    #     best_cw = self.cw
+    #     for index in range(6):
+    #         if turns(self.center, best_cw, checkpoints[index]) == LEFT:
+    #             best_cw = checkpoints[index]
+    #     self.cw = best_cw
  
-    # Contract an arc in the CCW direction.
-    def contractCCW(self, checkpoints):
+    # # Contract an arc in the CCW direction.
+    # def contractCCW(self, checkpoints):
+    #     best_ccw = self.ccw
+    #     for index in range(6):
+    #         if turns(self.center, best_ccw, checkpoints[index]) == RIGHT:
+    #             best_ccw = checkpoints[index]
+    #     self.ccw = best_ccw
+
+    # Contract an arc (in the CW direction) onto the best point on a hexagon.
+    def contractCW(self, checkpoints, checks=2):
+        best_cw = self.cw
+        best_match = 0
+        for i in range(6): # Candidate point
+            matches = 1
+            for j in range(6): # Other points
+                if i == j:
+                    continue
+                elif turns(self.center, checkpoints[i], checkpoints[j]) != RIGHT:
+                    matches += 1
+            if matches > best_match and matches <= checks:
+                best_cw = checkpoints[i]
+                best_match = matches
+            if matches == checks:
+                break
+        self.cw = best_cw
+
+    # Contract an arc (in the CCW direction) onto the best point on a hexagon.
+    def contractCCW(self, checkpoints, checks=2):
         best_ccw = self.ccw
-        for index in range(6):
-            if turns(self.center, best_ccw, checkpoints[index]) == RIGHT:
-                best_ccw = checkpoints[index]
+        best_match = 0
+        for i in range(6): # Candidate point
+            matches = 1
+            for j in range(6): # Other points
+                if i == j:
+                    continue
+                elif turns(self.center, checkpoints[i], checkpoints[j]) != LEFT:
+                    matches += 1
+            if matches > best_match and matches <= checks:
+                best_ccw = checkpoints[i]
+                best_match = matches
+            if matches == checks:
+                break
         self.ccw = best_ccw
 
     # Determine whether an arc is empty.
