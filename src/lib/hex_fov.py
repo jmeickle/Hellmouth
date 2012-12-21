@@ -338,20 +338,7 @@ class Arc:
 
         return arcs
 
-    # TODO: Remove asymmetry
     # Contract an arc in the CW direction.
-    # def contractCW(self, vertices):
-    #     best_cw = self.cw
-    #     for index in range(6):
-    #         matches = 0
-    #     for i in range(6):
-    #         direction = turns(center, arc_arm, checkpoints[i])
-    #         if direction == side or direction == STRAIGHT:
-    #             matches += 1
-    #     if matches > checks:
-    #         return True
-    #     return False
-
     def contractCW(self, vertices):
         best_cw = self.cw
         for index in range(6):
