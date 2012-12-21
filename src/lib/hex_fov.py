@@ -274,9 +274,9 @@ class Arc:
         position = self.start % max(1, rank - 1)
         start = face * rank + position + 1
 
-        while start >= 0 or start < rank * 6 - rank % 2:
-            pos, vertices = self.parent.cells[rank][start-1]
-            if arc_side(self.center, self.cw, vertices, RIGHT) is True:
+        while start >= 0 or start < rank * 6 - rank:
+            pos, checkpoints = self.parent.cells[rank][start-1]
+            if arc_side(self.center, self.cw, checkpoints, RIGHT) is True:
                 break
             start -= 1
 
@@ -285,8 +285,8 @@ class Arc:
         stop = face * rank + position
 
         while stop < rank * 6 - 1:
-            pos, vertices = self.parent.cells[rank][stop+1]
-            if arc_side(self.center, self.ccw, vertices, LEFT) is True:
+            pos, checkpoints = self.parent.cells[rank][stop+1]
+            if arc_side(self.center, self.ccw, checkpoints, LEFT) is True:
                 break
             stop += 1
 
@@ -298,20 +298,20 @@ class Arc:
 
         # Contract the clockwise arm of the arc until a non-blocked hex is found.
         for index in range(self.start, self.stop+1):
-            pos, vertices = self.parent.cells[rank][index]
+            pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
             if self.parent.map.get(pos) is False:
-                self.contractCW(vertices)
+                self.contractCW(checkpoints)
                 self.start += 1
             else:
                 break
 
         # Contract the counterclockwise arm of the arc until a non-blocked hex is found.
         for index in reversed(range(self.start, self.stop+1)):
-            pos, vertices = self.parent.cells[rank][index]
+            pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
             if self.parent.map.get(pos) is False:
-                self.contractCCW(vertices)
+                self.contractCCW(checkpoints)
                 self.stop -= 1
             else:
                 break
@@ -322,13 +322,13 @@ class Arc:
 
         # Go across the arc's span, excepting the very start and end, splitting into two arcs if an obstacle is detected.
         for index in range(self.start+1, self.stop):
-            pos, vertices = self.parent.cells[rank][index]
+            pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
             if self.parent.map.get(pos) is False:
                 child = Arc(self.parent, index+1, self.stop, self.cw, self.ccw)
-                child.contractCW(vertices)
+                child.contractCW(checkpoints)
                 self.stop = index - 1
-                self.contractCCW(vertices)
+                self.contractCCW(checkpoints)
                 if child.empty() is False:
                     arcs.extend(child.process(rank))
 
@@ -339,19 +339,19 @@ class Arc:
         return arcs
 
     # Contract an arc in the CW direction.
-    def contractCW(self, vertices):
+    def contractCW(self, checkpoints):
         best_cw = self.cw
         for index in range(6):
-            if turns(self.center, best_cw, vertices[index]) == LEFT:
-                best_cw = vertices[index]
+            if turns(self.center, best_cw, checkpoints[index]) == LEFT:
+                best_cw = checkpoints[index]
         self.cw = best_cw
 
     # Contract an arc in the CCW direction.
-    def contractCCW(self, vertices):
+    def contractCCW(self, checkpoints):
         best_ccw = self.ccw
         for index in range(6):
-            if turns(self.center, best_ccw, vertices[index]) == RIGHT:
-                best_ccw = vertices[index]
+            if turns(self.center, best_ccw, checkpoints[index]) == RIGHT:
+                best_ccw = checkpoints[index]
         self.ccw = best_ccw
 
     # Determine whether an arc is empty.
