@@ -455,6 +455,9 @@ if __name__ == '__main__':
 
         # Set up random blocking columns
         import random
+#        random.seed("HEXAGONS")
+#        random.seed("1dffd111aa1")
+        random.seed("animeeeeeeeeeeeeee")
         for column in range(mapsize):
             x = random.randint(0, mapsize-1)
             y = random.randint(0, mapsize-1)
