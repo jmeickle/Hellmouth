@@ -335,6 +335,9 @@ class Arc:
         for index in range(self.start+1, self.stop):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
+            if __debug__:
+                hits = visited_hexes[rank].get(index, 0)
+                visited_hexes[rank][index] = hits+1
             if self.parent.map.get(div(pos, 6)) is False:
                 child = Arc(self.parent, self.center, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(checkpoints)
