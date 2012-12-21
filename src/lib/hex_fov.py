@@ -515,46 +515,46 @@ if __name__ == '__main__':
     def mapdraw():
         window.fill(colors['black'])
         for y in range(mapsize):
-            sys.stdout.write(" " * y)
+#            sys.stdout.write(" " * y)
             for x in range(mapsize):
-                sys.stdout.write(" ")
+#                sys.stdout.write(" ")
 
                 pos = (x, y)
 
                 if pos == center:
-                    sys.stdout.write("@")
-                    draw_hex(pos, 'magenta', 6)
+#                    sys.stdout.write("@")
+                    draw_hex(pos, 'blue', 6)
                     draw_text("(%s,%s)" % pos, draw_pos(pos))
                     continue
 
                 contents = fov.visible.get((x*6,y*6))
 
                 if map[pos] is False:
-                    sys.stdout.write("X")
+#                    sys.stdout.write("X")
                     draw_hex(pos, 'red')
                 elif contents is None:
-                    sys.stdout.write("~")
+#                    sys.stdout.write("~")
                     draw_hex((x,y), 'grey')
                 else:
-                    sys.stdout.write(".")
+#                    sys.stdout.write(".")
                     draw_hex(pos)
 
-            sys.stdout.write("\n")
-        sys.stdout.write("\n\n")
+#            sys.stdout.write("\n")
+#        sys.stdout.write("\n\n")
 
-        for rank in cw_arcs:
-            for ctr, cw_arc in rank:
+        for cw_arc_rank in cw_arcs:
+            for ctr, cw_arc in cw_arc_rank:
                 ctr_pos = float(ctr[0]) / 6, float(ctr[1]) / 6
                 cw_pos = float(cw_arc[0]) / 6, float(cw_arc[1]) / 6
-                pygame.draw.line(window, colors['cyan'], draw_pos(ctr_pos), draw_pos(cw_pos), 1)
-                pygame.draw.circle(window, colors['cyan'], draw_pos(cw_pos), 3, 0)
+                #pygame.draw.line(window, colors['cyan'], draw_pos(ctr_pos), draw_pos(cw_pos), 1)
+                #pygame.draw.circle(window, colors['cyan'], draw_pos(cw_pos), 3, 0)
 
-        for rank in ccw_arcs:
-            for ctr, ccw_arc in rank:
+        for ccw_arc_rank in ccw_arcs:
+            for ctr, ccw_arc in ccw_arc_rank:
                 ctr_pos = float(ctr[0]) / 6, float(ctr[1]) / 6
                 ccw_pos = float(ccw_arc[0]) / 6, float(ccw_arc[1]) / 6
-                pygame.draw.line(window, colors['yellow'], draw_pos(ctr_pos), draw_pos(ccw_pos), 1)
-                pygame.draw.circle(window, colors['yellow'], draw_pos(ccw_pos), 3, 0)
+                #pygame.draw.line(window, colors['yellow'], draw_pos(ctr_pos), draw_pos(ccw_pos), 1)
+                #pygame.draw.circle(window, colors['yellow'], draw_pos(ccw_pos), 3, 0)
 
         for i in range(len(visited_hexes)):
             rank = visited_hexes[i]
@@ -567,11 +567,58 @@ if __name__ == '__main__':
     while True is True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                map = generatemap()
-                cw_arcs = [[]]
-                ccw_arcs = [[]]
-                visited_hexes = [{}]
-                peri = [[]]
-                fov = FOV(center, map)
-                fov.calculate()
-                mapdraw()
+                if chr(event.key) == 'q':
+                    can_see = {}
+                    cant_see = {}
+                    sys.stdout.write("Running a LOS test!\n\n\n")
+                    attempt = 0
+                    loops = 1
+                    while attempt <  loops:
+                        attempt += 1
+                        map = generatemap()
+                        cw_arcs = [[]]
+                        ccw_arcs = [[]]
+                        visited_hexes = [{}]
+                        peri = [[]]
+                        fov = FOV(center, map)
+                        fov.calculate()
+
+                        if attempt == loops:
+                            mapdraw()
+
+                        ctr, cw = cw_arcs[0][0]
+                        ctr, ccw = ccw_arcs[0][0]
+                        for y in range(mapsize): 
+                            for x in range(mapsize):
+                                cw_arcs = [[]]
+                                ccw_arcs = [[]]
+                                visited_hexes = [{}]
+                                peri = [[]]
+                                symmetry_check = FOV((x,y), map)
+                                symmetry_check.calculate()
+
+
+                                if symmetry_check.visible.get(mult(center,6)) is True and fov.visible.get((x*6, y*6)) is None:
+                                    cant_see[(attempt, (x,y))] = True
+                                    if attempt == loops:
+                                        draw_hex((x,y), 'yellow')
+
+                                if symmetry_check.visible.get(mult(center,6)) is None and fov.visible.get((x*6, y*6)) is True:
+                                    can_see[(attempt, (x,y))] = True
+                                    if attempt == loops:
+                                        draw_hex((x,y), 'magenta')
+                    if attempt == loops:
+                        pygame.display.update()
+                    sys.stdout.write("Failures in %s attempts:\n" % attempt)
+                    sys.stdout.write("Number of extraneous hexes: %s\n" % len(can_see))
+                    sys.stdout.write("Number of missing hexes: %s\n" % len(cant_see))
+
+                else:
+                    map = generatemap()
+                    cw_arcs = [[]]
+                    ccw_arcs = [[]]
+                    visited_hexes = [{}]
+                    peri = [[]]
+                    fov = FOV(center, map)
+                    fov.calculate()
+                    mapdraw()
