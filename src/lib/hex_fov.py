@@ -301,25 +301,21 @@ class Arc:
         # Contract the clockwise arm of the arc until a non-blocked hex is found.
         for index in range(self.start, self.stop+1):
             pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is False:
+            self.parent.visible[pos] = True
+            if self.parent.map.get(pos) is False:
                 self.contractCW(vertices)
                 self.start += 1
-                self.parent.visible[pos] = "red"
             else:
-                self.parent.visible[pos] = "yellow"
                 break
 
         # Contract the counterclockwise arm of the arc until a non-blocked hex is found.
         for index in reversed(range(self.start, self.stop+1)):
             pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is False:
+            self.parent.visible[pos] = True
+            if self.parent.map.get(pos) is False:
                 self.contractCCW(vertices)
                 self.stop -= 1
-                self.parent.visible[pos] = "red"
             else:
-                self.parent.visible[pos] = "cyan"
                 break
 
         # Exit early if the arc is too small to contain anything.
@@ -329,11 +325,8 @@ class Arc:
         # Go across the arc's span, excepting the very start and end, splitting into two arcs if an obstacle is detected.
         for index in range(self.start+1, self.stop):
             pos, vertices = self.parent.cells[rank][index]
-            tile = self.parent.map.get(pos)
-            if tile is not False:
-                self.parent.visible[pos] = "magenta"
-            else:
-                self.parent.visible[pos] = "!"
+            self.parent.visible[pos] = True
+            if self.parent.map.get(pos) is False:
                 child = Arc(self.parent, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(vertices)
                 self.stop = index - 1
