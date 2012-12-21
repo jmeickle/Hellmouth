@@ -300,7 +300,7 @@ class Arc:
         for index in range(self.start, self.stop+1):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
-            if self.parent.map.get(pos) is False:
+            if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCW(checkpoints)
                 self.start += 1
             else:
@@ -310,7 +310,7 @@ class Arc:
         for index in reversed(range(self.start, self.stop+1)):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
-            if self.parent.map.get(pos) is False:
+            if self.parent.map.get(div(pos, 6)) is False:
                 self.contractCCW(checkpoints)
                 self.stop -= 1
             else:
@@ -324,8 +324,8 @@ class Arc:
         for index in range(self.start+1, self.stop):
             pos, checkpoints = self.parent.cells[rank][index]
             self.parent.visible[pos] = True
-            if self.parent.map.get(pos) is False:
-                child = Arc(self.parent, index+1, self.stop, self.cw, self.ccw)
+            if self.parent.map.get(div(pos, 6)) is False:
+                child = Arc(self.parent, self.center, index+1, self.stop, self.cw, self.ccw)
                 child.contractCW(checkpoints)
                 self.stop = index - 1
                 self.contractCCW(checkpoints)
