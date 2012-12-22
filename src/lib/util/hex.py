@@ -210,7 +210,7 @@ def perimeter(origin, rank, data=False):
             return [origin]
         else:
             return [(origin, 0)]
-    corner = add(origin, mult(SE, rank))
+    corner = add(origin, mult(SW, rank))
     cells = [corner]
     for dir in dirs:
         cells.extend(cardinal_line(corner, rank, dir))
