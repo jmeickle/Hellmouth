@@ -1,8 +1,8 @@
 import curses
 
-from views.color import Color
-from define import *
-import key
+from src.lib.views.color import Color
+from src.lib.util.define import *
+from src.lib.util import key
 import random
 
 # Component is the minimal base class. They participate in keyin and draw

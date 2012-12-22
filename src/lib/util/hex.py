@@ -62,7 +62,7 @@ def rot(dir, turns=1):
     if dir == CC:
         return dir
     start = rotation[dir]
-    end = (start+turns) % num_dirs
+    end = (start+turns) % 6
     return dirs[end]
 
 # Alias for rotating 180 degrees (3 rotations).
@@ -204,22 +204,25 @@ class Shape():
 #         self.cells = self.area(center, rank)
 
 # Find all hexes at a given distance.
-def perimeter(origin, rank):
+def perimeter(origin, rank, data=False):
     if rank == 0:
         return [origin]
     corner = add(origin, mult(SE, rank))
-    hexes = [corner]
+    cells = [corner]
     for dir in dirs:
-        hexes.extend(cardinal_line(corner, rank, dir))
-        corner = hexes[-1]
-    return hexes
+        cells.extend(cardinal_line(corner, rank, dir))
+        corner = cells[-1]
+    if data is False:
+        return cells
+    else:
+        return [(cell, rank) for cell in cells]
 
 # Find all hexes up to a given rank.
-def area(origin, rank):
-    hexes = []
+def area(origin, rank, data=False):
+    cells = []
     for r in range(rank):
-        hexes.extend(perimeter(origin, r+1))
-    return hexes
+        cells.extend(perimeter(origin, r+1, data))
+    return cells
 
 # Return a number of random points on a perimeter.
 def random_perimeter(origin, rank, choices=1):
