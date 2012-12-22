@@ -70,8 +70,8 @@ class MeatArena():
         # Configure map settings, typically based on depth (destination).
         self.configure_map(destination)
 
-        # Call the map's terrain generator.
-	self.map.generate_terrain()
+        # Call the map's terrain generator
+        self.map.generate_terrain()
 
         # Monster placement.
         self.place_monsters(destination)
@@ -134,7 +134,6 @@ class MeatArena():
         cells = area(self.map.center, self.map.size)
         while num_mons > 0:
             monster = random.choice(monsters)()
-#            monster = monster()
             monster.generate_equipment()
             pos = random.choice(cells)
             if self.map.put(monster, pos) is not False:
