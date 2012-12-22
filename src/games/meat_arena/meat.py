@@ -4,7 +4,7 @@ from src.lib.util.component import Component
 from src.lib.views.screens import Screen
 from src.lib.views.tactical import Window
 from src.lib.views.help import HelpScreen
-from src.games.meat_arena.levels.meat.arena import MeatArena
+from src.games.meat_arena.levels.arena import MeatArena
 from src.lib.util.key import *
 from src.lib.data import screens
 
