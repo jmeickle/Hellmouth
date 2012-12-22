@@ -189,7 +189,7 @@ class Shape():
 
 # A hexagon, which is the hexgrid equivalent of a square.
 #
-# The radius is the number of full hexes from the center to the edge, like so:
+# The rank is the number of full hexes from the center to the edge, like so:
 #
 #  2 2 2
 # 2 1 1 2
@@ -197,53 +197,49 @@ class Shape():
 # 2 1 1 2
 #  2 2 2
 
-class Hexagon(Shape):
-    def __init__(center, radius=1):
-        Shape.__init__(self, center)
-        self.rank = rank
-        self.cells = self.area(center, radius - 1)
+# class Hexagon(Shape):
+#     def __init__(center, rank=1):
+#         Shape.__init__(self, center)
+#         self.rank = rank
+#         self.cells = self.area(center, rank)
 
-    # Find all hexes at a given distance.
-    def perimeter(center, radius):
-        hexes = []
-        corner = add(origin, mult(SE, radius))
-        for dir in dirs:
-            for hex in cardinal_line(corner, radius, dir):
-                hexes.append((hex, rank))
-            corner = hexes[-1]
-        return hexes
+# Find all hexes at a given distance.
+def perimeter(origin, rank):
+    if rank == 0:
+        return [origin]
+    corner = add(origin, mult(SE, rank))
+    hexes = [corner]
+    for dir in dirs:
+        hexes.extend(cardinal_line(corner, rank, dir))
+        corner = hexes[-1]
+    return hexes
 
-    # Find all hexes up to a given radius.
-    def area(center, radius):
-        hexes = [(center, 0)]
-        for r in range(radius+1):
-            for hex in perimeter(origin, r):
-                if info is True:
-                    hex, data = hex
-                    hexes[hex] = data
-                else:
-                    hexes[hex] = True
-        return hexes
+# Find all hexes up to a given rank.
+def area(origin, rank):
+    hexes = []
+    for r in range(rank):
+        hexes.extend(perimeter(origin, r+1))
+    return hexes
 
-    # Return a number of random points on a perimeter.
-    def random_perimeter(center, radius, choices=1):
-        cells = perimeter(dist, origin)
-        points = []
-        for x in range(choices):
-            choice = random.choice(cells)
-            cells.remove(choice)
-            points.append(choice)
-        return points
+# Return a number of random points on a perimeter.
+def random_perimeter(origin, rank, choices=1):
+    cells = perimeter(origin, rank)
+    points = []
+    for x in range(choices):
+        choice = random.choice(cells)
+        cells.remove(choice)
+        points.append(choice)
+    return points
 
-    # Return a number of random points on an area.
-    def random_area(center, radius, choices=1):
-        cells = area(dist, origin)
-        points = []
-        for x in range(choices):
-            choice = random.choice(cells.keys())
-            del cells[choice]
-            points.append(choice)
-        return points
+# Return a number of random points on an area.
+def random_area(origin, rank, choices=1):
+    cells = area(origin, rank)
+    points = []
+    for x in range(choices):
+        choice = random.choice(cells)
+        cells.remove(choice)
+        points.append(choice)
+    return points
 
 # TODO: Clean this the fuck up.
 # TODO: Make function iteration actually work.
