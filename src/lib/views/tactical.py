@@ -159,8 +159,8 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
-        cells = area(self.center, self.zoom, True)
-        for cell, distance in cells:
+        cells = area(self.center, self.zoom)
+        for cell in cells:
             if self.map.valid(cell) is not False:
                 glyph, col, subposition = self.get_glyph(cell)
             else:
