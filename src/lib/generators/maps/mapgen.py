@@ -69,7 +69,7 @@ class Cave(MapGen):
         node = self.nodes.pop(0)
         pos = self.center
         size = 5
-        hexes = area(size, pos)
+        hexes = area(pos, size)
         self.store(hexes, size)
 
         for connection in self.connections.pop(node, []):
@@ -86,11 +86,12 @@ class Cave(MapGen):
         width = min(r1d6(), 3)
         steps = line(pos1, pos2)
         for step in steps:
-            cells = area(width, step)  # TODO: Efficiency!
+            # TODO: Efficiency!
+            cells = area(step, width, True)
             for pos, dist in cells.items():
-#                if dist == width:
-#                    self.cells[pos] = (None, CaveWall())
-#                else:
+                if dist == width:
+                    self.cells[pos] = (None, CaveWall())
+                else:
                     self.cells[pos] = (None, None)
 
     # Place a node, then try to do the same for its children.
@@ -102,10 +103,10 @@ class Cave(MapGen):
         self.connect_nodes(origin, pos)
 
         size = r1d6() + 2
-        cells = area(size, pos)
+        cells = area(pos, size, True)
         self.store(cells, size)
-#        for pos, dist in cells.items():
-#            self.cells[pos] = (dist, None)
+        for pos, dist in cells:
+            self.cells[pos] = (dist, None)
 
         for connection in self.connections.pop(node, []):
             self.place_nodes(connection, pos)

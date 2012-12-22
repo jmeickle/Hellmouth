@@ -75,7 +75,7 @@ class MeatTunnel(MapGen):
             if x % 4 == 0:
                 for dir in (NW, SW):
                     pos = add(cell, mult(dir, 3))
-                    col = area(1, pos)
+                    col = area(pos, 1)
                     for pos, dist in col.items():
                         if dist == 1:
                             self.cells[pos] = (dist, MeatWall('outer'))
@@ -110,7 +110,7 @@ class MeatTower(MapGen):
         for x in range(colnum):
             colsize = random.randint(1, 3)
             pos = (self.center[0] + coin()*random.randint(4, self.size)-colsize, self.center[1] + coin() * random.randint(4,self.size)-colsize)
-            col = area(colsize, pos)
+            col = area(pos, colsize)
             for pos, dist in col.items():
                 if dist == colsize:
                     self.cells[pos] = (dist, MeatWall('outer'))
@@ -119,7 +119,7 @@ class MeatTower(MapGen):
 
         # Build the Sauceror's tower.
         tower_center = add(self.center, mult(CE, 15))
-        tower = area(10, tower_center)
+        tower = area(tower_center, 10)
         for pos, dist in tower.items():
             if dist == 10:
                 self.cells[pos] = (dist, MeatWall('outer'))
@@ -131,7 +131,7 @@ class MeatTower(MapGen):
                 self.cells[pos] = (dist, None)
 
         # Entrance to the tower.
-        for pos in area(2, add(self.center, mult(CE, 7))):
+        for pos in area(add(self.center, mult(CE, 7)), 2):
             self.cells[pos] = (dist, None)
 
         self.place_exits()
