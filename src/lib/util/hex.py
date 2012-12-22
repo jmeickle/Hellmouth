@@ -206,7 +206,10 @@ class Shape():
 # Find all hexes at a given distance.
 def perimeter(origin, rank, data=False):
     if rank == 0:
-        return [origin]
+        if data is False:
+            return [origin]
+        else:
+            return [(origin, 0)]
     corner = add(origin, mult(SE, rank))
     cells = [corner]
     for dir in dirs:
@@ -220,8 +223,8 @@ def perimeter(origin, rank, data=False):
 # Find all hexes up to a given rank.
 def area(origin, rank, data=False):
     cells = []
-    for r in range(rank):
-        cells.extend(perimeter(origin, r+1, data))
+    for r in range(rank+1):
+        cells.extend(perimeter(origin, r, data))
     return cells
 
 # Return a number of random points on a perimeter.
