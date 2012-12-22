@@ -5,7 +5,7 @@
 
 from actor import Actor
 import ai.astar
-from hex import *
+from src.lib.util.hex import *
 import body
 
 class NPC(Actor):

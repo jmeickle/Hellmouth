@@ -1,6 +1,8 @@
-from dice import *
-from generators.text.describe import describe
-from text import *
+from src.lib.util.dice import *
+from src.lib.util.text import *
+
+from src.lib.generators.text.describe import describe
+
 
 def combat(attack):
     strings = []

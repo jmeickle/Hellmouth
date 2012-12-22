@@ -1,14 +1,14 @@
-from component import Component
-from color import Color
-from define import *
-from hex import *
-import key
-
 import curses
 import re
-
 from collections import deque
 from random import choice
+
+from src.lib.util.component import Component
+from src.lib.util.define import *
+from src.lib.util.hex import *
+from src.lib.util import key
+
+from color import Color
 
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):

@@ -1,7 +1,7 @@
 from copy import copy
 
-from objects.items.item import Item
-from text import *
+from src.lib.objects.items.item import Item
+from src.lib.util.text import *
 
 # Corpses!
 class Corpse(Item):

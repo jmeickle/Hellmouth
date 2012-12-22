@@ -1,8 +1,8 @@
 import random
 
-from define import *
-from objects.items.item import Natural
-from objects.items.carrion import PartialCorpse
+from src.lib.util.define import *
+from src.lib.objects.items.item import Natural
+from src.lib.objects.items.carrion import PartialCorpse
 
 # Hit location
 class HitLoc:

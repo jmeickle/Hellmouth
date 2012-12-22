@@ -1,6 +1,6 @@
 import random
-from hex import *
-from text import *
+from src.lib.util.hex import *
+from src.lib.util.text import *
 
 class Cell:
     def __init__(self, pos, parent):

@@ -1,6 +1,6 @@
-from data import help
-from data import screens
-from views.screens import Screen
+from src.lib.data import help
+from src.lib.data import screens
+from src.lib.views.screens import Screen
 
 class HelpScreen(Screen):
     def __init__(self, window):

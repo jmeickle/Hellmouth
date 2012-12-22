@@ -6,13 +6,11 @@
 #     http://www.amagam.com/hexpath/
 
 if __name__ != '__main__':
-    from define import *
-    from hex import *
+    from src.lib.util.define import *
+    from src.lib.util.hex import *
 
+# Simple heuristic: hexagonal distance.
 def heuristic(pos1, pos2):
-# Manhattan (probably totally broken for hexes!):
-#    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
-# Pure hexagonal distance:
     return dist(pos1, pos2)
 
 class AStar:

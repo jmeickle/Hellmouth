@@ -1,4 +1,4 @@
-from objects.items.modifiers import *
+from src.lib.objects.items.modifiers import *
 
 generators = {
 

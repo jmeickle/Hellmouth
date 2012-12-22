@@ -1,24 +1,27 @@
 from random import choice
+from operator import itemgetter
 
-from define import *
-from dice import *
-from hex import *
-from key import *
-from text import *
-from generators.text.describe import describe
-from generators.items import EquipmentGenerator
-import data
+from src.lib.util.define import *
+from src.lib.util.dice import *
+from src.lib.util.hex import *
+from src.lib.util.key import *
+from src.lib.util.text import *
 
-from data import skills
-from data import traits
-import generators.points
+from src.lib.generators.text.describe import describe
+from src.lib.generators.items import EquipmentGenerator
+
+# TODO: Better data importing.
+import src.lib.data
+from src.lib.data import skills
+from src.lib.data import traits
+
+import src.lib.generators.points
 import body
 
 from combat import CombatAction
-import log
-from operator import itemgetter
+from src.lib.util import log
 
-from objects.items.carrion import Corpse
+from src.lib.objects.items.carrion import Corpse
 
 # Players, monsters, etc.
 class Actor:
@@ -110,7 +113,7 @@ class Actor:
 
         equipment = []
         for loadout in loadouts:
-            generator = EquipmentGenerator(data.generators.equipment.generators)
+            generator = EquipmentGenerator(src.lib.data.generators.equipment.generators)
             equipment.extend(generator.generate_equipment(loadout))
 
         for item in equipment:
@@ -192,7 +195,7 @@ class Actor:
         if unspent is True:
             points += self.points["unspent"]
             self.points["unspent"] = 0
-        spent = generators.points.spend_points(self)
+        spent = src.lib.generators.points.spend_points(self)
         for k, v in spent.items():
             if k == 'unspent' and unspent is True:
                 self.points["unspent"] += v

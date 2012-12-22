@@ -1,7 +1,8 @@
 import copy
 import re
 import random
-from data.generators.text import tokens
+# TODO: Better way of importing data.
+from src.lib.data.generators.text import tokens
 # This file is mostly for generating random text. Other stuff will eventually be moved out of it.
 
 # Key combinations. Supports anything, but using these keys:

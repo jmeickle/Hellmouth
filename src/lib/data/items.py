@@ -6,8 +6,9 @@
 # TODO: Whips
 # TODO: Foreign weapons
 
-from define import *
-from objects.items.item import *
+# TODO: Better way of storing/etc. this data
+from src.lib.util.define import *
+from src.lib.objects.items.item import *
 
 item_list = {
 # Swords.

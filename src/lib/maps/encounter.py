@@ -1,11 +1,13 @@
 # The map and cells in the map.
 # TODO: Not cells in the map.
 from collections import deque
-import hex
-from text import *
-from data import screens
-import log
-from maps.cell import Cell
+
+from src.lib.util.text import *
+from src.lib.util import log
+
+from src.lib.data import screens
+
+from cell import Cell
 
 class Encounter:
     def __init__(self, level):

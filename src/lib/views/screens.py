@@ -1,9 +1,9 @@
 # Basic full-screen classes and their methods.
 import curses
 
-from define import *
-from text import *
-from views.view import View
+from src.lib.util.define import *
+from src.lib.util.text import *
+from src.lib.views.view import View
 
 # Border, heading, body text.
 class Screen(View):

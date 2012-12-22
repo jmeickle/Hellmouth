@@ -1,33 +1,33 @@
-from generators.maps.mapgen import MapGen
-from hex import *
-from objects.terrain import *
+from src.lib.generators.maps.mapgen import MapGen
+from src.lib.util.hex import *
+from src.lib.objects.terrain import *
 
 class MeatArena(MapGen):
     def __init__(self, exits=None):
         MapGen.__init__(self, exits)
-        self.walls = 3
+        self.wall_width = 3
 
     def attempt(self):
-        hexes = area(self.size, self.center)
+        hexes = area(self.center, self.size, True)
 
         # Arena floor / walls
-        for pos, dist in hexes.items():
-            if dist > self.size - self.walls:
+        for pos, dist in hexes:
+            if dist > self.size - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('inner'))
-            elif dist == self.size - self.walls:
+            elif dist == self.size - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('outer'))
             else:
                 self.cells[pos] = (dist, None)
 
         # Randomly placed columns
-        colnum = self.size + r3d6()
-        positions = random_area(self.size, self.center, colnum)
-        for x in range(colnum):
-            colsize = random.choice((1, 1, 1, 2, 2, 3, 4))
-            pos = positions.pop()
-            col = area(colsize, pos)
-            for pos, dist in col.items():
-                if dist == colsize:
+        num_columns = self.size + r3d6()
+        column_positions = random_area(self.center, self.size, num_columns)
+        for x in range(num_columns):
+            column_size = random.choice((1, 1, 1, 2, 2, 3, 4))
+            pos = column_positions.pop()
+            column = area(pos, column_size, True)
+            for pos, dist in column:
+                if dist == column_size:
                     self.cells[pos] = (dist, MeatWall('outer'))
                 else:
                     self.cells[pos] = (dist, MeatWall('inner'))
@@ -94,13 +94,13 @@ class MeatTower(MapGen):
         self.walls = 3
 
     def attempt(self):
-        hexes = area(self.size, self.center)
+        hexes = area(self.center, self.size)
 
         # Arena floor / walls
         for pos, dist in hexes.items():
-            if dist > self.size - self.walls:
+            if dist > self.size - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('inner'))
-            elif dist == self.size - self.walls:
+            elif dist == self.size - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('outer'))
             else:
                 self.cells[pos] = (dist, None)
@@ -123,9 +123,9 @@ class MeatTower(MapGen):
         for pos, dist in tower.items():
             if dist == 10:
                 self.cells[pos] = (dist, MeatWall('outer'))
-            elif dist > 10 - self.walls:
+            elif dist > 10 - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('inner'))
-            elif dist == 10 - self.walls:
+            elif dist == 10 - self.wall_width:
                 self.cells[pos] = (dist, MeatWall('outer'))
             else:
                 self.cells[pos] = (dist, None)

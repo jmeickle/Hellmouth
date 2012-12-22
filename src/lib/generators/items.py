@@ -1,7 +1,8 @@
-from data import items
-from data.generators.equipment import generators
+# TODO: Better way of importing data.
+from src.lib.data import items
+from src.lib.data.generators.equipment import generators
 
-from generators.generator import Generator
+from src.lib.generators.generator import Generator
 
 class EquipmentGenerator(Generator):
     def __init__(self, choices):

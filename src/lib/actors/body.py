@@ -1,5 +1,5 @@
 from hitloc import *
-from generators import items
+from src.lib.generators import items
 from operator import attrgetter
 
 # Body layouts - humanoid, hexapod, etc.

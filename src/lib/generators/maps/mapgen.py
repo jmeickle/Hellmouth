@@ -1,8 +1,8 @@
 import random
-from define import *
-from dice import *
-from hex import *
-from objects.terrain import *
+from src.lib.util.define import *
+from src.lib.util.dice import *
+from src.lib.util.hex import *
+from src.lib.objects.terrain import *
 
 # Map generator class. If called, builds a hexagonal shape of plain tiles.
 class MapGen():
@@ -13,8 +13,8 @@ class MapGen():
         self.exits = exits
 
     def attempt(self):
-        hexes = area(self.size, self.center)
-        for pos, dist in hexes.items():
+        hexes = area(self.center, self.size, True)
+        for pos, dist in hexes:
             self.cells[pos] = (dist, None)
         self.place_exits()
         return self.cells, self.exits
@@ -28,7 +28,7 @@ class MapGen():
             where, pos = exit
             if pos is None:
                 dist = r1d(self.size/2) + self.size/2 - 4
-                pos = random_perimeter(dist, self.center).pop()
+                pos = random_perimeter(self.center, dist).pop()
                 self.cells[pos] = (dist, Stairs(which, where))
             else:
                 self.cells[pos] = (None, Stairs(which, where))

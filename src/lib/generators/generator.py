@@ -1,4 +1,4 @@
-from dice import *
+from src.lib.util.dice import *
 
 # Helper class to make choices from a weighted list.
 class Generator:

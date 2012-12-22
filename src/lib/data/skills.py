@@ -1,4 +1,5 @@
-from define import *
+# TODO: Better way of importing data
+from src.lib.util.define import *
 
 # Calculate ranks in skills based on number of points spent and their difficulty.
 # TODO: Move this out of data!

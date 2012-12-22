@@ -1,7 +1,7 @@
 # The map, cells in the map, and terrain.
 from collections import deque
-from describe import commas
-from item import Item
+from src.lib.util.describe import commas
+from src.lib.objects.item import Item
 import random
 
 class Map:

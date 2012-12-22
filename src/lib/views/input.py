@@ -1,10 +1,11 @@
 import curses
 
-from component import Component
-from views.view import View
-from define import *
-from hex import *
-from key import *
+from src.lib.util.component import Component
+from src.lib.util.define import *
+from src.lib.util.hex import *
+from src.lib.util.key import *
+
+from view import View
 
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):
@@ -133,6 +134,8 @@ class Cursor(Component):
     def draw(self):
         pos = self.pos
         cell = self.map.cell(pos)
+        color = "black-black"
+        
         if cell is not None:
             if cell.actors:
                 actor = cell.actors[self.selector.index]

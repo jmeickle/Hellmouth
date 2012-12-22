@@ -1,20 +1,21 @@
 import curses
 
-from views.view import View
-from views.screens import Screen
-from views.input import *
-
-from define import *
-from hex import *
-from data.skills import skill_list
-
 from collections import deque
+from operator import itemgetter, attrgetter
 from random import choice
 
-from text import *
-from operator import itemgetter, attrgetter
+from src.lib.views.view import View
+from src.lib.views.screens import Screen
+from src.lib.views.input import *
 
-import log
+from src.lib.util.define import *
+from src.lib.util.hex import *
+from src.lib.util.text import *
+from src.lib.util import log
+
+from src.lib.data.skills import skill_list
+
+
 
 # Main tactical window class.
 class Window(View):
@@ -158,8 +159,8 @@ class MainMap(View):
         else:
             self.center = self.player.pos
 
-        cells = area(self.zoom, self.center)
-        for cell, distance in cells.items():
+        cells = area(self.center, self.zoom, True)
+        for cell, distance in cells:
             if self.map.valid(cell) is not False:
                 glyph, col, subposition = self.get_glyph(cell)
             else:

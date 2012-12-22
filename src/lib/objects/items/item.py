@@ -1,5 +1,7 @@
 import random
-from objects.items.modifiers import *
+
+# TODO: Better way of handling imports/data
+from src.lib.objects.items.modifiers import *
 
 # Items.
 class Item():

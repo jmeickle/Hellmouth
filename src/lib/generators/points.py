@@ -2,10 +2,11 @@
 
 import random
 
-from define import *
-from dice import *
-from data.generators.points import generators
-from generators.generator import Generator
+# TODO: Better way of importing data
+from src.lib.util.define import *
+from src.lib.util.dice import *
+from src.lib.data.generators.points import generators
+from src.lib.generators.generator import Generator
 
 def spend_points(actor, points=None):
     # If we didn't feed in a number of points, we're using the actor's

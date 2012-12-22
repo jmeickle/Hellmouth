@@ -1,8 +1,8 @@
 # TODO: Make the keys more consistent.
-from define import *
-from dice import *
-from hex import *
-from generators.text.combat import combat
+from src.lib.util.define import *
+from src.lib.util.dice import *
+from src.lib.util.hex import *
+from src.lib.generators.text.combat import combat
 
 # KEY DEFINITIONS:
 # attacker: who launched the attack
