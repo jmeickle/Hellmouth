@@ -1,5 +1,5 @@
-from views.screens import Screen
-from data import screens
+from src.lib.views.screens import Screen
+from src.lib.data import screens
 
 # TODO: Split this out later.
 class StartScreen(Screen):

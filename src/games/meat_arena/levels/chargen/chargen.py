@@ -1,13 +1,14 @@
 from copy import copy
 import curses
 
-from component import Component
-from views.view import View
+from src.lib.util.component import Component
+from src.lib.views.view import View
 
-from levels.chargen.lifepath import Lifepath
+# TODO: Make this not depend on game
+from src.games.meat_arena.levels.chargen.lifepath import Lifepath
 
-from data.dialogue import chargen
-from data.lifepaths import eventdata
+from src.lib.data.dialogue import chargen
+from src.lib.data.lifepaths import eventdata
 
 class Chargen(Component):
     def __init__(self, screen, player):

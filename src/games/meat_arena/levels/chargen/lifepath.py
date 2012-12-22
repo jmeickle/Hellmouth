@@ -1,7 +1,7 @@
-from data.lifepaths import eventdata, skip
+from src.lib.data.lifepaths import eventdata, skip
 import random
-from data import skills
-from data import traits
+from src.lib.data import skills
+from src.lib.data import traits
 
 # A lifepath is the sum of your choices during character generation. It is
 # composed of lifepath events, forming a tree structure.

@@ -1,12 +1,12 @@
 # MEAT ARENA is a testing arena for Hellmouth, and a minigame in its own right.
-from actors.player import Player
-from component import Component
-from views.screens import Screen
-from views.tactical import Window
-from views.help import HelpScreen
-from levels.meat.arena import MeatArena
-from key import *
-from data import screens
+from src.lib.actors.player import Player
+from src.lib.util.component import Component
+from src.lib.views.screens import Screen
+from src.lib.views.tactical import Window
+from src.lib.views.help import HelpScreen
+from src.games.meat_arena.levels.meat.arena import MeatArena
+from src.lib.util.key import *
+from src.lib.data import screens
 
 # TODO: Split this into a generic game class and a meatgame meatclass
 class Game(Component):

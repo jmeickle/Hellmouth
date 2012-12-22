@@ -1,10 +1,10 @@
-from dice import *
-from generators.maps import meat
-from generators.items import ItemGenerator, generate_item
-from data.generators.items import generators
-from maps.encounter import Encounter
-from data import screens
-from hex import *
+from src.lib.util.dice import *
+from src.lib.generators.maps import meat
+from src.lib.generators.items import ItemGenerator, generate_item
+from src.lib.data.generators.items import generators
+from src.lib.maps.encounter import Encounter
+from src.lib.data import screens
+from src.lib.util.hex import *
 
 # TODO: Genericize this class.
 class MeatArena():
@@ -120,7 +120,7 @@ class MeatArena():
             return True
 
         # Define NPCs to be placed
-        from actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
+        from src.lib.actors.npc import MeatSlave, MeatWorm, MeatGolem, MeatHydra
         monsters = [MeatSlave] * 10#MeatWorm, MeatGolem, MeatHydra]
         for x in range(depth-1 * 3):
             monsters.append(MeatWorm)
@@ -131,10 +131,10 @@ class MeatArena():
 
         # Place monsters
         num_mons = sum(roll(r1d6, depth+1))
-        cells = area(self.map.size, self.map.center).keys()
+        cells = area(self.map.center, self.map.size)
         while num_mons > 0:
-            monster = random.choice(monsters)
-            monster = monster()
+            monster = random.choice(monsters)()
+#            monster = monster()
             monster.generate_equipment()
             pos = random.choice(cells)
             if self.map.put(monster, pos) is not False:
