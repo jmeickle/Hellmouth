@@ -5,7 +5,7 @@ def main(stdscr):
     # Use raw input mode.
     curses.raw()
 
-    from games.meat import Game
+    from src.games.meat_arena.meat import Game
     game = Game(stdscr)
     loop = True
 
