@@ -1405,3 +1405,24 @@ class Actor:
     # Paperdolls are based on body, of course.
     def paperdoll(self):
         return self.body.paperdoll()
+
+    # STUB FUNCTIONS for action chain stuff.
+    def can_touch(self, target):
+        print "%s can touch %s" % (self.name, target.name)
+        return True
+
+    def can_grasp(self, target):
+        print "%s can grasp %s" % (self.name, target.name)
+        return True
+
+    def can_use(self, target):
+        print "%s can use %s" % (self.name, target.name)
+        return True
+
+    def can_wield(self, target):
+        print "%s can wield %s" % (self.name, target.name)
+        return True
+
+    def can_throw(self, target):
+        print "%s can throw %s" % (self.name, target.name)
+        return True

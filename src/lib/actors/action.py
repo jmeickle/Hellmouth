@@ -45,27 +45,30 @@ class ActionPrimitive():
     # Add checks for actor methods to the primitive's class.
     def add_method(self, method):
         def _default_method(self, actor, target):
-            return getattr(actor, self.apply(method))(actor, target)
+            return getattr(actor, self.apply(method))(target)
         _default_method.__name__ = method
         setattr(self.__class__, _default_method.__name__, _default_method)
 
 class Action():
-    def __init__():
-        pass
+    def __init__(self, primitives):
+        self.primitives = primitives
 
-
-
+    # Check a given method for each primitive in the chain.
+    def check(self, method, actor, target):
+        for primitive in self.primitives:
+            current = globals()[primitive]()
+            if getattr(current, method)(actor, target) is False:
+                print "Failed at %" % primitive
+                return False 
+            else:
+                print "%s->%s_%s->%s" % (actor.name, method, current.__class__.__name__, target.name)
+        return True
 
 # Touch the target (with anything).
 class touch(ActionPrimitive): pass
 
 # Hold on to the target using a manipulator.
-class grasp(ActionPrimitive):
-# TODO: Remove this, it's only here for testing.
-    if __name__ == '__main__':
-        def can_grasp(self, actor, target):
-            return "Yay! Actor: %s; Target: %s" % (actor, target)
-    pass
+class grasp(ActionPrimitive): pass
 
 # Let go of a target held in a manipulator.
 class ungrasp(ActionPrimitive): pass
@@ -92,21 +95,36 @@ class drop(ActionPrimitive): pass
 class throw(ActionPrimitive): pass
 
 # Swing a sword:
-action = ["touch", "grasp", "wield", "use"]
+#action = ["touch", "grasp", "wield", "use"]
 
 # Throw a grenade:
-action = ["touch", "grasp", "wield", "throw"]
+#action = ["touch", "grasp", "wield", "throw"]
 
 # Throw a grenade (with pin):
-action = ["touch", "grasp", "wield", "use", "throw"]
+#action = ["touch", "grasp", "wield", "use", "throw"]
 
 # Basic testing code.
 if __name__ == '__main__':
-    test = grasp()
-    print "Class methods:", test.__class__.__dict__
-    print "Trying 'can_grasp':", test.can(test, test)
-    print "Trying 'cancel_grasp':", test.cancel(test, test)
+#    test = grasp()
+#    print "Class methods:", test.__class__.__dict__
+#    print "Trying 'can_grasp':", test.can(test, test)
+#    print "Trying 'cancel_grasp':", test.cancel(test, test)
 
     # Inspecting function source:
     # import inspect
     # print inspect.getsource(test.can)
+#    import action
+#    test2 = getattr(action, 'grasp')()
+#    print "Second object:", test2
+#    print "Trying 'can_grasp':", test2.can(test2, test2)
+
+    import actor
+    # Actor 1
+    a1 = actor.Actor()
+    # Actor 2
+    a2 = actor.Actor()
+
+    # Throw a grenade:
+    throw_grenade = Action(["touch", "grasp", "wield", "throw"])
+    if throw_grenade.check("can", a1, a2):
+        throw_grenade.check("attempt", a1, a2)
