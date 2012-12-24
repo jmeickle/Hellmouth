@@ -49,16 +49,58 @@ class ActionPrimitive():
         _default_method.__name__ = method
         setattr(self.__class__, _default_method.__name__, _default_method)
 
+class Action():
+    def __init__():
+        pass
+
+
+
+
 # Touch the target (with anything).
 class touch(ActionPrimitive): pass
 
 # Hold on to the target using a manipulator.
 class grasp(ActionPrimitive):
-    # TODO: Remove this, it's only here for testing.
+# TODO: Remove this, it's only here for testing.
     if __name__ == '__main__':
         def can_grasp(self, actor, target):
             return "Yay! Actor: %s; Target: %s" % (actor, target)
+    pass
 
+# Let go of a target held in a manipulator.
+class ungrasp(ActionPrimitive): pass
+
+# Move the target from one location to another.
+class move(ActionPrimitive): pass
+
+# Hold the target outward from your body using a manipulator.
+class wield(ActionPrimitive): pass
+
+# Attach the target to your body.
+class wear(ActionPrimitive): pass
+
+# Activate the target.
+class use(ActionPrimitive): pass
+
+# Get the item into inventory.
+class get(ActionPrimitive): pass
+
+# Drop the target from inventory.
+class drop(ActionPrimitive): pass
+
+# Throw the target at another target.
+class throw(ActionPrimitive): pass
+
+# Swing a sword:
+action = ["touch", "grasp", "wield", "use"]
+
+# Throw a grenade:
+action = ["touch", "grasp", "wield", "throw"]
+
+# Throw a grenade (with pin):
+action = ["touch", "grasp", "wield", "use", "throw"]
+
+# Basic testing code.
 if __name__ == '__main__':
     test = grasp()
     print "Class methods:", test.__class__.__dict__
@@ -68,4 +110,3 @@ if __name__ == '__main__':
     # Inspecting function source:
     # import inspect
     # print inspect.getsource(test.can)
-
