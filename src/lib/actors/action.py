@@ -305,8 +305,8 @@ actiondict = {
     "attack" : (
         ("touch", "item"),
         ("grasp", "item"),
-        ("lift", "item"),
-        ("reposition", "item"),
+#        ("lift", "item"),
+#        ("reposition", "item"),
         ("ready", "item"),
         ("contact", "target", "item"),
         ("use_at", "target", "item")
