@@ -1325,6 +1325,7 @@ class Actor:
     # ACTION PROCESSING:
     #
 
+    # Process an action.
     def action(self, methods, act, **kwargs):
         # Setup keyword arguments.
         kwargs = self.prep_kwargs(kwargs)
@@ -1355,8 +1356,11 @@ class Actor:
         return self.action(["can", "do"], act, **kwargs)
 
     #
-    # ACTION PRIMITIVE CALLBACKS:
+    # ACTION PRIMITIVE CALLBACK METHODS:
     #
+
+    # The "can" methods check whether the primitive, if attempted *right now*,
+    # would be able to be performed (but not whether it would be successful!).
 
     # STUB
     def can_touch(self, target):
@@ -1395,23 +1399,28 @@ class Actor:
     def can_use_at(self, target, item):
         return True
 
-    # STUB
+    # The "do" methods actually perform primitives and change game state. They
+    # do NOT check whether what they are attempting to do is valid because they
+    # always are preceded by appropriate "can" methods. These methods return
+    # True if the primitive is successfully performed.
+
+    # Touch the target.
     def do_touch(self, target):
         return True
 
-    # STUB
+    # Grasp the target.
     def do_grasp(self, target):
         return True
 
-    # STUB
+    # Ready the target.
     def do_ready(self, target):
         return True
 
-    # STUB
+    # Touch the target with an item.
     def do_contact(self, target, item):
         return True
 
-    # STUB
+    # Use an item at a target.
     def do_use_at(self, target, item):
         return True
 
