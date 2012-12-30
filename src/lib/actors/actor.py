@@ -17,9 +17,11 @@ from src.lib.data import traits
 
 import src.lib.generators.points
 import body
+import action
 
 from combat import CombatAction
 from src.lib.util import log
+from src.lib.util.debug import *
 
 from src.lib.objects.items.carrion import Corpse
 
@@ -97,30 +99,77 @@ class Actor:
             CMD_ATTACK : self.attack,
         }
 
-    def appearance(self):
-#        if self.controlled is True:
-#            return "<green-black>" + self.name + "</>"
-#        else:
-            return self.name
+        self.knowledge = {}
 
-    # Generate, add to inventory, and equip some generated items.
-    def generate_equipment(self, loadouts=None):
-        if loadouts is None:
-            if self.loadouts is not None:
-                loadouts = self.loadouts
-            else:
-                return False
+    #
+    # MOVEMENT AND POSITIONING:
+    #
 
-        equipment = []
-        for loadout in loadouts:
-            generator = EquipmentGenerator(src.lib.data.generators.equipment.generators)
-            equipment.extend(generator.generate_equipment(loadout))
+    # Return your own cell
+    def cell(self):
+        return self.map.cell(self.pos)
 
-        for item in equipment:
-            self._add(item)
-            self._equip(item)
+    # Calculate the distance between an actor and a target.
+    def dist(self, target):
+        return dist(self.pos, target.pos)
 
+    # Change actor coords directly and update the relevant cells.
+    def go(self, pos, dir=CC):
+        if self.map.cell(pos).occupied() is True:
+            actors = self.map.cell(pos).actors
+            self.subposition = flip(dir)
+            for actor in actors:
+                actor.subposition = dir
+        else:
+            self.subposition = CC
+        self.cell().remove(self)
+        self.pos = pos
+        self.cell().add(self)
+
+    # Try to move based on an input direction. Return whether it worked.
+    # TODO: Action chain
+    def move(self, pos, dir=CC):
+        if self.can_move(pos, dir):
+            self.go(pos, dir)
+            return True
+        else:
+            return False
+
+    # Whether we can actually move to a pos.
+    # TODO: Action chain
+    def can_move(self, pos, dir=CC):
+        if self.can_walk() is False:
+            return False
+        if self.valid_move(pos, dir) is False:
+            return False
+        return True
+
+    # Check move validity.
+    def valid_move(self, pos, dir=CC):
+        # Map border checking:
+        if self.map.valid(pos) is False:
+            return False
+
+        # Cell content checking:
+        if self.map.cell(pos).blocked(dir) is True:
+            return False
+
+        return True
+
+    # Change posture.
+    def change_posture(self, posture):
+        self.posture = posture
+
+    # Returns whether we're on the ground (either side).
+    def prone(self):
+        if self.posture == "lying prone" or self.posture == "lying face up":
+            return True
+        return False
+
+    #
     # UTILITY
+    #
+
     def ready(self):
         # HACK: We don't need to check this every turn!
         self.check_weapons()
@@ -159,78 +208,6 @@ class Actor:
                     if self.conscious() is True:
                         log.add("%s shrugs off the stun." % self.appearance())
 
-    # Display the attack line for the current combination of weapon/attack option.
-    # TODO: Multiple attacks.
-    def attackline(self):
-        weapon = self.weapons[self.weapon]
-        attack_option = self.attack_options[self.attack_option]
-        return weapon, attack_option
-
-    def choose_weapon(self, scroll):
-        assert len(self.weapons) != 0, "Had 0 weapons: %s" % self.__dict__
-        self.weapon += scroll
-        if self.weapon >= len(self.weapons):
-            self.weapon = 0
-        if self.weapon < 0:
-            self.weapon = len(self.weapons) - 1
-
-        weapon = self.weapons[self.weapon]
-        slot, appearance, trait, trait_level, item = weapon
-        self.attack_options = item.attack_options[trait]
-        self.attack_option = 0
-
-    def choose_attack_option(self, scroll):
-        assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
-        self.attack_option += scroll
-        if self.attack_option >= len(self.attack_options):
-            self.attack_option = 0
-        if self.attack_option < 0:
-            self.attack_option = len(self.attack_options) - 1
-
-    # Actor generation/improvement.
-    # 'unspent' determines whether to try to re-spend unspent points, as well
-    # as whether to save unspent points accrued during generation.
-    def build(self, points, unspent=True):
-        self.points["total"] += points
-        if unspent is True:
-            points += self.points["unspent"]
-            self.points["unspent"] = 0
-        spent = src.lib.generators.points.spend_points(self)
-        for k, v in spent.items():
-            if k == 'unspent' and unspent is True:
-                self.points["unspent"] += v
-            else:
-                for entry, points in v.items():
-                    if self.points[k].get(entry) is not None:
-                        self.points[k][entry] += points
-                    else:
-                        self.points[k][entry] = points
-        self.recalculate()
-
-    # Recalculate the character sheet from points spent.
-    def recalculate(self):
-        self.recalculate_attributes()
-        self.recalculate_skills()
-
-    # Reset attributes and recalculate from points.
-    def recalculate_attributes(self):
-        self.attributes = {}
-        for attribute in primary_attributes + secondary_attributes:
-            points = self.points["traits"].get(attribute)
-            if points is not None:
-                trait = traits.trait_list[attribute]
-                levels = points / trait["cost"]
-                self.attributes[attribute] = trait.get("default", 0) + min(levels, trait["max"])
-
-    # Change posture.
-    def change_posture(self, posture):
-        self.posture = posture
-
-    # Returns whether we're on the ground (either side).
-    def prone(self):
-        if self.posture == "lying prone" or self.posture == "lying face up":
-            return True
-        return False
 
     # Returns whether we're conscious.
     def conscious(self):
@@ -277,17 +254,9 @@ class Actor:
         # TODO: Improve messaging
         log.add("%s falls over!" % self.appearance())
 
-    # Recalculate only skills (usually this will be all that changed.)
-    def recalculate_skills(self):
-        skills.calculate_ranks(self)
-        skills.calculate_skills(self)
-        # TODO: Fix default calculation.
-#        skills.calculate_defaults(self)
-
     # Perform a command.
     def perform(self, command, target):
-        action = self.commands.get(command)
-        return action(target)
+        return self.commands.get(command)(target)
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
@@ -347,99 +316,73 @@ class Actor:
             if self.controlled is False:
                 self.attempts = 0
 
-    # Return your own cell
-    def cell(self):
-        return self.map.cell(self.pos)
-
-    # Show a screen.
-    def screen(self, screenname, arguments=None, screenclass=None):
-        self.map.screen(screenname, arguments, screenclass)
-
-    # MOVEMENT
-
-    # Change actor coords directly and update the relevant cells.
-    def go(self, pos, dir=CC):
-        if self.map.cell(pos).occupied() is True:
-            actors = self.map.cell(pos).actors
-            self.subposition = flip(dir)
-            for actor in actors:
-                actor.subposition = dir
-        else:
-            self.subposition = CC
-        self.cell().remove(self)
-        self.pos = pos
-        self.cell().add(self)
-
-    # Try to move based on an input direction. Return whether it worked.
-    def move(self, pos, dir=CC):
-        if self.can_move(pos, dir):
-            self.go(pos, dir)
-            return True
-        else:
-            return False
-
-    # Whether we can actually move to a pos.
-    def can_move(self, pos, dir=CC):
-        if self.can_walk() is False:
-            return False
-        if self.valid_move(pos, dir) is False:
+    # STUB: Whether the actor can take *any* actions.
+    def can_act(self):
+        if self.conscious() is False:
             return False
         return True
 
-    # Check move validity.
-    def valid_move(self, pos, dir=CC):
-        # Map border checking:
-        if self.map.valid(pos) is False:
+    # STUB: Whether actor can take maneuvers.
+    def can_maneuver(self):
+        if self.can_act() is False:
             return False
-
-        # Cell content checking:
-        if self.map.cell(pos).blocked(dir) is True:
+        if self.effects.get("Stun") is not None:
             return False
-
         return True
 
-    # SKILLS
+    # STUB: Whether actor can walk.
+    def can_walk(self):
+        if self.can_act() is False:
+            return False
+        # HACK
+        if self.prone() is True:
+            return False
+        return True
 
-    # STUB Gets the level of a skill as well as any situational modifiers.
-    def skill(self, skill, temporary=True):
-        attribute, level = self.skills.get(skill, (None, 0))
+    # STUB: Whether actor can defend.
+    def can_defend(self):
+        if self.can_act() is False:
+            return False
+        return True
 
-        if attribute is not None:
-            return self.stat(attribute, temporary) + level
+    def list_commands(self):
+        commands = []
+        commands.append(CMD_ATTACK)
+        commands.append(CMD_TALK)
+        return commands
 
-        # TODO: Fix attr defaulting.
-        # Didn't have it, or anything that defaults to it. So:
-        else:
-            skill_data = skills.skill_list.get(skill)
-            default = skill_data.get("attribute_default")
-            # If default is False, no default from attr for that skill.
-            if default is False:
-                return False
-            elif default is None:
-                # Default: -4 easy, -5 average, -6 hard
-                level = - 4 + difficulties[skill_data["difficulty"]]
-            else:
-                level = default
+    # Silly utility function that puts necessary information into kwargs
+    # TODO: Rewrite.
+    def prep_kwargs(self, kwargs):
+        kwargs["actor"] = self
+        return kwargs
 
-            return self.stat(skill_data["attribute"], temporary) + level
+    #
+    # COMBAT
+    #
 
-    # Get the actor's level in a skill/stat.
-    def trait(self, traitname, temporary=True):
-        level = self.stat(traitname, temporary)
-        if level is None:
-            level = self.skill(traitname, temporary)
-        return level
+    # TODO: Move all combat 'thinking' into src/lib/actor/ai/combat.
 
-    # Performs a stat or skill check.
-    def sc(self, traitname, modifier=0):
-        level = self.trait(traitname)
-        return sc(level, modifier)
+    def choose_weapon(self, scroll):
+        assert len(self.weapons) != 0, "Had 0 weapons: %s" % self.__dict__
+        self.weapon += scroll
+        if self.weapon >= len(self.weapons):
+            self.weapon = 0
+        if self.weapon < 0:
+            self.weapon = len(self.weapons) - 1
 
-    # Performs a quick contest.
-    def qc(self, them, skill):
-        self_skill, self_mod = self.skill(skill, True)
-        their_skill, their_mod = them.skill(skill, True)
-        return qc(self_skill, self_mod, their_skill, their_mod)
+        weapon = self.weapons[self.weapon]
+        slot, appearance, trait, trait_level, item = weapon
+        self.attack_options = item.attack_options[trait]
+        self.attack_option = 0
+
+    def choose_attack_option(self, scroll):
+        assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
+        self.attack_option += scroll
+        if self.attack_option >= len(self.attack_options):
+            self.attack_option = 0
+        if self.attack_option < 0:
+            self.attack_option = len(self.attack_options) - 1
 
     # TODO: Support armor divisors.
     def damage(self, damage, do_roll=True):
@@ -453,7 +396,6 @@ class Actor:
         elif type == "sw":
             return dice(self.Swing(), mod, do_roll)
 
-    # COMBAT
     # Find eligible weapons.
     def check_weapons(self):
         weapons = []
@@ -507,8 +449,16 @@ class Actor:
             # Same target, item, skill, *and* attack option.
             target, item, skill, attack_option = maneuver
             distance = dist(self.pos, target.pos)
-            if self.reach(distance, attack_option) is False:
+
+            # TODO: Improve how this is called. attack_option[0] ?
+            # Instantiate this action's object.
+            attack = action.Action("attack")
+
+            # Continue to the next maneuver if we failed our attempt.
+            # TODO: Analyze failure reason here instead
+            if self.attempt(attack, target=target, item=item) is False:
                 continue
+
             attacks[maneuver] = {}
             attacks[maneuver]["attacker"] = self
             attacks[maneuver]["target"] = target
@@ -522,15 +472,15 @@ class Actor:
         if len(attacks) == 0:
             return False
 
-        action = CombatAction(attacks)
+        combat_action = CombatAction(attacks)
 
-        if action.setup() is True:
-            action.fire()
+        if combat_action.setup() is True:
+            combat_action.fire()
 
         # TODO: Replace with check for whether it's interesting.
-        for line in action.display():
+        for line in combat_action.display():
             log.add(line)
-        action.cleanup()
+        combat_action.cleanup()
         return True
 
     # STUB: Handle movement on a retreat.
@@ -591,76 +541,59 @@ class Actor:
             attack["retreat target"] = attack["attacker"]
             self.effects["Retreat"] = attack["retreat target"]
 
-    # Decide which entire-actor effects will happen in response to injury.
-    def prepare_hurt(self, attack):
-        # Shock:
-        attack["shock"] = min(attack["injury"], 4)
+    #
+    # SKILLS
+    #
 
-        # Effects of a major wound:
-        if attack.get("major wound") is True:
-            # TODO: Face/vital/etc. hits
-            check, margin = self.sc('HT')
-            if check < TIE:
-                # Stun:
-                if self.can_be_stunned() is True:
-                    attack["stun"] = True
+    # STUB Gets the level of a skill as well as any situational modifiers.
+    def skill(self, skill, temporary=True):
+        attribute, level = self.skills.get(skill, (None, 0))
 
-                # Knockdown:
-                if self.can_be_knocked_down() is True: 
-                    attack["knockdown"] = True
+        if attribute is not None:
+            return self.stat(attribute, temporary) + level
 
-                # Disarmament:
-                # TODO: Force dropping held items
-                if self.is_holding_items() is True:
-                    attack["dropped items"] = True
+        # TODO: Fix attr defaulting.
+        # Didn't have it, or anything that defaults to it. So:
+        else:
+            skill_data = skills.skill_list.get(skill)
+            default = skill_data.get("attribute_default")
+            # If default is False, no default from attr for that skill.
+            if default is False:
+                return False
+            elif default is None:
+                # Default: -4 easy, -5 average, -6 hard
+                level = - 4 + difficulties[skill_data["difficulty"]]
+            else:
+                level = default
 
-                # Knockout:
-                if margin <= -5 or check == CRIT_FAIL:
-                    if self.can_be_knocked_out() is True:
-                        attack["knockout"] = True
+            return self.stat(skill_data["attribute"], temporary) + level
 
-    # Cause the effects decided in prepare_hurt().
-    def hurt(self, attack):
-        if attack.get("knockout") is not None:
-            # TODO: Improve messaging
-            log.add("%s is knocked unconscious!" % self.appearance())
-            self.knockout()
+    # Get the actor's level in a skill/stat.
+    def trait(self, traitname, temporary=True):
+        level = self.stat(traitname, temporary)
+        if level is None:
+            level = self.skill(traitname, temporary)
+        return level
 
-        if attack.get("knockdown") is not None:
-            self.knockdown()
+    # Performs a stat or skill check.
+    def sc(self, traitname, modifier=0):
+        level = self.trait(traitname)
+        return sc(level, modifier)
 
-        if attack.get("dropped items") is not None:
-            self.drop_all_held()
+    # Performs a quick contest.
+    def qc(self, them, skill):
+        self_skill, self_mod = self.skill(skill, True)
+        their_skill, their_mod = them.skill(skill, True)
+        return qc(self_skill, self_mod, their_skill, their_mod)
 
-        if attack.get("stun") is not None and self.conscious() is True:
-            self.effects["Stun"] = attack["stun"]
-            # TODO: Change message.
-            log.add("%s is stunned!" % self.appearance())
-
-        # Handle shock (potentially from multiple sources.)
-        if attack.get("shock") is not None:
-            shock = self.effects.get("Shock", 0)
-            self.effects["Shock"] = min(4, shock + attack["shock"])
-
-        # Cause HP loss.
-        hp = self.HP()
-        self.hp_spent += attack["injury"]
-
-        if self.HP() < -self.MaxHP():
-            death_checks_made = (min(0,hp) - 1)/self.MaxHP() + 1
-            death_checks = (self.HP()-1)/self.MaxHP() + 1
-            for death_check in range(-1*(death_checks - death_checks_made)):
-                check, margin = self.sc('HT')
-                if check < TIE:
-                    self.alive = False
+    #
+    # INTERACTION:
+    #
 
     # Returns true if the currently preferred weapon has reach.
+    # TODO: Remove this function.
     def preferred_reach(self, dist):
-        preferred_attack = self.attack_options[self.attack_option]
-        return self.reach(dist, preferred_attack)
-
-    # Returns true if the provided weapon has appropriate reach.
-    def reach(self, dist, attack_option):
+        attack_option = self.attack_options[self.attack_option]
         min_reach = attack_option[3][0]
         max_reach = attack_option[3][-1]
         if dist >= min_reach and dist <= max_reach:
@@ -668,83 +601,16 @@ class Actor:
         else:
             return False
 
-    # We just lost a limb :(
-    def limbloss(self, attack):
-        limbnames = []
-        descendants = attack["location"].descendants()
-        for descendant in descendants:
-            limbnames.append(hit_locations.get(descendant.type))
-        return "Auuuuugh! Your %s has been severed!<br><br>In total, you've lost the use of your %s." % (attack["location"].appearance(), commas(limbnames, False))
+    # STUB: Natural reach. Always 0.
+    def min_reach(self):
+        return 0
 
-    # Check whether you are dead.
-    def check_dead(self):
-        if self.alive is False:
-            return True
-
-        if self.HP() <= -5*self.MaxHP():
-            return True
-
-    # Remove self from the map and the queue
-    def die(self):
-        if self.death() is True:
-            self.alive = False
-            if self == self.map.acting:
-                self.map.acting = None
-            self.map.queue.remove(self)
-            self.drop_all()
-            self.cell().remove(self)
-            if self.controlled is True:
-                self.screen("meat-death")
-
-    # *Mechanical* actions to perform on death. Return whether we actually died.
-    # For example, extra lives happen here - you die, but then come back.
-    def death(self):
-        # HACK: Shouldn't be a magic number
-        if dist(self.map.player.pos, self.pos) <= 10:
-            log.add(describe("%s has been slain!" % self.name))
-        self.cell().put(self.corpse())
-        return self.check_dead()
-
-    # Generate a corpse of ourselves.
-    def corpse(self):
-        return Corpse(self)
-
-    # STUB: Whether the actor can take *any* actions.
-    def can_act(self):
-        if self.conscious() is False:
-            return False
-        return True
-
-    # STUB: Whether actor can take maneuvers.
-    def can_maneuver(self):
-        if self.can_act() is False:
-            return False
-        if self.effects.get("Stun") is not None:
-            return False
-        return True
-
-    # STUB: Whether actor can walk.
-    def can_walk(self):
-        if self.can_act() is False:
-            return False
-        # HACK
-        if self.prone() is True:
-            return False
-        return True
-
-    # STUB: Whether actor can defend.
-    def can_defend(self):
-        if self.can_act() is False:
-            return False
-        return True
-
-    def list_commands(self):
-        commands = []
-        commands.append(CMD_ATTACK)
-        commands.append(CMD_TALK)
-        return commands
-
+    # STUB: Natural reach. Depends on size.
+    def max_reach(self):
+        return 0
+    #
     # STATS
+    #
 
     # Retrieve actor stat.
     def stat(self, stat, temporary=True):
@@ -919,18 +785,7 @@ class Actor:
             return True
         else:
             return False
-
-    # UI / DIALOGUE
-    # STUB:
-    def cursor_color(self):
-        return self.dialogue_color()
-
-    def dialogue_color(self):
-        if self.controlled is True:
-            return "green-black"
-        else:
-            return "red-black"
-    
+   
     # INJURY / HIT LOCATIONS
 
     # TODO: Move this to body class.
@@ -990,7 +845,114 @@ class Actor:
             else:
                 return wounds
 
-    # INVENTORY
+    # Decide which entire-actor effects will happen in response to injury.
+    def prepare_hurt(self, attack):
+        # Shock:
+        attack["shock"] = min(attack["injury"], 4)
+
+        # Effects of a major wound:
+        if attack.get("major wound") is True:
+            # TODO: Face/vital/etc. hits
+            check, margin = self.sc('HT')
+            if check < TIE:
+                # Stun:
+                if self.can_be_stunned() is True:
+                    attack["stun"] = True
+
+                # Knockdown:
+                if self.can_be_knocked_down() is True: 
+                    attack["knockdown"] = True
+
+                # Disarmament:
+                # TODO: Force dropping held items
+                if self.is_holding_items() is True:
+                    attack["dropped items"] = True
+
+                # Knockout:
+                if margin <= -5 or check == CRIT_FAIL:
+                    if self.can_be_knocked_out() is True:
+                        attack["knockout"] = True
+
+    # Cause the effects decided in prepare_hurt().
+    def hurt(self, attack):
+        if attack.get("knockout") is not None:
+            # TODO: Improve messaging
+            log.add("%s is knocked unconscious!" % self.appearance())
+            self.knockout()
+
+        if attack.get("knockdown") is not None:
+            self.knockdown()
+
+        if attack.get("dropped items") is not None:
+            self.drop_all_held()
+
+        if attack.get("stun") is not None and self.conscious() is True:
+            self.effects["Stun"] = attack["stun"]
+            # TODO: Change message.
+            log.add("%s is stunned!" % self.appearance())
+
+        # Handle shock (potentially from multiple sources.)
+        if attack.get("shock") is not None:
+            shock = self.effects.get("Shock", 0)
+            self.effects["Shock"] = min(4, shock + attack["shock"])
+
+        # Cause HP loss.
+        hp = self.HP()
+        self.hp_spent += attack["injury"]
+
+        if self.HP() < -self.MaxHP():
+            death_checks_made = (min(0,hp) - 1)/self.MaxHP() + 1
+            death_checks = (self.HP()-1)/self.MaxHP() + 1
+            for death_check in range(-1*(death_checks - death_checks_made)):
+                check, margin = self.sc('HT')
+                if check < TIE:
+                    self.alive = False
+
+    # We just lost a limb :(
+    def limbloss(self, attack):
+        limbnames = []
+        descendants = attack["location"].descendants()
+        for descendant in descendants:
+            limbnames.append(hit_locations.get(descendant.type))
+        return "Auuuuugh! Your %s has been severed!<br><br>In total, you've lost the use of your %s." % (attack["location"].appearance(), commas(limbnames, False))
+
+    # Check whether you are dead.
+    def check_dead(self):
+        if self.alive is False:
+            return True
+
+        if self.HP() <= -5*self.MaxHP():
+            return True
+
+    # Remove self from the map and the queue
+    def die(self):
+        if self.death() is True:
+            self.alive = False
+            if self == self.map.acting:
+                self.map.acting = None
+            self.map.queue.remove(self)
+            self.drop_all()
+            self.cell().remove(self)
+            if self.controlled is True:
+                self.screen("meat-death")
+
+    # *Mechanical* actions to perform on death. Return whether we actually died.
+    # For example, extra lives happen here - you die, but then come back.
+    def death(self):
+        # HACK: Shouldn't be a magic number
+        if dist(self.map.player.pos, self.pos) <= 10:
+            log.add(describe("%s has been slain!" % self.name))
+        self.cell().put(self.corpse())
+        return self.check_dead()
+
+    # Generate a corpse of ourselves.
+    def corpse(self):
+        return Corpse(self)
+
+    #
+    # INVENTORY:
+    #
+
     # STUB: Return a sorted section of the inventory, or ground items, based on args
     # TODO: Print this more nicely after new inventory scheme.
     def list_carried(self):
@@ -1154,8 +1116,6 @@ class Actor:
         if self.worn(item):
             return False
         return True
-
-    # INVENTORY
 
     # STUB: Needed functions:
     # TODO: Everything with inventory lettering
@@ -1361,6 +1321,119 @@ class Actor:
                 return True
         return False
 
+    #
+    # ACTION PROCESSING:
+    #
+
+    def action(self, methods, act, **kwargs):
+        # Setup keyword arguments.
+        kwargs = self.prep_kwargs(kwargs)
+
+        # Get the results of processing the action.
+        results = act.process(methods, **kwargs)
+
+        # TODO: Return the full results!
+        # A full attempt returns len(methods) * len(self.definition) results.
+        if len(results) != len(act.definition) * len(methods):
+            return False
+
+        # If we did reach the end, we only need to check the last primitive.
+        return results[-1][0]
+
+
+    # Action helper functions - shorthand for calls to self.action().
+
+    # Check whether an action is believed to be attemptable.
+    def believe(self, act, **kwargs):
+        return self.action(["believe"], act **kwargs)
+
+    # Check whether an action can actually be attempted.
+    def can(self, act, **kwargs):
+        return self.action(["can"], act, **kwargs)
+
+    # Check whether an action can actually be attempted, and if so, attempt it.
+    def attempt(self, act, **kwargs):
+        return self.action(["can", "attempt"], act, **kwargs)
+
+    #
+    # ACTION PRIMITIVE CALLBACKS:
+    #
+
+    # STUB
+    def can_touch(self, target):
+        return True
+
+    # STUB
+    def can_grasp(self, target):
+        return True
+
+    # STUB
+    def can_ready(self, target):
+        return True
+
+    # Return whether the actor can touch the target with the item.
+    # TODO: Enhanced return values.
+    def can_contact(self, target, item):
+        # TODO: Restructure attack option structure so that items can figure
+        # this out based on how they are being held
+        target_dist = self.dist(target)
+        attack_option = self.attack_options[self.attack_option]
+        min_reach = attack_option[3][0] + self.min_reach()
+        max_reach = attack_option[3][-1] + self.max_reach()
+
+        # Check whether it's too close to reach
+#        min_reach = self.min_reach() + item.min_reach(self.attack_option)
+        if target_dist < min_reach:
+            return (False,)
+
+        # Check whether it's too far to reach
+#        max_reach = self.max_reach() + item.max_reach(self.attack_option)
+        if target_dist > max_reach:
+            return (False,)
+        return (True,)
+
+    # STUB
+    def can_use_at(self, target, item):
+        return True
+
+    # STUB
+    def attempt_touch(self, target):
+        return True
+
+    # STUB
+    def attempt_grasp(self, target):
+        return True
+
+    # STUB
+    def attempt_ready(self, target):
+        return True
+
+    # STUB
+    def attempt_contact(self, target, item):
+        return True
+
+    # STUB
+    def attempt_use_at(self, target, item):
+        return True
+
+    #
+    # INFORMATION DISPLAYS:
+    #
+
+    def appearance(self):
+    # TODO: Add real coloring support.
+#        if self.controlled is True:
+#            return "<green-black>" + self.name + "</>"
+#        else:
+            return self.name
+
+    # Display the attack line for the current combination of weapon/attack option.
+    # TODO: Multiple attacks.
+    def attackline(self):
+        weapon = self.weapons[self.weapon]
+        attack_option = self.attack_options[self.attack_option]
+        return weapon, attack_option
+
     # Returns a list of lines to go into a character sheet.
     def character_sheet(self, chargen=False):
         sheet = []
@@ -1406,23 +1479,79 @@ class Actor:
     def paperdoll(self):
         return self.body.paperdoll()
 
-    # STUB FUNCTIONS for action chain stuff.
-    def can_touch(self, target):
-        print "%s can touch %s" % (self.name, target.name)
-        return True
+    # Show a screen.
+    def screen(self, screenname, arguments=None, screenclass=None):
+        self.map.screen(screenname, arguments, screenclass)
 
-    def can_grasp(self, target):
-        print "%s can grasp %s" % (self.name, target.name)
-        return True
+    # STUB:
+    def cursor_color(self):
+        return self.dialogue_color()
 
-    def can_use(self, target):
-        print "%s can use %s" % (self.name, target.name)
-        return True
+    def dialogue_color(self):
+        if self.controlled is True:
+            return "green-black"
+        else:
+            return "red-black"
 
-    def can_wield(self, target):
-        print "%s can wield %s" % (self.name, target.name)
-        return True
+    #
+    # GENERATION AND IMPROVEMENT:
+    #
 
-    def can_throw(self, target):
-        print "%s can throw %s" % (self.name, target.name)
-        return True
+    # Actor generation/improvement.
+    # 'unspent' determines whether to try to re-spend unspent points, as well
+    # as whether to save unspent points accrued during generation.
+    def build(self, points, unspent=True):
+        self.points["total"] += points
+        if unspent is True:
+            points += self.points["unspent"]
+            self.points["unspent"] = 0
+        spent = src.lib.generators.points.spend_points(self)
+        for k, v in spent.items():
+            if k == 'unspent' and unspent is True:
+                self.points["unspent"] += v
+            else:
+                for entry, points in v.items():
+                    if self.points[k].get(entry) is not None:
+                        self.points[k][entry] += points
+                    else:
+                        self.points[k][entry] = points
+        self.recalculate()
+
+    # Generate, add to inventory, and equip some generated items.
+    def generate_equipment(self, loadouts=None):
+        if loadouts is None:
+            if self.loadouts is not None:
+                loadouts = self.loadouts
+            else:
+                return False
+
+        equipment = []
+        for loadout in loadouts:
+            generator = EquipmentGenerator(src.lib.data.generators.equipment.generators)
+            equipment.extend(generator.generate_equipment(loadout))
+
+        for item in equipment:
+            self._add(item)
+            self._equip(item)
+
+    # Recalculate the character sheet from points spent.
+    def recalculate(self):
+        self.recalculate_attributes()
+        self.recalculate_skills()
+
+    # Reset attributes and recalculate from points.
+    def recalculate_attributes(self):
+        self.attributes = {}
+        for attribute in primary_attributes + secondary_attributes:
+            points = self.points["traits"].get(attribute)
+            if points is not None:
+                trait = traits.trait_list[attribute]
+                levels = points / trait["cost"]
+                self.attributes[attribute] = trait.get("default", 0) + min(levels, trait["max"])
+
+    # Recalculate only skills (usually this will be all that changed.)
+    def recalculate_skills(self):
+        skills.calculate_ranks(self)
+        skills.calculate_skills(self)
+        # TODO: Fix default calculation.
+#        skills.calculate_defaults(self)
