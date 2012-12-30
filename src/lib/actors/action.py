@@ -22,12 +22,6 @@
 # into actions. It also defines a basic set of them that should be appropriate
 # for most game, though these can be overridden if necessary.
 
-# Hack to allow running this script as a single file.
-# TODO: Remove.
-if __name__ == '__main__':
-    import sys
-    sys.path.insert(0, '/home/eronarn/Code/Hellmouth/')
-
 # An individual action primitive.
 class ActionPrimitive():
     # When a primitive is initialized, it generates a class method for each
@@ -342,30 +336,3 @@ actiondict = {
         ("use_at", "target", "item")
     ),    
 }
-
-# Basic testing code.
-# TODO: Deprecated!
-if __name__ == '__main__':
-#    test = grasp()
-#    print "Class methods:", test.__class__.__dict__
-#    print "Trying 'can_grasp':", test.can(test, test)
-#    print "Trying 'cancel_grasp':", test.cancel(test, test)
-
-    # Inspecting function source:
-    # import inspect
-    # print inspect.getsource(test.can)
-#    import action
-#    test2 = getattr(action, 'grasp')()
-#    print "Second object:", test2
-#    print "Trying 'can_grasp':", test2.can(test2, test2)
-
-    import actor
-    # Actor 1
-    a1 = actor.Actor()
-    # Actor 2
-    a2 = actor.Actor()
-
-    # Throw a grenade:
-    throw_grenade = Action(["touch", "grasp", "wield", "throw"])
-    if throw_grenade.check("can", a1, a2):
-        throw_grenade.check("attempt", a1, a2)
