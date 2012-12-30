@@ -47,11 +47,7 @@ class CombatAction:
         # Key ripostes / etc. off of maneuver (a hashable tuple)
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
-
-# TODO: Remove?
-#            if self.reach(attack) is False:
-#                continue
-
+            
             # Attack roll
             attack["attack-check"], attack["attack-margin"] = attack["attacker"].sc(attack["skill"])
 
