@@ -1340,7 +1340,6 @@ class Actor:
         # If we did reach the end, we only need to check the last primitive.
         return results[-1][0]
 
-
     # Action helper functions - shorthand for calls to self.action().
 
     # Check whether an action is believed to be attemptable.
