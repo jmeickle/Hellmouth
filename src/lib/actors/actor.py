@@ -22,6 +22,7 @@ import action
 from combat import CombatAction
 from src.lib.util import log
 from src.lib.util.debug import *
+from src.lib.util.dynamic import *
 
 from src.lib.objects.items.carrion import Corpse
 
@@ -1341,6 +1342,12 @@ class Actor:
         # If we did reach the end, we only need to check the last primitive.
         return results[-1][0]
 
+    # Try to call a reaction function based on the calling function's name.
+    def react(self, order, *args):
+        reaction = getattr(self, "react_%s_%s" % (order, caller()), None)
+        if reaction:
+            reaction(*args)
+
     # Action helper functions - shorthand for calls to self.action().
 
     # Check whether an action is believed to be attemptable.
@@ -1422,7 +1429,13 @@ class Actor:
 
     # Use an item at a target.
     def do_use_at(self, target, item):
+        target.react("before", self, item)
+        target.react("after", self, item)
         return True
+
+    # TODO: REMOVE. Just here as an example!
+    def react_before_do_use_at(self, targeter, item):
+        log.add("%s says: \"Curse your %s, %s!\"" % (self.name, item.name, targeter.name))
 
     #
     # INFORMATION DISPLAYS:

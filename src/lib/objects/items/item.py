@@ -3,6 +3,9 @@ import random
 # TODO: Better way of handling imports/data
 from src.lib.objects.items.modifiers import *
 
+# TODO: Remove once items are agents.
+from src.lib.util.dynamic import *
+
 # Items.
 class Item():
     def __init__(self):
@@ -120,7 +123,15 @@ class Item():
         assert self.is_readied(loc) is False, "Item wasn't worn or held, but still managed to be readied."
         return False
 
+    # Call a reaction function based on the calling function, if one exists.
+    # TODO: Remove this once items become agents.
+    def react(self, order, *args):
+        reaction = getattr(self, "react_%s_%s" % (order, caller()), None)
+        if reaction:
+            reaction(*args)
+
     # Return spike damage.
+    # TODO: Remove
     def spikes(self):
         if hasattr(self, 'spikes'):
             return self.spikes
