@@ -1353,7 +1353,7 @@ class Actor:
 
     # Check whether an action can actually be attempted, and if so, attempt it.
     def attempt(self, act, **kwargs):
-        return self.action(["can", "attempt"], act, **kwargs)
+        return self.action(["can", "do"], act, **kwargs)
 
     #
     # ACTION PRIMITIVE CALLBACKS:
@@ -1397,23 +1397,23 @@ class Actor:
         return True
 
     # STUB
-    def attempt_touch(self, target):
+    def do_touch(self, target):
         return True
 
     # STUB
-    def attempt_grasp(self, target):
+    def do_grasp(self, target):
         return True
 
     # STUB
-    def attempt_ready(self, target):
+    def do_ready(self, target):
         return True
 
     # STUB
-    def attempt_contact(self, target, item):
+    def do_contact(self, target, item):
         return True
 
     # STUB
-    def attempt_use_at(self, target, item):
+    def do_use_at(self, target, item):
         return True
 
     #

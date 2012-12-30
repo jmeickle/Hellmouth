@@ -41,7 +41,7 @@ class ActionPrimitive():
     # The methods that can be applied to this primitive.
     # TODO: Make this a dict containing arguments to check against.
     def methods(self):
-        return ['believe', 'can', 'attempt', 'cancel']
+        return ['believe', 'can', 'do']
 
     # The name of a corresponding actor method for this primitive. By default
     # it looks for "believe_touch", "can_grasp", etc.
@@ -146,17 +146,27 @@ class throw(ActionPrimitive): pass
 class use(ActionPrimitive): pass
 
 # Attach the target to your body.
-class wear(ActionPrimitive): pass
+class equip(ActionPrimitive): pass
 
 # Unattach the target from your body.
-class unwear(ActionPrimitive): pass
+class unequip(ActionPrimitive): pass
 
 # Typically, these will require a single item as target:
 
-# Store the target into inventory.
+# Exert force to elevate the target.
+class lift(ActionPrimitive): pass
+
+# Change the target's orientation in some way without moving it on the map.
+# n.b. - You can reposition some objects even if you can't lift them.
+class reposition(ActionPrimitive): pass
+
+# Typically, these will require a single actor or item as a first target, and
+# an inventory as a second target:
+
+# Place the target into an inventory.
 class store(ActionPrimitive): pass
 
-# Drop the target from inventory.
+# Retrieve the target from an inventory.
 class unstore(ActionPrimitive): pass
 
 # Typically, these will require a single actor or item as a first target, and a
@@ -189,13 +199,142 @@ class use_at(ActionPrimitive): pass
 
 # Dictionary of defined actions.
 actiondict = {
+    #
+    # MOVEMENT AND POSITIONING:
+    #
+
+    # Move yourself from one location to another.
+    "move_to" : (
+        ("move", "actor", "pos"),
+    ),
+
+    #
+    # ITEM INTERACTION AND INVENTORY MANAGEMENT:
+    #
+
+    # Lift an item from the environment into your manipulator.
+    "pickup" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+    ),
+
+    # Move an item from your manipulator into the environment.
+    "putdown" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("ungrasp", "item"),
+    ),
+
+    # Let an item fall down into the environment (uncontrolled).
+    "drop" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("ungrasp", "item"),
+    ),
+
+    # Move an item from your manipulator into an inventory.
+    "pack" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("store", "item", "inventory"),
+        ("ungrasp", "item"),
+    ),
+
+    # Retrieve an item from an inventory into your manipulator.
+    "unpack" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("unstore", "item", "inventory"),
+    ),
+
+    # Move an item from a manipulator onto your body.
+    "wear" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("equip", "item"),
+    ),
+
+    # Move an item from your body into a manipulator.
+    "unwear" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("unequip", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+    ),
+
+    # Hold an item in a manipulator out in front of you.
+    "wield" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("ready", "item"),
+    ),
+
+    # Hold an item in a manipulator at your side.
+    "unwield" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("unready", "item"),
+    ),
+
+    #
+    # ATTACKS AND COMBAT:
+    #
+
+    # Avoid an attack.
+    "dodge" : (
+        ("move", "actor", "pos"),
+    ),
+
+    # Use a ready item to attack a target.
     "attack" : (
         ("touch", "item"),
         ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
         ("ready", "item"),
         ("contact", "target", "item"),
         ("use_at", "target", "item")
     ),
+
+    # Use a ready item to parry an attack.
+    # n.b. - The 'target' is the other item!
+    "parry" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("ready", "item"),
+        ("contact", "target", "item"),
+        ("use_at", "target", "item")
+    ),
+
+    # Use a ready item to disarm.
+    # n.b. - The 'target' is the other item!
+    "disarm" : (
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("lift", "item"),
+        ("reposition", "item"),
+        ("ready", "item"),
+        ("contact", "target", "item"),
+        ("use_at", "target", "item")
+    ),    
 }
 
 # Basic testing code.
