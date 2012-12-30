@@ -51,7 +51,13 @@ class ActionPrimitive():
     # Add a class method to a primitive to check the corresponding actor method.
     def add_method(self, method):
         def _default_method(self, actor, *args):
-            return getattr(actor, self.apply(method))(*args)
+            result = getattr(actor, self.apply(method), None)(*args)
+            # If we got None as our result, that means the function either
+            # returned nothing or didn't exist in the first place. Log it.
+            if result is None:
+                DEBUG("Actor %s did not have method %s(%s)" % (actor.name, method, args))
+                return (False,)
+            return result
         _default_method.__name__ = method
         setattr(self.__class__, _default_method.__name__, _default_method)
 
