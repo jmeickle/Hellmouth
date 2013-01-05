@@ -9,8 +9,9 @@ debug_frequency = {}
 
 # TODO: Support setting level to info/warning
 def DEBUG(message, level=logging.DEBUG):
-    hits = debug_frequency.get(message, 0) + 1
-    debug_frequency[message] = hits
-    logging.debug("%s:%s" % (hits, message))
+    msg = "%s" % message
+    hits = debug_frequency.get(msg, 0) + 1
+    debug_frequency[msg] = hits
+    logging.debug("%s:%s" % (hits, msg))
 
 DEBUG('Imported debug.py and initialized logging.')
