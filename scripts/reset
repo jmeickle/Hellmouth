@@ -1,0 +1,5 @@
+# Delete all .pyc files
+find . -name *.pyc -delete
+
+# Delete all saves
+rm -rf saves
