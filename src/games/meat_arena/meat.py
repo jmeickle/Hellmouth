@@ -5,13 +5,21 @@ from src.lib.views.screens import Screen, MenuScreen
 from src.lib.views.tactical import Window
 from src.lib.views.help import HelpScreen
 from src.games.meat_arena.levels.arena import MeatArena
-from src.lib.util.key import *
 from src.lib.data import screens
+from src.lib.util.key import *
+from src.lib.util import db
+from src.lib.util import system
 
 # TODO: Split this into a generic game class and a meatgame meatclass
 class Game(Component):
-    def __init__(self, window):
+    def __init__(self, window, resume):
         Component.__init__(self)
+
+        # The name of this game.
+        self.name = "MEAT ARENA"
+
+        # Whether to keep playing.
+        self.alive = True
 
         # DISPLAY:
         # Store the provided curses window.
@@ -26,8 +34,29 @@ class Game(Component):
         self.level = None
         self.map = None
 
+        # Set up the save if necessary.
+        if resume is False:
+            self.new_game()
+        else:
+            self.resume_game()
+
         # Perform any actions before starting the game.
         self.before_start()
+
+    # STUB: Define the save path for this game.
+    def save_path(self):
+        return 'saves/%s/%s' % (self.__class__.__name__, self.player.name)
+
+    # Create a directory structure to match the new game.
+    def new_game(self):
+        path = self.save_path()
+        folders = ["db", "exports",]
+        for folder in folders:
+            system.makedir("%s/%s" % (path, folder))
+
+    # STUB: Resume a game from a directory.
+    def resume_game(self):
+        pass
 
     def loop(self):
         # Don't continue looping if the game is over.
