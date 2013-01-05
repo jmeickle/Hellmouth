@@ -4,8 +4,8 @@ import curses
 from src.lib.util.define import *
 from src.lib.util import key
 from src.lib.util.text import *
-from src.lib.views.input import *
-from src.lib.views.view import View
+from src.lib.components.input import *
+from src.lib.components.views.view import View
 
 # Border, heading, body text.
 class Screen(View):

@@ -1,6 +1,6 @@
 import curses
 
-from src.lib.views.color import Color
+from src.lib.util.color import Color
 from src.lib.util.define import *
 from src.lib.util import key
 import random

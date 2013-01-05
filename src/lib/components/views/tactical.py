@@ -4,9 +4,9 @@ from collections import deque
 from operator import itemgetter, attrgetter
 from random import choice
 
-from src.lib.views.view import View
-from src.lib.views.screens import Screen
-from src.lib.views.input import *
+from src.lib.components.views.view import View
+from src.lib.components.views.screens.screen import Screen
+from src.lib.components.input import *
 
 from src.lib.util.define import *
 from src.lib.util.hex import *

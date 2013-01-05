@@ -1,11 +1,11 @@
 import curses
 
-from src.lib.util.component import Component
+from src.lib.components.component import Component
+from src.lib.components.views.view import View
+
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util.key import *
-
-from view import View
 
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):

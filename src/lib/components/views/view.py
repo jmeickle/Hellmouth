@@ -3,12 +3,12 @@ import re
 from collections import deque
 from random import choice
 
-from src.lib.util.component import Component
+from src.lib.components.component import Component
+from src.lib.util.color import Color
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util import key
 
-from color import Color
 
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):
