@@ -3,3 +3,6 @@ find . -name *.pyc -delete
 
 # Delete all saves
 rm -rf saves
+
+# Delete the debug log
+rm *.log
