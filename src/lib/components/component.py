@@ -6,7 +6,7 @@ from src.lib.util import key
 import random
 
 # Component is the minimal base class. They participate in keyin and draw
-# loops, but do not have access to drawing functions.
+# loops, but do not have direct access to drawing functions.
 class Component():
     def __init__(self):
         self.alive = True
@@ -39,19 +39,17 @@ class Component():
         for child in self.children:
             child.inherit()
 
-
     # Abstract. Perform actions that the child couldn't during init.
     def ready(self):
         return True
 
     # Kills children (recursively) and then itself.
     def suicide(self):
+        self.alive = False
         for child in self.children:
             child.suicide()
         if self.parent is not None:
             self.parent.children.remove(self)
-        else:
-            self.alive = False
 
     # DRAWING:
 
@@ -90,6 +88,7 @@ class Component():
 
     # Set up curses attributes on a string
     # TODO: Handle anything but basic colors
+    # TODO: Replace with a curses mixin
     def attr(self, color=None, attr=None):
         if color is not None:
             col = Color.pairs.get(color)
@@ -109,12 +108,18 @@ class Component():
         for child in reversed(self.children):
             if child._keyin(c) is False:
                 return False
-        if self.parent is not None and self.prompt is False:
-            if c < 256:
-                if key.globals.get(c) is True:
-                    return None
+#        if self.parent is not None and self.prompt is False:
+#            if c < 256:
+#                if key.globals.get(c) is True:
+#                    return None
         return self.keyin(c)
 
     # Handle keyin. Abstract.
     def keyin(self, c):
         return True
+
+# The first component called, containing window information.
+class RootComponent(Component):
+    def __init__(self, window):
+        Component.__init__(self)
+        self.window = window
