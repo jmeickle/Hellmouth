@@ -201,6 +201,8 @@ class TextPrompt(Prompt):
             text += "<black-white>_</>"
         self.cline(text)
 
+    # TODO: Handle tabs, ESC, etc.
+    # TODO: Split this into a 'handle text entry' mixin
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord("\n"):
             self.suicide()
@@ -242,8 +244,7 @@ class TextPrompt(Prompt):
 
         self.scroller.resize(len(self.input))
 
+# TODO: Prompt to choose an item from inventory.
 class ItemPrompt(Prompt):
     def __init__(self):
         Prompt.__init__(self)
-
-
