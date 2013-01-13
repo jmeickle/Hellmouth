@@ -1,44 +1,59 @@
-SHORT TERM GOALS:
-- Item interaction
-- LOS algo
-- Bug fixes
+# Development Roadmap
 
-LONGER TERM GOALS:
-- Make lifepath events affect character stats
-- Fill out lifepaths so all reachable events are meaningful
-- Screen to spend discretionary character points
-- Support numpads correctly across systems
-- Reenable skill defaults
+## v0.3-meat:
+- Game launch menu
+- Game launch options
+- Starting equipment
+- Inventory rewrite
+- Improved terrain generation
+- Terrain interaction (doors, levers, etc.)
+
+## v0.4-meat:
 - Improved monster target-seeking AI
+- Add a symmetric LOS algo
 
-VERY LONG TERM GOALS:
-- Dialogue screens
-- Save/load game
-- Remappable keys
-- Windows support
-- Improved map generation
-- Non-combat skills
-- Scrollbar icon = player glyph
-- Item damage
-- Tactical combat pane
+## v0.5-meat:
+- Reenable skill defaults
 - Close combat
-- Weapon reach
+- Improved tactical combat pane
 
-MISC:
+## v0.6-meat:
+- Fill out lifepaths so all reachable events are meaningful
+- Make lifepath events affect character stats
+- Screen to spend discretionary character points
 
-DISPLAY:
+## v0.7-meat:
+- Improved text generation
+- Dialogue screens
+
+## v0.8-meat:
+- Save/load game
+
+## v0.1:
+- Non-combat skills
+
+# Wishlist:
+
+## Gameplay:
+- Item damage
+
+## Display:
 - Support curses attributes
 - Convert colors to default to a black background (i.e., no "green-black").
 - Support 256 color mode.
+- Scrollbar icon = player glyph
 
-UTILITY:
+## Utility:
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
+- Remappable keys
+- Windows support
 
-STRUCTURE:
+## Structure:
 - Split generators into classes
 - Switch to using decorators for printing functions
 
-KNOWN BUGS:
+# Known Bugs:
+- Support numpads correctly across systems
 - Scrollbar display
 - Item duplication on dropping
 - Stair pathing

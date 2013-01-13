@@ -1,6 +1,6 @@
 To run Meat Arena:
 
-    python src/hellmouth.py
+    python src/main.py
 
 The game will probably not run on Windows.
 

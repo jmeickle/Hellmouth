@@ -1,25 +1,45 @@
-(Somewhat deprecated!)
-
 Folder structure:
 
-/actor: Code for actors (both the player and NPCs).
+/saves: Default save directory. Ignored by git.
+|
+/scripts: Handy utility scripts.
+|
+/src
+|
+|-/games: Games contained in the library.
+| |
+| |-/$GAME: One folder per game.
+|   |
+|   |-/data: Any data specific to that game.
+|   |
+|   |-/levels: That game's levels, optionally with subfolders.
+|
+|-/lib
   |
-  |-/ai: Contains the primary AI class and the modules it can call upon.
-
-/data: Contains information about items, skills, etc.
-
-/generators: Procedural content generation code.
+  |-/actors: Code for actors (both the player and NPCs).
+  | |
+  | |-/ai: Contains the primary AI class and the modules it can call upon.
+  | |
+  | |-/components: Process the game view and logic.
+  |   |
+  |   |-/views: Components that draw to the screen.
+  |     |
+  |     |-/screens: Full-screen components (like menus).
+  |    
+  |-/data: Contains information about items, skills, etc.
+  |   |
+  |   |-/generators: Data for generators.
   |
-  |-/maps: Map generators.
+  |-/generators: Procedural content generation code.
+  | |
+  | |-/maps: Map generators.
+  | |
+  | |-/text: Produce strings dynamically.
   |
-  |-/text: Produce strings dynamically.
-
-/levels: 'Special' game data, like the classes for chargen.
-
-/maps: Map classes (but not data or generators).
-
-/objects: Items, terrain, etc.
-
-/views: Code for visible UI components (not all of which are View()s)
-
-/wip: Random crap I wanted to commit but didn't want to make a branch for.
+  |-/maps: Map classes (but not data or generators).
+  |
+  |-/objects: Catchall for items, terrain, etc.
+  | |
+  | |-/items: Items.
+  |
+  |-/util: Cross-game definitions and utility/helper functions.
