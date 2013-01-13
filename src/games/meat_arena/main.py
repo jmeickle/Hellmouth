@@ -12,19 +12,11 @@ from src.lib.util import system
 
 # TODO: Split this into a generic game class and a meatgame meatclass
 class Game(Component):
-    def __init__(self, window, resume):
+    def __init__(self, **kwargs):
         Component.__init__(self)
-
-        # The name of this game.
-        self.name = "MEAT ARENA"
 
         # Whether to keep playing.
         self.alive = True
-
-        # DISPLAY:
-        # Store the provided curses window.
-        self.window = window
-        self.screens = []
 
         # Whether we're interacting with maps and levels.
         self.gameplay = True
@@ -33,6 +25,14 @@ class Game(Component):
         self.player = Player()
         self.level = None
         self.map = None
+
+    # Launch actions (post-initialization, pre-start).
+    def launch(self, resume=False):
+        # Display:
+
+        # Store the provided curses window.
+        self.window = self.parent.window
+        self.screens = []
 
         # Set up the save if necessary.
         if resume is False:
@@ -47,12 +47,17 @@ class Game(Component):
     def save_path(self):
         return 'saves/%s/%s' % (self.__class__.__name__, self.player.name)
 
-    # Create a directory structure to match the new game.
     def new_game(self):
+        # Create a directory structure to match the new game.
         path = self.save_path()
         folders = ["db", "exports",]
         for folder in folders:
             system.makedir("%s/%s" % (path, folder))
+
+        # Launch the database.
+        from src.lib.util import db
+
+        # TODO: Create any necessary tables.
 
     # STUB: Resume a game from a directory.
     def resume_game(self):
@@ -95,25 +100,16 @@ class Game(Component):
             screenname, arguments, screenclass = self.screens.pop()
             self.screen(screenname, arguments, screenclass)
 
-        # Draw tree.
-        self.window.erase()
-        self._draw()
-        self.window.refresh()
-
-        # Keyin tree.
-        c = self.window.getch()
-        self._keyin(c)
-
         return True
 
     def keyin(self, c):
         # Always allow help.
         if c == ord('?'):
             self.spawn(HelpScreen(self.window))
-
         # Always allow quitting.
-        if c == ctrl('q'):
+        elif c == ctrl('q'):
             self.finish()
+        return True
 
     # Returns whether we meet the conditions to keep playing.
     def conditions(self):
@@ -131,7 +127,6 @@ class Game(Component):
     def before_start(self):
         self.screen("meat-start", {"callback" : self.start, "footer_text": screens.footer})
         self.spawn(HelpScreen(self.window))
-        self.screen("blank", None, MenuScreen)
 
     def start(self):
         # Go to the first level.
