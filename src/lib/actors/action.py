@@ -142,7 +142,7 @@ class unready(ActionPrimitive): pass
 # Throw the target at another target.
 class throw(ActionPrimitive): pass
 
-# Use the target.
+# Use the target for an intended function.
 class use(ActionPrimitive): pass
 
 # Attach the target to your body.
@@ -153,12 +153,15 @@ class unequip(ActionPrimitive): pass
 
 # Typically, these will require a single item as target:
 
-# Exert force to elevate the target.
+# Exert force to move a target's entire mass.
 class lift(ActionPrimitive): pass
 
-# Change the target's orientation in some way without moving it on the map.
-# n.b. - You can reposition some objects even if you can't lift them.
-class reposition(ActionPrimitive): pass
+# Exert force to move a target whose mass rests against a surface.
+class slide(ActionPrimitive): pass
+
+# Exert force to position or manipulate a target.
+# n.b. - You can handle some targets even if you can't lift or slide them.
+class handle(ActionPrimitive): pass
 
 # Typically, these will require a single actor or item as a first target, and
 # an inventory as a second target:
@@ -217,7 +220,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
     ),
 
     # Move an item from your manipulator into the environment.
@@ -225,7 +228,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("ungrasp", "item"),
     ),
 
@@ -242,8 +245,8 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
-        ("store", "item", "inventory"),
+        ("handle", "item"),
+        ("store", "item", "target"),
         ("ungrasp", "item"),
     ),
 
@@ -252,8 +255,8 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
-        ("unstore", "item", "inventory"),
+        ("handle", "item"),
+        ("unstore", "item", "target"),
     ),
 
     # Move an item from a manipulator onto your body.
@@ -261,7 +264,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("equip", "item"),
     ),
 
@@ -271,7 +274,7 @@ actiondict = {
         ("grasp", "item"),
         ("unequip", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
     ),
 
     # Hold an item in a manipulator out in front of you.
@@ -279,7 +282,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("ready", "item"),
     ),
 
@@ -288,7 +291,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("unready", "item"),
     ),
 
@@ -306,7 +309,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
 #        ("lift", "item"),
-#        ("reposition", "item"),
+#        ("handle", "item"),
         ("ready", "item"),
         ("contact", "target", "item"),
         ("use_at", "target", "item")
@@ -318,7 +321,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("ready", "item"),
         ("contact", "target", "item"),
         ("use_at", "target", "item")
@@ -330,7 +333,7 @@ actiondict = {
         ("touch", "item"),
         ("grasp", "item"),
         ("lift", "item"),
-        ("reposition", "item"),
+        ("handle", "item"),
         ("ready", "item"),
         ("contact", "target", "item"),
         ("use_at", "target", "item")
