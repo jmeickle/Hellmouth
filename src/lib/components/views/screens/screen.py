@@ -65,12 +65,13 @@ class Screen(View):
             else:
                 self.callback()
 
-# A basic menu screen. You have some options and may choose one of them.
+# A basic menu screen. You have some options and must choose one of them.
 class MenuScreen(Screen):
     def __init__(self, window, **args):
-        Screen.__init__(self, window)
+        Screen.__init__(self, window, **args)
         self.choices = args.get("choices", [])
-        self.selector = Selector(self, self.choices)
+        self.selector = Scroller(len(self.choices) - 1)
+        self.spawn(self.selector)
 
     def color(self):
         return "green-black"
@@ -84,18 +85,21 @@ class MenuScreen(Screen):
         self.x_acc -= 2
         self.cline("-"*(self.x))
         self.x_acc += 2
+
+        for x in range(len(self.choices)):
+            module_name, module_info = self.choices[x]
+            if x == self.selector.index:
+                self.cline(module_info.name, "green-black")
+            else:
+                self.cline(module_info.name)
         return False
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
-            self.callback()
-        else:
-            dir = key.hexkeys(c)
-            if dir == CC:
-                self.selector.jump(6)
-            elif dir is not None:
-                self.selector.jump(rotation[dir])
-        return False # Don't permit anything but continuing.
+            self.suicide()
+            self.callback(self.choices[self.selector.index])
+        # Don't permit anything but continuing.
+        return False
 
 # A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
