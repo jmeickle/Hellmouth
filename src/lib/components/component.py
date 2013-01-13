@@ -118,8 +118,31 @@ class Component():
     def keyin(self, c):
         return True
 
+    def loop(self):
+        # Draw tree.
+        self.window.erase()
+        self._draw()
+        self.window.refresh()
+
+        # Keyin tree.
+        c = self.window.getch()
+        self._keyin(c)
+
+        # Die if no children left.
+        if not self.children:
+            self.alive = False
+
 # The first component called, containing window information.
 class RootComponent(Component):
     def __init__(self, window):
         Component.__init__(self)
         self.window = window
+
+    def launch(self, module):
+        # Import the chosen game module (in the form of src.games.__GAMEMODE__.main.py).
+        # TODO: Permit a classname other than 'Game'
+        module_name, module_info = module
+        gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['Game'])
+ 
+        # Spawn the game as a child process and then launch it.
+        self.spawn(gamemodule.Game()).launch()
