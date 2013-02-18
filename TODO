@@ -41,14 +41,17 @@
 - Support curses attributes
 - Convert colors to default to a black background (i.e., no "green-black").
 - Support 256 color mode.
+- Support Unicode mode.
 - Scrollbar icon = player glyph
 
 ## Utility:
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
 - Remappable keys
+- Game launch arguments
 - Windows support
 
 ## Structure:
+- Remove 'import *' before it gets any worse!
 - Split generators into classes
 - Switch to using decorators for printing functions
 
