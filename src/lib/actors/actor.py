@@ -17,18 +17,33 @@ from src.lib.data import traits
 
 import src.lib.generators.points
 import body
-import action
 
 from combat import CombatAction
 from src.lib.util import log
 from src.lib.util.debug import *
-from src.lib.util.dynamic import *
 
+from src.lib.util.trait import include
 from src.lib.objects.items.carrion import Corpse
 
-# Players, monsters, etc.
-class Actor:
-    def __init__(self):
+from src.lib.agents.agent import Agent
+
+from src.lib.agents.components.inventory import Store, Unstore
+from src.lib.agents.components.manipulation import Touch, Grasp, Ready, Contact, UseAt
+from src.lib.agents.components.status import Status
+
+from src.lib.actors import action
+
+class Actor(Agent):
+    """Monster-like Agents. Most typically, players and monsters."""
+
+    __metaclass__ = include(Store, Unstore, Touch, Grasp, Ready, Contact, UseAt)
+    """Define Trait inheritance."""
+
+    def __init__(self, components=[Status]):
+#        components += Actor.components
+        super(Actor, self).__init__(components)
+#        exit(self.component_registry)
+
         # Text information (cosmetic)
         self.name = 'Default monster'
         self.description = 'This is the description'
@@ -41,7 +56,6 @@ class Actor:
         # Highly mutable actor state
         self.body = body.Humanoid(self)
         self.effects = {}
-        self.inventory = {}
         self.base_skills = {}
 
         self.hp_spent = 0
@@ -95,24 +109,20 @@ class Actor:
         self.parry = 0
 
         self.posture = "standing"
-        self.commands = {
-            CMD_ATTACK : self.attack,
-            CMD_ATTACK : self.attack,
-        }
 
         self.knowledge = {}
 
     #
-    # MOVEMENT AND POSITIONING:
+    # ACTIONS:
     #
 
-    # Return your own cell
-    def cell(self):
-        return self.map.cell(self.pos)
+    # Perform a command.
+    def command(self, command, **args):
+        return self.commands.get(command, DEBUG)(**args)
 
-    # Calculate the distance between an actor and a target.
-    def dist(self, target):
-        return dist(self.pos, target.pos)
+    #
+    # MOVEMENT AND POSITIONING:
+    #
 
     # Change actor coords directly and update the relevant cells.
     def go(self, pos, dir=CC):
@@ -254,10 +264,6 @@ class Actor:
             self.change_posture("lying face up")
         # TODO: Improve messaging
         log.add("%s falls over!" % self.appearance())
-
-    # Perform a command.
-    def perform(self, command, target):
-        return self.commands.get(command)(target)
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
@@ -954,199 +960,9 @@ class Actor:
     # INVENTORY:
     #
 
-    # STUB: Return a sorted section of the inventory, or ground items, based on args
-    # TODO: Print this more nicely after new inventory scheme.
-    def list_carried(self):
-        items = []
-        for appearance, itemlist in self.inventory.items():
-            append = True
-            for item in itemlist:
-                if item.is_equipped() is True:
-                    append = False
-            if append is True:
-                items.append((appearance, itemlist))
-        return sorted(items, key=itemgetter(0))
-
-    # Convert an item appearance to an item (randomly). False if nothing by that appearance.
-    def item(self, appearance):
-        list = self.inventory.get(appearance, None)
-        if list is not None:
-            item = choice(list)
-            return item
-        else:
-            return False
-
-    # 'Forcibly' add an inventory item
-    def _add(self, item):
-        list = self.inventory.get(item.appearance(), None)
-        if list is not None:
-            list.append(item)
-        else:
-            self.inventory[item.appearance()] = [item]
-
-    # STUB: This should perform sanity checks that _add doesn't.
-    def add(self, item):
-        self._add(item)
-
-    # 'Forcibly' remove a specific inventory item (and return it).
-    # Returns false if the list doesn't exist or is empty.
-    def _remove(self, item):
-        itemlist = self.inventory[item.appearance()]
-        if itemlist is not None:
-            itemlist.remove(item)
-            if len(itemlist) == 0:
-                del self.inventory[item.appearance()]
-            else:
-                self.inventory[item.appearance()] = itemlist
-            return item
-        else:
-            return False
-
-    # Remove a single item (randomly chosen) based on its appearance (and return it).
-    # Returns false if the list doesn't exist or is empty.
-    def remove(self, appearance):
-        itemlist = self.inventory.get(appearance, None)
-        if itemlist is not None:
-            item = choice(itemlist)
-            itemlist.remove(item)
-            if len(itemlist) == 0:
-                del self.inventory[appearance]
-            return item
-        else:
-            return False
-
-    # TODO: Support getting from any cell
-    # Get item(s) with an appearance from a cell and put them in inventory.
-    def get(self, appearance, num=1):
-        cell = self.cell()
-        for x in range(num):
-            item = cell.get(appearance)
-            if item is not False:
-                self.add(item)
-
-    # Get everything from the current cell.
-    # HACK: Appearances might change in picking them up!
-    def get_all(self): 
-        cell = self.cell()
-        if len(cell.items) > 0:
-            appearances = []
-
-            while len(cell.items) > 0:
-                appearance, itemlist = cell.items.popitem()
-                self._merge(appearance, itemlist)
-                appearances.append(appearance)
-
-            log.add("%s picks up the %s." % (self.appearance(), commas(appearances, False)))
-
-    # TODO: Support dropping to any cell
-    # 'Forcibly' drop a specific inventory item.
-    # Returns false if the item wasn't found in the player's inventory.
-    def _drop(self, item):
-        assert self._unequip(item) is True, "Lost an item: it was removed, but not returned."
-        self._remove(item)
-        self.cell().put(item)
-        log.add("%s drops a %s." % (self.appearance(), item.appearance()))
-        return False
-
-    # TODO: Support dropping to any cell
-    # Take item(s) with the same appearance from the inventory and put them on the ground.
-    def drop(self, appearance, num=1):
-        cell = self.cell()
-        for x in range(num):
-            item = self._drop(self.item(appearance))
-            if item is not False:
-                cell.put(item)
-            else:
-                return False
-
-    # Drop everything to the current cell.
-    def drop_all(self): 
-        for loc in self.body.locs.values():
-            itemlist = loc.items()
-            while itemlist:
-                self._drop(itemlist.pop())
-
-    # TODO: Less hack-ish.
-    def drop_all_held(self):
-        if self.is_holding_items() is False:
-            return False
-        for loc in self.body.locs.values():
-            for appearance, itemlist in loc.held.items():
-                for item in itemlist:
-                    self._drop(item)
-        # TODO: Change message.
-        #log.add("%s drops its items!" % self.appearance())
-            
-    # Tack an appearance and associated list of items from a cell into your own inventory.
-    def _merge(self, appearance, itemlist):
-        current = self.inventory.get(appearance, [])
-        current.extend(itemlist)
-        self.inventory[appearance] = current
-
-    # Misc. map-item checking functions
-
-    # Can stuff be gotten from a pos?
-    def _can_get(self):
-        return self.cell().can_get()
-
-    # TODO: Sanity checks not handled above
-    def can_get(self):
-        return self._can_get()
-
-    # Whether there is anything both interesting and possible to get.
-    def can_get_items(self):
-        if len(self.cell().items) == 0:
-            return False
-        return self.can_get()
-
-    # Can stuff be dropped into a pos?
-    def _can_drop(self):
-        return self.cell().can_drop()
-
-    # TODO: Sanity checks not handled above
-    def can_drop(self):
-        return self._can_drop()
-
-    # Can this specific appearance be dropped?
-    def can_drop_item(self, appearance):
-        return self._can_drop_item(self.item(appearance))
-
-    # Can this specific item be dropped?
-    def _can_drop_item(self, item):
-        # Worn (as opposed to held) items cannot be dropped.
-        if self.worn(item):
-            return False
-        return True
-
-    # STUB: Needed functions:
-    # TODO: Everything with inventory lettering
-    # recalculate letters
-    # swap letters
-
-    # reassign letter
-    # find appropriate letter
-
-    # Turn a letter into an item appearance.
-    # Returns false if there is no appearance associated with the letter.
-    #def l2i(self, letter):
-    #    return self.letters.get(letter, False)
-
-    #def i2l(self, letter):
-    #    return l2i(letter)
-
-    # TODO: Input a list of possible drop/get cells, then call cell class to check them.
-
-    # TRY_DROP, general process:
-    # See if you can drop into that cell.
-    # Accept a letter. Get the appearance from the letter. Get an item from the appearance.
-    # See if you can drop that item.
-    # Only then, drop the item.
-
-    # TRY_GET, general process:
-    # See if you can get from that cell.
-    # Accept a letter. Get the appearance from the get view's letter index.
-    # Get an item from the appearance. See if you can get that item.
-    # Only then, get the item.
+    #
+    # EQUIPMENT:
+    #
 
     # Either hold or wear the item as appropriate.
     # Return false if nothing could be equipped.
@@ -1323,130 +1139,12 @@ class Actor:
         return False
 
     #
-    # ACTION PROCESSING:
-    #
-
-    # Process an action.
-    def action(self, methods, act, **kwargs):
-        # Setup keyword arguments.
-        kwargs = self.prep_kwargs(kwargs)
-
-        # Get the results of processing the action.
-        results = act.process(methods, **kwargs)
-
-        # TODO: Return the full results!
-        # A full attempt returns len(methods) * len(self.definition) results.
-        if len(results) != len(act.definition) * len(methods):
-            return False
-
-        # If we did reach the end, we only need to check the last primitive.
-        return results[-1][0]
-
-    # Try to call a reaction function based on the calling function's name.
-    def react(self, order, *args):
-        reaction = getattr(self, "react_%s_%s" % (order, caller()), None)
-        if reaction:
-            reaction(*args)
-
-    # Action helper functions - shorthand for calls to self.action().
-
-    # Check whether an action is believed to be attemptable.
-    def believe(self, act, **kwargs):
-        return self.action(["believe"], act **kwargs)
-
-    # Check whether an action can actually be attempted.
-    def can(self, act, **kwargs):
-        return self.action(["can"], act, **kwargs)
-
-    # Check whether an action can actually be attempted, and if so, attempt it.
-    def attempt(self, act, **kwargs):
-        return self.action(["can", "do"], act, **kwargs)
-
-    #
-    # ACTION PRIMITIVE CALLBACK METHODS:
-    #
-
-    # The "can" methods check whether the primitive, if attempted *right now*,
-    # would be able to be performed (but not whether it would be successful!).
-
-    # STUB
-    def can_touch(self, target):
-        return True
-
-    # STUB
-    def can_grasp(self, target):
-        return True
-
-    # STUB
-    def can_ready(self, target):
-        return True
-
-    # Return whether the actor can touch the target with the item.
-    # TODO: Enhanced return values.
-    def can_contact(self, target, item):
-        # TODO: Restructure attack option structure so that items can figure
-        # this out based on how they are being held
-        target_dist = self.dist(target)
-        attack_option = self.attack_options[self.attack_option]
-        min_reach = attack_option[3][0] + self.min_reach()
-        max_reach = attack_option[3][-1] + self.max_reach()
-
-        # Check whether it's too close to reach
-#        min_reach = self.min_reach() + item.min_reach(self.attack_option)
-        if target_dist < min_reach:
-            return (False,)
-
-        # Check whether it's too far to reach
-#        max_reach = self.max_reach() + item.max_reach(self.attack_option)
-        if target_dist > max_reach:
-            return (False,)
-        return (True,)
-
-    # STUB
-    def can_use_at(self, target, item):
-        return True
-
-    # The "do" methods actually perform primitives and change game state. They
-    # do NOT check whether what they are attempting to do is valid because they
-    # always are preceded by appropriate "can" methods. These methods return
-    # True if the primitive is successfully performed.
-
-    # Touch the target.
-    def do_touch(self, target):
-        return True
-
-    # Grasp the target.
-    def do_grasp(self, target):
-        return True
-
-    # Ready the target.
-    def do_ready(self, target):
-        return True
-
-    # Touch the target with an item.
-    def do_contact(self, target, item):
-        return True
-
-    # Use an item at a target.
-    def do_use_at(self, target, item):
-        target.react("before", self, item)
-        target.react("after", self, item)
-        return True
-
-    # TODO: REMOVE. Just here as an example!
-    def react_before_do_use_at(self, targeter, item):
-        log.add("%s says: \"Curse your %s, %s!\"" % (self.name, item.name, targeter.name))
-
-    #
     # INFORMATION DISPLAYS:
     #
 
-    def appearance(self):
     # TODO: Add real coloring support.
-#        if self.controlled is True:
-#            return "<green-black>" + self.name + "</>"
-#        else:
-            return self.name
+    def appearance(self):
+        return self.name
 
     # Display the attack line for the current combination of weapon/attack option.
     # TODO: Multiple attacks.
@@ -1456,6 +1154,7 @@ class Actor:
         return weapon, attack_option
 
     # Returns a list of lines to go into a character sheet.
+    # TODO: Move to a View!
     def character_sheet(self, chargen=False):
         sheet = []
         if chargen is False:
@@ -1475,6 +1174,7 @@ class Actor:
             level = self.attributes[attribute]
             sheet.append("%s: %s" % (attribute, level))
         sheet.append("")
+        # TODO: Make point printing nicer
 #        sheet.append("--Points--")
 #        for skill, points in self.points["skills"].items():
 #            sheet.append("%s: %s points" % (skill, points))
@@ -1497,17 +1197,19 @@ class Actor:
         return sheet
 
     # Paperdolls are based on body, of course.
+    # TODO: Componentize.
     def paperdoll(self):
         return self.body.paperdoll()
 
     # Show a screen.
+    # TODO: Refactor this so it isn't touching map?
     def screen(self, screenname, arguments=None, screenclass=None):
         self.map.screen(screenname, arguments, screenclass)
 
     # STUB:
     def cursor_color(self):
         return self.dialogue_color()
-
+    # STUB:
     def dialogue_color(self):
         if self.controlled is True:
             return "green-black"
@@ -1517,6 +1219,8 @@ class Actor:
     #
     # GENERATION AND IMPROVEMENT:
     #
+
+    # TODO: Move all of this to its own module.
 
     # Actor generation/improvement.
     # 'unspent' determines whether to try to re-spend unspent points, as well
@@ -1540,6 +1244,7 @@ class Actor:
 
     # Generate, add to inventory, and equip some generated items.
     def generate_equipment(self, loadouts=None):
+        return False
         if loadouts is None:
             if self.loadouts is not None:
                 loadouts = self.loadouts
