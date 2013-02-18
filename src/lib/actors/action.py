@@ -1,3 +1,6 @@
+# TODO: REMOVE THIS FILE.
+
+from src.lib.util.debug import DEBUG
 # Actions are activities carried out by an agent. The most common kind of agent
 # is an actor, but spells or environmental effects can also be agents. Each
 # action can be described as "`agent` does `action` to `target`". Even actions
@@ -23,6 +26,7 @@
 # for most game, though these can be overridden if necessary.
 
 # An individual action primitive.
+# TODO: Remove this class; we don't explicitly need an ActionPrimitive class now.
 class ActionPrimitive():
     # When a primitive is initialized, it generates a class method for each
     # of its self.methods() according to the pattern in self.add_method(). By
@@ -80,7 +84,7 @@ class Action():
             primitive = primitive_definition[0]
 
             # Get the primitive's desired arguments from the action definition.
-            primitive_args = primitive_definition[1:len(primitive_definition)]
+            primitive_args = primitive_definition[1:]
 
             # Always use actor as the first argument.
             args = (kwargs["actor"],)
@@ -113,88 +117,10 @@ class Action():
                     return results
         return results
 
-    # Process a single method for a single primitive.
-    # TODO: Restructure this.
     def process_primitive(self, method, primitive, *args):
-        return getattr(globals()[primitive](), method)(*args)
+        """Call the primitive's initiator's method."""
+        return getattr(args[0], method + "_" + primitive)(*args[1:])
 
-#
-# ACTION PRIMITIVES:
-#
-
-# Typically, these can take either a single actor or item as target:
-
-# Touch the target (with anything).
-class touch(ActionPrimitive): pass
-
-# Hold on to the target.
-class grasp(ActionPrimitive): pass
-
-# Let go of the target.
-class ungrasp(ActionPrimitive): pass
-
-# Hold the target outward from your body.
-class ready(ActionPrimitive): pass
-
-# Hold the target at the side of your body.
-class unready(ActionPrimitive): pass
-
-# Throw the target at another target.
-class throw(ActionPrimitive): pass
-
-# Use the target for an intended function.
-class use(ActionPrimitive): pass
-
-# Attach the target to your body.
-class equip(ActionPrimitive): pass
-
-# Unattach the target from your body.
-class unequip(ActionPrimitive): pass
-
-# Typically, these will require a single item as target:
-
-# Exert force to move a target's entire mass.
-class lift(ActionPrimitive): pass
-
-# Exert force to move a target whose mass rests against a surface.
-class slide(ActionPrimitive): pass
-
-# Exert force to position or manipulate a target.
-# n.b. - You can handle some targets even if you can't lift or slide them.
-class handle(ActionPrimitive): pass
-
-# Typically, these will require a single actor or item as a first target, and
-# an inventory as a second target:
-
-# Place the target into an inventory.
-class store(ActionPrimitive): pass
-
-# Retrieve the target from an inventory.
-class unstore(ActionPrimitive): pass
-
-# Typically, these will require a single actor or item as a first target, and a
-# location as a second target:
-
-# Move the target from one map location to another.
-class move(ActionPrimitive): pass
-
-# Typically, these will require a single actor or item as a first target, and a
-# single item as a second target:
-
-# Touch the target (with a specific item).
-class contact(ActionPrimitive): pass
-
-# Point a readied target at a second target.
-# n.b. - It is up to the item whether brandishing is compatible with readying!
-class brandish(ActionPrimitive): pass
-
-# Stop pointing a readied target at a second target.
-# n.b. - This can have a second target because you can pointedly lower your
-# weapon 'at' someone, e.g., if asked to by a guard.
-class unbrandish(ActionPrimitive): pass
-
-# Use an item at the target.
-class use_at(ActionPrimitive): pass
 
 #
 # ACTIONS:
