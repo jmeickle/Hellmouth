@@ -57,26 +57,6 @@ class MainMap(View):
         self.cursor = None
 
     def keyin(self, c):
-        if c == ord('G') or c == ord('g'):
-            self.player.get_all()
-            return False
-
-        if c == ord('}'):
-            self.zoom = 2
-            self.inherit()
-            return False
-
-        if c == ord('{'):
-            self.zoom = self.viewport_rank
-            self.inherit()
-            return False
-
-        if c == ord('N'):
-#            if len(self.map.player.cell().items) > 1:
-                self.spawn(TextPrompt(self.screen, self.width, self.height))
-#            else:
-#                self.map.player.get_all()
-#            return False
 
         # TODO: Allow multiple open children.
         if not self.children:
@@ -90,27 +70,39 @@ class MainMap(View):
                     self.cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
 
-        if True is True:#else:
-        # This is generally the last step before keys fall into oblivion.
-        # TODO: Feed the keyin into a player function.
-            if c == ord('7'):
-                self.map.player.do(NW)
-            elif c == ord('4'):
-                self.map.player.do(CW)
-            elif c == ord('1'):
-                self.map.player.do(SW)
-            elif c == ord('9'):
-                self.map.player.do(NE)
-            elif c == ord('6'):
-                self.map.player.do(CE)
-            elif c == ord('3'):
-                self.map.player.do(SE)
-            elif c == ord('5'):
-                self.map.player.over()
-            elif c == ord('>') or c == ord('<'):
-                self.map.player.stairs()
-            else: return True
+        if c == ord('G'):
+            self.player.command()
             return False
+        elif c == ord('g'):
+            self.player.command()
+            return False
+        elif c == ord('}'):
+            self.zoom = 2
+            self.inherit()
+            return False
+        elif c == ord('{'):
+            self.zoom = self.viewport_rank
+            self.inherit()
+        elif c == ord('N'):
+            self.spawn(TextPrompt(self.screen, self.width, self.height))
+        elif c == ord('7'):
+            self.map.player.do(NW)
+        elif c == ord('4'):
+            self.map.player.do(CW)
+        elif c == ord('1'):
+            self.map.player.do(SW)
+        elif c == ord('9'):
+            self.map.player.do(NE)
+        elif c == ord('6'):
+            self.map.player.do(CE)
+        elif c == ord('3'):
+            self.map.player.do(SE)
+        elif c == ord('5'):
+            self.map.player.over()
+        elif c == ord('>') or c == ord('<'):
+            self.map.player.stairs()
+        else: return True
+        return False
 
     # Hex character function, for maps only.
     def hd(self, pos, glyph, col=None, attr=None):
