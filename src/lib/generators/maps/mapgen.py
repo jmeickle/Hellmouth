@@ -45,6 +45,11 @@ class MapGen():
             for cell in cells:
                 self.cells[cell] = (None, None)
 
+    def place_levers(self):
+        dist = 4
+        pos = random_perimeter(self.center, dist).pop()
+        self.cells[pos] = (None, Lever(None))
+
 class Cave(MapGen):
     def __init__(self, exits=None):
         MapGen.__init__(self, exits)

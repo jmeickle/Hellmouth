@@ -34,6 +34,7 @@ class MeatArena(MapGen):
 
         self.place_exits()
         self.connect_exits()
+        self.place_levers()
         return self.cells, self.exits
 
 class MeatTunnel(MapGen):
