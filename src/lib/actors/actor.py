@@ -339,12 +339,6 @@ class Actor(Agent):
             return False
         return True
 
-    def list_commands(self):
-        commands = []
-        commands.append(CMD_ATTACK)
-        commands.append(CMD_TALK)
-        return commands
-
     # Silly utility function that puts necessary information into kwargs
     # TODO: Rewrite.
     def prep_kwargs(self, kwargs):
