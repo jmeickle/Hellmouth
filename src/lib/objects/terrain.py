@@ -1,6 +1,8 @@
 # Terrain objects.
 
-class Terrain():
+from src.lib.agents.agent import Agent
+
+class Terrain(Agent):
     def __init__(self, terrain_type=None):
         self.cell = None
         self.name = None
@@ -27,7 +29,21 @@ class Stairs(Terrain):
         self.color = "green-black"
         self.blocking = False
 
-    def interact(self, actor):
+    def react_on_use(self, user):
+        self.cell.map.go(self.destination)
+        return True
+
+# Generic lever class.
+class Lever(Terrain):
+    def __init__(self, target):
+        Terrain.__init__(self)
+        self.name = "lever"
+        self.target = target
+        self.glyph = "|"
+        self.color = "magenta-black"
+        self.blocking = False
+
+    def react_on_do_use(self, user):
         self.cell.map.go(self.destination)
         return True
 
