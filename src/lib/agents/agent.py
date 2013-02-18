@@ -54,9 +54,9 @@ class Agent(object):
         implementations = self.component_registry.get(domain)
         result = None
         for implementation in implementations:
-            result = getattr(implementation, method)(*args)
+            result = implementation.process(method, result, args)
         for implementation in reversed(implementations):
-            result = getattr(implementation, method)(*args)
+            result = implementation.process(method, result, args)
         return result
 
     # TODO: Let implementations override
