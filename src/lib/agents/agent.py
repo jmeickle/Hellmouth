@@ -65,7 +65,7 @@ class Agent(object):
         return self.process(domain, "get_" + key, *args)
 
     # TODO: Let implementations override
-    def set(self, domain, command, *args):
+    def set(self, domain, key, *args):
         """Return the result of a simple set within a domain."""
         return self.process(domain, "set_" + key, *args)
 
