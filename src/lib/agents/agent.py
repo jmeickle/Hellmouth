@@ -23,7 +23,7 @@ class Agent(object):
 
         # TODO: Return the full results!
         # A full attempt returns len(methods) * len(self.definition) results.
-        if len(results) != len(action.definition) * len(methods):
+        if len(results) != len(action.sequence) * len(methods):
             return False
 
         # If we did reach the end, we only need to check the last primitive.

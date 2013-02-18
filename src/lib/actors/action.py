@@ -59,26 +59,31 @@ class ActionPrimitive():
         _default_method.__name__ = method
         setattr(self.__class__, _default_method.__name__, _default_method)
 
-# A chain of multiple action primitives.
-class Action():
-    # When an action is initialized, it retrieves its definition.
-    def __init__(self, action_key):
-        self.definition = actiondict[action_key]
+class Action(object):
+    """A sequence of primitives to be called."""
 
-    # Process a list of methods for each primitive in this action's
-    # definition. The necessary arguments for each primitive are pulled from
-    # the provided keyword arguments. The return value accumulates the method
-    # return values in a 'striped' list:
-    #
-    # [Method1, Method2, Method3] x [Primitive1, Primitive2, Primitive3]
-    # == M1P1, M2P1, M3P1, M1P2, M2P2, M3P2, M1P3, M2P3, M3P3
-    #
-    # If any function returns False, processing will stop, meaning that the
-    # return value has variable length.
-    def process(self, methods, **kwargs):
+    def __init__(self, sequence=None):
+        if not sequence:
+            sequence = self.__class__.sequence
+            """Load the default sequence for that class if one is not provided."""
+        assert sequence is not None
+
+    def process(self, scopes, **kwargs):
+        """Process this Action by executing its primitive sequence within a
+        list of scopes.
+
+        The necessary arguments for each primitive are pulled from the provided
+        keyword arguments. The return value accumulates the method return
+        values into a 'striped' list:
+            [Method1, Method2, Method3] x [Primitive1, Primitive2, Primitive3]
+            == M1P1, M2P1, M3P1, M1P2, M2P2, M3P2, M1P3, M2P3, M3P3
+        
+        If any function returns False, processing will stop, meaning that the
+        return value has variable length."""
+
         results = []
         # For each primitive in this action's definition...
-        for primitive_definition in self.definition:
+        for primitive_definition in self.sequence:
 
             # Get the name of the current primitive.
             primitive = primitive_definition[0]
@@ -96,9 +101,9 @@ class Action():
                 # assert(kwargs.get(primitive_arg) is not None)
                 args += (kwargs.get(primitive_arg),)
 
-            # Process each method of the current primitive.
-            for method in methods:
-                result = self.process_primitive(method, primitive, *args)
+            # Process that primitive within each scope.
+            for scope in scopes:
+                result = self.process_primitive(scope, primitive, *args)
 
                 # Handle the case of pure T/F function returns.
                 # TODO: Make all reachable functions return better data rather
@@ -117,10 +122,30 @@ class Action():
                     return results
         return results
 
-    def process_primitive(self, method, primitive, *args):
-        """Call the primitive's initiator's method."""
-        return getattr(args[0], method + "_" + primitive)(*args[1:])
+    def process_primitive(self, scope, primitive, *args):
+        """Call the primitive's initiator's method within a scope."""
+        return getattr(args[0], scope + "_" + primitive)(*args[1:])
 
+class Attack(Action):
+    """Attack a target with a weapon held in a manipulator."""
+    sequence = [
+        ("touch", "weapon"),
+        ("grasp", "weapon"),
+        # ("lift", "weapon"),
+        # ("handle", "weapon"),
+        ("ready", "weapon"),
+        ("contact", "target", "weapon"),
+        ("use_at", "target", "weapon")
+    ]
+
+class Toggle(Action):
+    """Toggle a target using a manipulator."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        # ("handle", "target"),
+        ("use", "target")
+    ]
 
 #
 # ACTIONS:
@@ -228,17 +253,6 @@ actiondict = {
     # Avoid an attack.
     "dodge" : (
         ("move", "actor", "pos"),
-    ),
-
-    # Use a ready item to attack a target.
-    "attack" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-#        ("lift", "item"),
-#        ("handle", "item"),
-        ("ready", "item"),
-        ("contact", "target", "item"),
-        ("use_at", "target", "item")
     ),
 
     # Use a ready item to parry an attack.
