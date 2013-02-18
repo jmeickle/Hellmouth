@@ -18,3 +18,8 @@ class Status(Component):
         if self.statuses.get("Unconscious") is not None:
             return False
         return True
+
+    def set_unconscious(self, value):
+        """Set the Agent's Unconscious status effect to a value."""
+        self.statuses["Unconscious"] = value
+        return True
