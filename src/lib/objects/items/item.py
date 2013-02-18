@@ -138,6 +138,10 @@ class Item():
         else:
             return None
 
+    # STUB
+    def is_equippable(self):
+        pass
+
 class Armor(Item):
     def __init__(self):
         Item.__init__(self)
@@ -166,6 +170,14 @@ class Weapon(Item):
 
     def requires_empty_location(self):
         return True
+
+    # STUB
+    def min_reach(self, attack_option):
+        pass
+
+    # STUB
+    def max_reach(self, attack_option):
+        pass
 
 class Broadsword(Weapon):
     def __init__(self):
