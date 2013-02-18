@@ -2,7 +2,6 @@
 
 from src.lib.util import db, key
 from src.lib.agents.components.component import Component
-from src.lib.util.trait import Trait
 
 # TODO: Use database tables!
 # On import, try to create the necessary database tables.
@@ -30,7 +29,7 @@ class Inventory(Component):
     def count(self):
         return len(self.inventory)
 
-class Store(Trait):
+class Store(object):
     """Provides the ability to store targets into an Inventory."""
 
     # # Whether you believe you can store an item in your inventory.
@@ -65,7 +64,7 @@ class Store(Trait):
         self.inventory[target.appearance()] = matches
         return True
 
-class Unstore(Trait):
+class Unstore(object):
     """Provides the ability to unstore targets from an Inventory."""
 
     def can_unstore(self, target):
@@ -80,6 +79,8 @@ class Unstore(Trait):
         self.inventory[target.appearance()] = matches        
         return True
 
+class InventoryAgent(Store, Unstore):
+    pass
 
 #     # Whether you believe you can retrieve an item in your inventory.
 #     @checks_item_memory

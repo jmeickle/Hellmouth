@@ -3,13 +3,14 @@
 # 2) Have AI to control them
 # 3) Do need any interface niceties (e.g., figuring out item letters)
 
-from actor import Actor
+from src.lib.actors.actor import Actor
 import ai.astar
 from src.lib.util.hex import *
 
 class NPC(Actor):
+
     def __init__(self):
-        Actor.__init__(self)
+        super(NPC, self).__init__()
 
         # TODO: Make an AI class.
 

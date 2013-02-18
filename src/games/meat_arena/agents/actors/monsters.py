@@ -5,8 +5,10 @@
 from src.lib.actors.npc import NPC
 
 class MeatSlave(NPC):
+
     def __init__(self):
-        NPC.__init__(self)
+        super(MeatSlave, self).__init__()
+
         self.glyph = '@'
         self.name = 'meat slave'
         self.color = 'yellow'

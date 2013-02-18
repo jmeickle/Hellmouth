@@ -22,7 +22,6 @@ from combat import CombatAction
 from src.lib.util import log
 from src.lib.util.debug import *
 
-from src.lib.util.trait import include
 from src.lib.objects.items.carrion import Corpse
 
 from src.lib.agents.agent import Agent
@@ -36,13 +35,8 @@ from src.lib.actors import action
 class Actor(Agent):
     """Monster-like Agents. Most typically, players and monsters."""
 
-    __metaclass__ = include(Store, Unstore, Touch, Grasp, Ready, Contact, UseAt)
-    """Define Trait inheritance."""
-
     def __init__(self, components=[Status]):
-#        components += Actor.components
         super(Actor, self).__init__(components)
-#        exit(self.component_registry)
 
         # Text information (cosmetic)
         self.name = 'Default monster'

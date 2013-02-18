@@ -1,6 +1,4 @@
 """Defines a set of target manipulation Traits used across Agents.""" 
-
-from src.lib.util.trait import Trait
 #
 # ACTION PRIMITIVE CALLBACK METHODS:
 #
@@ -13,7 +11,7 @@ from src.lib.util.trait import Trait
 # always are preceded by appropriate "can" methods. These methods return
 # True if the primitive is successfully performed.
 
-class Touch(Trait):
+class Touch(object):
     """Provides the ability to touch a target with a manipulator.
 
     Unlike many other Traits, there is no corresponding 'Untouch' Trait because
@@ -28,7 +26,7 @@ class Touch(Trait):
         return True
 
 # Touch the target (with a specific item).
-class Contact(Trait):
+class Contact(object):
     """Provides the ability to touch a target with a second target.
 
 
@@ -61,7 +59,7 @@ class Contact(Trait):
         """Touch a target with a second target."""
         return True
 
-class Grasp(Trait):
+class Grasp(object):
     """Provides the ability to hold a the target with a manipulator."""
 
     # STUB
@@ -72,7 +70,7 @@ class Grasp(Trait):
     def do_grasp(self, target, manipulator=None):
         return True
 
-class Ungrasp(Trait):
+class Ungrasp(object):
     """Provides the ability to let go of a target with a manipulator."""
 
     # STUB
@@ -83,7 +81,7 @@ class Ungrasp(Trait):
     def do_ungrasp(self, target, manipulator=None):
         return True
 
-class Ready(Trait):
+class Ready(object):
     """Provides the ability to raise the target outward from your body."""
 
     # STUB
@@ -94,7 +92,7 @@ class Ready(Trait):
     def do_ready(self, target, manipulator=None):
         return True
 
-class Unready(Trait):
+class Unready(object):
     """Provides the ability to lower the target to the side of your body."""
 
     # STUB
@@ -105,7 +103,7 @@ class Unready(Trait):
     def do_unready(self, target, manipulator=None):
         return True
 
-class Use(Trait):
+class Use(object):
     """Provides the ability to use a target.
 
     Unlike many other Traits, there is no corresponding 'Unuse' Trait because
@@ -123,7 +121,7 @@ class Use(Trait):
         target.react("on", self)
         return True
 
-class UseAt(Trait):
+class UseAt(object):
     """Provides the ability to use a target at a second target.
 
     Unlike many other Traits, there is no corresponding 'UnuseAt' Trait because
@@ -143,6 +141,8 @@ class UseAt(Trait):
         target.react("after", self, item)
         return True
 
+class ManipulatingAgent(Touch, Contact, Grasp, Ungrasp, Ready, Unready, Use, UseAt):
+    pass
 
 # Everything below here is stub functions!
 # # Throw the target at another target.
