@@ -191,7 +191,7 @@ class Actor(Agent):
         if self.effects.get("Retreat") is not None:
             del self.effects["Retreat"]
 
-        if self.conscious() is True and self.HP() < 0:
+        if self.get("Status", "unconscious") is True and self.HP() < 0:
             check, margin = self.sc('HT', self.MaxHP() / self.HP())
             if check < TIE:
                 # TODO: Improve messaging
@@ -216,15 +216,8 @@ class Actor(Agent):
                 if check > TIE:
                     del self.effects["Stun"]
                     # TODO: Real message.
-                    if self.conscious() is True:
+                    if self.get("Status", "unconscious") is True:
                         log.add("%s shrugs off the stun." % self.appearance())
-
-
-    # Returns whether we're conscious.
-    def conscious(self):
-        if self.effects.get("Unconscious") is not None:
-            return False
-        return True
 
     # STUB: Figure out whether we are subject to knockdown.
     def can_be_knocked_down(self):
@@ -234,7 +227,7 @@ class Actor(Agent):
 
     # STUB: Figure out whether we are subject to knockout.
     def can_be_knocked_out(self):
-        if self.conscious() is False:
+        if self.get("Status", "unconscious") is False:
             return False
         return True
 
@@ -250,7 +243,7 @@ class Actor(Agent):
             return False
         if self.controlled is True:
             self.screen("KO")
-        self.effects["Unconscious"] = True
+        self.set("Status", "unconscious", True)
         self.drop_all_held()
         self.knockdown()
 
@@ -325,7 +318,7 @@ class Actor(Agent):
 
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
-        if self.conscious() is False:
+        if self.get("Status", "unconscious") is False:
             return False
         return True
 
@@ -893,7 +886,7 @@ class Actor(Agent):
         if attack.get("dropped items") is not None:
             self.drop_all_held()
 
-        if attack.get("stun") is not None and self.conscious() is True:
+        if attack.get("stun") is not None and self.get("Status", "unconscious") is True:
             self.effects["Stun"] = attack["stun"]
             # TODO: Change message.
             log.add("%s is stunned!" % self.appearance())

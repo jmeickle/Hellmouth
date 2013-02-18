@@ -32,7 +32,8 @@ class Cell:
             for actor in self.actors:
                 glyph = actor.glyph
                 color = actor.color
-                if actor.conscious() is True:
+                # TODO: HACK
+                if actor.get("Status", "unconscious") is True:
                     if len(self.actors) > 1 and all is False:
                         color += "-magenta"
                     else:
