@@ -16,6 +16,11 @@ class Agent(object):
         for component in Agent.components + components:
             self.register_component(component)
 
+        # Positioning information
+        self.map = None
+        self.pos = None
+        self.subposition = CC
+
     def register_component(self, component, domain=None):
         """Initializes an instance of a Component class and registers it as the sole member of its domain."""
         if not domain:
@@ -32,6 +37,10 @@ class Agent(object):
             for domain, components in self.component_registry.items():
                 for component in components:
                     yield component
+
+    def get_component(self, domain):
+        """Return the first Component from a domain."""
+        return self.component_registry.get(domain, [None])[0]
 
     # TODO: Handle checking interruptions and the like.
     def process(self, domain, method, *args):
@@ -68,7 +77,7 @@ class Agent(object):
         will be "before", "on", and "after"."""
         reaction = getattr(self, "react_%s_%s" % (identifier, caller()), None)
         if reaction:
-            reaction(*args)
+            return reaction(*args)
 
     def get_context(self, members=[], source=None):
         """Return a Context object containing information used to decide how to process an Agent's event."""
@@ -78,16 +87,17 @@ class Agent(object):
     def respond(self, event, context, scope=None):
         """Respond to an event occurring within a given Context."""
         commands = [command for command in self.get_commands()] + [interaction for interaction in context.get_interactions()]
+#        exit(commands)
         for origin, command in self.sort_commands(commands):
             if event in command.events():
                 # TODO: Make this hurt other people less
-                action = command.get_action()()
+                actions = command.get_actions()
                 kwargs = {"target" : origin}
 
                 if not scope:
-                    result = self.attempt(action, **kwargs)
+                    result = self.attempt(actions, **kwargs)
                 else:
-                    result = self.action(scope, action, **kwargs)
+                    result = self.action(scope, actions, **kwargs)
 
                 # STUB: need a parse_result function.
                 return result
@@ -118,32 +128,34 @@ class Agent(object):
     def dist(self, target):
         return dist(self.pos, target.pos)
 
-    def action(self, scope, action, **kwargs):
+    def action(self, scope, actions, **kwargs):
         """Process an action consisting of a sequence of steps required for completion."""
         # Setup keyword arguments.
         kwargs = self.prep_kwargs(kwargs)
 
-        # Get the results of processing the action.
-        results = action.process(scope, **kwargs)
+        from src.lib.util.debug import DEBUG
+        for action in actions:
+            # Get the results of processing the action.
+            results = action().process(scope, **kwargs)
 
-        # TODO: Return the full results!
-        # A full attempt returns len(scope) * len(action.sequence) results.
-        if len(results) != len(action.sequence) * len(scope):
-            return False
+            # TODO: Return the full results!
+            # A full attempt returns len(scope) * len(action.sequence) results.
+            if len(results) != len(action.sequence) * len(scope):
+                return False
 
         # If we did reach the end, we only need to check the last primitive.
         return results[-1][0]
 
     """Action helper functions - shorthand for calls to self.action()."""
 
-    def believe(self, action, **kwargs):
+    def believe(self, actions, **kwargs):
         """Check whether an action is believed to be attemptable."""
-        return self.action(["believe"], action, **kwargs)
+        return self.action(["believe"], actions, **kwargs)
 
-    def can(self, action, **kwargs):
+    def can(self, actions, **kwargs):
         """Check whether an action can actually be attempted."""
-        return self.action(["can"], action, **kwargs)
+        return self.action(["can"], actions, **kwargs)
 
-    def attempt(self, action, **kwargs):
+    def attempt(self, actions, **kwargs):
         """Check whether an action can actually be attempted; if so, attempt it."""
-        return self.action(["can", "do"], action, **kwargs)
+        return self.action(["can", "do"], actions, **kwargs)

@@ -26,8 +26,7 @@ from src.lib.objects.items.carrion import Corpse
 
 from src.lib.agents.agent import Agent
 
-from src.lib.agents.components.inventory import Store, Unstore
-from src.lib.agents.components.manipulation import Touch, Grasp, Ready, Contact, UseAt
+from src.lib.agents.components.inventory import Inventory
 from src.lib.agents.components.status import Status
 
 from src.lib.actors import action
@@ -35,7 +34,7 @@ from src.lib.actors import action
 class Actor(Agent):
     """Monster-like Agents. Most typically, players and monsters."""
 
-    def __init__(self, components=[Status]):
+    def __init__(self, components=[Status, Inventory]):
         super(Actor, self).__init__(components)
 
         # Text information (cosmetic)
@@ -57,11 +56,6 @@ class Actor(Agent):
         self.mp_spent = 0
 
         self.alive = True
-
-        # Positioning information
-        self.map = None
-        self.pos = None
-        self.subposition = CC
 
         # More static information: points spent on your character
         self.points = {
@@ -421,6 +415,7 @@ class Actor(Agent):
             return True
 
     # Use attack maneuvers to do an attack.
+    # TODO: Rewrite this now that we have events
     def _attack(self, maneuvers):
         attacks = {}
 
@@ -436,7 +431,7 @@ class Actor(Agent):
 
             # Continue to the next maneuver if we failed our attempt.
             # TODO: Analyze failure reason here instead
-            if self.attempt(attack, target=target, item=item) is False:
+            if self.attempt([attack], target=target, item=item) is False:
                 continue
 
             attacks[maneuver] = {}

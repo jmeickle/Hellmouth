@@ -11,6 +11,79 @@
 # always are preceded by appropriate "can" methods. These methods return
 # True if the primitive is successfully performed.
 
+from src.lib.actors.action import Action
+from src.lib.agents.components.component import Component
+from src.lib.util.command import Command
+
+"""Actions."""
+
+class Toggle(Action):
+    """Toggle a target using a manipulator."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("handle", "target"),
+        ("use", "target")
+    ]
+
+class Pickup(Action):
+    """Lift an item from the environment into your manipulator."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("force", "target"),
+    ]
+
+class Putdown(Action):
+    """Move an item from your manipulator into the environment."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("ungrasp", "item"),
+    ]
+
+class Drop(Action):
+    """Let an item fall down from your manipulator into the environment (uncontrolled)."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("ungrasp", "item"),
+    ]
+
+class Wield(Action):
+    """"Hold an item in a manipulator out in front of you."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("ready", "item"),
+    ]
+
+class Unwield(Action):
+    """Lower an item in a manipulator to your side."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("unready", "item"),
+    ]
+
+
+"""Commands."""
+
+class Ready(Command):
+    description = "ready an item"
+    defaults = ("R",)
+
+class Wield(Command):
+    description = "wield a weapon"
+    defaults = ("w",)
+
+"""Components."""
+
+"""Mixins."""
+
 class Touch(object):
     """Provides the ability to touch a target with a manipulator.
 
@@ -81,6 +154,20 @@ class Ungrasp(object):
     def do_ungrasp(self, target, manipulator=None):
         return True
 
+class Get(object):
+    """Provides the ability to touch a target with a manipulator.
+
+    Unlike many other Traits, there is no corresponding 'Untouch' Trait because
+    this is an instantaneous effect with no 'on' state."""
+
+    # STUB
+    def can_touch(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_touch(self, target, manipulator=None):
+        return True
+
 class Ready(object):
     """Provides the ability to raise the target outward from your body."""
 
@@ -104,7 +191,7 @@ class Unready(object):
         return True
 
 class Use(object):
-    """Provides the ability to use a target.
+    """Provides the ability to use a target for an intended function.
 
     Unlike many other Traits, there is no corresponding 'Unuse' Trait because
     this is an instantaneous effect with no 'on' state."""
@@ -134,48 +221,65 @@ class UseAt(object):
         return True
 
     # Use an item at a target.
+    # STUB
     def do_use_at(self, target, item):
         """Use a target at a second target."""
-        target.react("before", self, item)
-        target.react("after", self, item)
         return True
 
-class ManipulatingAgent(Touch, Contact, Grasp, Ungrasp, Ready, Unready, Use, UseAt):
+class Force(object):
+    """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
+
+    # STUB
+    def can_force(self, target):
+        """Whether you can exert force to reposition a target whose mass is controlled by you.."""
+        return True
+
+    # STUB
+    def do_force(self, target):
+        """Exert force to reposition a target whose mass is controlled by you."""
+        return True
+
+class Slide(object):
+    """Provides the ability to exert force to drag, slide, or shove a target against a surface."""
+
+    # STUB
+    def can_slide(self, target, surface):
+        """Whether you can exert force to drag, slide, or shove a target against a surface."""
+        return True
+
+    # STUB
+    def do_slide(self, target, surface):
+        """Exert force to drag, slide, or shove a target against a surface."""
+        return True
+
+class Handle(object):
+    """Provides the ability to exert force to reposition or manipulate part of a target.
+
+    n.b. - You can handle some targets even if you can't Force or Slide them."""
+
+    # STUB
+    def can_handle(self, target):
+        """Whether you can exert force to reposition or manipulate part of a target."""
+        return True
+
+    # STUB
+    def do_handle(self, target):
+        """Exert force to reposition or manipulate part of a target."""
+        return True
+
+class ManipulatingAgent(Touch, Contact, Grasp, Ungrasp, Ready, Unready, Use, UseAt, Force, Slide, Handle):
+    """Convenience mixin class for Agents that have manipulators capable of holding items."""
     pass
 
 # Everything below here is stub functions!
 # # Throw the target at another target.
 # class throw(ActionPrimitive): pass
 
-# # Use the target for an intended function.
-# class use(ActionPrimitive): pass
-
 # # Attach the target to your body.
 # class equip(ActionPrimitive): pass
 
 # # Unattach the target from your body.
 # class unequip(ActionPrimitive): pass
-
-# # Typically, these will require a single item as target:
-
-# # Exert force to move a target's entire mass.
-# class lift(ActionPrimitive): pass
-
-# # Exert force to move a target whose mass rests against a surface.
-# class slide(ActionPrimitive): pass
-
-# # Exert force to position or manipulate a target.
-# # n.b. - You can handle some targets even if you can't lift or slide them.
-# class handle(ActionPrimitive): pass
-
-# # Typically, these will require a single actor or item as a first target, and
-# # an inventory as a second target:
-
-# # Place the target into an inventory.
-# class store(ActionPrimitive): pass
-
-# # Retrieve the target from an inventory.
-# class unstore(ActionPrimitive): pass
 
 # # Typically, these will require a single actor or item as a first target, and a
 # # location as a second target:

@@ -4,7 +4,7 @@ class Command(object):
 
     registry = {}
 
-    action = None
+    actions = []
     description = "no command"
     defaults = []
 
@@ -16,9 +16,10 @@ class Command(object):
         return Command.registry.get(command, Command)
 
     @staticmethod
-    def register(command):
-        Command.register_command(command.__name__, command)
-        Command.register_events(command.events(), command)
+    def register(*commands):
+        for command in commands:
+            Command.register_command(command.__name__, command)
+            Command.register_events(command.events(), command)
 
     @staticmethod
     def register_command(name, command):
@@ -40,8 +41,8 @@ class Command(object):
         return cls.__name__
 
     @classmethod
-    def get_action(cls):
-        return cls.action
+    def get_actions(cls):
+        return cls.actions
 
 class Save(Command):
     description = "save the game"
@@ -61,9 +62,7 @@ class Talk(Command):
     defaults = ("t",)
 
 # This is a bit hackish, but it beats registering them all by hand!
-for command in [Save, Load, Quit, Attack, Talk]:
-    if command.__name__[0] != "_":
-        Command.register(command)
+Command.register(Save, Load, Quit, Attack, Talk)
 
 # # Player character commands
 # CMD_ATTACK = 

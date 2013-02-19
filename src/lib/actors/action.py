@@ -138,24 +138,6 @@ class Attack(Action):
         ("use_at", "target", "weapon")
     ]
 
-class Toggle(Action):
-    """Toggle a target using a manipulator."""
-    sequence = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        # ("handle", "target"),
-        ("use", "target")
-    ]
-
-class Pickup(Action):
-    """Lift an item from the environment into your manipulator."""
-    sequence = [
-        ("touch", "target"),
-        ("grasp", "target"),
-#        ("lift", "target"),
-#        ("handle", "target"),
-    ]
-
 #
 # ACTIONS:
 #
@@ -175,23 +157,6 @@ actiondict = {
     # ITEM INTERACTION AND INVENTORY MANAGEMENT:
     #
 
-    # Move an item from your manipulator into the environment.
-    "putdown" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("ungrasp", "item"),
-    ),
-
-    # Let an item fall down into the environment (uncontrolled).
-    "drop" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("ungrasp", "item"),
-    ),
-
     # Move an item from a manipulator onto your body.
     "wear" : (
         ("touch", "item"),
@@ -210,23 +175,6 @@ actiondict = {
         ("handle", "item"),
     ),
 
-    # Hold an item in a manipulator out in front of you.
-    "wield" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("ready", "item"),
-    ),
-
-    # Hold an item in a manipulator at your side.
-    "unwield" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("unready", "item"),
-    ),
 
     #
     # ATTACKS AND COMBAT:

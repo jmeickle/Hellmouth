@@ -1,12 +1,13 @@
 """Defines the Components and Traits that provide inventory functionality to Agents."""
 
-from src.lib.util import db, key
-from src.lib.util.command import Command
-from src.lib.agents.components.component import Component
 from src.lib.actors.action import Action
+from src.lib.agents.components.component import Component
+from src.lib.agents.components import manipulation
+from src.lib.util.command import Command
 
 # TODO: Use database tables!
 # On import, try to create the necessary database tables.
+#from src.lib.util import db
 # db.query("CREATE TABLE IF NOT EXISTS item (iid int, PRIMARY KEY (iid))")
 # db.query("CREATE TABLE IF NOT EXISTS inventory (aid int, root int, depth int, PRIMARY KEY (aid))")
 # db.query("CREATE TABLE IF NOT EXISTS inventory_item (aid int, iid int)")
@@ -21,13 +22,14 @@ from src.lib.actors.action import Action
 #         return fn(self, *args)
 #     return wrapped
 
+"""Actions."""
+
 class Pack(Action):
     """Move a target from your manipulator into an inventory."""
     sequence = [
         ("touch", "target"),
         ("grasp", "target"),
-        ("lift", "target"),
-        ("handle", "target"),
+        ("force", "target"),
         ("store", "target", "inventory"),
         ("ungrasp", "target"),
     ]
@@ -37,24 +39,27 @@ class Unpack(Action):
     sequence = [
         ("touch", "target"),
         ("grasp", "target"),
-#        ("lift", "target"),
-#        ("handle", "target"),
+        ("force", "target"),
         ("unstore", "target", "inventory"),
     ]
 
+"""Commands."""
+
 class Get(Command):
-#    action = Pickup
     description = "pick up an item"
     defaults = ("g",)
 
 class GetAll(Command):
-#    action = Pickup
     description = "pick up all items"
     defaults = ("G",)
 
     @classmethod
-    def get_action(cls):
-        return Pack
+    def get_actions(cls):
+        return [manipulation.Pickup, Pack]
+
+Command.register(Get, GetAll)
+
+"""Components."""
 
 class Inventory(Component):
     """Defines the ability to contain targets inside or on an Agent."""
@@ -66,8 +71,19 @@ class Inventory(Component):
     def count(self):
         return len(self.inventory)
 
-Inventory.set_commands(Get, GetAll)
-"""Provides some inventory manipulation commands."""
+    def add(self, target):
+
+
+        matches = self.inventory.get(target.appearance(), [])
+
+        # This covers only the case of that exact item already being in inventory.
+        assert target not in matches
+
+        matches.append(target)
+        self.inventory[target.appearance()] = matches
+        return True
+
+"""Mixins."""
 
 class Store(object):
     """Provides the ability to store targets into an Inventory."""
@@ -79,14 +95,19 @@ class Store(object):
 
     # Whether you can store an item in your inventory.
     # TODO: Don't use a limit of 5 entries (testing only!).    
-    def can_store(self, target):
+    def can_store(self, target, inventory=None):
         """Whether you can store an item into an Inventory."""
-        if self.Inventory.count() > 5:
+        if inventory is None:
+            inventory = self.get_component("Inventory")
+
+        assert inventory is not None
+
+        if inventory.count() > 5:
             return False
         return True
 
     # Store an item in your inventory.
-    def do_store(self, target):
+    def do_store(self, target, inventory=None):
         """Store an item into an Inventory."""
 
         # Store the item based on known properties, if you have item memory.
@@ -98,11 +119,15 @@ class Store(object):
         #     self.inventory[known.appearance()] = item_list
         # Otherwise, store it based on raw appearance.
         # else:
-        matches = self.inventory.get(target.appearance(), [])
-        assert target not in matches
-        matches.append(target)
-        self.inventory[target.appearance()] = matches
-        return True
+        if inventory is None:
+            inventory = self.get_component("Inventory")
+
+        if target.react("on", inventory) is False:
+            return False
+
+        if inventory.add(target):
+            return True
+        return False
 
 class Unstore(object):
     """Provides the ability to unstore targets from an Inventory."""
