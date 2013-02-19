@@ -6,8 +6,12 @@ from src.lib.objects.items.modifiers import *
 # TODO: Remove once items are agents.
 from src.lib.util.dynamic import *
 
+from src.lib.agents.agent import Agent
+
+from src.lib.util.command import Command
+
 # Items.
-class Item():
+class Item(Agent):
     def __init__(self):
         # Flavor
         self.name = "debugger"
@@ -32,6 +36,11 @@ class Item():
         self.held = []
         self.readied = []
         self.worn = []
+
+    def get_interactions(self, agent, source):
+        """List the interaction options exposed to another Agent within a given source."""
+        yield Command("Get")
+        yield Command("GetAll")
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
     def appearance(self):
