@@ -83,6 +83,9 @@ class Cell:
         else:
             list.append(item)
 
+        item.pos = self.pos
+        item.map = self.map
+
     # Put an item into a cell.
     # TODO: Sanity checks that _put doesn't have.
     def put(self, item):
@@ -93,9 +96,14 @@ class Cell:
     # Returns false if there are no items matching that appearance.
     # Errors if the item is not in the list.
     def _get(self, item):
-        list = self.items.get(item.appearance, None)
-        if list is not None:
-            return list.remove(item)
+        itemlist = self.items.get(item.appearance(), None)
+        if itemlist:
+            itemlist.remove(item)
+            if itemlist:
+                self.items[item.appearance()] = itemlist
+            else:
+                del self.items[item.appearance()]
+            return item
         else:
             return False
 
