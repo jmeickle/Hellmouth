@@ -140,7 +140,7 @@ class MeatArena():
                 num_mons -= 1
 
     def place_items(self, depth):
-        item_count = r1d6() + 3 + depth
+        item_count = r3d6() + 10 + depth
         generator = ItemGenerator(generators)
         for x in range(item_count):
             item = generator.random_item("weapons")
