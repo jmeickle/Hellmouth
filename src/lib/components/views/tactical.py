@@ -69,8 +69,10 @@ class MainMap(View):
                     return False
 
         if c == ord('G'):
-            self.player.command()
-            return False
+            items = self.player.cell().get_items()
+            context = self.player.get_context(members=items, source=self)
+            event = chr(c)
+            return self.player.respond(event, context)
         elif c == ord('g'):
             self.player.command()
             return False

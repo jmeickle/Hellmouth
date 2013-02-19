@@ -112,22 +112,18 @@ class Cursor(Component):
 
     def keyin(self, c):
         # TODO: Dup code.
-        pos = self.pos
-        cell = self.map.cell(pos)
-        if cell is not None:
-            if cell.actors:
-                actor = cell.actors[self.selector.index]
-                for command in actor.list_commands():
-                    if cmd(c, command):
-                        self.player.perform(command, actor)
-                        return False
         if cmd(c, CMD_HEX):
             self.scroll(hexkeys(c))
+            return False
         elif cmd(c, CMD_CANCEL):
             self.parent.cursor = None
             self.suicide()
-        else: return True
-        return False
+            return False
+        else:
+            agent = self.map.actors(self.pos)[self.selector.index]
+            context = self.player.get_context(members=[agent], source=self)
+            self.player.respond(c, context)
+        return True
 
     # Move the cursor (hexagonally).
     def scroll(self, dir):
