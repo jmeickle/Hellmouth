@@ -110,7 +110,6 @@ class Use(object):
     this is an instantaneous effect with no 'on' state."""
     # TODO: ^ What about canceling use of an item?
 
-
     # STUB
     def can_use(self, target):
         """Whether you can use a target."""
