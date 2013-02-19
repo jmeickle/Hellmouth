@@ -19,7 +19,7 @@ import src.lib.generators.points
 import body
 
 from combat import CombatAction
-from src.lib.util import log
+from src.lib.util.log import Log
 from src.lib.util.debug import *
 
 from src.lib.objects.items.carrion import Corpse
@@ -189,7 +189,7 @@ class Actor(Agent):
             check, margin = self.sc('HT', self.MaxHP() / self.HP())
             if check < TIE:
                 # TODO: Improve messaging
-                log.add("%s passes out." % self.appearance())
+                Log.add("%s passes out." % self.appearance())
                 self.knockout()
 
         # Do Nothing.
@@ -211,7 +211,7 @@ class Actor(Agent):
                     del self.effects["Stun"]
                     # TODO: Real message.
                     if self.get("Status", "unconscious") is True:
-                        log.add("%s shrugs off the stun." % self.appearance())
+                        Log.add("%s shrugs off the stun." % self.appearance())
 
     # STUB: Figure out whether we are subject to knockdown.
     def can_be_knocked_down(self):
@@ -250,15 +250,15 @@ class Actor(Agent):
         else:
             self.change_posture("lying face up")
         # TODO: Improve messaging
-        log.add("%s falls over!" % self.appearance())
+        Log.add("%s falls over!" % self.appearance())
 
     # Do something in a dir - this could be an attack or a move.
     def do(self, dir):
         if self.controlled is True and self.can_maneuver() is False:
             if self.alive is False:
-                log.add("%s is dead. Press Ctrl-q to quit the game." % self.appearance())
+                Log.add("%s is dead. Press Ctrl-q to quit the game." % self.appearance())
             else:
-                log.add("%s can't act in its current state." % self.appearance())
+                Log.add("%s can't act in its current state." % self.appearance())
             self.over()
             return False
 
@@ -293,7 +293,7 @@ class Actor(Agent):
         # Check for invalid hexes.
         if self.map.valid(pos) is False:
             if self.controlled is True:
-                log.add("It would be a long, long way down into that yawning abyss.")
+                Log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
         # The only option left.
@@ -467,7 +467,7 @@ class Actor(Agent):
 
         # TODO: Replace with check for whether it's interesting.
         for line in combat_action.display():
-            log.add(line)
+            Log.add(line)
         combat_action.cleanup()
         return True
 
@@ -865,7 +865,7 @@ class Actor(Agent):
     def hurt(self, attack):
         if attack.get("knockout") is not None:
             # TODO: Improve messaging
-            log.add("%s is knocked unconscious!" % self.appearance())
+            Log.add("%s is knocked unconscious!" % self.appearance())
             self.knockout()
 
         if attack.get("knockdown") is not None:
@@ -877,7 +877,7 @@ class Actor(Agent):
         if attack.get("stun") is not None and self.get("Status", "unconscious") is True:
             self.effects["Stun"] = attack["stun"]
             # TODO: Change message.
-            log.add("%s is stunned!" % self.appearance())
+            Log.add("%s is stunned!" % self.appearance())
 
         # Handle shock (potentially from multiple sources.)
         if attack.get("shock") is not None:
@@ -929,7 +929,7 @@ class Actor(Agent):
     def death(self):
         # HACK: Shouldn't be a magic number
         if dist(self.map.player.pos, self.pos) <= 10:
-            log.add(describe("%s has been slain!" % self.name))
+            Log.add(describe("%s has been slain!" % self.name))
         self.cell().put(self.corpse())
         return self.check_dead()
 
@@ -994,7 +994,7 @@ class Actor(Agent):
 
         # Otherwise, we fail.
         else:
-            log.add("%s can't equip the %s right now." % (self.appearance(), item.appearance()))
+            Log.add("%s can't equip the %s right now." % (self.appearance(), item.appearance()))
             return False
 
         # HACK: Remove the equipped item from inventory.
@@ -1002,7 +1002,7 @@ class Actor(Agent):
         self.check_weapons()
         # HACK: Later add a flag.
         if self.controlled is True:
-            log.add("%s equips the %s." % (self.appearance(), item.appearance()))
+            Log.add("%s equips the %s." % (self.appearance(), item.appearance()))
         return True
 
     # TODO: Sanity checks not handled above.
@@ -1062,7 +1062,7 @@ class Actor(Agent):
         self._add(item)
         # HACK: Later, make this a flag
         if self.controlled is True:
-            log.add("%s unequips the %s." % (self.appearance(), item.appearance()))
+            Log.add("%s unequips the %s." % (self.appearance(), item.appearance()))
 
         return True
 

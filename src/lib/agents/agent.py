@@ -1,8 +1,8 @@
 """Defines the methods for the basic Agent class."""
 
 from src.lib.util.dynamic import caller
-
 from src.lib.util.hex import *
+from src.lib.util.log import Log
 
 class Agent(object):
 

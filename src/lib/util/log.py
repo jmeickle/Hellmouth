@@ -3,11 +3,10 @@ from collections import deque
 class Log:
     events = deque()
 
-def add(event):
-    Log.events.append(event)
+    @classmethod
+    def add(cls, event):
+        cls.events.append(event)
 
-def length():
-    return len(Log.events)
-
-def events():
-    return Log.events
+    @classmethod
+    def length(cls):
+        return len(cls.events)

@@ -3,7 +3,7 @@
 from collections import deque
 
 from src.lib.util.text import *
-from src.lib.util import log
+from src.lib.util.log import Log
 
 from src.lib.data import screens
 
@@ -68,7 +68,7 @@ class Encounter:
         entryscreen = self.level.name
         if self.name is not None:
             entryscreen  += ", " + self.name # HACK: Later it should choose different dict for different levels.
-        log.add("You enter %s." % entryscreen)
+        Log.add("You enter %s." % entryscreen)
         if screens.text.get(striptags(entryscreen)) is not None:
             arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
             self.screen(striptags(entryscreen), arguments)

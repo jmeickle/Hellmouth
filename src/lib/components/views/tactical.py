@@ -11,11 +11,9 @@ from src.lib.components.input import *
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util.text import *
-from src.lib.util import log
+from src.lib.util.log import Log
 
 from src.lib.data.skills import skill_list
-
-
 
 # Main tactical window class.
 class Window(View):
@@ -363,15 +361,15 @@ class LogViewer(View):
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
-        self.scroller = self.spawn(Scroller(log.length() - self.height))
+        self.scroller = self.spawn(Scroller(Log.length() - self.height))
 
     def before_draw(self):
-        if log.length() > self.events:
-            max_scroll = max(0, log.length() - self.height)
+        if Log.length() > self.events:
+            max_scroll = max(0, Log.length() - self.height)
             self.scroller.resize(max_scroll)
             if self.autoscroll is True:
-                self.scroller.scroll(log.length() - self.events)
-            self.events = log.length()
+                self.scroller.scroll(Log.length() - self.events)
+            self.events = Log.length()
 
     def draw(self):
         # Start from the bottom:
@@ -386,7 +384,8 @@ class LogViewer(View):
             index += 1
 
         everything = True
-        for event in reversed(log.events()):
+        # TODO: Don't use raw events
+        for event in reversed(Log.events):
             index -= 1
             if index >= self.scroller.index:
                 continue
