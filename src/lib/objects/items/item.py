@@ -37,6 +37,10 @@ class Item(Agent):
         self.readied = []
         self.worn = []
 
+    def react_on_do_store(self, inventory):
+        """React to being stored in an inventory."""
+        self.cell()._get(self)
+
     def get_interactions(self, agent, source):
         """List the interaction options exposed to another Agent within a given source."""
         yield Command("Get")
