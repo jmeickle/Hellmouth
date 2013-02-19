@@ -135,6 +135,13 @@ class Cell:
         else:
             return len(list)
 
+    def get_items(self):
+        """Get all the items in a cell."""
+        items = []
+        for item in [item for item in self.items.values()]:
+            items.extend(item)
+        return items
+
     # ACTORS
 
     # Add a actor to a cell.
