@@ -1,7 +1,9 @@
 """Defines the Components and Traits that provide inventory functionality to Agents."""
 
 from src.lib.util import db, key
+from src.lib.util.command import Command
 from src.lib.agents.components.component import Component
+from src.lib.actors.action import Action
 
 # TODO: Use database tables!
 # On import, try to create the necessary database tables.
@@ -19,6 +21,41 @@ from src.lib.agents.components.component import Component
 #         return fn(self, *args)
 #     return wrapped
 
+class Pack(Action):
+    """Move a target from your manipulator into an inventory."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("lift", "target"),
+        ("handle", "target"),
+        ("store", "target", "inventory"),
+        ("ungrasp", "target"),
+    ]
+
+class Unpack(Action):
+    """Move a target from an inventory into your manipulator."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+#        ("lift", "target"),
+#        ("handle", "target"),
+        ("unstore", "target", "inventory"),
+    ]
+
+class Get(Command):
+#    action = Pickup
+    description = "pick up an item"
+    defaults = ("g",)
+
+class GetAll(Command):
+#    action = Pickup
+    description = "pick up all items"
+    defaults = ("G",)
+
+    @classmethod
+    def get_action(cls):
+        return Pack
+
 class Inventory(Component):
     """Defines the ability to contain targets inside or on an Agent."""
 
@@ -28,6 +65,9 @@ class Inventory(Component):
 
     def count(self):
         return len(self.inventory)
+
+Inventory.set_commands(Get, GetAll)
+"""Provides some inventory manipulation commands."""
 
 class Store(object):
     """Provides the ability to store targets into an Inventory."""

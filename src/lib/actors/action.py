@@ -147,6 +147,15 @@ class Toggle(Action):
         ("use", "target")
     ]
 
+class Pickup(Action):
+    """Lift an item from the environment into your manipulator."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+#        ("lift", "target"),
+#        ("handle", "target"),
+    ]
+
 #
 # ACTIONS:
 #
@@ -166,14 +175,6 @@ actiondict = {
     # ITEM INTERACTION AND INVENTORY MANAGEMENT:
     #
 
-    # Lift an item from the environment into your manipulator.
-    "pickup" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-    ),
-
     # Move an item from your manipulator into the environment.
     "putdown" : (
         ("touch", "item"),
@@ -189,25 +190,6 @@ actiondict = {
         ("grasp", "item"),
         ("lift", "item"),
         ("ungrasp", "item"),
-    ),
-
-    # Move an item from your manipulator into an inventory.
-    "pack" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("store", "item", "target"),
-        ("ungrasp", "item"),
-    ),
-
-    # Retrieve an item from an inventory into your manipulator.
-    "unpack" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("unstore", "item", "target"),
     ),
 
     # Move an item from a manipulator onto your body.
