@@ -107,14 +107,6 @@ class Actor(Agent):
         self.knowledge = {}
 
     #
-    # ACTIONS:
-    #
-
-    # Perform a command.
-    def command(self, command, **args):
-        return self.commands.get(command, DEBUG)(**args)
-
-    #
     # MOVEMENT AND POSITIONING:
     #
 
