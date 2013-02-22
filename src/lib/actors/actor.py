@@ -427,7 +427,7 @@ class Actor(Agent):
 
             # TODO: Improve how this is called. attack_option[0] ?
             # Instantiate this action's object.
-            attack = action.Attack()
+            attack = action.Attack
 
             # Continue to the next maneuver if we failed our attempt.
             # TODO: Analyze failure reason here instead
