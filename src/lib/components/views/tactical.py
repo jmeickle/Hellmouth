@@ -68,15 +68,22 @@ class MainMap(View):
                     self.cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
 
+        """Get items."""
         if c == ord('G'):
             items = self.player.cell().get_items()
             context = self.player.get_context(members=items, source=self)
             event = chr(c)
             return self.player.respond(event, context)
-        elif c == ord('g'):
-            self.player.command()
-            return False
+#        elif c == ord('g'):
+#            self.player.command()
+#            return False
+        elif c == ord('U'):
+            terrain = self.player.cell().get_terrain()
+            context = self.player.get_context(members=terrain, source=self)
+            event = chr(c)
+            return self.player.respond(event, context)
         elif c == ord('}'):
+            """Zoom."""
             self.zoom = 2
             self.inherit()
             return False
@@ -84,6 +91,7 @@ class MainMap(View):
             self.zoom = self.viewport_rank
             self.inherit()
         elif c == ord('N'):
+            """Notepad."""
             self.spawn(TextPrompt(self.screen, self.width, self.height))
         elif c == ord('7'):
             self.map.player.do(NW)
@@ -100,6 +108,7 @@ class MainMap(View):
         elif c == ord('5'):
             self.map.player.over()
         elif c == ord('>') or c == ord('<'):
+            """Stairs."""
             self.map.player.stairs()
         else: return True
         return False
