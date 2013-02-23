@@ -1,6 +1,23 @@
-# TODO: REMOVE THIS FILE.
+
+"""Usage note: if an Action has a prefix like "Un", retain the capitalization
+of the prefixed Action. For example, `Equip` should become `UnEquip`. This
+permits more convenient references between these classes.
+"""
+
 
 from src.lib.util.debug import DEBUG
+#
+# ACTION PRIMITIVE CALLBACK METHODS:
+#
+
+# The "can" methods check whether the primitive, if attempted *right now*,
+# would be able to be performed (but not whether it would be successful!).
+
+# The "do" methods actually perform primitives and change game state. They
+# do NOT check whether what they are attempting to do is valid because they
+# always are preceded by appropriate "can" methods. These methods return
+# True if the primitive is successfully performed.
+
 # Actions are activities carried out by an agent. The most common kind of agent
 # is an actor, but spells or environmental effects can also be agents. Each
 # action can be described as "`agent` does `action` to `target`". Even actions
