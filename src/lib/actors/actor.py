@@ -28,7 +28,9 @@ from src.lib.agents.agent import Agent
 
 from src.lib.actors import action
 
-class Actor(Agent):
+from src.lib.agents.components.manipulation import ManipulatingAgent
+
+class Actor(Agent, ManipulatingAgent):
     """Monster-like Agents. Most typically, players and monsters."""
 
     def __init__(self, components=[]):
@@ -44,8 +46,10 @@ class Actor(Agent):
         self.color = 'magenta-black'
 
         # Highly mutable actor state
-        self.body = body.Humanoid(self)
-        self.effects = {}
+#        self.register_component(self, component, domain=None):
+#        self.body = body.Humanoid(self)
+        self.component_registry["Body"] = [body.Humanoid(self)]
+
         self.base_skills = {}
 
         self.hp_spent = 0
