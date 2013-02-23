@@ -2,8 +2,10 @@ from hitloc import *
 from src.lib.generators import items
 from operator import attrgetter
 
+from src.lib.agents.components.component import Component
+
 # Body layouts - humanoid, hexapod, etc.
-class BodyPlan:
+class Body(Component):
     def __init__(self, parent):
         self.parent = parent
         # Size (0 for a human)
@@ -60,7 +62,7 @@ class BodyPlan:
     def paperdoll(self):
         return False
 
-class Humanoid(BodyPlan):
+class Humanoid(Body):
     # These tuples represent:
     # 1: Sorting order (lowest first).
     # 2: Part name.
@@ -95,9 +97,6 @@ class Humanoid(BodyPlan):
 #        'LFoot' : ("kick"),
     }
 
-    def __init__(self, parent):
-        BodyPlan.__init__(self, parent)
-        self.build(parent)
     def paperdoll(self):
         p = self.parent
         list = []
@@ -124,7 +123,7 @@ class Humanoid(BodyPlan):
         list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.locdr('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.locdr('RFoot')))
         return list
 
-class Vermiform(BodyPlan):
+class Vermiform(Body):
     # These tuples represent:
     # 1: Sorting order (lowest first).
     # 2: Part name.
@@ -147,9 +146,6 @@ class Vermiform(BodyPlan):
         'Skull' : ("sharp teeth",),
     }
 
-    def __init__(self, parent):
-        BodyPlan.__init__(self, parent)
-        self.build(parent)
     def paperdoll(self):
         p = self.parent
         list = []
@@ -178,7 +174,7 @@ class Vermiform(BodyPlan):
         list.append('')
         return list
 
-class Octopod(BodyPlan):
+class Octopod(Body):
     # See Humanoid for a description.
     parts = (
              ('Mantle', None, None),
@@ -193,10 +189,6 @@ class Octopod(BodyPlan):
     )
 
     primary_slot = 'Arm1'
-
-    def __init__(self, parent):
-        BodyPlan.__init__(self, parent)
-        self.build(parent)
 
 # WIP:
 # Winged Humanoid
