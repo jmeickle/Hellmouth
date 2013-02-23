@@ -28,7 +28,11 @@ class Agent(object):
         assert domain not in self.component_registry
         self.component_registry[domain] = [component(self)]
 
-    def retrieve_components(self, domain=None):
+    def get_component(self, domain):
+        """Return the first Component from a domain."""
+        return self.component_registry.get(domain, [None])[0]
+
+    def get_components(self, domain=None):
         """Return an iterator over Components (optionally, limited to a domain)."""
         if domain:
             for component in self.component_registry.get(domain):
@@ -38,10 +42,6 @@ class Agent(object):
                 for component in components:
                     yield component
 
-    def get_component(self, domain):
-        """Return the first Component from a domain."""
-        return self.component_registry.get(domain, [None])[0]
-
     # TODO: Handle checking interruptions and the like.
     def process(self, domain, method, *args):
         """Process a method for every Component in a domain.
@@ -49,7 +49,7 @@ class Agent(object):
         Every Component in a domain is offered a chance to process the method
         in turn and contribute to the result set. After the last component has
         responded, the order reverses."""
-        implementations = [component for component in self.retrieve_components(domain)]
+        implementations = [component for component in self.get_components(domain)]
         result = None
 
         for implementation in implementations:
