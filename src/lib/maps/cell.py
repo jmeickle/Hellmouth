@@ -221,3 +221,7 @@ class Cell:
                 return True
         return False
 
+    # TODO: Multiple terrain
+    def get_terrain(self):
+        """Return terrain inside of a cell."""
+        return [self.terrain]
