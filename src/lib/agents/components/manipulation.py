@@ -1,15 +1,35 @@
-"""Defines a set of target manipulation Traits used across Agents.""" 
-#
-# ACTION PRIMITIVE CALLBACK METHODS:
-#
+"""Provides functionality for Agents to manipulate other Agents (typically items).
 
-# The "can" methods check whether the primitive, if attempted *right now*,
-# would be able to be performed (but not whether it would be successful!).
+A Manipulator can be a body part, but it can also be something more poetic like
+a gust of wind or a psychic force. Therefore, Manipulation capability says
+nothing about Equipment capability (and vice versa). This somewhat complicates
+the case of a hand, which is capable of both Manipulating and Equipping. The
+functionality provided by a hand is portioned out as so:
 
-# The "do" methods actually perform primitives and change game state. They
-# do NOT check whether what they are attempting to do is valid because they
-# always are preceded by appropriate "can" methods. These methods return
-# True if the primitive is successfully performed.
+* The 'hand' itself is part of a Body. Even if it is severed, the Agent owning
+    it can still Manipulate and Equip other Agents.
+
+* The state of wearing a ring requires Equipment capability, but not
+    Manipulation capability.
+
+* Putting on or taking off your ring is Manipulating something to change
+    whether it is currently Equipped, and requires both sets of functionality.
+
+* Putting on or taking off someone else's ring requires Manipulation
+    capability from you and Equipment capability from them.
+
+* Wielding a sword requires Manipulation capability, but not Equipment capability.
+
+* Wielding a katar *properly* requires Equipping it first!
+
+* A psychic force can Manipulate a ring, but can't Equip it.
+
+* A statue can Equip a ring, but can't Manipulate it.
+
+The last example comes with a caveat: the statue would have some Manipulation
+capability, e.g., to return whether it is currently grasping a weapon. It
+simply wouldn't be able to *change* any of its manipulation states.
+"""
 
 from src.lib.actors.action import Action
 from src.lib.agents.components.component import Component
@@ -17,6 +37,54 @@ from src.lib.util.command import Command
 from src.lib.util.mixin import Mixin
 
 """Actions."""
+
+"""Moving Agents to or from manipulators."""
+
+class Pickup(Action):
+    """Remove an Agent from the environment, placing it into your manipulator exclusively."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("force", "target"),
+    ]
+
+class Putdown(Action):
+    """Remove an item from your manipulator, placing it into the environment exclusively."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("ungrasp", "item"),
+    ]
+
+class Drop(Action):
+    """Let an item fall from your manipulator into the environment (uncontrolled)."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("ungrasp", "item"),
+    ]
+
+class Pack(Action):
+    """Remove an item from your manipulator, placing it into a container exclusively."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("force", "target"),
+        ("store", "target", "container"),
+        ("ungrasp", "target"),
+    ]
+
+class UnPack(Action):
+    """Remove an item from a container, placing it into your manipulator exclusively."""
+    sequence = [
+        ("touch", "target"),
+        ("grasp", "target"),
+        ("force", "target"),
+        ("unstore", "target", "container"),
+    ]
+
+"""Interacting with Agents using manipulators."""
 
 class Use(Action):
     """Use a target using a manipulator."""
@@ -27,30 +95,7 @@ class Use(Action):
         ("use", "target")
     ]
 
-class Pickup(Action):
-    """Lift an item from the environment into your manipulator."""
-    sequence = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("force", "target"),
-    ]
-
-class Putdown(Action):
-    """Move an item from your manipulator into the environment."""
-    sequence = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("ungrasp", "item"),
-    ]
-
-class Drop(Action):
-    """Let an item fall down from your manipulator into the environment (uncontrolled)."""
-    sequence = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("ungrasp", "item"),
-    ]
+"""Interacting with Agents using manipulators in a way requiring holding them."""
 
 class Wield(Action):
     """"Hold an item in a manipulator out in front of you."""
@@ -61,7 +106,7 @@ class Wield(Action):
         ("ready", "item"),
     ]
 
-class Unwield(Action):
+class UnWield(Action):
     """Lower an item in a manipulator to your side."""
     sequence = [
         ("touch", "item"),
@@ -70,11 +115,62 @@ class Unwield(Action):
         ("unready", "item"),
     ]
 
+class Brandish(Action):
+    """Point at a target using a second, wielded target.
+
+    n.b. - This may unready your second target! For example, pointing a
+    warhammer at someone makes it rather useless for combat.
+    """
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("ready", "item"),
+    ]
+
+class UnBrandish(Action):
+    """Stop pointing at a target using a second, wielded target."""
+    sequence = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("unready", "item"),
+    ]
+
+# if target.touch():
+#     if target.grasp():
+#         if target.force():
+#             if target.unready():
+#                 target.UnBrandish
+
+# # Throw the target at another target.
+# class throw(ActionPrimitive): pass
+
 
 """Commands."""
 
-class Ready(Command):
-    description = "ready an item"
+class Get(Command):
+    """Pick up a single nearby item."""
+    description = "pick up an item"
+    defaults = ("g",)
+
+    @classmethod
+    def get_actions(cls):
+        return [Pickup, Pack]
+
+class GetAll(Command):
+    """Pick up multiple nearby items."""
+    description = "pick up all items"
+    defaults = ("G",)
+
+    @classmethod
+    def get_actions(cls):
+        return [Pickup, Pack]
+
+Command.register(Get, GetAll)
+
+class ReadyWeapon(Command):
+    description = "ready an unreadied weapon"
     defaults = ("R",)
 
 class UseTerrain(Command):
@@ -91,15 +187,10 @@ class Wield(Command):
 
 Command.register(UseTerrain)
 
-"""Components."""
-
 """Mixins."""
 
 class TouchMixin(Mixin):
-    """Provides the ability to touch a target with a manipulator.
-
-    Unlike many other Traits, there is no corresponding 'Untouch' Trait because
-    this is an instantaneous effect with no 'on' state."""
+    """Provides the ability to touch a target with a manipulator."""
 
     # STUB
     def can_touch(self, target, manipulator=None):
@@ -109,15 +200,50 @@ class TouchMixin(Mixin):
     def do_touch(self, target, manipulator=None):
         return True
 
-# Touch the target (with a specific item).
+class UnTouchMixin(Mixin):
+    """Provides the ability to stop touching a target with a manipulator."""
+
+    # STUB
+    def can_untouch(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_untouch(self, target, manipulator=None):
+        return True
+
+class TouchingAgent(TouchMixin, UnTouchMixin):
+    """Convenience Mixin to represent an Agent with touching capability."""
+    pass
+
+class GraspMixin(Mixin):
+    """Provides the ability to hold a target with a manipulator."""
+
+    # STUB
+    def can_grasp(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_grasp(self, target, manipulator=None):
+        return True
+
+class UnGraspMixin(Mixin):
+    """Provides the ability to let go of a target with a manipulator."""
+
+    # STUB
+    def can_ungrasp(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_ungrasp(self, target, manipulator=None):
+        return True
+
+class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
+    """Convenience Mixin to represent an Agent with grasping capability."""
+    pass
+
 class ContactMixin(Mixin):
-    """Provides the ability to touch a target with a second target.
+    """Provides the ability to touch a target with a second target."""
 
-
-    Unlike many other Traits, there is no corresponding 'Uncontact' Trait because
-    this is an instantaneous effect with no 'on' state."""
-
-    # Return whether the actor can touch the target with the item.
     # TODO: Enhanced return values.
     def can_contact(self, contacted_target, contacting_target):
         """Whether you can touch a target with a second target."""
@@ -143,40 +269,14 @@ class ContactMixin(Mixin):
         """Touch a target with a second target."""
         return True
 
-class GraspMixin(Mixin):
-    """Provides the ability to hold a the target with a manipulator."""
+class UnContactMixin(Mixin):
+    """Provides the ability to stop touching a target with a second target."""
 
-    # STUB
-    def can_grasp(self, target, manipulator=None):
-        return True
+    def can_uncontact(self, contacted_target, contacting_target):
+        """Whether you can stop touching a target with a second target."""
 
-    # STUB
-    def do_grasp(self, target, manipulator=None):
-        return True
-
-class UngraspMixin(Mixin):
-    """Provides the ability to let go of a target with a manipulator."""
-
-    # STUB
-    def can_ungrasp(self, target, manipulator=None):
-        return True
-
-    # STUB
-    def do_ungrasp(self, target, manipulator=None):
-        return True
-
-class GetMixin(Mixin):
-    """Provides the ability to touch a target with a manipulator.
-
-    Unlike many other Traits, there is no corresponding 'Untouch' Trait because
-    this is an instantaneous effect with no 'on' state."""
-
-    # STUB
-    def can_touch(self, target, manipulator=None):
-        return True
-
-    # STUB
-    def do_touch(self, target, manipulator=None):
+    def do_uncontact(self, contacted_target, contacting_target):
+        """Stop touching a target with a second target."""
         return True
 
 class ReadyMixin(Mixin):
@@ -190,7 +290,7 @@ class ReadyMixin(Mixin):
     def do_ready(self, target, manipulator=None):
         return True
 
-class UnreadyMixin(Mixin):
+class UnReadyMixin(Mixin):
     """Provides the ability to lower the target to the side of your body."""
 
     # STUB
@@ -201,41 +301,9 @@ class UnreadyMixin(Mixin):
     def do_unready(self, target, manipulator=None):
         return True
 
-class UseMixin(Mixin):
-    """Provides the ability to use a target for an intended function.
-
-    Unlike many other Traits, there is no corresponding 'Unuse' Trait because
-    this is an instantaneous effect with no 'on' state."""
-    # TODO: ^ What about canceling use of an item?
-
-    # STUB
-    def can_use(self, target):
-        """Whether you can use a target."""
-        return True
-
-    def do_use(self, target):
-        """Use a target."""
-        target.react("on", self)
-        return True
-
-class UseAtMixin(Mixin):
-    """Provides the ability to use a target at a second target.
-
-    Unlike many other Traits, there is no corresponding 'UnuseAt' Trait because
-    this is an instantaneous effect with no 'on' state."""
-    # TODO: ^ What about canceling use of an item?
-
-
-    # STUB
-    def can_use_at(self, target, item):
-        """Whether you can use a target at a second target."""
-        return True
-
-    # Use an item at a target.
-    # STUB
-    def do_use_at(self, target, item):
-        """Use a target at a second target."""
-        return True
+class HoldingAgent(GraspingAgent, ContactMixin, UnContactMixin, ReadyMixin, UnReadyMixin):
+    """Convenience Mixin to represent an Agent that can manipulate held Agents."""
+    pass
 
 class ForceMixin(Mixin):
     """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
@@ -278,34 +346,116 @@ class HandleMixin(Mixin):
         """Exert force to reposition or manipulate part of a target."""
         return True
 
-class ManipulatingAgent(TouchMixin, ContactMixin, GraspMixin, UngraspMixin, ReadyMixin, UnreadyMixin, UseMixin, UseAtMixin, ForceMixin, SlideMixin, HandleMixin):
-    """Convenience mixin class for Agents that have manipulators capable of holding items."""
+class PositioningAgent(TouchingAgent, ForceMixin, SlideMixin, HandleMixin):
+    """Convenience Mixin to represent an Agent that can use its manipulators to position other Agents."""
     pass
 
-# Everything below here is stub functions!
-# # Throw the target at another target.
-# class throw(ActionPrimitive): pass
+class UseMixin(Mixin):
+    """Provides the ability to use a target for an intended function.
 
-# # Attach the target to your body.
-# class equip(ActionPrimitive): pass
+    Unlike many other Mixins, there is no corresponding 'Unuse' Trait because
+    this is an instantaneous effect with no 'on' state."""
+    # TODO: ^ What about canceling use of an item?
 
-# # Unattach the target from your body.
-# class unequip(ActionPrimitive): pass
+    # STUB
+    def can_use(self, target):
+        """Whether you can use a target."""
+        return True
 
-# # Typically, these will require a single actor or item as a first target, and a
-# # location as a second target:
+    def do_use(self, target):
+        """Use a target."""
+        target.react("on", self)
+        return True
 
-# # Move the target from one map location to another.
-# class move(ActionPrimitive): pass
+class UseAtMixin(Mixin):
+    """Provides the ability to use a target at a second target.
 
-# # Typically, these will require a single actor or item as a first target, and a
-# # single item as a second target:
+    Unlike many other Mixins, there is no corresponding 'UnuseAt' Trait because
+    this is an instantaneous effect with no 'on' state."""
+    # TODO: ^ What about canceling use of an item?
 
-# # Point a readied target at a second target.
-# # n.b. - It is up to the item whether brandishing is compatible with readying!
-# class brandish(ActionPrimitive): pass
 
-# # Stop pointing a readied target at a second target.
-# # n.b. - This can have a second target because you can pointedly lower your
-# # weapon 'at' someone, e.g., if asked to by a guard.
-# class unbrandish(ActionPrimitive): pass
+    # STUB
+    def can_use_at(self, target, item):
+        """Whether you can use a target at a second target."""
+        return True
+
+    # Use an item at a target.
+    # STUB
+    def do_use_at(self, target, item):
+        """Use a target at a second target."""
+        return True
+
+class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
+    """Convenience Mixin to represent an Agent that use its manipulators to use other Agents."""
+    pass
+
+class StoreMixin(Mixin):
+    """Provides the ability to store targets into a Container."""
+
+    # TODO: Don't use a limit of 5 entries (testing only!).    
+    def can_store(self, target, container=None):
+        """Whether you can store an item into a Container."""
+        if container is None:
+            container = self.get_component("Container")
+
+        if container is None:
+            return False
+
+        if container.count() > 5:
+            return False
+        return True
+
+    # Store an item in your container.
+    def do_store(self, target, container=None):
+        """Store an item into a Container."""
+
+        if container is None:
+            container = self.get_component("Container")
+
+        if target.react("on", container) is False:
+            return False
+
+        if container.add(target):
+            return True
+        return False
+
+class UnstoreMixin(Mixin):
+    """Provides the ability to unstore targets from a Container."""
+
+    def can_unstore(self, target):
+        """Whether you can unstore an item from a Container."""
+        return True
+
+    def do_unstore(self, target):
+        """Unstore an item from a cOntainer."""
+        matches = self.container.get(target.appearance(), [])
+        assert target in matches
+        matches.remove(target)
+        self.container[target.appearance()] = matches        
+        return True
+
+class StoringAgent(StoreMixin, UnstoreMixin):
+    """Convenience Mixin to represent an Agent that can use its manipulators to store items in Containers."""
+    pass
+
+class ManipulatingAgent(HoldingAgent, PositioningAgent, UsingAgent, StoringAgent, Mixin):
+    """Convenience Mixin to represent an Agent with full Manipulation capabilities."""
+    pass
+
+    # # Whether you believe you can store an item in your container.
+    # # @checks_item_memory
+    # def believe_store(self, item):
+    #     return self.can_store(item)
+
+    # Whether you can store an item in your container.
+
+    # Store the item based on known properties, if you have item memory.
+    # TODO: Nicer way of doing item memory?
+    # if hasattr(self, 'memory'):
+    #     known = self.memory.get(item, Item())
+    #     item_list = self.container.get(known.appearance(), [])
+    #     item_list.append(item)
+    #     self.container[known.appearance()] = item_list
+    # Otherwise, store it based on raw appearance.
+    # else:
