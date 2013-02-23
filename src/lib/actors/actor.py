@@ -26,15 +26,12 @@ from src.lib.objects.items.carrion import Corpse
 
 from src.lib.agents.agent import Agent
 
-from src.lib.agents.components.inventory import Inventory
-from src.lib.agents.components.status import Status
-
 from src.lib.actors import action
 
 class Actor(Agent):
     """Monster-like Agents. Most typically, players and monsters."""
 
-    def __init__(self, components=[Status, Inventory]):
+    def __init__(self, components=[]):
         super(Actor, self).__init__(components)
 
         # Text information (cosmetic)
