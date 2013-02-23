@@ -225,7 +225,7 @@ class Actor(Agent, ManipulatingAgent):
         if self.controlled is True:
             self.screen("KO")
         self.set("Status", "unconscious", True)
-        self.drop_all_held()
+        self.process("Equipment", "drop_all_held")
         self.knockdown()
 
     # Get knocked down.
