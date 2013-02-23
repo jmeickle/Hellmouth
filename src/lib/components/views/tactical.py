@@ -456,14 +456,14 @@ class Inventory(View):
 
     # Stored here for convenience.
     def before_draw(self):
-        self.items = self.player.list_carried()
-        self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
+        self.items = [item for item in self.player.process("Equipment", "get_tree")]
+        #self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
 
         # Tabbing! (Very hackish/simple.)
-        if self.sidescroller.index == 0:
-            self.scroller.resize(len(self.items)-1)
-        else:
-            self.scroller.resize(len(self.slots)-1)
+#        if self.sidescroller.index == 0:
+#            self.scroller.resize(len(self.items)-1)
+#        else:
+#            self.scroller.resize(len(self.slots)-1)
 
     def draw(self):
         self.window.clear()
@@ -472,11 +472,12 @@ class Inventory(View):
         self.y_acc += 1
         if len(self.items) > 0:
             for x in range(len(self.items)):
-                appearance, items = self.items[x]
-                if len(items) > 1:
-                    string = "%d %ss" % (len(items), appearance)
-                else:
-                    string = appearance
+                string = self.items[x]
+#                appearance, items = self.items[x]
+#                if len(items) > 1:
+#                    string = "%d %ss" % (len(items), appearance)
+#                else:
+#                    string = appearance
 
                 # Highlight tab, if present.
                 if self.sidescroller.index == 0 and x == self.scroller.index:
@@ -503,36 +504,36 @@ class Inventory(View):
         self.x_acc += 20
 
         # TODO: Fix this messaging.
-        self.cline("Equipped")
-        self.y_acc += 1
-        for x in range(len(self.slots)):
-            loc = self.slots[x]
-            equipped = ""
-            for appearance, items in loc.readied.items():
-                for item in items: # Ick. Definitely need to move this printing!
-                    if item.is_wielded():
-                        equipped += "%s" % appearance # (wielded)
-                    else:
-                        equipped += "%s" % appearance # (readied)
-            for appearance, items in loc.held.items():
-                for item in items:
-                    if not item.is_wielded():
-                        equipped += "%s" % appearance # (held)
-            for appearance, items in loc.worn.items():
-                for item in items:
-                    equipped += "%s" % appearance # (worn)
+#        self.cline("Equipped")
+#        self.y_acc += 1
+#        for x in range(len(self.slots)):
+#            loc = self.slots[x]
+#            equipped = ""
+#            for appearance, items in loc.readied.items():
+#                for item in items: # Ick. Definitely need to move this printing!
+#                    if item.is_wielded():
+#                        equipped += "%s" % appearance # (wielded)
+#                    else:
+#                        equipped += "%s" % appearance # (readied)
+#            for appearance, items in loc.held.items():
+#                for item in items:
+#                    if not item.is_wielded():
+#                        equipped += "%s" % appearance # (held)
+#            for appearance, items in loc.worn.items():
+#                for item in items:
+#                    equipped += "%s" % appearance # (worn)
 
             # If we don't have a string yet:
-            if not equipped:
-                continue
+#            if not equipped:
+#                continue
 
-            colon = "%s:" % loc.appearance()
+#            colon = "%s:" % loc.appearance()
 
             # Highlights.
-            if self.sidescroller.index == 1 and x == self.scroller.index:
-                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
-            else:
-                self.cline("%-11s %s" % (colon, equipped))
+#            if self.sidescroller.index == 1 and x == self.scroller.index:
+#                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
+#            else:
+#                self.cline("%-11s %s" % (colon, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
