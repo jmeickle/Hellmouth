@@ -35,7 +35,7 @@ class Agent(object):
     def get_components(self, domain=None):
         """Return an iterator over Components (optionally, limited to a domain)."""
         if domain:
-            for component in self.component_registry.get(domain):
+            for component in self.component_registry.get(domain, []):
                 yield component
         else:
             for domain, components in self.component_registry.items():
