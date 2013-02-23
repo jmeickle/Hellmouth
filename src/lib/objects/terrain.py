@@ -30,7 +30,7 @@ class Stairs(Terrain):
         self.color = "green-black"
         self.blocking = False
 
-    def react_on_use(self, user):
+    def react_on_do_use(self, user):
         self.cell.map.go(self.destination)
         return True
 
