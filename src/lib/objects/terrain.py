@@ -1,6 +1,7 @@
 # Terrain objects.
 
 from src.lib.agents.agent import Agent
+from src.lib.util.command import Command
 
 class Terrain(Agent):
     def __init__(self, terrain_type=None):
@@ -43,8 +44,12 @@ class Lever(Terrain):
         self.color = "magenta-black"
         self.blocking = False
 
+    def get_interactions(self, agent, source):
+        """List the interaction options exposed to another Agent within a given source."""
+        yield Command("UseTerrain")
+
     def react_on_do_use(self, user):
-        self.cell.map.go(self.destination)
+        self.color = "black-magenta"
         return True
 
 # Meat Arena
