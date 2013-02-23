@@ -14,11 +14,12 @@
 from src.lib.actors.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.util.command import Command
+from src.lib.util.mixin import Mixin
 
 """Actions."""
 
-class Toggle(Action):
-    """Toggle a target using a manipulator."""
+class Use(Action):
+    """Use a target using a manipulator."""
     sequence = [
         ("touch", "target"),
         ("grasp", "target"),
