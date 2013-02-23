@@ -5,7 +5,7 @@ from src.lib.objects.items.item import Natural
 from src.lib.objects.items.carrion import PartialCorpse
 
 # Hit location
-class HitLoc:
+class BodyPart(object):
     def __init__(self, type, owner):
         self.type = type
         self.owner = owner
@@ -322,9 +322,9 @@ class HitLoc:
             return False
 
 # Arms, legs, pseudopods, etc.
-class Limb(HitLoc):
+class Limb(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["pi++"] = 1
         self.multipliers["pi+"] = 1
@@ -338,16 +338,16 @@ class Limb(HitLoc):
 
 class Leg(Limb):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
     def sever(self, attack):
         self.owner.knockdown()
         Limb.sever(self, attack)
 
 # Hands, feet, etc.
-class Extremity(HitLoc):
+class Extremity(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["pi++"] = 1
         self.multipliers["pi+"] = 1
@@ -361,16 +361,16 @@ class Extremity(HitLoc):
 
 class Foot(Extremity):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
     def sever(self, attack):
         self.owner.knockdown()
         Extremity.sever(self, attack)
 
 # Brain containment
-class Skull(HitLoc):
+class Skull(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.dr = 2
 
@@ -381,9 +381,9 @@ class Skull(HitLoc):
         return self.multipliers.get(type, 4)
 
 # Internal organs.
-class Vitals(HitLoc):
+class Vitals(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["pi-"] = 3
         self.multipliers["pi"] = 3
@@ -392,9 +392,9 @@ class Vitals(HitLoc):
         self.multipliers["imp"] = 3
 
 # Squishy seeing organs
-class Eye(HitLoc):
+class Eye(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["tox"] = 1
 
@@ -407,16 +407,16 @@ class Eye(HitLoc):
         return self.owner.MaxHP()/10
 
 # Face.
-class Face(HitLoc):
+class Face(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["corr"] = 1.5
 
 # Neck
-class Neck(HitLoc):
+class Neck(BodyPart):
     def __init__(self, type, owner):
-        HitLoc.__init__(self, type, owner)
+        BodyPart.__init__(self, type, owner)
 
         self.multipliers["cr"] = 1.5
         self.multipliers["corr"] = 1.5

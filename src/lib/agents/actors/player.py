@@ -1,5 +1,5 @@
 # The player character(s).
-from actor import Actor
+from src.lib.agents.actors.actor import Actor
 from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import ManipulatingAgent
 from src.lib.agents.components.status import Status

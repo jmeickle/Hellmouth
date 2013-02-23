@@ -1,6 +1,6 @@
 """Provides functionality for Agents to change their position on the map."""
 
-from src.lib.actors.action import Action
+from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.util.command import Command
 from src.lib.util.mixin import Mixin

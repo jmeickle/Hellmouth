@@ -1,4 +1,4 @@
-from hitloc import *
+from src.lib.agents.components.bodies.parts import *
 from src.lib.generators import items
 from operator import attrgetter
 
@@ -35,7 +35,7 @@ class Body(Component):
 
             # Set up relationships between parts.
             if parent is not None:
-                HitLoc.add_child(self.locs[parent], part)
+                BodyPart.add_child(self.locs[parent], part)
 
             # Add the location to the hit location chart.
             for roll in rolls:
@@ -73,7 +73,7 @@ class Humanoid(Body):
     #    If a further d6 roll is required, use a list like:
     #        [15, [16, 1, 2, 3], 17]
     parts = (
-             (2, 'Torso', HitLoc, None, False, [9, 10]),
+             (2, 'Torso', BodyPart, None, False, [9, 10]),
              (1, 'Neck', Neck, 'Torso', False, [17, 18]),
              (1, 'Skull', Skull, 'Neck', False, [3, 4]),
              (1, 'Face', Face, 'Skull', False, [5]),
@@ -81,7 +81,7 @@ class Humanoid(Body):
              (3, 'LArm', Limb, 'Torso', False, [12]),
              (4, 'RHand', Extremity, 'RArm', False, [(15, (1, 2, 3))]),
              (4, 'LHand', Extremity, 'LArm', False, [(15, (4, 5, 6))]),
-             (5, 'Groin', HitLoc, 'Torso', False, [11]),
+             (5, 'Groin', BodyPart, 'Torso', False, [11]),
              (6, 'RLeg', Leg, 'Groin', False, [6, 7]),
              (6, 'LLeg', Leg, 'Groin', False, [13, 14]),
              (7, 'RFoot', Foot, 'RLeg', False, [(16, (1, 2, 3))]),
@@ -134,7 +134,7 @@ class Vermiform(Body):
     #    If a further d6 roll is required, use a list like:
     #        [15, [16, 1, 2, 3], 17]
     parts = (
-             (2, 'Torso', HitLoc, None, False, range(9, 18+1)),
+             (2, 'Torso', BodyPart, None, False, range(9, 18+1)),
              (1, 'Neck', Neck, 'Torso', False, [6, 7, 8]),
              (1, 'Skull', Skull, 'Neck', False, [3, 4]),
              (1, 'Face', Face, 'Skull', False, [5]),

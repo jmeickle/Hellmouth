@@ -1,7 +1,7 @@
 """Defines the methods for the basic Agent class."""
 
 from src.lib.util.command import Command
-from src.lib.util.context import AgentContext
+from src.lib.agents.contexts.context import AgentContext
 from src.lib.util.dynamic import caller
 from src.lib.util.hex import *
 from src.lib.util.log import Log

@@ -16,9 +16,9 @@ from src.lib.data import skills
 from src.lib.data import traits
 
 import src.lib.generators.points
-import body
+from src.lib.agents.components.bodies import body
 
-from combat import CombatAction
+from src.lib.agents.contexts.combat import CombatAction
 from src.lib.util.log import Log
 from src.lib.util.debug import *
 
@@ -26,7 +26,7 @@ from src.lib.objects.items.carrion import Corpse
 
 from src.lib.agents.agent import Agent
 
-from src.lib.actors import action
+from src.lib.agents.components import action
 
 from src.lib.agents.components.manipulation import ManipulatingAgent
 

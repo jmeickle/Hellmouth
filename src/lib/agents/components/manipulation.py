@@ -31,7 +31,7 @@ capability, e.g., to return whether it is currently grasping a weapon. It
 simply wouldn't be able to *change* any of its manipulation states.
 """
 
-from src.lib.actors.action import Action
+from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.util.command import Command
 from src.lib.util.mixin import Mixin

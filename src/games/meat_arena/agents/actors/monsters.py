@@ -2,7 +2,7 @@
 #
 # TODO: Define these with json rather than Python code.
 
-from src.lib.actors.npc import NPC
+from src.lib.agents.actors.npc import NPC
 
 class MeatSlave(NPC):
 
