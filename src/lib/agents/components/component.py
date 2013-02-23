@@ -7,6 +7,9 @@ class Component(object):
     dependencies = []
     """Mark a Component as having a dependency on another Component."""
 
+    def __init__(self, owner):
+        self.owner = owner
+
     def process(self, method, result, args):
         return getattr(self, method)(*args)
 
