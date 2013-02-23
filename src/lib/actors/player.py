@@ -1,12 +1,13 @@
 # The player character(s).
 from actor import Actor
+from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import ManipulatingAgent
-from src.lib.agents.components.inventory import InventoryAgent
+from src.lib.agents.components.status import Status
 
-class Player(Actor, InventoryAgent, ManipulatingAgent):
+class Player(Actor, ManipulatingAgent):
 
-    def __init__(self):
-        super(Player, self).__init__()
+    def __init__(self, components=[Equipment, Status]):
+        super(Player, self).__init__(components)
         self.glyph = '@'
         self.name = 'adventurer'
         self.color = 'cyan'
