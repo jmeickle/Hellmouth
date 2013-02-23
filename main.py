@@ -64,15 +64,20 @@ if arguments["displaymode"] == displayflags["curses"]:
         from src.lib.components.component import RootComponent
         root = RootComponent(stdscr)
 
-        # Get a list of valid game names.
-        choices = []
-        for module_name in sorted(system.folders("src/games")):
-            module_info = __import__('src.games.%s.info' % module_name, globals(), locals(), ['name', 'version', 'description'])
-            choices.append((module_name, module_info))
+        #
+        if arguments.get("gamemode"):
+            # TODO: Remove extraneous None
+            root.launch((arguments.get("gamemode"), None))
+        else:
+            # Get a list of valid game names.
+            choices = []
+            for module_name in sorted(system.folders("src/games")):
+                module_info = __import__('src.games.%s.info' % module_name, globals(), locals(), ['name', 'version', 'description'])
+                choices.append((module_name, module_info))
 
-        # Spawn a game choice menu.
-        from src.lib.components.views.screens.screen import MenuScreen
-        root.spawn(MenuScreen(root.window, **{"title" : "Start Game!", "choices" : choices, "callback" : root.launch}))
+            # Spawn a game choice menu.
+            from src.lib.components.views.screens.screen import MenuScreen
+            root.spawn(MenuScreen(root.window, **{"title" : "Start Game!", "choices" : choices, "callback" : root.launch}))
 
         # Start the application loop.
         while root.alive is True:
