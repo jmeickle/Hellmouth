@@ -76,15 +76,25 @@ class Ready(Command):
     description = "ready an item"
     defaults = ("R",)
 
+class UseTerrain(Command):
+    description = "use a terrain feature"
+    defaults = ("U",)
+
+    @classmethod
+    def get_actions(cls):
+        return [Use]
+
 class Wield(Command):
     description = "wield a weapon"
     defaults = ("w",)
+
+Command.register(UseTerrain)
 
 """Components."""
 
 """Mixins."""
 
-class Touch(object):
+class TouchMixin(Mixin):
     """Provides the ability to touch a target with a manipulator.
 
     Unlike many other Traits, there is no corresponding 'Untouch' Trait because
@@ -99,7 +109,7 @@ class Touch(object):
         return True
 
 # Touch the target (with a specific item).
-class Contact(object):
+class ContactMixin(Mixin):
     """Provides the ability to touch a target with a second target.
 
 
@@ -132,7 +142,7 @@ class Contact(object):
         """Touch a target with a second target."""
         return True
 
-class Grasp(object):
+class GraspMixin(Mixin):
     """Provides the ability to hold a the target with a manipulator."""
 
     # STUB
@@ -143,7 +153,7 @@ class Grasp(object):
     def do_grasp(self, target, manipulator=None):
         return True
 
-class Ungrasp(object):
+class UngraspMixin(Mixin):
     """Provides the ability to let go of a target with a manipulator."""
 
     # STUB
@@ -154,7 +164,7 @@ class Ungrasp(object):
     def do_ungrasp(self, target, manipulator=None):
         return True
 
-class Get(object):
+class GetMixin(Mixin):
     """Provides the ability to touch a target with a manipulator.
 
     Unlike many other Traits, there is no corresponding 'Untouch' Trait because
@@ -168,7 +178,7 @@ class Get(object):
     def do_touch(self, target, manipulator=None):
         return True
 
-class Ready(object):
+class ReadyMixin(Mixin):
     """Provides the ability to raise the target outward from your body."""
 
     # STUB
@@ -179,7 +189,7 @@ class Ready(object):
     def do_ready(self, target, manipulator=None):
         return True
 
-class Unready(object):
+class UnreadyMixin(Mixin):
     """Provides the ability to lower the target to the side of your body."""
 
     # STUB
@@ -190,7 +200,7 @@ class Unready(object):
     def do_unready(self, target, manipulator=None):
         return True
 
-class Use(object):
+class UseMixin(Mixin):
     """Provides the ability to use a target for an intended function.
 
     Unlike many other Traits, there is no corresponding 'Unuse' Trait because
@@ -207,7 +217,7 @@ class Use(object):
         target.react("on", self)
         return True
 
-class UseAt(object):
+class UseAtMixin(Mixin):
     """Provides the ability to use a target at a second target.
 
     Unlike many other Traits, there is no corresponding 'UnuseAt' Trait because
@@ -226,7 +236,7 @@ class UseAt(object):
         """Use a target at a second target."""
         return True
 
-class Force(object):
+class ForceMixin(Mixin):
     """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
 
     # STUB
@@ -239,7 +249,7 @@ class Force(object):
         """Exert force to reposition a target whose mass is controlled by you."""
         return True
 
-class Slide(object):
+class SlideMixin(Mixin):
     """Provides the ability to exert force to drag, slide, or shove a target against a surface."""
 
     # STUB
@@ -252,7 +262,7 @@ class Slide(object):
         """Exert force to drag, slide, or shove a target against a surface."""
         return True
 
-class Handle(object):
+class HandleMixin(Mixin):
     """Provides the ability to exert force to reposition or manipulate part of a target.
 
     n.b. - You can handle some targets even if you can't Force or Slide them."""
@@ -267,7 +277,7 @@ class Handle(object):
         """Exert force to reposition or manipulate part of a target."""
         return True
 
-class ManipulatingAgent(Touch, Contact, Grasp, Ungrasp, Ready, Unready, Use, UseAt, Force, Slide, Handle):
+class ManipulatingAgent(TouchMixin, ContactMixin, GraspMixin, UngraspMixin, ReadyMixin, UnreadyMixin, UseMixin, UseAtMixin, ForceMixin, SlideMixin, HandleMixin):
     """Convenience mixin class for Agents that have manipulators capable of holding items."""
     pass
 

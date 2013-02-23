@@ -4,6 +4,7 @@ from src.lib.actors.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.agents.components import manipulation
 from src.lib.util.command import Command
+from src.lib.util.mixin import Mixin
 
 # TODO: Use database tables!
 # On import, try to create the necessary database tables.
@@ -85,7 +86,7 @@ class Inventory(Component):
 
 """Mixins."""
 
-class Store(object):
+class StoreMixin(Mixin):
     """Provides the ability to store targets into an Inventory."""
 
     # # Whether you believe you can store an item in your inventory.
@@ -129,7 +130,7 @@ class Store(object):
             return True
         return False
 
-class Unstore(object):
+class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from an Inventory."""
 
     def can_unstore(self, target):
@@ -144,7 +145,7 @@ class Unstore(object):
         self.inventory[target.appearance()] = matches        
         return True
 
-class InventoryAgent(Store, Unstore):
+class InventoryAgent(StoreMixin, UnstoreMixin):
     pass
 
 #     # Whether you believe you can retrieve an item in your inventory.
