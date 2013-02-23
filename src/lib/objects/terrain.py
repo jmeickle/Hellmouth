@@ -49,7 +49,10 @@ class Lever(Terrain):
         yield Command("UseTerrain")
 
     def react_on_do_use(self, user):
-        self.color = "black-magenta"
+        if self.color == 'magenta-black':
+            self.color = "black-magenta"
+        else:
+            self.color = "magenta-black"
         return True
 
 # Meat Arena
