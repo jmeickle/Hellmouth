@@ -166,16 +166,6 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
-        # Clear retreats.
-        if self.effects.get("Retreat") is not None:
-            del self.effects["Retreat"]
-
-        if self.get("Status", "unconscious") is True and self.HP() < 0:
-            check, margin = self.sc('HT', self.MaxHP() / self.HP())
-            if check < TIE:
-                # TODO: Improve messaging
-                Log.add("%s passes out." % self.appearance())
-                self.knockout()
 
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
@@ -183,20 +173,7 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Things to do at the end of your turn.
     def after_turn(self):
-        # Shock ends at the end of your turn.
-        # TODO: Handle the case of getting shock in your own turn.
-        if self.effects.get("Shock") is not None:
-            del self.effects["Shock"]
-
-        for effect, details in self.effects.items():
-            if effect == "Stun":
-                # TODO: Mental Stun
-                check, margin = self.sc('HT')
-                if check > TIE:
-                    del self.effects["Stun"]
-                    # TODO: Real message.
-                    if self.get("Status", "unconscious") is True:
-                        Log.add("%s shrugs off the stun." % self.appearance())
+        pass
 
     # STUB: Figure out whether we are subject to knockdown.
     def can_be_knocked_down(self):
@@ -206,13 +183,13 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Figure out whether we are subject to knockout.
     def can_be_knocked_out(self):
-        if self.get("Status", "unconscious") is False:
+        if self.has("Status", "Unconscious"):
             return False
         return True
 
     # STUB: Figure out whether we are currently subject to stun.
     def can_be_stunned(self):
-        if self.effects.get("Stun") is not None:
+        if self.has("Status", "Stun"):
             return False
         return True
 
@@ -297,7 +274,7 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
-        if self.get("Status", "unconscious") is False:
+        if self.has("Status", "Unconscious"):
             return False
         return True
 
@@ -305,7 +282,7 @@ class Actor(Agent, ManipulatingAgent):
     def can_maneuver(self):
         if self.can_act() is False:
             return False
-        if self.effects.get("Stun") is not None:
+        if self.has("Status", "Stun"):
             return False
         return True
 
@@ -405,20 +382,20 @@ class Actor(Agent, ManipulatingAgent):
     def ST(self, temporary=True):
         ST = self.attributes.get('ST')
         if temporary is True:
-            if self.exhausted() is True:
+            if self.has("Status", "Exhausted") is True:
                 ST = (ST + 1) / 2
         return ST
 
     def DX(self, temporary=True):
         DX = self.attributes.get('DX')
         if temporary is True:
-            DX -= self.effects.get("Shock", 0)
+            DX -= self.get("Status", "Shock", 0)
         return DX
 
     def IQ(self, temporary=True):
         IQ = self.attributes.get('IQ')
         if temporary is True:
-            IQ -= self.effects.get("Shock", 0)
+            IQ -= self.get("Status", "Shock", 0)
         return IQ
 
     def HT(self, temporary=True):
@@ -464,7 +441,7 @@ class Actor(Agent, ManipulatingAgent):
             return None
 
         status_mod = 0
-        if self.effects.get("Stun") is not None:
+        if self.has("Status", "Stun"):
             status_mod -= 4
 
         posture_mod = postures[self.posture][1]
@@ -476,11 +453,11 @@ class Actor(Agent, ManipulatingAgent):
         dodge = self.Speed()/4 + 3 + status_mod + posture_mod + retreat_mod# /4 because no /4 in speed.
 
         # Penalty from reeling: halve dodge.
-        if self.reeling() is True:
+        if self.has("Status", "Reeling"):
             dodge = (dodge + 1) / 2
 
         # Penalty from exhaustion: halve dodge.
-        if self.exhausted() is True:
+        if self.has("Status", "Exhausted"):
             dodge = (dodge + 1) / 2
 
         return dodge
@@ -501,7 +478,7 @@ class Actor(Agent, ManipulatingAgent):
             return None
 
         status_mod = 0
-        if self.effects.get("Stun") is not None:
+        if self.has("Status", "Stun"):
             status_mod -= 4
 
         posture_mod = postures[self.posture][1]
@@ -554,20 +531,6 @@ class Actor(Agent, ManipulatingAgent):
     # STUB: Return body-wide damage resistance.
     def DR(self):
         return 0
-
-    # Whether you're so injured as to be reeling.
-    def reeling(self):
-        if self.HP() < self.MaxHP()/3:
-            return True
-        else:
-            return False
-
-    # Whether you're so fatigued as to be exhausted.
-    def exhausted(self):
-        if self.FP() < self.MaxFP()/3:
-            return True
-        else:
-            return False
    
     # INJURY / HIT LOCATIONS
 
@@ -669,15 +632,16 @@ class Actor(Agent, ManipulatingAgent):
         if attack.get("dropped items") is not None:
             self.drop_all_held()
 
-        if attack.get("stun") is not None and self.get("Status", "unconscious") is True:
-            self.effects["Stun"] = attack["stun"]
+        if attack.get("stun") is not None and self.has("Status", "Unconscious") is False:
+            self.set("Status", "status", "Stun", attack["stun"])
             # TODO: Change message.
             Log.add("%s is stunned!" % self.appearance())
 
         # Handle shock (potentially from multiple sources.)
         if attack.get("shock") is not None:
-            shock = self.effects.get("Shock", 0)
-            self.effects["Shock"] = min(4, shock + attack["shock"])
+            shock = self.get("Status", "Shock", 0)
+            # shock = self.effects.get("Shock", 0)
+            self.set("Status", "Shock", min(4, shock + attack["shock"]))
 
         # Cause HP loss.
         hp = self.HP()
