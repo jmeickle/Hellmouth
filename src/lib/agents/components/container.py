@@ -1,6 +1,6 @@
 """Provides functionality for Agents to contain other Agents (typically items) inside of themselves."""
 
-from src.lib.agents.components.component import Component
+from src.lib.agents.components.component import Component, accumulate_results, ignore_results
 
 """Components."""
 
@@ -42,9 +42,10 @@ class Container(Component):
         """Return the number of Agents inside this Container."""
         return len(self.contents)
 
+    @accumulate_results
     def get_contents(self):
         """Get a dictionary of Agents inside the Container."""
-            return self.contents
+        return self.contents
 
 #    def get_matches(self, appearance):
 #        for appearance, itemlist in self.contents.items():
