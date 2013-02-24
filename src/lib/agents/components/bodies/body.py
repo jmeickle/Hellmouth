@@ -2,12 +2,12 @@ from src.lib.agents.components.bodies.parts import *
 from src.lib.generators import items
 from operator import attrgetter
 
-from src.lib.agents.components.component import Component
+from src.lib.agents.components.component import Component, ignore_results
 
 # Body layouts - humanoid, hexapod, etc.
 class Body(Component):
-    def __init__(self, parent):
-        self.parent = parent
+    def __init__(self, owner):
+        super(Body, self).__init__(owner)
         # Size (0 for a human)
         self.size = None
         # Shape (tall, long, or full)
@@ -18,6 +18,12 @@ class Body(Component):
         self.table = {}
         # Primary slot
 #        self.primary_slot = None
+        self.build(self.owner)
+
+    @ignore_results
+    def get_worn(self, *args, **kwargs):
+        for loc in self.locs:
+            yield loc.worn
 
     def get_part(self, part_name):
         """Return the part matching a part name."""
@@ -51,6 +57,7 @@ class Body(Component):
                     self.table[roll] = part
 
     # Very simple display of body information.
+    # TODO: Deprecated.
     def display(self):
         screen = []
         screen.append("")
@@ -133,6 +140,7 @@ class Humanoid(Body):
 #        'LFoot' : ("kick"),
     }
 
+    @ignore_results
     def get_paperdoll(self):
 
         # Small paperdoll:
@@ -194,6 +202,7 @@ class Vermiform(Body):
         'Skull' : ("sharp teeth",),
     }
 
+    @ignore_results
     def get_paperdoll(self):
 
         # Small paperdoll:

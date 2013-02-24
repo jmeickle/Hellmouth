@@ -545,31 +545,6 @@ class Actor(Agent, ManipulatingAgent):
             loc = self.body.table[("%s-%s" % (roll, subroll))]
         return loc
 
-    # TODO: Get rid of this?
-    # Choose the color for a hit location.
-    def loccol(self, loc):
-        loc = self.body.locs.get(loc, None)
-        if loc is None:
-            return "black-black"
-        else:
-            return "%s-black" % loc.color()
-
-    # DR number for a location.
-    def locdr(self, slot):
-        loc = self.body.locs.get(slot, None)
-        if loc is None:
-            return " "
-        if loc.severed() is True:
-            return " "
-
-        dr = loc.DR()
-        if dr == 0:
-            return " "
-        elif dr < 10:
-            return "<cyan-black>%s</>" % dr
-        else:
-            return "<cyan-black>+</>"
-
     # Calculate how many points of wounds a location has, then return
     # it as a single character. Optional parameter: wrap the character
     # in a color tag.
@@ -928,11 +903,6 @@ class Actor(Agent, ManipulatingAgent):
         # Print information about your body.
         sheet.extend(self.body.display())
         return sheet
-
-    # Paperdolls are based on body, of course.
-    # TODO: Componentize.
-    def paperdoll(self):
-        return self.body.paperdoll()
 
     # Show a screen.
     # TODO: Refactor this so it isn't touching map?
