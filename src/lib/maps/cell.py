@@ -33,13 +33,13 @@ class Cell:
                 glyph = actor.glyph
                 color = actor.color
                 # TODO: HACK
-                if actor.get("Status", "unconscious") is True:
+                if actor.has("Status", "Unconscious"):
+                    color += "-white"
+                else:
                     if len(self.actors) > 1 and all is False:
                         color += "-magenta"
                     else:
                         color += "-black"
-                else:
-                    color += "-white"
                 glyphs.append((glyph, color, actor.subposition))
         elif self.terrain is not None:
             glyphs.append((self.terrain.glyph, self.terrain.color, CC))
