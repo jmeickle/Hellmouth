@@ -2,6 +2,7 @@
 
 from src.lib.agents.agent import Agent
 from src.lib.util.command import Command
+from src.lib.util.log import Log
 
 class Terrain(Agent):
     def __init__(self, terrain_type=None):
@@ -49,6 +50,7 @@ class Lever(Terrain):
         yield Command("UseTerrain")
 
     def react_on_do_use(self, user):
+        Log.add("<magenta-black>-CLICK!-</> You toggle the lever.")
         if self.color == 'magenta-black':
             self.color = "black-magenta"
         else:
