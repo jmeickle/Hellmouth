@@ -12,5 +12,6 @@ class AgentContext(object):
     def get_interactions(self):
         """Return the interactions made available to an Agent by the members of a Context."""
         for member in self.members:
-            for interaction in member.get_interactions(self.agent, self.source):
-                yield (member, interaction)
+            if member:
+                for interaction in member.get_interactions(self.agent, self.source):
+                    yield (member, interaction)
