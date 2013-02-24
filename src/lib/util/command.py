@@ -53,16 +53,12 @@ class Load(Command):
 class Quit(Command):
     description = "quit the game"
 
-class Attack(Command):
-    description = "attack"
-    defaults = ("a",)
-
 class Talk(Command):
     description = "talk"
     defaults = ("t",)
 
 # This is a bit hackish, but it beats registering them all by hand!
-Command.register(Save, Load, Quit, Attack, Talk)
+Command.register(Save, Load, Quit, Talk)
 
 # # Player character commands
 # CMD_ATTACK = 
