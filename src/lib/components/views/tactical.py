@@ -228,7 +228,7 @@ class Stats(View):
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
-        for line in self.player.paperdoll():
+        for line in self.player.get("Body", "paperdoll"):
             self.cline(line)
 
         # Show the chosen weapon/attack option combination.

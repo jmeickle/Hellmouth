@@ -236,16 +236,43 @@ class BodyPart(object):
                     if attack["wound"] + sum(self.wounds) > 2*self.crippling():
                         attack["dismembered"] = True
 
-    # TODO: Make this a display-only function, not for handling damage done.
+    # TODO: Remove.
     def DR(self):
         dr = 0
         # HACK: Use all items!
         import random
         for appearance, itemlist in self.worn.items():
-            item = random.choice(itemlist)
+            item = random.choice(itemlist) # MEGA HACK.
             dr += item.DR()
         dr += self.dr + self.owner.DR()
         return dr
+
+    def get_dr_glyph(self):
+        """Display a glyph representing this part's DR."""
+        dr = self.DR()
+        if dr == 0:
+            return " "
+        elif dr < 10:
+            return dr
+        else:
+            return "+"
+
+    def get_dr_colors(self, fg=True, bg=True):
+        """Display a color representing this part's DR."""
+        dr = self.DR()
+
+        if self.severed() or dr == 0:
+            if fg and bg:
+                return "black-black"
+            else:
+                return "black"
+        else:
+            if fg and bg:
+                return "cyan-black"
+            elif fg:
+                return "cyan"
+            else:
+                return "black"
 
     # TODO: Make this more useful for display
     def multiplier(self, type):

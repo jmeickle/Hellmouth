@@ -19,6 +19,10 @@ class Body(Component):
         # Primary slot
 #        self.primary_slot = None
 
+    def get_part(self, part_name):
+        """Return the part matching a part name."""
+        return self.locs.get(part_name)
+
     # Build a body from the class information.
     def build(self, owner):
         for order, partname, partclass, parent, sublocation, rolls in self.parts:
@@ -58,9 +62,41 @@ class Body(Component):
                 screen.extend(loc.display())
         return screen
 
+    def get_paperdoll_part_colors(self, part, fg=True, bg=True):
+        """Return the colors matching a part."""
+        if part:
+            return part.get_color(fg, bg)
+        else:
+            if fg and bg:
+                return "black-black"
+            else:
+                return "black"
+
+    def get_paperdoll_part_dr_colors(self, part, fg=True, bg=True):
+        """Return the DR colors matching a part."""
+        if part:
+            return part.get_dr_colors(fg, bg)
+        else:
+            if fg and bg:
+                return "black-black"
+            else:
+                return "black"
+
+    def get_paperdoll_part_dr_glyph(self, part):
+        """Return the DR glyph matching a part."""
+        if part is None or part.severed() is True:
+            return " "
+        else:
+            return part.get_dr_glyph()
+
+    def get_paperdoll_parts(self, part_name):
+        part = self.get_part(part_name)
+        return self.get_paperdoll_part_colors(part), '<%s>%s</>' % (self.get_paperdoll_part_dr_colors(part), self.get_paperdoll_part_dr_glyph(part))
+
     # Implement this for anything that needs a paperdoll.
-    def paperdoll(self):
-        return False
+    def get_paperdoll(self):
+        """Return this body's ASCII paperdoll."""
+        yield ''
 
 class Humanoid(Body):
     # These tuples represent:
@@ -97,31 +133,43 @@ class Humanoid(Body):
 #        'LFoot' : ("kick"),
     }
 
-    def paperdoll(self):
-        p = self.parent
-        list = []
+    def get_paperdoll(self):
 
-# Small size:
-############
-#    [ ]   #
-#  .--+--. #
-#  | = = | #
-#  ' -|- ' #
-#   .\=/.  #
-#   |   |  #
-#   |   |  #
-#  --   -- #
-############
+        # Small paperdoll:
 
-        list.append('    <%s>[</>%s<%s>]</>   ' % (p.loccol('Skull'), p.locdr('Skull'), p.loccol('Skull')))
-        list.append('  <%s>.--</><%s>+</><%s>--.</> ' % (p.loccol('LArm'), p.loccol('Neck'), p.loccol('RArm')))
-        list.append(' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (p.locdr('LArm'), p.loccol('LArm'), p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('RArm'), p.locdr('RArm')))
-        list.append(' %s<%s>\'</> <%s>-|-</> <%s>\'</>%s ' % (p.locdr('LHand'), p.loccol('LHand'), p.loccol('Torso'), p.loccol('RHand'), p.locdr('RHand')))
-        list.append('   <%s>.\</><%s>=</><%s>/.</>   ' % (p.loccol('LLeg'), p.loccol('Groin'), p.loccol('RLeg')))
-        list.append('  %s<%s>|</>   <%s>|</>%s  ' % (p.locdr('LLeg'), p.loccol('LLeg'), p.loccol('RLeg'), p.locdr('RLeg')))
-        list.append('   <%s>|</>   <%s>|</>   ' % (p.loccol('LLeg'), p.loccol('RLeg')))
-        list.append(' %s<%s>--</>   <%s>--</>%s ' % (p.locdr('LFoot'), p.loccol('LFoot'), p.loccol('RFoot'), p.locdr('RFoot')))
-        return list
+        ############
+        #    [ ]   #
+        #  .--+--. #
+        #  | = = | #
+        #  ' -|- ' #
+        #   .\=/.  #
+        #   |   |  #
+        #   |   |  #
+        #  --   -- #
+        ############
+
+        s, S = self.get_paperdoll_parts('Skull')
+        n, N = self.get_paperdoll_parts('Neck')
+        la, LA = self.get_paperdoll_parts('LArm')
+        ra, RA = self.get_paperdoll_parts('RArm')
+        lh, LH = self.get_paperdoll_parts('LHand')
+        rh, RH = self.get_paperdoll_parts('RHand')
+        t, T = self.get_paperdoll_parts('Torso')
+        g, G = self.get_paperdoll_parts('Groin')
+        ll, LL = self.get_paperdoll_parts('LLeg')
+        rl, RL = self.get_paperdoll_parts('RLeg')
+        lf, LF = self.get_paperdoll_parts('LFoot')
+        rf, RF = self.get_paperdoll_parts('RFoot')
+
+        yield '    <%s>[</>%s<%s>]</>   ' % (s, S, s)
+        yield '  <%s>.--</><%s>+</><%s>--.</> ' % (la, n, ra)
+        yield ' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (LA, la, t, T, t, ra, RA)
+        yield ' %s<%s>\'</> <%s>-|-</> <%s>\'</>%s ' % (LH, lh, t, rh, RH)
+        yield '   <%s>.\</><%s>=</><%s>/.</>   ' % (ll, g, rl)
+        yield '  %s<%s>|</>   <%s>|</>%s  ' % (LL, ll, rl, RL)
+        yield '   <%s>|</>   <%s>|</>   ' % (ll, rl)
+        yield ' %s<%s>--</>   <%s>--</>%s ' % (LF, lf, rf, RF)
+
 
 class Vermiform(Body):
     # These tuples represent:
@@ -146,33 +194,34 @@ class Vermiform(Body):
         'Skull' : ("sharp teeth",),
     }
 
-    def paperdoll(self):
-        p = self.parent
-        list = []
+    def get_paperdoll(self):
 
-# Small paperdoll:
-############
-#   _____  #
-#  / __ n\ #
-# / /  \  \#
-#/t/   /s o#
-#\ \   \/\/#
-# \ \___// #
-#  \____/  #
-#          #
-############
-# n = neck
-# s = skull
-# t = torso
-        list.append('  <%s> _____</>  ' % p.loccol('Torso'))
-        list.append('  <%s>/ __</> %s<%s>\</> ' % (p.loccol('Torso'), p.locdr('Neck'), p.loccol('Neck')))
-        list.append(' <%s>/ /</>  <%s>\</>  <%s>\</>' % (p.loccol('Torso'), p.loccol('Neck'), p.loccol('Skull')))
-        list.append('<%s>/</>%s<%s>/</>   <%s>/</>%s o' % (p.loccol('Torso'), p.locdr('Torso'), p.loccol('Torso'), p.loccol('Skull'), p.locdr('Skull')))
-        list.append('<%s>\ \</>   <%s>\/\/</>' % (p.loccol('Torso'), p.loccol('Face')))
-        list.append('<%s> \ \___//</> ' % p.loccol('Torso'))
-        list.append('<%s>  \____/</>  ' % p.loccol('Torso'))
-        list.append('')
-        return list
+        # Small paperdoll:
+
+        ############
+        #   _____  #
+        #  / __ N\ #
+        # / /  \  \#
+        #/T/   /S o#
+        #\ \   \/\/#
+        # \ \___// #
+        #  \____/  #
+        #          #
+        ############
+
+        f, F = self.get_paperdoll_parts('Face')
+        n, N = self.get_paperdoll_parts('Neck')
+        s, S = self.get_paperdoll_parts('Skull')
+        t, T = self.get_paperdoll_parts('Torso')
+
+        yield '  <%s> _____</>  ' % t
+        yield '  <%s>/ __</> %s<%s>\</> ' % (t, N, n)
+        yield ' <%s>/ /</>  <%s>\</>  <%s>\</>' % (t, n, s)
+        yield '<%s>/</>%s<%s>/</>   <%s>/</>%s o' % (t, T, t, s, S)
+        yield '<%s>\ \</>   <%s>\/\/</>' % (t, f)
+        yield '<%s> \ \___//</> ' % t
+        yield '<%s>  \____/</>  ' % t
+        yield ''
 
 class Octopod(Body):
     # See Humanoid for a description.
