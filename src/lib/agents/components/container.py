@@ -46,7 +46,8 @@ class Container(Component):
     @accumulate_results
     def get_contents(self):
         """Get a dictionary of Agents inside the Container."""
-        return self.contents
+        for key, itemlist in self.contents.items():
+            yield ((key, itemlist))
 
 #    def get_matches(self, appearance):
 #        for appearance, itemlist in self.contents.items():
