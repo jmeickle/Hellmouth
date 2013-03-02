@@ -18,7 +18,7 @@ class Command(object):
     @staticmethod
     def register(*commands):
         for command in commands:
-            Command.register_command(command.__name__, command)
+            Command.register_command(command.name(), command)
             Command.register_events(command.events(), command)
 
     @staticmethod
