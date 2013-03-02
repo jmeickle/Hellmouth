@@ -31,3 +31,14 @@ class Component(object):
         situations."""
         for command in self.__class__.commands:
             yield command
+
+    def before_turn(self):
+        """Respond to the Agent's turn starting."""
+        pass
+
+    def after_turn(self):
+        """Respond to the Agent's turn ending."""
+        pass
+
+    def get(self, *args):
+        assert False, "Unimplemented!"
