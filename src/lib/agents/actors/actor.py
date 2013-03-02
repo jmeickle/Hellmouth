@@ -37,7 +37,7 @@ class Actor(Agent, ManipulatingAgent):
     components = [Combat, Container]
 
     def __init__(self, components=[]):
-        super(Actor, self).__init__(components)
+        super(Actor, self).__init__(components + self.__class__.components)
 
         # Text information (cosmetic)
         self.name = 'Default monster'
