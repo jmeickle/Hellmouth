@@ -57,8 +57,18 @@ class Talk(Command):
     description = "talk"
     defaults = ("t",)
 
+class Cancel(Command):
+    description = "cancel or go back"
+    defaults = (" ",)
+
+class Confirm(Command):
+    description = "confirm or submit"
+    defaults = ("\n",)
+
+
+
 # This is a bit hackish, but it beats registering them all by hand!
-Command.register(Save, Load, Quit, Talk)
+Command.register(Save, Load, Quit, Talk, Cancel, Confirm)
 
 # # Player character commands
 # CMD_ATTACK = 
