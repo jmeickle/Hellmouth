@@ -1,6 +1,7 @@
 """A Component is a combination of state and functionality possessed by an Agent."""
 
 from src.lib.util.command import Command
+from src.lib.util.result import ignore_results
 
 class Component(object):
     commands = []
@@ -20,6 +21,7 @@ class Component(object):
             cls.commands.append(command)
             Command.register(command)
 
+    @ignore_results
     def get_commands(self):
         """Return the commands provided by this Component.
 
