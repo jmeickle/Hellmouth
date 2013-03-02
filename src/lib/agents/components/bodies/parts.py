@@ -86,7 +86,7 @@ class BodyPart(object):
     # Information about this location.
     def display(self):
         screen = []
-        screen.append("<%s-black>%s:</>" % (self.color(), self.appearance()))
+        screen.append("<%s-black>%s:</>" % (self.get_color(), self.appearance()))
         for k, v in self.worn.items():
             screen.append("  %s (worn)" % k)
         for k, v in self.held.items():
@@ -311,14 +311,21 @@ class BodyPart(object):
         original.cell().put(corpse)
 
     # Return a color for the limb status.
-    def color(self):
+    def get_color(self, fg=True, bg=True):
         status = self.status()
-        if status == SEVERED:       return "black"
-        elif status == DISMEMBERED: return "magenta"
-        elif status == CRIPPLED:    return "red"
-        elif status == INJURED:     return "yellow"
-        elif status == SCRATCHED:   return "cyan" # TODO: Change color.
-        else:                       return "green"
+        if fg:
+            if status == SEVERED:       fg = "black"
+            elif status == DISMEMBERED: fg = "magenta"
+            elif status == CRIPPLED:    fg = "red"
+            elif status == INJURED:     fg = "yellow"
+            elif status == SCRATCHED:   fg = "cyan" # TODO: Change color.
+            else:                       fg = "green"
+        if fg and bg:
+            return "%s-black" % fg
+        if fg:
+            return fg
+        elif bg:
+            return "black"
 
     # Returns the damage that must be *exceeded* to cripple a limb.
     def crippling(self):
