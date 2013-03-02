@@ -27,6 +27,8 @@ commands[CMD_CANCEL] = (' ',)
 special = {
     "\n" : "Enter",
     curses.KEY_ENTER : "Enter",
+    "\t" : "Tab",
+    curses.KEY_BTAB : "Shift+Tab",
     curses.KEY_BACKSPACE : "Backspace",
     curses.KEY_DC : "Delete",
     curses.KEY_UP : "Up",
@@ -40,7 +42,7 @@ def event(e):
         return "Ctrl-%s" % (e + 96)
     if e <= 256:
         return special.get(chr(e), chr(e))
-    assert e in special
+    assert e in special, "Unrecognized key: '%s'" % curses.keyname(e)
     return special.get(e, None)
 
 # Return whether the provided keypress belongs to the provided command.
