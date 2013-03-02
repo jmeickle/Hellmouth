@@ -59,14 +59,13 @@ class Equipment(Component):
 
     @ignore_results
     def get_worn(self):
-        """Get a nested representation of the Actor's worn Equipment."""
-        return self.owner.process("Body", "get_worn")
+        """Get a list representation of the Agent's worn Equipment."""
+        return self.owner.values("Body", "get_worn")
 
     @ignore_results
     def get_containers(self):
         """Get a nested representation of the Actor's Containers and their contents."""
-        for container in self.owner.process("Body", "get_worn", "can_store"):
-            return container
+        return self.owner.values("Body", "get_containers")
 
         # if self.is_holding_items() is False:
         #     return False
