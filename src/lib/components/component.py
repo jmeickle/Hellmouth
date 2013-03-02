@@ -118,6 +118,18 @@ class Component():
     def keyin(self, c):
         return True
 
+    # Recurse through children trying their keyin functions,
+    # until you've done your own.
+    def _event(self, e):
+        for child in reversed(self.children):
+            if child._event(e) is False:
+                return False
+        return self.event(e)
+
+    # Handle keyin. Abstract.
+    def event(self, e):
+        return True
+
     def loop(self):
         # Draw tree.
         self.window.erase()
@@ -127,6 +139,10 @@ class Component():
         # Keyin tree.
         c = self.window.getch()
         self._keyin(c)
+
+        # Event processing tree.
+        e = key.event(c)
+        self._event(e)
 
         # Die if no children left.
         if not self.children:
