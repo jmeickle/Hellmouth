@@ -35,6 +35,11 @@ special = {
     curses.KEY_DOWN : "Down",
     curses.KEY_LEFT : "Left",
     curses.KEY_RIGHT : "Right",
+    curses.KEY_END : "End",
+    curses.KEY_HOME : "Home",
+    curses.KEY_PPAGE : "PgUp",
+    curses.KEY_NPAGE : "PgDown",
+    curses.KEY_IC : "Insert",
 }
 
 def event(e):
