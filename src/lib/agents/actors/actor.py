@@ -864,24 +864,23 @@ class Actor(Agent, ManipulatingAgent):
     # Returns a list of lines to go into a character sheet.
     # TODO: Move to a View!
     def character_sheet(self, chargen=False):
-        sheet = []
         if chargen is False:
-            sheet.append(self.description)
-            sheet.append("")
-        sheet.append("--Weapons--")
-        for slot, appearance, trait, trait_level, item in self.weapons:
-            sheet.append("  %s: %s (%s-%s)" % (slot, appearance, trait, trait_level))
-        sheet.append("")
-        sheet.append("--Effects--")
-        for effect, details in self.effects.items():
-            sheet.append("%s: %s" % (effect, details))
-        sheet.append("Posture: %s" % self.posture)
-        sheet.append("")
-        sheet.append("--Attributes--")
+            yield self.description
+            yield ""
+        # sheet.append("--Weapons--")
+        # for slot, appearance, trait, trait_level, item in self.weapons:
+        #     sheet.append("  %s: %s (%s-%s)" % (slot, appearance, trait, trait_level))
+        # sheet.append("")
+        yield "--Effects--"
+        for effect, details in self.values("Status", "get_view_data"):
+            yield "%s: %s" % (effect, details)
+#        sheet.append("Posture: %s" % self.posture)
+        yield ""
+        yield "--Attributes--"
         for attribute in primary_attributes:
             level = self.attributes[attribute]
-            sheet.append("%s: %s" % (attribute, level))
-        sheet.append("")
+            yield "%s: %s" % (attribute, level)
+        yield ""
         # TODO: Make point printing nicer
 #        sheet.append("--Points--")
 #        for skill, points in self.points["skills"].items():
@@ -891,18 +890,19 @@ class Actor(Agent, ManipulatingAgent):
 #        for skill, info in self.skills.items():
 #            sheet.append("%s (%s/%s): %s%+d" % (skill, labels[skills.skill_list[skill]["attribute"]], labels[skills.skill_list[skill]["difficulty"]], labels[info[0]], info[1]))
 #        sheet.append("")
-        sheet.append("--Skill Levels--")
+        yield "--Skill Levels--"
         for skill, level in self.base_skills.items():
             skill = "%s (%s/%s)" % (skill, skills.skill_list[skill]["attribute"], skills.skill_list[skill]["difficulty"])
             level = level[0]
-            str = "%-25s- %2s" % (skill, level)
+            yield "%-25s- %2s" % (skill, level)
             #if level[1] is not False:
             #    str += " " + "(default: %s%d)" % (level[1][0], level[1][1])
-            sheet.append(str)
 
         # Print information about your body.
-        sheet.extend(self.body.display())
-        return sheet
+        yield ""
+        yield "--Skill Levels--"
+        for line in self.values("Body", "get_view_data"):
+            yield line
 
     # Show a screen.
     # TODO: Refactor this so it isn't touching map?

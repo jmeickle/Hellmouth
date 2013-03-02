@@ -84,19 +84,18 @@ class BodyPart(object):
         return found_weapons
 
     # Information about this location.
-    def display(self):
-        screen = []
-        screen.append("<%s-black>%s:</>" % (self.get_color(), self.appearance()))
+    def get_view_data(self):
+        yield self.appearance()
+#        yield "<%s-black>%s:</>" % (self.get_color(), self.appearance())
         for k, v in self.worn.items():
-            screen.append("  %s (worn)" % k)
+            if k: yield "  %s (worn)" % k
         for k, v in self.held.items():
-            screen.append("  %s (held)" % k)
+            if k: yield "  %s (held)" % k
         for k, v in self.readied.items():
-            screen.append("  %s (ready)" % k)
+            if k: yield "  %s (ready)" % k
         if len(self.attack_options) > 0:
             for weapon in self.attack_options.keys():
-                screen.append("  %s (natural)" % weapon)
-        return screen
+                if weapon: yield "  %s (natural)" % weapon
 
     # Return the healthiness of the limb
     # TODO: Injured status for extremities, rather than using 'major wound'.
