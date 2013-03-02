@@ -11,8 +11,9 @@ class Component(object):
     def __init__(self, owner):
         self.owner = owner
 
-    def process(self, method, result, args):
-        return getattr(self, method)(*args)
+    def process(self, method, *args, **kwargs):
+        """Process the results of a method call."""
+        return getattr(self, method)(*args, **kwargs)
 
     @classmethod
     def set_commands(cls, *commands):
