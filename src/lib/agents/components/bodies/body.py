@@ -22,8 +22,8 @@ class Body(Component):
 
     @ignore_results
     def get_worn(self, *args, **kwargs):
-        for loc in self.locs:
-            yield loc.worn
+        for loc in self.locs.values():
+            yield loc.appearance(), loc.worn
 
     def get_part(self, part_name):
         """Return the part matching a part name."""
