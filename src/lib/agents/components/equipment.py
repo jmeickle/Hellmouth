@@ -1,7 +1,7 @@
 """Provides functionality for Agents to use equipment."""
 
 from src.lib.agents.components.action import Action
-from src.lib.agents.components.component import Component
+from src.lib.agents.components.component import Component, ignore_results
 from src.lib.util.command import Command
 from src.lib.util.mixin import Mixin
 
@@ -57,10 +57,12 @@ class Equipment(Component):
     def get_weapons(self):
         return []
 
+    @ignore_results
     def get_worn(self):
         """Get a nested representation of the Actor's worn Equipment."""
         return self.owner.process("Body", "get_worn")
 
+    @ignore_results
     def get_containers(self):
         """Get a nested representation of the Actor's Containers and their contents."""
         for container in self.owner.process("Body", "get_worn", "can_store"):

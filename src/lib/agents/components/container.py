@@ -1,6 +1,7 @@
 """Provides functionality for Agents to contain other Agents (typically items) inside of themselves."""
 
-from src.lib.agents.components.component import Component, accumulate_results, ignore_results
+from src.lib.agents.components.component import Component
+from src.lib.util.result import accumulate_results, ignore_results
 
 """Components."""
 

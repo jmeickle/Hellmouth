@@ -1,6 +1,7 @@
 """Defines the Components and Traits that provide status effect functionality to Agents."""
 
-from src.lib.agents.components.component import Component, accumulate_results, ignore_results
+from src.lib.agents.components.component import Component
+from src.lib.util.result import accumulate_results, ignore_results, single_results
 
 class Status(Component):
     """Defines the ability to be afflicted by status effects."""
@@ -39,7 +40,7 @@ class Status(Component):
                     if self.get("Status", "unconscious") is True:
                         Log.add("%s shrugs off the stun." % self.appearance())
 
-    @ignore_results
+    @single_results
     def get(self, method, *args):
         return self.get_status(method, *args)
 
@@ -70,8 +71,6 @@ class Status(Component):
             return False
         else:
             return True
-
-
 
     @accumulate_results
     def get_view_data(self, view):
