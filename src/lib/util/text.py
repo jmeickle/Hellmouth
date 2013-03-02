@@ -1,3 +1,5 @@
+from src.lib.util.define import *
+
 import re
 
 # Strip tags out of a string. Used to calculate the length of strings with tags.
@@ -48,3 +50,19 @@ def print_dict(name, dict):
     for k,v in dict.items():
         print "| %s: %s" % (k,v)
     print "--%s--" % ("-" * len(name))
+
+def tag(string, tag):
+    """Wrap a string with a tag."""
+    return "<%s>%s</>" % (tag, string)
+
+def highlight(string, fg=HIGHLIGHT, bg=BACKGROUND):
+    """Highlight a string."""
+    return tag(string, fg+"-"+bg)
+
+def highlight_substr(string, start=0, stop=0, fg=HIGHLIGHT, bg=BACKGROUND):
+    """Convenience function for highlighting a substring."""
+    return string[0:start] + highlight(string[start:stop], fg, bg) + string[stop:len(string)]
+
+def highlight_first(string, fg=HIGHLIGHT, bg=BACKGROUND):
+    """Convenience function to highlight the first letter of a string."""
+    return highlight(string[0]) + string[1:]

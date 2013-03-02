@@ -30,6 +30,12 @@ CRIPPLED = 3
 DISMEMBERED = 4
 SEVERED = 5
 
+# Default interface colors
+TEXT = "white"
+HIGHLIGHT = "green"
+ERROR = "red"
+BACKGROUND = "black"
+
 # Damage types.
 damage_types = {
     "aff"  : ("affliction", "affliction"),
