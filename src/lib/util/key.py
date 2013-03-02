@@ -1,4 +1,7 @@
 # TODO: Define a dict of keys/actions for remappable keys.
+
+import curses
+
 from define import *
 from hex import *
 
@@ -20,6 +23,21 @@ commands[CMD_ATTACK] = ("a",)
 commands[CMD_TALK] = ("t",)
 commands[CMD_HEX] = ("1", "3", "4", "6", "7", "9", "5")
 commands[CMD_CANCEL] = (' ',)
+
+special = {
+    "\n" : "Enter",
+    curses.KEY_ENTER : "Enter",
+    curses.KEY_BACKSPACE : "Backspace",
+    curses.KEY_DC : "Delete"
+}
+
+def event(e):
+    if e <= 26:
+        return "Ctrl-%s" % (e + 96)
+    if e <= 256:
+        return special.get(chr(e), chr(e))
+    assert e in special
+    return special.get(e, None)
 
 # Return whether the provided keypress belongs to the provided command.
 def cmd(c, command):
