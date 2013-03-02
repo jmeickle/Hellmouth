@@ -28,7 +28,11 @@ special = {
     "\n" : "Enter",
     curses.KEY_ENTER : "Enter",
     curses.KEY_BACKSPACE : "Backspace",
-    curses.KEY_DC : "Delete"
+    curses.KEY_DC : "Delete",
+    curses.KEY_UP : "Up",
+    curses.KEY_DOWN : "Down",
+    curses.KEY_LEFT : "Left",
+    curses.KEY_RIGHT : "Right",
 }
 
 def event(e):
