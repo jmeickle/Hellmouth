@@ -7,7 +7,7 @@ import random
 
 # Component is the minimal base class. They participate in keyin and draw
 # loops, but do not have direct access to drawing functions.
-class Component():
+class Component(object):
     def __init__(self):
         self.alive = True
         self.children = []
