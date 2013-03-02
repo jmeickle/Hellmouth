@@ -29,6 +29,12 @@ class Body(Component):
         """Return the part matching a part name."""
         return self.locs.get(part_name)
 
+    # TODO: Filter?
+    def get_parts(self):
+        """Generate all parts."""
+        for part in self.locs.values():
+            yield part
+
     # Build a body from the class information.
     def build(self, owner):
         for order, partname, partclass, parent, sublocation, rolls in self.parts:
