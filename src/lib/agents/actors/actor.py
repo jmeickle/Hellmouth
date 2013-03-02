@@ -183,13 +183,13 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Figure out whether we are subject to knockout.
     def can_be_knocked_out(self):
-        if self.has("Status", "Unconscious"):
+        if self.get("Status", "Unconscious"):
             return False
         return True
 
     # STUB: Figure out whether we are currently subject to stun.
     def can_be_stunned(self):
-        if self.has("Status", "Stun"):
+        if self.get("Status", "Stun"):
             return False
         return True
 
@@ -274,7 +274,7 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
-        if self.has("Status", "Unconscious"):
+        if self.get("Status", "Unconscious"):
             return False
         return True
 
@@ -282,7 +282,7 @@ class Actor(Agent, ManipulatingAgent):
     def can_maneuver(self):
         if self.can_act() is False:
             return False
-        if self.has("Status", "Stun"):
+        if self.get("Status", "Stun"):
             return False
         return True
 
@@ -382,7 +382,7 @@ class Actor(Agent, ManipulatingAgent):
     def ST(self, temporary=True):
         ST = self.attributes.get('ST')
         if temporary is True:
-            if self.has("Status", "Exhausted") is True:
+            if self.get("Status", "Exhausted"):
                 ST = (ST + 1) / 2
         return ST
 
@@ -441,7 +441,7 @@ class Actor(Agent, ManipulatingAgent):
             return None
 
         status_mod = 0
-        if self.has("Status", "Stun"):
+        if self.get("Status", "Stun"):
             status_mod -= 4
 
         posture_mod = postures[self.posture][1]
@@ -453,11 +453,11 @@ class Actor(Agent, ManipulatingAgent):
         dodge = self.Speed()/4 + 3 + status_mod + posture_mod + retreat_mod# /4 because no /4 in speed.
 
         # Penalty from reeling: halve dodge.
-        if self.has("Status", "Reeling"):
+        if self.get("Status", "Reeling"):
             dodge = (dodge + 1) / 2
 
         # Penalty from exhaustion: halve dodge.
-        if self.has("Status", "Exhausted"):
+        if self.get("Status", "Exhausted"):
             dodge = (dodge + 1) / 2
 
         return dodge
@@ -478,7 +478,7 @@ class Actor(Agent, ManipulatingAgent):
             return None
 
         status_mod = 0
-        if self.has("Status", "Stun"):
+        if self.get("Status", "Stun"):
             status_mod -= 4
 
         posture_mod = postures[self.posture][1]
@@ -607,7 +607,7 @@ class Actor(Agent, ManipulatingAgent):
         if attack.get("dropped items") is not None:
             self.drop_all_held()
 
-        if attack.get("stun") is not None and self.has("Status", "Unconscious") is False:
+        if attack.get("stun") is not None and self.get("Status", "Unconscious") is False:
             self.set("Status", "status", "Stun", attack["stun"])
             # TODO: Change message.
             Log.add("%s is stunned!" % self.appearance())
