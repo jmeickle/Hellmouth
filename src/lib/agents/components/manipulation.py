@@ -269,13 +269,13 @@ class ContactMixin(Mixin):
         # Check whether it's too close to reach
 #        min_reach = self.min_reach() + item.min_reach(self.attack_option)
         if distance < min_reach:
-            return (False,)
+            return False, "too close"
 
         # Check whether it's too far to reach
 #        max_reach = self.max_reach() + item.max_reach(self.attack_option)
         if distance > max_reach:
-            return (False,)
-        return (True,)
+            return False, "too far"
+        return True
 
     def do_contact(self, contacted_target, contacting_target):
         """Touch a target with a second target."""
