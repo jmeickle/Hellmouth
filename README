@@ -1,6 +1,6 @@
 To run Meat Arena:
 
-    python src/main.py
+    python main.py
 
 The game will probably not run on Windows.
 
@@ -8,6 +8,7 @@ MEAT ARENA:
 A testing arena for Hellmouth. Find a weapon and dig in!
 
 HELLMOUTH:
+(Currently disabled.)
 The forces of darkness are gathering in the hidden places of the world. As a
 demon slayer, it is your calling to put an end to their plans. You must find
 the Hellmouth and seal it at any cost!
