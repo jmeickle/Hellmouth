@@ -19,8 +19,8 @@ class Command(object):
             return True
 
         for called_action, result in self.context.get_results(self.entry_id, "action"):
-            outcome, cause = self.context.parse_result(result)
-            if next_action == called_action:
+            if next_action == called_action.__class__:
+                outcome, cause = self.context.parse_result(result)
                 return outcome
 
         return False
