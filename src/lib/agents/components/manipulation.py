@@ -42,7 +42,7 @@ from src.lib.util.mixin import Mixin
 
 class Pickup(Action):
     """Remove an Agent from the environment, placing it into your manipulator exclusively."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("force", "target"),
@@ -50,7 +50,7 @@ class Pickup(Action):
 
 class Putdown(Action):
     """Remove an item from your manipulator, placing it into the environment exclusively."""
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("force", "item"),
@@ -59,7 +59,7 @@ class Putdown(Action):
 
 class Drop(Action):
     """Let an item fall from your manipulator into the environment (uncontrolled)."""
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("ungrasp", "item"),
@@ -67,7 +67,7 @@ class Drop(Action):
 
 class Pack(Action):
     """Remove an item from your manipulator, placing it into a container exclusively."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("force", "target"),
@@ -77,7 +77,7 @@ class Pack(Action):
 
 class UnPack(Action):
     """Remove an item from a container, placing it into your manipulator exclusively."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("force", "target"),
@@ -88,7 +88,7 @@ class UnPack(Action):
 
 class Use(Action):
     """Use a target using a manipulator."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("handle", "target"),
@@ -99,16 +99,22 @@ class Use(Action):
 
 class Wield(Action):
     """"Hold an item in a manipulator out in front of you."""
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("force", "item"),
         ("ready", "item"),
     ]
 
+    def get_phases(self):
+        yield "touch", "target"
+        if self("touch", "target"): yield "grasp", "target"
+        if self("grasp", "target"): yield "force", "target"
+        if self("force", "target"): yield "ready", "target"
+
 class UnWield(Action):
     """Lower an item in a manipulator to your side."""
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("force", "item"),
@@ -121,7 +127,7 @@ class Brandish(Action):
     n.b. - This may unready your second target! For example, pointing a
     warhammer at someone makes it rather useless for combat.
     """
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("force", "item"),
@@ -130,7 +136,7 @@ class Brandish(Action):
 
 class UnBrandish(Action):
     """Stop pointing at a target using a second, wielded target."""
-    sequence = [
+    phases = [
         ("touch", "item"),
         ("grasp", "item"),
         ("force", "item"),
@@ -155,20 +161,18 @@ class Get(Command):
     description = "pick up an item"
     defaults = ("g",)
 
-    @classmethod
-    def get_actions(cls):
-        yield Pickup
-        yield Pack
+    def get_actions(self):
+        yield Pickup, "target"
+        if self(Pickup, "target"): yield Pack, "target"
 
 class GetAll(Command):
     """Pick up multiple nearby items."""
     description = "pick up all items"
     defaults = ("G",)
 
-    @classmethod
-    def get_actions(cls):
-        yield Pickup
-        yield Pack
+    def get_actions(self):
+        yield Pickup, "target"
+        if self(Pickup, "target"): yield Pack, "target"
 
 CMD.register(Get, GetAll)
 
@@ -182,9 +186,8 @@ class WieldWeapon(Command):
     description = "wield a weapon"
     defaults = ("w",)
 
-    @classmethod
-    def get_actions(cls):
-        return [Wield]
+    def get_actions(self):
+        yield Wield, "target"
 
 CMD.register(ReadyWeapon, WieldWeapon)
 
@@ -194,22 +197,28 @@ class UseTerrain(Command):
     description = "use a terrain feature"
     defaults = ("U",)
 
-    @classmethod
-    def get_actions(cls):
-        return [Use]
+    def get_actions(self):
+        yield Use, "target"
 
-CommandRegistry.register(UseTerrain)
+CMD.register(UseTerrain)
 
 """Mixins."""
+
+class ReachMixin(Mixin):
+    """Provides the ability to reach a target with a manipulator."""
+
+    def can_reach(self, target, manipulator=None):
+        return True
+
+    def do_reach(self, target, manipulator=None):
+        return True
 
 class TouchMixin(Mixin):
     """Provides the ability to touch a target with a manipulator."""
 
-    # STUB
     def can_touch(self, target, manipulator=None):
         return True
 
-    # STUB
     def do_touch(self, target, manipulator=None):
         return True
 
@@ -224,7 +233,7 @@ class UnTouchMixin(Mixin):
     def do_untouch(self, target, manipulator=None):
         return True
 
-class TouchingAgent(TouchMixin, UnTouchMixin):
+class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
     """Convenience Mixin to represent an Agent with touching capability."""
     pass
 

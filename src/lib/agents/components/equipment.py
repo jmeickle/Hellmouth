@@ -2,6 +2,7 @@
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component, ignore_results
+from src.lib.agents.components.manipulation import Pack
 from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
 
@@ -11,7 +12,7 @@ from src.lib.util.mixin import Mixin
 
 class Equip(Action):
     """Attach a target to your body."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("handle", "target"),
@@ -20,7 +21,7 @@ class Equip(Action):
 
 class UnEquip(Action):
     """Remove a target from your body."""
-    sequence = [
+    phases = [
         ("touch", "target"),
         ("grasp", "target"),
         ("handle", "target"),
@@ -29,19 +30,23 @@ class UnEquip(Action):
 
 """Commands."""
 
-class Equip(Command):
-    description = "equip an item"
-    defaults = ("g",)
+class Wear(Command):
+    description = "wear an item"
+    defaults = ("W",)
 
-class UnEquip(Command):
-    description = "unequip an item"
-    defaults = ("G",)
+    def get_actions(self):
+        yield UnPack, "target"
+        if self(UnPack, "target"): yield UnEquip, "target"
 
-    @classmethod
-    def get_actions(cls):
-        return [manipulation.Pickup, manipulation.Pack]
+class Remove(Command):
+    description = "remove an item"
+    defaults = ("R",)
 
-Command.register(Equip, UnEquip)
+    def get_actions(self):
+        yield UnEquip, "target"
+        if self(UnEquip, "target"): yield Pack, "target"
+
+CommandRegistry.register(Wear, Remove)
 
 """Components."""
 
@@ -107,16 +112,12 @@ class Equipment(Component):
     #     """Return the number of Agents inside this Container."""
     #     return len(self.contents)
 
-
-
 """Mixins."""
 
 #     # Whether you believe you can retrieve an item in your inventory.
 #     @checks_item_memory
 #     def believe_unstore(self, item):
 #         return self.can_unstore(item)
-
-
 
 #     # Retrieve an item in your inventory.
 #     # TODO: Nicer way of doing item memory?
@@ -133,9 +134,6 @@ class Equipment(Component):
 #             item_list.remove(item)
 #             self.inventory[item.appearance()] = item_list
 #         return True
-
-# # Provides the ability to make use of targets inside or on self.
-# class Equipment():
 
 #     #
 #     # EQUIP:
@@ -267,6 +265,3 @@ class Equipment(Component):
 #                 validity = False
 
 #         return (validity, results)
-
-# # Provides the ability to manipulate targets inside or on self.
-# class Manipulation():

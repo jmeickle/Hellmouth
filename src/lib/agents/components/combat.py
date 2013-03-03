@@ -11,7 +11,7 @@ from src.lib.util.mixin import Mixin
 
 class AttackWithWielded(Action):
     """Attack a target with a weapon wielded in a manipulator."""
-    sequence = [
+    phases = [
         ("touch", "weapon"),
         ("grasp", "weapon"),
         # ("lift", "weapon"),
