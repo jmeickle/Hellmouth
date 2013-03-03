@@ -28,8 +28,8 @@ class Action(object):
             return True
 
         for called_phase, result in self.context.get_results(self.entry_id, "phase"):
-            outcome, cause = self.context.parse_result(result)
             if next_phase == called_phase:
+                outcome, cause = self.context.parse_result(result)
                 return outcome
 
         return False
