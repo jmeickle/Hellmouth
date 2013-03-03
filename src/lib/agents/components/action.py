@@ -56,6 +56,9 @@ class Action(object):
         for remaining_phase in self.get_phases():
             pass
 
+    @classmethod
+    def get_name(cls):
+        return cls.__name__
 #
 # ACTION PRIMITIVE CALLBACK METHODS:
 #
