@@ -6,13 +6,13 @@ from random import choice
 
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
-from src.lib.components.input import *
+from src.lib.components.input import Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt
 
 from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
 from src.lib.util.debug import debug
 from src.lib.util.hex import *
-from src.lib.util.text import *
+from src.lib.util import text
 from src.lib.util.log import Log
 
 from src.lib.data.skills import skill_list
@@ -427,7 +427,7 @@ class LogViewer(View):
             self.line("v")
 
     def logline(self, event):
-        lines = wrap_string([event], self.width - self.x_acc)
+        lines = text.wrap_string([event], self.width - self.x_acc)
 
         # Move up by that much to offset what the line function would do.
         self.y_acc -= len(lines)
@@ -647,7 +647,7 @@ class CharacterSheet(View):
         self.cline('%s(+-)</> %s' % (scroller, self.actor.appearance()))
         self.cline("-"*self.width)
 
-        self.text = wrap_string(self.actor.character_sheet(), self.width)
+        self.text = text.wrap_string(self.actor.character_sheet(), self.width)
         self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
         offset = 0
