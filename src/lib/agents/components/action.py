@@ -6,74 +6,55 @@ permits more convenient references between these classes.
 
 from copy import copy
 
+from src.lib.util.define import *
+
 class Action(object):
-    """A sequence of methods to be called in order."""
+    """A sequence of steps that can be called within prefixed scopes."""
 
-    def __init__(self, sequence=None):
-        if not sequence:
-            sequence = self.__class__.sequence
-            """Load the default sequence for that class if one is not provided."""
+    def __init__(self, command):
+        """Load the default sequence for that class if one is not provided."""
+        self.context = command.context
+        self.entry_id = command.entry_id
 
-    def process(self, scopes, **kwargs):
-        """Process this Action by executing its primitive sequence within a
-        list of scopes.
+        # Phase generator example:
+        # yield "touch", "target"
+        # if self("touch", "target"): yield "grasp", "target"
+        # if self("grasp", "target"): yield "force", "target"
+        # if self("force", "target"): yield "ready", "target"
 
-        The necessary arguments for each primitive are pulled from the provided
-        keyword arguments. The return value accumulates the method return
-        values into a 'striped' list:
-            [Method1, Method2, Method3] x [Primitive1, Primitive2, Primitive3]
-            == M1P1, M2P1, M3P1, M1P2, M2P2, M3P2, M1P3, M2P3, M3P3
-        
-        If any function returns False, processing will stop, meaning that the
-        return value has variable length."""
-        results = kwargs["results"]
+    def __call__(self, next_phase, *arguments):
+        """Override __call__ to allow concisely checking phase status in get_phases()."""
+        if not self.context:
+            return True
 
-        # For each primitive in this action's definition...
-        for primitive_definition in self.sequence:
+        for called_phase, result in self.context.get_results(self.entry_id, "phase"):
+            outcome, cause = self.context.parse_result(result)
+            if next_phase == called_phase:
+                return outcome
 
-            # Get the name of the current primitive.
-            primitive = primitive_definition[0]
+        return False
 
-            # Get the primitive's desired arguments from the action definition.
-            primitive_args = primitive_definition[1:]
+    def get_phases(self):
+        """Yield the phases involved in completing this Action within a Context.
 
-            # Always use actor as the first argument.
-            args = (kwargs["actor"],)
+        Because this method returns a generator, it's possible to modify the
+        Action's associated Context inside of a loop as long as this results in
+        no phases being inserted before the most recently visited one.
+        """
+        for phase in self.__class__.phases:
+            yield phase
 
-            # Populate the rest of the arguments, if any.
-            for primitive_arg in primitive_args:
-                # We don't do this here - what if an argument really *should*
-                # be none? Leave it up to the function to assert.
-                # assert(kwargs.get(primitive_arg) is not None)
-                args += (kwargs.get(primitive_arg),)
+    def get_default_phases(self):
+        """Yield the phases involved in completing this Action when there is no Context available."""
+        default = self.copy()
+        del default.context
+        return default.get_phases()
 
-            # Process that primitive within each scope.
-            for scope in scopes:
-                method, result = self.process_primitive(scope, primitive, *args)
-
-                # Handle the case of pure T/F function returns.
-                # TODO: Make all reachable functions return better data rather
-                # than just T/F.
-                # try:
-                #     if result[0]:
-                #         pass
-                # except TypeError:
-                #     result = (result,)
-
-                # Store the function result.
-                results.update((method, result))
-
-                # If the function's primary result was False, exit early.
-                if result is False:
-                    return False#results
-
-        return True#results
-
-    def process_primitive(self, scope, primitive, *args):
-        """Call the primitive's initiator's method within a scope."""
-        method = scope + "_" + primitive
-
-        return method, getattr(args[0], method )(*args[1:])
+    @UNIMPLEMENTED
+    def get_remaining_phases(self, current_phases):
+        """Yield the phases remaining before completion."""
+        for remaining_phase in self.get_phases():
+            pass
 
 #
 # ACTION PRIMITIVE CALLBACK METHODS:
@@ -146,8 +127,6 @@ class Action(object):
 #         setattr(self.__class__, _default_method.__name__, _default_method)
 
 
-
-
 #
 # ACTIONS:
 #
@@ -162,29 +141,6 @@ actiondict = {
     "move_to" : (
         ("move", "actor", "pos"),
     ),
-
-    #
-    # ITEM INTERACTION AND INVENTORY MANAGEMENT:
-    #
-
-    # Move an item from a manipulator onto your body.
-    "wear" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-        ("equip", "item"),
-    ),
-
-    # Move an item from your body into a manipulator.
-    "unwear" : (
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("unequip", "item"),
-        ("lift", "item"),
-        ("handle", "item"),
-    ),
-
 
     #
     # ATTACKS AND COMBAT:
