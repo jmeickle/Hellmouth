@@ -102,16 +102,17 @@ class Agent(object):
     """Event processing methods."""
 
     def process_event(self, event, context):
-        """Find the first Command matching an event and process it."""
-        commands = self.sort_commands([interaction for interaction in context.get_interactions()])
+        """Find the first Command matching an event, instantiate it, and process it."""
+        Log.add("EVENT: %s" % event)
 
+        commands = self.sort_commands([interaction for interaction in context.get_interactions()])
         for target, command_class in commands:
-            if event in command_class.get_events():
-                Log.add("Tried to %s a %s." % (command_class.__name__, target.name))
+            for command_event in command_class.get_events():
+                if event != command_event:
+                    continue
 
                 command = command_class(context)
-                context.update(command.entry_id, prefixes=command.get_prefixes(), target=target)
-                context.append(command.entry_id, command=command)
+                context.update(command.entry_id, target=target)
 
                 result = self.process_command(command)
                 context.add_result(command.entry_id, "command", result)
@@ -122,10 +123,7 @@ class Agent(object):
                 else:
                     Log.add("Couldn't because: %s!" % cause)
 
-                # for value in result.get_values():
-                #     Log.add("%s: %s" % value)
-
-                return outcome
+                return outcome, cause
 
         Log.add("Couldn't respond to: %s" % event)
         return False
@@ -137,15 +135,21 @@ class Agent(object):
 
         Returns an outcome and a cause, based on the Context's parsing.
         """
+        command.context.append(command.entry_id, command=command)
+
+        prefixes = command.context.get(command.entry_id, "prefixes")
+        if not prefixes:
+            prefixes = command.get_prefixes()
+            command.context.update(command.entry_id, prefixes=prefixes)
+
+        Log.add("COMMAND: %s (%s)." % (command.__class__.get_name(), prefixes))
 
         # This is a generator, so we can check the Context object for a
         # different list of actions between go-arounds.
-        for action_class in command.get_actions():
-            action = action_class(command)
-            action.context.append(action.entry_id, action=action)
-            active_prefix = action.context.get(action.entry_id, "prefixes")[0]
-            action.context.update(action.entry_id, active_prefix=active_prefix)
+        for action in command.get_actions():
+            action_class, action_arguments = action[0], action[1:]
 
+            action = action_class(command)
             result = self.process_action(action)
             action.context.add_result(action.entry_id, "action", result)
 
@@ -157,7 +161,7 @@ class Agent(object):
 
     def can(self, command):
         """Helper to check whether a Command object can be attempted within its Context."""
-        command.context.update(command.entry_id, **{"prefixes" : ["can"]})
+        command.context.update(command.entry_id, prefixes=["can"])
         return self.process_command(command)
 
     """Command utility methods."""
@@ -198,6 +202,11 @@ class Agent(object):
         
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
+        Log.add("ACTION: %s." % action.__class__.get_name())
+
+        action.context.append(action.entry_id, action=action)
+        active_prefix = action.context.get(action.entry_id, "prefixes")[0]
+        action.context.update(action.entry_id, active_prefix=active_prefix)
 
         # This is a generator, so we can check the Context object for a
         # different list of phases between go-arounds.
@@ -211,6 +220,7 @@ class Agent(object):
                 action.context.add_result(action.entry_id, "phase", result)
 
                 outcome, cause = action.context.parse_result(result)
+                Log.add("PHASE: %s (%s)." % (prefix + "_" + phase[0], outcome))
                 if outcome is False:
                     # Return to get_phases(), which typically means we're done
                     # in this function because there will be no next phase.
