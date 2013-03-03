@@ -69,7 +69,6 @@ class Agent(object):
 
         # return results
 
-
     """Component utility methods."""
 
     def register_component(self, component, domain=None):
@@ -99,14 +98,6 @@ class Agent(object):
     def get_domains(self):
         """Return an iterator over currently defined domains."""
         return self.component_registry.keys()
-
-    """Context utility methods."""
-
-    @UNIMPLEMENTED
-    def get_context(self, members=[], source=None):
-        pass
-        # """Return a Context object containing information about the Agent's immediate surroundings."""
-        # return Context(self, members, source)
 
     """Event processing methods."""
 
@@ -226,6 +217,14 @@ class Agent(object):
                     break
 
         return action.context.parse_results(action.entry_id, "action")
+
+    """Context utility methods."""
+
+    @UNIMPLEMENTED
+    def get_context(self, members=[], source=None):
+        pass
+        # """Return a Context object containing information about the Agent's immediate surroundings."""
+        # return Context(self, members, source)
 
     """Miscellaneous methods."""
 
