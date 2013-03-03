@@ -33,7 +33,7 @@ simply wouldn't be able to *change* any of its manipulation states.
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
-from src.lib.util.command import Command, CommandRegistry
+from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.mixin import Mixin
 
 """Actions."""
@@ -170,7 +170,7 @@ class GetAll(Command):
         yield Pickup
         yield Pack
 
-CommandRegistry.register(Get, GetAll)
+CMD.register(Get, GetAll)
 
 """Change how an item is manipulated."""
 
@@ -186,7 +186,7 @@ class WieldWeapon(Command):
     def get_actions(cls):
         return [Wield]
 
-CommandRegistry.register(ReadyWeapon, WieldWeapon)
+CMD.register(ReadyWeapon, WieldWeapon)
 
 """Manipulate an agent."""
 
