@@ -1,12 +1,16 @@
 # Development Roadmap
 
-## v0.3-meat:
-- Game launch menu
-- Game launch options
+## v0.3-meat (March?):
++ Game launch menu
+~ Game launch options
 - Starting equipment
-- Inventory rewrite
+~ Inventory rewrite
 - Improved terrain generation
-- Terrain interaction (doors, levers, etc.)
++ Terrain interaction (doors, levers, etc.)
+~ Fix combat
+~ Reenable monster AI
+- Improve cursor examination
+- Improve interlevel travel
 
 ## v0.4-meat:
 - Improved monster target-seeking AI
@@ -15,7 +19,7 @@
 ## v0.5-meat:
 - Reenable skill defaults
 - Close combat
-- Improved tactical combat pane
+~ Improved tactical combat pane
 
 ## v0.6-meat:
 - Fill out lifepaths so all reachable events are meaningful
@@ -51,7 +55,7 @@
 - Windows support
 
 ## Structure:
-- Remove 'import *' before it gets any worse!
+~ Remove 'import *' before it gets any worse!
 - Split generators into classes
 - Switch to using decorators for printing functions
 
