@@ -165,6 +165,8 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
+        if self.controlled is False:
+            self.attempts = 0
 
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
@@ -268,8 +270,6 @@ class Actor(Agent, ManipulatingAgent):
             self.after_turn()
             self.map.acting = None
             self.map.queue.append(self)
-            if self.controlled is False:
-                self.attempts = 0
 
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
