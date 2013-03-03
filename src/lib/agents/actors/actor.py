@@ -168,7 +168,7 @@ class Actor(Agent, ManipulatingAgent):
 
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
-            self.over()
+            self.end_turn()
 
     # STUB: Things to do at the end of your turn.
     def after_turn(self):
@@ -220,7 +220,7 @@ class Actor(Agent, ManipulatingAgent):
                 Log.add("%s is dead. Press Ctrl-q to quit the game." % self.appearance())
             else:
                 Log.add("%s can't act in its current state." % self.appearance())
-            self.over()
+            self.end_turn()
             return False
 
         # Actors that are in our cell.
@@ -259,11 +259,11 @@ class Actor(Agent, ManipulatingAgent):
 
         # The only option left.
         if self.can_move(pos, dir):
-            self.over()
+            self.end_turn()
             return self.move(pos, dir)
 
     # Mark self as done acting.
-    def over(self):
+    def end_turn(self):
         if self.map.acting == self:
             self.after_turn()
             self.map.acting = None

@@ -35,7 +35,7 @@ class NPC(Actor):
 
         self.attempts += 1
         if self.attempts > 10:
-            self.over()
+            self.end_turn()
             return False
 
         self.distance = dist(self.pos, self.target.pos)

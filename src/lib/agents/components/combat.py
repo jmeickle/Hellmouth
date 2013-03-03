@@ -154,7 +154,7 @@ class Combat(Component):
         maneuvers.append((target, item, trait, attack_option))
 
         if self._attack(maneuvers) is True:
-            self.over()
+            self.end_turn()
             return True
 
     # Use attack maneuvers to do an attack.
