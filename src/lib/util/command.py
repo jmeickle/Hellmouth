@@ -13,6 +13,10 @@ class Command(object):
         """Get actions required to complete this Command."""
         return self.__class__.actions
 
+    def get_prefixes(self):
+        intent = self.context.get_intent()
+        if "attempt" in intent:
+            return ["can", "do"]
 
     @classmethod
     def events(cls):
