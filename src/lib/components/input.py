@@ -156,8 +156,8 @@ class Cursor(Component):
             return False
         else:
             agent = self.map.actors(self.pos)[self.selector.index]
-            context = self.player.get_context(members=[agent], source=self)
-            self.player.respond(c, context)
+            context = Context(agent=self.player, participants=[agent], component=self)
+            self.player.process_event(c, context)
         return True
 
     # Move the cursor (hexagonally).
@@ -246,6 +246,7 @@ class TextPrompt(Prompt):
             self.delete()
         elif c < 256:
             self.write(c)
+
         return False
 
     def write(self, c):

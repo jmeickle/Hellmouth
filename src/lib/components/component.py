@@ -1,6 +1,7 @@
 import curses
 
 from src.lib.util.color import Color
+from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
 from src.lib.util import key
 import random
@@ -147,6 +148,16 @@ class Component(object):
         # Die if no children left.
         if not self.children:
             self.alive = False
+
+    def get_context(self, **kwargs):
+        context_class = kwargs.pop("context_class", Context)
+
+        kwargs["agent"] = kwargs.get("agent", self.player)
+        kwargs["participants"] = kwargs.get("participants", [])
+        kwargs["intent"] = kwargs.get("intent", {"attempt" : True})
+        kwargs["component"] = kwargs.get("component", self)
+
+        return context_class(**kwargs)
 
 # The first component called, containing window information.
 class RootComponent(Component):

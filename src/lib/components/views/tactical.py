@@ -8,7 +8,9 @@ from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
 from src.lib.components.input import *
 
+from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
+from src.lib.util.debug import debug
 from src.lib.util.hex import *
 from src.lib.util.text import *
 from src.lib.util.log import Log
@@ -70,18 +72,21 @@ class MainMap(View):
 
         """Get items."""
         if c == ord('G'):
-            items = self.player.cell().get_items()
-            context = self.player.get_context(members=items, source=self)
+            items = []
+            for appearance, itemlist in self.player.cell().get_items():
+                items.extend(itemlist)
+
+            context = self.get_context(participants=items)
             event = chr(c)
-            return self.player.respond(event, context)
+            return self.player.process_event(event, context)
 #        elif c == ord('g'):
 #            self.player.command()
 #            return False
         elif c == ord('U'):
             terrain = self.player.cell().get_terrain()
-            context = self.player.get_context(members=terrain, source=self)
+            context = self.get_context(participants=terrain)
             event = chr(c)
-            return self.player.respond(event, context)
+            return self.player.process_event(event, context)
         elif c == ord('}'):
             """Zoom."""
             self.zoom = 2
