@@ -46,11 +46,7 @@ class Status(Component):
 
     def get_status(self, status_name, default=None):
         """Return the status in question."""
-        status = self.statuses.get(status_name)
-        if status:
-            return status
-        else:
-            return default
+        return self.statuses.get(status_name, default)
 
     def update(self):
 #        if change in ('HP', 'MaxHP'):
