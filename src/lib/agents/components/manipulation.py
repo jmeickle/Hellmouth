@@ -137,15 +137,14 @@ class UnBrandish(Action):
         ("unready", "item"),
     ]
 
-# if target.touch():
-#     if target.grasp():
-#         if target.force():
-#             if target.unready():
-#                 target.UnBrandish
-
-# # Throw the target at another target.
-# class throw(ActionPrimitive): pass
-
+class Throw(Action):
+    """Throw a target at a second target."""
+    phases = [
+        ("touch", "item"),
+        ("grasp", "item"),
+        ("force", "item"),
+        ("unready", "item"),
+    ]
 
 """Commands."""
 
