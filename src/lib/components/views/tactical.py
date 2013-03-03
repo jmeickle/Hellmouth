@@ -461,7 +461,7 @@ class Inventory(View):
         #self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
         self.ground = [ground for ground in self.map.player.cell().get_items()]
 
-        self.tabs.set_choices([choice for choice in self.required_tabs()])
+        self.tabs.set_choices([choice for choice in self.active_tabs()])
 
         if self.tabs.choice() == "Inventory":
             self.selection.set_choices(self.items)
