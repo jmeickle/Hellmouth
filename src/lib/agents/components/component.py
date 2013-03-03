@@ -21,11 +21,10 @@ class Component(object):
         cls.commands = []
         for command in commands:
             cls.commands.append(command)
-            Command.register(command)
+            CommandRegistry.register(command)
 
-    @ignore_results
-    def get_commands(self):
-        """Return the commands provided by this Component.
+    def get_commands(self, context):
+        """Yield the Commands provided by this Component.
 
         This is a generator because a yield-based return value is friendlier
         for classes that override to define commands only available in certain
@@ -41,5 +40,6 @@ class Component(object):
         """Respond to the Agent's turn ending."""
         pass
 
+    @UNIMPLEMENTED
     def get(self, *args):
-        assert False, "Unimplemented!"
+        pass
