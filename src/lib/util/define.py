@@ -125,3 +125,19 @@ postures = {
     "lying prone" : (-4, -3, -2, False),
     "lying face up" : (-4, -3, -2, False),
 }
+
+import functools
+
+def STUB(fn):
+    """Decorator to return True when calling a stub method."""
+    @functools.wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        return True
+    return wrapper
+
+def UNIMPLEMENTED(fn):
+    """Decorator to assert on calling an unimplemented method."""    
+    @functools.wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        assert False, "Unimplemented method!"
+    return wrapper
