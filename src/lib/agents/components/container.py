@@ -43,9 +43,29 @@ class Container(Component):
         """Return the number of Agents inside this Container."""
         return len(self.contents)
 
+    # Not currently working:
+    # @ignore_results
+    # def get(self, key, default=None):
+    #     """Default get method."""
+    #     # results = [res for res in self.get_contents()]
+    #     # if results:
+    #     #     exit("key %s, dict %s" % (key, results))
+    #     for appearance, itemlist in self.get_contents():
+    #         for item in itemlist:
+    #             if key == item:
+    #                 return True
+    #     return False
+
+    @accumulate_results
+    def get_list(self):
+        """Yield a flat list of items inside a container."""
+        for itemlist in self.contents.values():
+            for item in itemlist:
+                yield item
+
     @accumulate_results
     def get_contents(self):
-        """Get a dictionary of Agents inside the Container."""
+        """Get Agents inside the Container."""
         for key, itemlist in self.contents.items():
             yield ((key, itemlist))
 
