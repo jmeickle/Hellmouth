@@ -1,13 +1,14 @@
 """Defines the methods for the basic Agent class."""
 
-from src.lib.util.command import Command
-from src.lib.agents.contexts.context import AgentContext
+from src.lib.util.command import Command, CommandRegistry as CMD
+from src.lib.util.debug import DEBUG
 from src.lib.util.dynamic import caller
+from src.lib.util.result import Result, SingleResult
 from src.lib.util.hex import *
 from src.lib.util.log import Log
 
 class Agent(object):
-    # TODO: What Components do all Actors have?
+    # TODO: What Components do all Agents have?
     components = []
 
     def __init__(self, components=[]):

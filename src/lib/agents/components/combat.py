@@ -2,7 +2,7 @@ from collections import deque
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
-from src.lib.util.command import Command
+from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
 
 """Actions."""
@@ -53,7 +53,7 @@ class Attack(Command):
     description = "attack"
     defaults = ("a",)
 
-Command.register(Attack)
+CommandRegistry.register(Attack)
 
 class Combat(Component):
     """Allows an Agent to engage in combat with other Agents."""

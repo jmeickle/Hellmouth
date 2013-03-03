@@ -1,6 +1,7 @@
 """A Component is a combination of state and functionality possessed by an Agent."""
 
-from src.lib.util.command import Command
+from src.lib.util.command import CommandRegistry
+from src.lib.util.define import *
 from src.lib.util.result import ignore_results
 
 class Component(object):

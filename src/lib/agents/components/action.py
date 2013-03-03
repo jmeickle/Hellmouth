@@ -4,9 +4,7 @@ of the prefixed Action. For example, `Equip` should become `UnEquip`. This
 permits more convenient references between these classes.
 """
 
-
-from src.lib.util.debug import DEBUG
-from src.lib.util.result import CommandResult
+from copy import copy
 
 class Action(object):
     """A sequence of methods to be called in order."""

@@ -2,7 +2,7 @@
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component, ignore_results
-from src.lib.util.command import Command
+from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
 
 """Actions."""

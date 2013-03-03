@@ -1,7 +1,7 @@
 # Terrain objects.
 
 from src.lib.agents.agent import Agent
-from src.lib.util.command import Command
+from src.lib.util.command import CommandRegistry
 from src.lib.util.log import Log
 
 class Terrain(Agent):
@@ -47,7 +47,7 @@ class Lever(Terrain):
 
     def get_interactions(self, agent, source):
         """List the interaction options exposed to another Agent within a given source."""
-        yield Command("UseTerrain")
+        yield CommandRegistry("UseTerrain")
 
     def react_on_do_use(self, user):
         Log.add("<magenta-black>-CLICK!-</> You toggle the lever.")

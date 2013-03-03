@@ -1,36 +1,18 @@
 """Define Commands as an intermediary layer of abstraction, between keypresses and actions."""
 
 class Command(object):
-
-    registry = {}
-
     actions = []
     description = "no command"
     defaults = []
 
-    def __new__(self, command):
-        return Command.get(command)
+    def __init__(self, context):
+        self.context = context
+        self.entry_id = self.context.get_id()
 
-    @staticmethod
-    def get(command):
-        return Command.registry.get(command, Command)
+    def get_actions(self):
+        """Get actions required to complete this Command."""
+        return self.__class__.actions
 
-    @staticmethod
-    def register(*commands):
-        for command in commands:
-            Command.register_command(command.name(), command)
-            Command.register_events(command.events(), command)
-
-    @staticmethod
-    def register_command(name, command):
-        Command.registry[name] = command
-
-    @staticmethod
-    def register_events(events, command):
-        for event in events:
-            command_list = Command.registry.get(event, [])
-            command_list.append(command)
-            Command.registry[event] = command_list
 
     @classmethod
     def events(cls):
@@ -39,10 +21,6 @@ class Command(object):
     @classmethod
     def name(cls):
         return cls.__name__
-
-    @classmethod
-    def get_actions(cls):
-        return cls.actions
 
 class Save(Command):
     description = "save the game"
@@ -65,10 +43,54 @@ class Confirm(Command):
     description = "confirm or submit"
     defaults = ("\n",)
 
+# class Backspace(Command):
+#     description = "confirm or submit"
+#     defaults = ("Backspace",)
 
+# class Delete(Command):
+#     description = "confirm or submit"
+#     defaults = ("Delete",)
+
+class CommandRegistry(object):
+    registry = {}
+
+    def __new__(self, command_name, context=None, **kwargs):
+        """Return the Command class corresponding to a provided name.
+
+        If a Context is provided, return an instance of that Command instead."""
+        command_class = CommandRegistry.get(command_name)
+        assert command_class, "Attempted to retrieve unregistered command: '%s'" % command_name
+
+        if context:
+            command = command_class(context)
+            context.update(command.entry_id, **kwargs)
+            return command
+        else:
+            return command_class
+
+    @staticmethod
+    def get(command_name, default=Command):
+        return CommandRegistry.registry.get(command_name, default)
+
+    @staticmethod
+    def register(*commands):
+        for command in commands:
+            CommandRegistry.register_command(command.name(), command)
+            CommandRegistry.register_events(command.events(), command)
+
+    @staticmethod
+    def register_command(name, command):
+        CommandRegistry.registry[name] = command
+
+    @staticmethod
+    def register_events(events, command):
+        for event in events:
+            command_list = CommandRegistry.get(event, [])
+            command_list.append(command)
+            CommandRegistry.registry[event] = command_list
 
 # This is a bit hackish, but it beats registering them all by hand!
-Command.register(Save, Load, Quit, Talk, Cancel, Confirm)
+CommandRegistry.register(Save, Load, Quit, Talk, Cancel, Confirm)
 
 # # Player character commands
 # CMD_ATTACK = 

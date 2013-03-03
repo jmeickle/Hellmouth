@@ -33,7 +33,7 @@ simply wouldn't be able to *change* any of its manipulation states.
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
-from src.lib.util.command import Command
+from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
 
 """Actions."""
@@ -149,6 +149,8 @@ class UnBrandish(Action):
 
 """Commands."""
 
+"""Retrieve items."""
+
 class Get(Command):
     """Pick up a single nearby item."""
     description = "pick up an item"
@@ -156,7 +158,8 @@ class Get(Command):
 
     @classmethod
     def get_actions(cls):
-        return [Pickup, Pack]
+        yield Pickup
+        yield Pack
 
 class GetAll(Command):
     """Pick up multiple nearby items."""
@@ -165,13 +168,28 @@ class GetAll(Command):
 
     @classmethod
     def get_actions(cls):
-        return [Pickup, Pack]
+        yield Pickup
+        yield Pack
 
-Command.register(Get, GetAll)
+CommandRegistry.register(Get, GetAll)
+
+"""Change how an item is manipulated."""
 
 class ReadyWeapon(Command):
     description = "ready an unreadied weapon"
-    defaults = ("R",)
+    defaults = ("r",)
+
+class WieldWeapon(Command):
+    description = "wield a weapon"
+    defaults = ("w",)
+
+    @classmethod
+    def get_actions(cls):
+        return [Wield]
+
+CommandRegistry.register(ReadyWeapon, WieldWeapon)
+
+"""Manipulate an agent."""
 
 class UseTerrain(Command):
     description = "use a terrain feature"
@@ -181,11 +199,7 @@ class UseTerrain(Command):
     def get_actions(cls):
         return [Use]
 
-class Wield(Command):
-    description = "wield a weapon"
-    defaults = ("w",)
-
-Command.register(UseTerrain)
+CommandRegistry.register(UseTerrain)
 
 """Mixins."""
 
@@ -244,7 +258,6 @@ class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
 class ContactMixin(Mixin):
     """Provides the ability to touch a target with a second target."""
 
-    # TODO: Enhanced return values.
     def can_contact(self, contacted_target, contacting_target):
         """Whether you can touch a target with a second target."""
         # TODO: Restructure attack option structure so that items can figure
