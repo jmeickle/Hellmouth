@@ -50,7 +50,8 @@ class Command(object):
 
     @classmethod
     def get_events(cls):
-        return cls.defaults
+        for event in cls.defaults:
+            yield event
 
     @classmethod
     def get_name(cls):
@@ -107,22 +108,22 @@ class CommandRegistry(object):
         return CommandRegistry.registry.get(command_name, default)
 
     @staticmethod
-    def register(*commands):
-        for command in commands:
-            assert command.get_name() not in CommandRegistry.registry, "Attempted to register command twice: '%s'" % command.get_name()
-            CommandRegistry.register_command(command)
-            CommandRegistry.register_events(command)
+    def register(*command_classes):
+        for command_class in command_classes:
+            assert command_class.get_name() not in CommandRegistry.registry, "Attempted to register command twice: '%s'" % command_class.get_name()
+            CommandRegistry.register_command(command_class)
+            CommandRegistry.register_events(command_class)
 
     @staticmethod
-    def register_command(command):
-        CommandRegistry.registry[command.get_name()] = command
+    def register_command(command_class):
+        CommandRegistry.registry[command_class.get_name()] = command_class
 
     # TODO: Do I even need this...?
     @staticmethod
-    def register_events(command):
-        for event in command.get_events():
+    def register_events(command_class):
+        for event in command_class.get_events():
             command_list = CommandRegistry.get(event, [])
-            command_list.append(command)
+            command_list.append(command_class)
             CommandRegistry.registry[event] = command_list
 
 # This is a bit hackish, but it beats registering them all by hand!
