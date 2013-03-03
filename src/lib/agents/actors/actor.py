@@ -20,7 +20,6 @@ from src.lib.agents.components.bodies import body
 
 from src.lib.agents.contexts.combat import CombatAction
 from src.lib.util.log import Log
-from src.lib.util.debug import *
 
 from src.lib.objects.items.carrion import Corpse
 
