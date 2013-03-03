@@ -35,7 +35,7 @@ class Action(object):
         return False
 
     def get_phases(self):
-        """Yield the phases involved in completing this Action within a Context.
+        """Yield the phases required to complete this Action.
 
         Because this method returns a generator, it's possible to modify the
         Action's associated Context inside of a loop as long as this results in
@@ -45,7 +45,7 @@ class Action(object):
             yield phase
 
     def get_default_phases(self):
-        """Yield the phases involved in completing this Action when there is no Context available."""
+        """Yield the phases that would normally be required to complete this Action."""
         default = self.copy()
         del default.context
         return default.get_phases()

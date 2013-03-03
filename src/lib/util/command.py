@@ -1,5 +1,7 @@
 """Define Commands as an intermediary layer of abstraction, between keypresses and actions."""
 
+from copy import copy
+
 class Command(object):
     actions = []
     description = "no command"
@@ -9,9 +11,33 @@ class Command(object):
         self.context = context
         self.entry_id = self.context.get_id()
 
+    def __call__(self, next_action, *arguments):
+        """Override __call__ to allow concisely checking Action status in get_phases()."""
+        if not self.context:
+            return True
+
+        for called_action, result in self.context.get_results(self.entry_id, "action"):
+            outcome, cause = self.context.parse_result(result)
+            if next_action == called_action:
+                return outcome
+
+        return False
+
     def get_actions(self):
-        """Get actions required to complete this Command."""
-        return self.__class__.actions
+        """Yield the Actions required to complete this Command.
+
+        Because this method returns a generator, it's possible to modify the
+        Command's associated Context inside of a loop as long as this results
+        in no actions being inserted before the most recently visited one.
+        """
+        for action in self.__class__.actions:
+            yield action
+
+    def get_default_actions(self):
+        """Yield the Actions that would normally be required to complete this Command."""
+        default = self.copy()
+        del default.context
+        return default.get_phases()
 
     def get_prefixes(self):
         intent = self.context.get_intent()
@@ -79,6 +105,7 @@ class CommandRegistry(object):
     @staticmethod
     def register(*commands):
         for command in commands:
+            assert command.name() not in CommandRegistry.registry, "Attempted to register command twice: '%s'" % command.name()
             CommandRegistry.register_command(command.name(), command)
             CommandRegistry.register_events(command.events(), command)
 

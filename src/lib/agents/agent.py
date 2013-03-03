@@ -146,6 +146,8 @@ class Agent(object):
 
         Returns an outcome and a cause, based on the Context's parsing.
         """
+
+        # This is a generator, so we can check the Context object for a different list of actions between go-arounds.
         for action_class in command.get_actions():
             action = action_class(command)
             action.context.append(action.entry_id, action=action)
