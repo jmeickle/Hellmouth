@@ -115,7 +115,7 @@ class Agent(object):
         commands = self.sort_commands([interaction for interaction in context.get_interactions()])
 
         for target, command_class in commands:
-            if event in command_class.events():
+            if event in command_class.get_events():
                 Log.add("Tried to %s a %s." % (command_class.__name__, target.name))
 
                 command = command_class(context)
@@ -147,7 +147,8 @@ class Agent(object):
         Returns an outcome and a cause, based on the Context's parsing.
         """
 
-        # This is a generator, so we can check the Context object for a different list of actions between go-arounds.
+        # This is a generator, so we can check the Context object for a
+        # different list of actions between go-arounds.
         for action_class in command.get_actions():
             action = action_class(command)
             action.context.append(action.entry_id, action=action)
@@ -207,9 +208,10 @@ class Agent(object):
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
 
-        # This is a generator, so we can check the Context object for a different list of phases between go-arounds.
+        # This is a generator, so we can check the Context object for a
+        # different list of phases between go-arounds.
         for phase in action.get_phases():
-            # This is fixed per-pass.
+            # On the other hand, prefixes are fixed per-pass.
             for prefix in action.context.get(action.entry_id, "prefixes"):
                 action.context.update(action.entry_id, active_prefix=prefix)
                 action.context.append(action.entry_id, phase=phase[0])
@@ -219,9 +221,8 @@ class Agent(object):
 
                 outcome, cause = action.context.parse_result(result)
                 if outcome is False:
-                    """Return to get_phases(), which typically means we're done
-                    in this function because there will be no next phase.
-                    """
+                    # Return to get_phases(), which typically means we're done
+                    # in this function because there will be no next phase.
                     break
 
         return action.context.parse_results(action.entry_id, "action")

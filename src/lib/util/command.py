@@ -37,19 +37,20 @@ class Command(object):
         """Yield the Actions that would normally be required to complete this Command."""
         default = self.copy()
         del default.context
-        return default.get_phases()
+        return default.get_actions()
 
     def get_prefixes(self):
+        """Return a list of prefixes appropriate for the Context's intent."""
         intent = self.context.get_intent()
         if "attempt" in intent:
             return ["can", "do"]
 
     @classmethod
-    def events(cls):
+    def get_events(cls):
         return cls.defaults
 
     @classmethod
-    def name(cls):
+    def get_name(cls):
         return cls.__name__
 
 class Save(Command):
@@ -105,34 +106,21 @@ class CommandRegistry(object):
     @staticmethod
     def register(*commands):
         for command in commands:
-            assert command.name() not in CommandRegistry.registry, "Attempted to register command twice: '%s'" % command.name()
-            CommandRegistry.register_command(command.name(), command)
-            CommandRegistry.register_events(command.events(), command)
+            assert command.get_name() not in CommandRegistry.registry, "Attempted to register command twice: '%s'" % command.get_name()
+            CommandRegistry.register_command(command)
+            CommandRegistry.register_events(command)
 
     @staticmethod
-    def register_command(name, command):
-        CommandRegistry.registry[name] = command
+    def register_command(command):
+        CommandRegistry.registry[command.get_name()] = command
 
+    # TODO: Do I even need this...?
     @staticmethod
-    def register_events(events, command):
-        for event in events:
+    def register_events(command):
+        for event in command.get_events():
             command_list = CommandRegistry.get(event, [])
             command_list.append(command)
             CommandRegistry.registry[event] = command_list
 
 # This is a bit hackish, but it beats registering them all by hand!
 CommandRegistry.register(Save, Load, Quit, Talk, Cancel, Confirm)
-
-# # Player character commands
-# CMD_ATTACK = 
-# CMD_TALK = "talk"
-# CMD_HEX = "hex direction"
-# CMD_RECT = "rectangular direction"
-# CMD_CONFIRM = "confirm or submit"
-# CMD_CANCEL = "cancel or go back"
-
-# commands = {}
-# commands[CMD_ATTACK] = ("a",)
-# commands[CMD_TALK] = ("t",)
-# commands[CMD_HEX] = ("1", "3", "4", "6", "7", "9", "5")
-# commands[CMD_CANCEL] = (' ',)
