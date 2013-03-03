@@ -12,7 +12,7 @@ from src.lib.util.key import *
 # Scroll up/down.
 class Scroller(Component):
     def __init__(self, max=0, min=0, initial=0):
-        Component.__init__(self)
+        super(Scroller, self).__init__()
         self.min = min
         self.max = max
         self.index = initial
@@ -43,6 +43,41 @@ class SideScroller(Scroller):
     def keyin(self, c):
         if c == curses.KEY_LEFT: self.scroll(-1)
         elif c == curses.KEY_RIGHT: self.scroll(1)
+        else:
+            return True
+        return False
+
+# Scroller that initializes with a set of choices.
+class Chooser(Scroller):
+    def __init__(self, choices=[], initial=0):
+        self.choices = choices
+        super(Chooser, self).__init__(max=len(self.choices)-1, min=0, initial=initial)
+
+    def resize(self):
+        super(Chooser, self).resize(len(self.choices)-1)
+
+    def choice(self):
+        if self.choices and self.index is not None:
+            return self.choices[self.index]
+
+    def set_choices(self, choices):
+        self.choices = choices
+        self.resize()
+
+# Same as a Chooser, but only left/right.
+class SideChooser(Chooser):
+    def keyin(self, c):
+        if c == curses.KEY_LEFT: self.scroll(-1)
+        elif c == curses.KEY_RIGHT: self.scroll(1)
+        else:
+            return True
+        return False
+
+# Chooser that tabs back and forth.
+class Tabber(Chooser):
+    def keyin(self, c):
+        if c == curses.KEY_BTAB: self.scroll(-1)
+        elif c == ord("\t"): self.scroll(1)
         else:
             return True
         return False
