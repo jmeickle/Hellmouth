@@ -313,7 +313,31 @@ class UnReadyMixin(Mixin):
     def do_unready(self, target, manipulator=None):
         return True
 
-class HoldingAgent(GraspingAgent, ContactMixin, UnContactMixin, ReadyMixin, UnReadyMixin):
+class WieldMixin(Mixin):
+    """Provides the ability to raise the target outward from your body."""
+
+    # STUB
+    def can_wield(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_wield(self, target, manipulator=None):
+        return True
+
+class UnWieldMixin(Mixin):
+    """Provides the ability to lower the target to the side of your body."""
+
+    # STUB
+    def can_unwield(self, target, manipulator=None):
+        if not target.is_wielded(self):
+            return False
+        return True
+
+    # STUB
+    def do_unwield(self, target, manipulator=None):
+        return True
+
+class HoldingAgent(GraspingAgent, ContactMixin, UnContactMixin, ReadyMixin, UnReadyMixin, WieldMixin, UnWieldMixin):
     """Convenience Mixin to represent an Agent that can manipulate held Agents."""
     pass
 
