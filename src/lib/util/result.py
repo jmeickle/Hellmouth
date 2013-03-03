@@ -2,6 +2,66 @@
 
 import functools
 
+class Result(object):
+    def __init__(self, *args, **kwargs):
+        self.results = []
+
+    def update(self, result):
+        self.results.append(result)
+        return True
+
+    def describe(self):
+        yield "%s called: %s.%s%s:\n" % (self.caller, self.method, self.domain, self.args)
+        yield "\n"
+        yield "Result: %s" % self.results
+
+    def get_text(self):
+        text = ""
+        for line in self.describe():
+            text += line
+        return text
+
+    def get_result(self):
+        if not self.results:
+            return False
+
+    def get_values(self):
+        return self.results
+
+class ActionResult(Result):
+    pass
+
+class CommandResult(Result):
+    def __init__(self, *args, **kwargs):
+        self.results = []
+
+    def update(self, result):
+        self.results.append(result)
+
+    def get_result(self):
+        if not self.results:
+            return "failure", False
+        else:
+            for method, result in self.results:
+                if not result:
+                    return method, result
+        return "success", True
+
+class SingleResult(Result):
+    def update(self, result):
+        if not self.results:
+            self.results = result
+            return True
+        return False
+
+    def can_update(self):
+        if not self.results:
+            return True
+        return False
+
+    def get_result(self):
+        return self.results
+
 def accumulate_results(fn):
     """Decorator function for calls that accumulate results."""
     @functools.wraps(fn)
@@ -33,68 +93,3 @@ def single_results(fn):
             results.update(result)
             return result
     return wrapper
-
-class Result(object):
-    def __init__(self, caller, domain, method, args=None, kwargs=None):
-        self.results = []
-        self.caller = caller
-        self.domain = domain
-        self.method = method
-        self.args = args
-        self.kwargs = kwargs
-
-    def update(self, result):
-        self.results.append(result)
-        return True
-
-    def describe(self):
-        yield "%s called: %s.%s%s:\n" % (self.caller, self.method, self.domain, self.args)
-        yield "\n"
-        yield "Result: %s" % self.results
-
-    def get_text(self):
-        text = ""
-        for line in self.describe():
-            text += line
-        return text
-
-    def get_result(self):
-        if not self.results:
-            return False
-
-    def get_values(self):
-        return self.results
-
-class CommandResult(Result):
-    def __init__(self, caller, command, scope):
-        self.results = []
-        self.caller = caller
-        self.command = command
-        self.scope = scope
-
-    def update(self, result):
-        self.results.append(result)
-
-    def get_result(self):
-        if not self.results:
-            return "failure", False
-        else:
-            for method, result in self.results:
-                if not result:
-                    return method, result
-        return "success", True
-
-class SingleResult(Result):
-    def update(self, result):
-        if not self.results:
-            self.results = result
-            return True
-        return False
-
-    def can_update(self):
-        if not self.results:
-            return True
-        return False
-
-    def get_result(self):
-        return self.results
