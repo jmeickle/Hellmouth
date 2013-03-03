@@ -1,14 +1,11 @@
 import random
 
-# TODO: Better way of handling imports/data
-from src.lib.objects.items.modifiers import *
-
-# TODO: Remove once items are agents.
-from src.lib.util.dynamic import *
-
 from src.lib.agents.agent import Agent
 
-from src.lib.util.command import Command
+from src.lib.objects.items.modifiers import * # TODO: Better way of handling imports/data
+
+from src.lib.util.command import Command, CommandRegistry as CMD
+from src.lib.util.dynamic import * # TODO: Remove once items are agents.
 
 # Items.
 class Item(Agent):
@@ -41,10 +38,15 @@ class Item(Agent):
         """React to being stored in an inventory."""
         self.cell()._get(self)
 
-    def get_interactions(self, agent, source):
-        """List the interaction options exposed to another Agent within a given source."""
-        yield Command("Get")
-        yield Command("GetAll")
+    def get_interactions(self, agent, context):
+        """List the interaction options exposed to another Agent within a given Context."""
+
+        if self not in agent.values("Container", "get_list"):
+            yield CMD("Get")
+            yield CMD("GetAll")
+
+        if not self.is_wielded() and agent.can(CMD("WieldWeapon", context, target=self)):
+            yield CMD("WieldWeapon")
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
     def appearance(self):
