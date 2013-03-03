@@ -2,6 +2,8 @@
 
 from copy import copy
 
+from src.lib.util.define import *
+
 class Command(object):
     actions = []
     description = "no command"
@@ -23,6 +25,7 @@ class Command(object):
 
         return False
 
+    @UNIMPLEMENTED
     def get_actions(self):
         """Yield the Actions required to complete this Command.
 
