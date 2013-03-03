@@ -57,7 +57,6 @@ class MainMap(View):
         self.cursor = None
 
     def keyin(self, c):
-
         # TODO: Allow multiple open children.
         if not self.children:
             if c == ord('I') or c == ord('i'):
@@ -233,42 +232,44 @@ class Stats(View):
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
-        for line in self.player.get("Body", "paperdoll"):
+        for line in self.player.values("Body", "get_paperdoll"):
             self.cline(line)
 
         # Show the chosen weapon/attack option combination.
-        weapon, attack_option = self.player.attackline()
-        slot, appearance, trait, trait_level, item = weapon
-        # Override this with the current value.
-        trait_level = self.player.trait(trait)
+        # for weapon, attackline in self.player.get("Combat", "view_data"):
 
-        # Print reach
-        # TODO: Move to weapon display function.
-        reach = ""
-        for dist in attack_option[3]:
-            if reach:
-                reach += ","
-            if dist == 0:
-                reach += "C"
-            else:
-                reach += "%s" % dist
-            # TODO: selected reach for variable weaons
-                #reach += "*"
-        reach = "(%s)" % reach
+            # weapon, attack_option = attackline
+            # slot, appearance, trait, trait_level, item = weapon
+            # # Override this with the current value.
+            # trait_level = self.player.trait(trait)
 
-        # HACK: Should ask the item to display a shorter appearance.
-        self.cline("(/*) %s: %s" % (self.player.body.locs[slot].appearance(), appearance[:20]))
+            # # Print reach
+            # # TODO: Move to weapon display function.
+            # reach = ""
+            # for dist in attack_option[3]:
+            #     if reach:
+            #         reach += ","
+            #     if dist == 0:
+            #         reach += "C"
+            #     else:
+            #         reach += "%s" % dist
+            #     # TODO: selected reach for variable weaons
+            #         #reach += "*"
+            # reach = "(%s)" % reach
 
-        color = "white-black"
-        if self.player.base_skills.get(trait) is None:
-            color = "red-black"
+            # # HACK: Should ask the item to display a shorter appearance.
+            # self.cline("(/*) %s: %s" % (self.player.body.locs[slot].appearance(), appearance[:20]))
 
-        self.cline("%s, <%s>%s-%s</>" % (self.player.body.locs[slot].appearance(), color, trait, trait_level))
+            # color = "white-black"
+            # if self.player.base_skills.get(trait) is None:
+            #     color = "red-black"
 
-        selector = ""
-        if len(self.player.attack_options) > 1:
-            selector = "(+-) "
-        self.cline("%5s%s %s %s %s" % (selector, attack_option[0], self.player.damage(attack_option[1], False), attack_option[2], reach))
+            # self.cline("%s, <%s>%s-%s</>" % (self.player.body.locs[slot].appearance(), color, trait, trait_level))
+
+            # selector = ""
+            # if len(self.player.attack_options) > 1:
+            #     selector = "(+-) "
+            # self.cline("%5s%s %s %s %s" % (selector, attack_option[0], self.player.damage(attack_option[1], False), attack_option[2], reach))
 
         # Col 2: Combat information
         self.x_acc += 12
@@ -338,25 +339,9 @@ class Status(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
-        shock = self.player.effects.get("Shock", 0)
-        if shock > 0:
-            if shock == 4:
-                color = "magenta-black"
-            elif shock == 3:
-                color = "red-black"
-            elif shock == 2:
-                color = "yellow-black"
-            else:
-                color = "cyan-black"
-            self.line("Shock", color)
-        if self.player.effects.get("Stun") is not None:
-            self.line("Stun", "red-black")
-        if self.player.effects.get("Unconscious") is not None:
-            self.line("KO'd", "red-black")
-        if self.player.reeling() is True:
-            self.line("Reeling", "red-black")
-        if self.player.exhausted() is True:
-            self.line("Exh", "yellow-black")
+        for text, color in self.player.values("Status", "get_view_data", self):
+            debug("text: %s, color: %s" % (text, color))
+            self.line(text, color)
         return True
 
 class Place(View):
@@ -456,36 +441,71 @@ class Inventory(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def ready(self):
-        self.scroller = self.spawn(Scroller())
-        self.sidescroller = self.spawn(SideScroller(1))
+        self.context = None
+        self.tabs = self.spawn(Tabber())
+        self.selection = self.spawn(Chooser())
+        self.commands = self.spawn(SideChooser())
+
+    def active_tabs(self):
+        yield "Inventory"
+        yield "Equipment"
+        if self.ground:
+            yield "Ground"
+
+    # TODO: Fire this on events that require a refresh.
+    def refresh(self):
+        self.items = [item for item in self.player.values("Container", "get_contents")]
+        self.equipment = [equipment for equipment in self.player.values("Equipment", "get_worn")]
+        self.parts = [part for part in self.player.values("Body", "get_parts")]
+        # TODO: Add sorting back in once it's fixed.
+        #self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
+        self.ground = [ground for ground in self.map.player.cell().get_items()]
+
+        self.tabs.set_choices([choice for choice in self.required_tabs()])
+
+        if self.tabs.choice() == "Inventory":
+            self.selection.set_choices(self.items)
+        elif self.tabs.choice() == "Equipment":
+            self.selection.set_choices(self.equipment)
+        elif self.tabs.choice() == "Ground":
+            self.selection.set_choices(self.ground)
+
+        self.context = Context(agent=self.player, component=self)
+
+        if self.tabs.choice() == "Inventory" and self.items:
+            appearance, itemlist = self.items[self.selection.index]
+            self.context.set_participant(itemlist[0])
+        elif self.tabs.choice() == "Equipment" and self.equipment:
+            part_appearance, item_dict = self.equipment[self.selection.index]
+            self.context.set_participant(item_dict)
+        elif self.tabs.choice() == "Ground" and self.ground:
+            appearance, itemlist = self.ground[self.selection.index]
+            self.context.set_participant(itemlist[0])
+
+        self.commands.set_choices([command for command in self.context.get_interactions()])
 
     # Stored here for convenience.
     def before_draw(self):
-        self.items = [item for item in self.player.process("Equipment", "get_tree")]
-        #self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
-
-        # Tabbing! (Very hackish/simple.)
-#        if self.sidescroller.index == 0:
-#            self.scroller.resize(len(self.items)-1)
-#        else:
-#            self.scroller.resize(len(self.slots)-1)
+        self.refresh()
 
     def draw(self):
         self.window.clear()
-        self.border(" ")
+        self.border("#")
+        self.render()
+
+    def render(self):
         self.cline("Inventory")
         self.y_acc += 1
         if len(self.items) > 0:
             for x in range(len(self.items)):
-                string = self.items[x]
-#                appearance, items = self.items[x]
-#                if len(items) > 1:
-#                    string = "%d %ss" % (len(items), appearance)
-#                else:
-#                    string = appearance
+                appearance, items = self.items[x]
+                if len(items) > 1:
+                    string = "%d %ss" % (len(items), appearance)
+                else:
+                    string = appearance
 
                 # Highlight tab, if present.
-                if self.sidescroller.index == 0 and x == self.scroller.index:
+                if self.tabs.index == 0 and x == self.selection.index:
                     self.cline("<green-black>%s</>" % string)
                 else:
                     self.cline(string)
@@ -495,119 +515,95 @@ class Inventory(View):
         self.y_acc += 1
 
         # Print what's on the ground, too.
-        ground = self.map.player.cell().items
-        if len(ground) > 0:
+
+        if len(self.ground) > 0:
             self.cline("Ground:")
             self.y_acc += 1
-            for appearance, items in ground.items():
+            for x in range(len(self.ground)):
+                appearance, items = self.ground[x]
                 if len(items) > 1:
-                    self.line("%d %ss" % (len(items), appearance))
+                    string = "%d %ss" % (len(items), appearance)
                 else:
-                    self.line(appearance)
+                    string = appearance
+
+                if self.tabs.choice() == "Ground" and x == self.selection.index:
+                    string = text.highlight(string)
+
+                self.cline(string)
 
         self.y_acc = 0
         self.x_acc += 20
 
         # TODO: Fix this messaging.
-#        self.cline("Equipped")
-#        self.y_acc += 1
-#        for x in range(len(self.slots)):
-#            loc = self.slots[x]
-#            equipped = ""
-#            for appearance, items in loc.readied.items():
-#                for item in items: # Ick. Definitely need to move this printing!
-#                    if item.is_wielded():
-#                        equipped += "%s" % appearance # (wielded)
-#                    else:
-#                        equipped += "%s" % appearance # (readied)
-#            for appearance, items in loc.held.items():
-#                for item in items:
-#                    if not item.is_wielded():
-#                        equipped += "%s" % appearance # (held)
-#            for appearance, items in loc.worn.items():
-#                for item in items:
-#                    equipped += "%s" % appearance # (worn)
+        self.cline("Equipped")
+        self.y_acc += 1
+        for x in range(len(self.parts)):
+            part = self.parts[x]
+            equipped = ""
+            for appearance, items in part.readied.items():
+                for item in items: # Ick. Definitely need to move this printing!
+                    if item.is_wielded():
+                        equipped += "%s" % appearance # (wielded)
+                    else:
+                        equipped += "%s" % appearance # (readied)
+            for appearance, items in part.held.items():
+                for item in items:
+                    if not item.is_wielded():
+                        equipped += "%s" % appearance # (held)
+            for appearance, items in part.worn.items():
+                for item in items:
+                    equipped += "%s" % appearance # (worn)
 
             # If we don't have a string yet:
-#            if not equipped:
-#                continue
+            if not equipped:
+                continue
 
-#            colon = "%s:" % loc.appearance()
+            colon = "%s:" % part.appearance()
 
             # Highlights.
-#            if self.sidescroller.index == 1 and x == self.scroller.index:
-#                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
-#            else:
-#                self.cline("%-11s %s" % (colon, equipped))
+            if self.tabs.index == 1 and x == self.selection.index:
+                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
+            else:
+                self.cline("%-11s %s" % (colon, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
 
-        self.cline("Available actions:")
-        actions = []
-        # These actions depend on having a carried item.
-        if self.sidescroller.index == 0 and len(self.items) > 0:
-            appearance, items = self.items[self.scroller.index]
-            if self.map.player.can_equip_item(appearance, self.player.body.locs.get(self.player.body.primary_slot)):
-                actions.append("(<green-black>e</>)quip")
+        if self.commands.choices:
+            self.cline("Available commands:")
+            commands = []
+            chosen_target, chosen_command = self.commands.choice()
+#            exit(self.commands.choices)
+            for target, command in self.commands.choices:
+                string = command.__name__
+                if command == chosen_command:
+                    string = text.highlight_first(string)
+                commands.append(string)
+            self.cline("  %s." % text.commas(commands))
 
-        elif self.sidescroller.index == 1:
-            loc = self.slots[self.scroller.index]
-            #for item in loc.items():
-            # Hackish! Pop a random element from the set.
-            items = loc.items()
-            if len(items) > 0:
-                item = loc.items().pop()
-                if self.player._can_unequip_item(item):
-                    actions.append("(<green-black>u</>)nequip")
-
-        item = self.selected()
-        if item is not None:
-            if self.sidescroller.index == 0:
-                if self.player.can_drop_item(item):
-                    actions.append("(<green-black>d</>)rop")
-            elif self.sidescroller.index == 1:
-                if self.player._can_drop_item(item):
-                    actions.append("(<green-black>d</>)rop")
-
-        # Always visible, if there are items to get.
-        if self.player.can_get_items():
-            actions.append("(<green-black>G</>)et all")
-
-        if actions:
-            self.cline("  %s." % commas(actions))
-
-    # HACK: Returns the seletected item (or appearance).
-    def selected(self):
-        if self.sidescroller.index == 0 and len(self.items) > 0:
-            appearance, items = self.items[self.scroller.index]
-            return appearance
-        elif self.sidescroller.index == 1:
-            loc = self.slots[self.scroller.index]
-            #for item in loc.items():
-            # Hackish! Pop a random element from the set.
-            items = loc.items()
-            if len(items) > 0:
-                return items.pop()
+    def event(self, e):
+        if self.context:
+            return self.player.process_event(e, self.context)
+        return True
 
     def keyin(self, c):
         if c == ord(' '):
             self.suicide()
-        # Hack.
-        elif c == ord('d'):
-            if self.scroller.index == 0:
-                self.player.drop(self.selected())
-            else:
-                self.player._drop(self.selected())
-        elif c == ord('e'):
-            self.player.equip(self.selected())#, self.player.body.locs.get(self.player.body.primary_slot))
-        elif c == ord('u'):
-            # This is also a hack.
-            self.player._unequip(self.selected())
-#        else: return True
-        elif c == ord('G') or c == ord('g'):
-            self.player.get_all()
-            return False
+#         # Hack.
+#         elif c == ord('d'):
+#             if self.selection.index == 0:
+#                 self.player.drop(self.selected())
+#             else:
+#                 self.player._drop(self.selected())
+#         elif c == ord('e'):
+#             self.player.equip(self.selected())#, self.player.body.locs.get(self.player.body.primary_slot))
+#         elif c == ord('u'):
+#             # This is also a hack.
+#             self.player._unequip(self.selected())
+# #        else: return True
+#         elif c == ord('G') or c == ord('g'):
+#             self.player.get_all()
+#             return False
         return False
 
 class CharacterSheet(View):
@@ -658,7 +654,7 @@ class CharacterSheet(View):
 
         maxlines = self.height - self.y_acc
 
-# TODO: Generalize this.
+        # TODO: Generalize this.
         for x in range(maxlines):
             if self.y_acc+1 == self.height and self.scroller.index < self.scroller.max:
                 self.cline('[...]')
@@ -669,6 +665,8 @@ class CharacterSheet(View):
             self.cline(line)
         return False # Block further drawing if we drew.
 
-# TODO: Add a minimap and a health screen.
+# TODO: Add a minimap.
 #class MiniMap(View):
+
+# TODO: Add a health screen.
 #class Health(View):
