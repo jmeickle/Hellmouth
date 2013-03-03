@@ -20,19 +20,36 @@ class Context(object):
 
     """Context participant methods."""
     
-    def get_participants(self):
-        for participant in self.participants:
-            yield participant
+    def add_participant(self, participant):
+        """Add a participant to a Context."""
+        self.participants.append(participant)
+
+    def add_participants(self, participants):
+        """Add several participants to a Context."""
+        self.participants.extend(participants)
+
+    def remove_participant(self, participant):
+        """Remove a participant from a Context."""
+        self.participants.remove(participant)
 
     def set_participant(self, participant):
         """Set this Context to have a single participant."""
         self.participants = [participant]
+
+    def get_participants(self):
+        """Yield the participants in a Context."""
+        for participant in self.participants:
+            yield participant
 
     """Context intent methods."""
 
     def get_intent(self):
         """Return the intent of the Agent towards this Context."""
         return self.intent
+
+    def update_intent(self, **kwargs):
+        """Update the intent of the Agent towards this Context."""
+        self.intent.update(kwargs)
 
     """Context data retrieval methods."""
 
