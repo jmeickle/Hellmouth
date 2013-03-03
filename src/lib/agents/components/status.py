@@ -69,7 +69,7 @@ class Status(Component):
             return True
 
     @accumulate_results
-    def get_view_data(self, view):
+    def get_view_data(self, view=None):
         """Retrieve the raw data for a View."""
         shock = self.statuses.get("Shock", 0)
         if shock > 0:
