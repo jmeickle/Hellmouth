@@ -31,7 +31,6 @@ try:
     options, remainder = getopt.getopt(sys.argv[1:],"a:b:")
 except getopt.GetoptError:
     debug("Failed to parse arguments: %s." % sys.argv[1:])
-    exit()
 
 # TODO: Handle more command line arguments.
 for opt, arg in options:
