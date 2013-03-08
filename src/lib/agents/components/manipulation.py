@@ -297,11 +297,11 @@ class ReadyMixin(Mixin):
     """
 
     # STUB
-    def can_ready(self, target, manipulator=None):
+    def can_ready(self, target, manipulator):
         return True
 
     # STUB
-    def do_ready(self, target, manipulator=None):
+    def do_ready(self, target, manipulator):
         return True
 
 class UnReadyMixin(Mixin):
@@ -310,11 +310,11 @@ class UnReadyMixin(Mixin):
     """
 
     # STUB
-    def can_unready(self, target, manipulator=None):
+    def can_unready(self, target, manipulator):
         return True
 
     # STUB
-    def do_unready(self, target, manipulator=None):
+    def do_unready(self, target, manipulator):
         return True
 
 class ContactMixin(Mixin):
@@ -322,7 +322,7 @@ class ContactMixin(Mixin):
     manipulator.
     """
 
-    def can_contact(self, contacted_target, contacting_target):
+    def can_contact(self, contacted_target, contacting_target, manipulator):
         """Whether you can touch a target with a second target."""
         # TODO: Restructure attack option structure so that items can figure
         # this out based on how they are being held
@@ -342,7 +342,7 @@ class ContactMixin(Mixin):
             return False, "too far"
         return True
 
-    def do_contact(self, contacted_target, contacting_target):
+    def do_contact(self, contacted_target, contacting_target, manipulator):
         """Touch a target with a second target."""
         return True
 
@@ -351,11 +351,11 @@ class UnContactMixin(Mixin):
     in a manipulator.
     """
 
-    def can_uncontact(self, contacted_target, contacting_target):
+    def can_uncontact(self, contacted_target, contacting_target, manipulator):
         """Whether you can stop touching a target with a second target."""
         pass
 
-    def do_uncontact(self, contacted_target, contacting_target):
+    def do_uncontact(self, contacted_target, contacting_target, manipulator):
         """Stop touching a target with a second target."""
         return True
 
@@ -368,12 +368,12 @@ class ForceMixin(Mixin):
     """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
 
     # STUB
-    def can_force(self, target):
+    def can_force(self, target, manipulator):
         """Whether you can exert force to reposition a target whose mass is controlled by you.."""
         return True
 
     # STUB
-    def do_force(self, target):
+    def do_force(self, target, manipulator):
         """Exert force to reposition a target whose mass is controlled by you."""
         return True
 
@@ -381,12 +381,12 @@ class SlideMixin(Mixin):
     """Provides the ability to exert force to drag, slide, or shove a target against a surface."""
 
     # STUB
-    def can_slide(self, target, surface):
+    def can_slide(self, target, surface, manipulator):
         """Whether you can exert force to drag, slide, or shove a target against a surface."""
         return True
 
     # STUB
-    def do_slide(self, target, surface):
+    def do_slide(self, target, surface, manipulator):
         """Exert force to drag, slide, or shove a target against a surface."""
         return True
 
@@ -396,12 +396,12 @@ class HandleMixin(Mixin):
     n.b. - You can handle some targets even if you can't Force or Slide them."""
 
     # STUB
-    def can_handle(self, target):
+    def can_handle(self, target, manipulator):
         """Whether you can exert force to reposition or manipulate part of a target."""
         return True
 
     # STUB
-    def do_handle(self, target):
+    def do_handle(self, target, manipulator):
         """Exert force to reposition or manipulate part of a target."""
         return True
 
@@ -417,11 +417,11 @@ class UseMixin(Mixin):
     # TODO: ^ What about canceling use of an item?
 
     # STUB
-    def can_use(self, target):
+    def can_use(self, target, manipulator):
         """Whether you can use a target."""
         return True
 
-    def do_use(self, target):
+    def do_use(self, target, manipulator):
         """Use a target."""
         target.react("on", self)
         return True
@@ -435,13 +435,13 @@ class UseAtMixin(Mixin):
 
 
     # STUB
-    def can_use_at(self, target, item):
+    def can_use_at(self, target, item, manipulator):
         """Whether you can use a target at a second target."""
         return True
 
     # Use an item at a target.
     # STUB
-    def do_use_at(self, target, item):
+    def do_use_at(self, target, item, manipulator):
         """Use a target at a second target."""
         return True
 
@@ -453,8 +453,10 @@ class StoreMixin(Mixin):
     """Provides the ability to store targets into a Container."""
 
     # TODO: Don't use a limit of 5 entries (testing only!).    
-    def can_store(self, target, container=None):
+    def can_store(self, target, manipulator, container=None):
         """Whether you can store an item into a Container."""
+
+        # TODO: Remove default
         if container is None:
             container = self.get_component("Container")
 
@@ -466,11 +468,15 @@ class StoreMixin(Mixin):
         return True
 
     # Store an item in your container.
-    def do_store(self, target, container=None):
+    def do_store(self, target, manipulator, container=None):
         """Store an item into a Container."""
 
+        # TODO: Remove default
         if container is None:
             container = self.get_component("Container")
+
+        if container is None:
+            return False
 
         if target.react("on", container) is False:
             return False
@@ -482,16 +488,32 @@ class StoreMixin(Mixin):
 class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from a Container."""
 
-    def can_unstore(self, target):
+    def can_unstore(self, target, manipulator, container=None):
         """Whether you can unstore an item from a Container."""
+
+        # TODO: Remove default
+        if container is None:
+            container = self.get_component("Container")
+
+        if container is None:
+            return False
+
         return True
 
-    def do_unstore(self, target):
-        """Unstore an item from a cOntainer."""
-        matches = self.container.get(target.appearance(), [])
+    def do_unstore(self, target, manipulator, container=None,):
+        """Unstore an item from a Container."""
+
+        # TODO: Remove default
+        if container is None:
+            container = self.get_component("Container")
+
+        if container is None:
+            return False
+
+        matches = container.get(target.appearance(), [])
         assert target in matches
         matches.remove(target)
-        self.container[target.appearance()] = matches        
+        container[target.appearance()] = matches
         return True
 
 class StoringAgent(StoreMixin, UnstoreMixin):
