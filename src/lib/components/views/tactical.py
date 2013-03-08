@@ -470,7 +470,7 @@ class Inventory(View):
         elif self.tabs.choice() == "Ground":
             self.selection.set_choices(self.ground)
 
-        self.context = Context(agent=self.player, component=self)
+        self.context = self.get_context()
 
         if self.tabs.choice() == "Inventory" and self.items:
             appearance, itemlist = self.items[self.selection.index]
