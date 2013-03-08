@@ -106,6 +106,7 @@ class Context(object):
         except TypeError:
             exit("%s" % results)
 
+    # TODO: Move elsewhere
     def parse_result(self, result):
         """Take any type of result and convert it to an outcome bool and a cause tag."""
         if isinstance(result, Result):
@@ -116,6 +117,7 @@ class Context(object):
             except TypeError:
                 return result, "unknown"
 
+    # TODO: Move elsewhere
     def parse_results(self, entry_id, key):
         for caller, result in self.get_results(entry_id, key):
             outcome, cause = self.parse_result(result)
