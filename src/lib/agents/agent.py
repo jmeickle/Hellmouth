@@ -119,13 +119,13 @@ class Agent(object):
 
                 outcome, cause = context.parse_result(result)
                 if outcome is True:
-                    Log.add("Could because: %s!" % cause)
+                    Log.add("(+): %s" % cause)
                 else:
-                    Log.add("Couldn't because: %s!" % cause)
+                    Log.add("(-): %s" % cause)
 
                 return outcome, cause
 
-        Log.add("Couldn't respond to: %s" % event)
+        Log.add("( ): %s" % event)
         return False
 
     """Command processing methods."""
@@ -142,7 +142,7 @@ class Agent(object):
             prefixes = command.get_prefixes()
             command.context.update(command.entry_id, prefixes=prefixes)
 
-        Log.add("COMMAND: %s (%s)." % (command.__class__.get_name(), prefixes))
+        Log.add("CMD: %s (%s)." % (command.__class__.get_name(), prefixes))
 
         # This is a generator, so we can check the Context object for a
         # different list of actions between go-arounds.
@@ -202,7 +202,7 @@ class Agent(object):
         
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
-        Log.add("ACTION: %s." % action.__class__.get_name())
+        Log.add("ACT: %s" % action.__class__.get_name())
 
         action.context.append(action.entry_id, action=action)
         active_prefix = action.context.get(action.entry_id, "prefixes")[0]
@@ -220,7 +220,7 @@ class Agent(object):
                 action.context.add_result(action.entry_id, "phase", result)
 
                 outcome, cause = action.context.parse_result(result)
-                Log.add("PHASE: %s (%s)." % (prefix + "_" + phase[0], outcome))
+                Log.add("P: %s (%s)." % (prefix + "_" + phase[0], outcome))
                 if outcome is False:
                     # Return to get_phases(), which typically means we're done
                     # in this function because there will be no next phase.
