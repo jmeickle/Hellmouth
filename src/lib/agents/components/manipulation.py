@@ -43,45 +43,45 @@ from src.lib.util.mixin import Mixin
 class Pickup(Action):
     """Remove an Agent from the environment, placing it into your manipulator exclusively."""
     phases = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("force", "target"),
+        ("touch", "target", "manipulator"),
+        ("grasp", "target", "manipulator"),
+        ("force", "target", "manipulator"),
     ]
 
 class Putdown(Action):
     """Remove an item from your manipulator, placing it into the environment exclusively."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("ungrasp", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("ungrasp", "item", "manipulator"),
     ]
 
 class Drop(Action):
     """Let an item fall from your manipulator into the environment (uncontrolled)."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("ungrasp", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("ungrasp", "item", "manipulator"),
     ]
 
 class Pack(Action):
     """Remove an item from your manipulator, placing it into a container exclusively."""
     phases = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("force", "target"),
-        ("store", "target", "container"),
-        ("ungrasp", "target"),
+        ("touch", "target", "manipulator"),
+        ("grasp", "target", "manipulator"),
+        ("force", "target", "manipulator"),
+        ("store", "target", "container", "manipulator"),
+        ("ungrasp", "target", "manipulator"),
     ]
 
 class UnPack(Action):
     """Remove an item from a container, placing it into your manipulator exclusively."""
     phases = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("force", "target"),
-        ("unstore", "target", "container"),
+        ("touch", "target", "manipulator"),
+        ("grasp", "target", "manipulator"),
+        ("force", "target", "manipulator"),
+        ("unstore", "target", "container", "manipulator"),
     ]
 
 """Interacting with Agents using manipulators."""
@@ -89,10 +89,10 @@ class UnPack(Action):
 class Use(Action):
     """Use a target using a manipulator."""
     phases = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("handle", "target"),
-        ("use", "target")
+        ("touch", "target", "manipulator"),
+        ("grasp", "target", "manipulator"),
+        ("handle", "target", "manipulator"),
+        ("use", "target", "manipulator")
     ]
 
 """Interacting with Agents using manipulators in a way requiring holding them."""
@@ -100,25 +100,25 @@ class Use(Action):
 class Wield(Action):
     """"Hold an item in a manipulator out in front of you."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("ready", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("ready", "item", "manipulator"),
     ]
 
     def get_phases(self):
-        yield "touch", "target"
-        if self("touch", "target"): yield "grasp", "target"
-        if self("grasp", "target"): yield "force", "target"
-        if self("force", "target"): yield "ready", "target"
+        yield "touch", "target", "manipulator"
+        if self("touch", "target"): yield "grasp", "target", "manipulator"
+        if self("grasp", "target"): yield "force", "target", "manipulator"
+        if self("force", "target"): yield "ready", "target", "manipulator"
 
 class UnWield(Action):
     """Lower an item in a manipulator to your side."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("unready", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("unready", "item", "manipulator"),
     ]
 
 class Brandish(Action):
@@ -128,28 +128,28 @@ class Brandish(Action):
     warhammer at someone makes it rather useless for combat.
     """
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("ready", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("ready", "item", "manipulator"),
     ]
 
 class UnBrandish(Action):
     """Stop pointing at a target using a second, wielded target."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("unready", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("unready", "item", "manipulator"),
     ]
 
 class Throw(Action):
     """Throw a target at a second target."""
     phases = [
-        ("touch", "item"),
-        ("grasp", "item"),
-        ("force", "item"),
-        ("unready", "item"),
+        ("touch", "item", "manipulator"),
+        ("grasp", "item", "manipulator"),
+        ("force", "item", "manipulator"),
+        ("unready", "item", "manipulator"),
     ]
 
 """Commands."""
@@ -162,8 +162,8 @@ class Get(Command):
     defaults = ("g",)
 
     def get_actions(self):
-        yield Pickup, "target"
-        if self(Pickup, "target"): yield Pack, "target"
+        yield Pickup, "target", "manipulator"
+        if self(Pickup, "target"): yield Pack, "target", "container", "manipulator"
 
 class GetAll(Command):
     """Pick up multiple nearby items."""
@@ -171,8 +171,8 @@ class GetAll(Command):
     defaults = ("G",)
 
     def get_actions(self):
-        yield Pickup, "target"
-        if self(Pickup, "target"): yield Pack, "target"
+        yield Pickup, "target", "manipulator"
+        if self(Pickup, "target"): yield Pack, "target", "container", "manipulator"
 
 CMD.register(Get, GetAll)
 
@@ -207,30 +207,30 @@ CMD.register(UseTerrain)
 class ReachMixin(Mixin):
     """Provides the ability to reach a target with a manipulator."""
 
-    def can_reach(self, target, manipulator=None):
+    def can_reach(self, target, manipulator):
         return True
 
-    def do_reach(self, target, manipulator=None):
+    def do_reach(self, target, manipulator):
         return True
 
 class TouchMixin(Mixin):
     """Provides the ability to touch a target with a manipulator."""
 
-    def can_touch(self, target, manipulator=None):
+    def can_touch(self, target, manipulator):
         return True
 
-    def do_touch(self, target, manipulator=None):
+    def do_touch(self, target, manipulator):
         return True
 
 class UnTouchMixin(Mixin):
     """Provides the ability to stop touching a target with a manipulator."""
 
     # STUB
-    def can_untouch(self, target, manipulator=None):
+    def can_untouch(self, target, manipulator):
         return True
 
     # STUB
-    def do_untouch(self, target, manipulator=None):
+    def do_untouch(self, target, manipulator):
         return True
 
 class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
@@ -241,30 +241,86 @@ class GraspMixin(Mixin):
     """Provides the ability to hold a target with a manipulator."""
 
     # STUB
-    def can_grasp(self, target, manipulator=None):
+    def can_grasp(self, target, manipulator):
         return True
 
     # STUB
-    def do_grasp(self, target, manipulator=None):
+    def do_grasp(self, target, manipulator):
         return True
 
 class UnGraspMixin(Mixin):
     """Provides the ability to let go of a target with a manipulator."""
 
     # STUB
-    def can_ungrasp(self, target, manipulator=None):
+    def can_ungrasp(self, target, manipulator):
         return True
 
     # STUB
-    def do_ungrasp(self, target, manipulator=None):
+    def do_ungrasp(self, target, manipulator):
         return True
 
 class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
     """Convenience Mixin to represent an Agent with grasping capability."""
     pass
 
+class WieldMixin(Mixin):
+    """Provides the ability to hold a target with a manipulator in a way
+    permitting its use as a tool.
+    """
+
+    # STUB
+    def can_wield(self, target, manipulator):
+        return True
+
+    # STUB
+    def do_wield(self, target, manipulator):
+        return True
+
+class UnWieldMixin(Mixin):
+    """Provides the ability to hold a target with a manipulator in a way
+    permitting its use as a tool.
+    """
+
+    # STUB
+    def can_unwield(self, target, manipulator):
+        if not target.is_wielded(self):
+            return False
+        return True
+
+    # STUB
+    def do_unwield(self, target, manipulator):
+        return True
+
+class ReadyMixin(Mixin):
+    """Provides the ability to raise a target held with a manipulator outward
+    from your body.
+    """
+
+    # STUB
+    def can_ready(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_ready(self, target, manipulator=None):
+        return True
+
+class UnReadyMixin(Mixin):
+    """Provides the ability to lower a target held with a manipulator to the
+    side of your body.
+    """
+
+    # STUB
+    def can_unready(self, target, manipulator=None):
+        return True
+
+    # STUB
+    def do_unready(self, target, manipulator=None):
+        return True
+
 class ContactMixin(Mixin):
-    """Provides the ability to touch a target with a second target."""
+    """Provides the ability to touch a target with a second target held in a
+    manipulator.
+    """
 
     def can_contact(self, contacted_target, contacting_target):
         """Whether you can touch a target with a second target."""
@@ -291,63 +347,21 @@ class ContactMixin(Mixin):
         return True
 
 class UnContactMixin(Mixin):
-    """Provides the ability to stop touching a target with a second target."""
+    """Provides the ability to stop touching a target with a second target held
+    in a manipulator.
+    """
 
     def can_uncontact(self, contacted_target, contacting_target):
         """Whether you can stop touching a target with a second target."""
+        pass
 
     def do_uncontact(self, contacted_target, contacting_target):
         """Stop touching a target with a second target."""
         return True
 
-class ReadyMixin(Mixin):
-    """Provides the ability to raise the target outward from your body."""
-
-    # STUB
-    def can_ready(self, target, manipulator=None):
-        return True
-
-    # STUB
-    def do_ready(self, target, manipulator=None):
-        return True
-
-class UnReadyMixin(Mixin):
-    """Provides the ability to lower the target to the side of your body."""
-
-    # STUB
-    def can_unready(self, target, manipulator=None):
-        return True
-
-    # STUB
-    def do_unready(self, target, manipulator=None):
-        return True
-
-class WieldMixin(Mixin):
-    """Provides the ability to raise the target outward from your body."""
-
-    # STUB
-    def can_wield(self, target, manipulator=None):
-        return True
-
-    # STUB
-    def do_wield(self, target, manipulator=None):
-        return True
-
-class UnWieldMixin(Mixin):
-    """Provides the ability to lower the target to the side of your body."""
-
-    # STUB
-    def can_unwield(self, target, manipulator=None):
-        if not target.is_wielded(self):
-            return False
-        return True
-
-    # STUB
-    def do_unwield(self, target, manipulator=None):
-        return True
-
-class HoldingAgent(GraspingAgent, ContactMixin, UnContactMixin, ReadyMixin, UnReadyMixin, WieldMixin, UnWieldMixin):
-    """Convenience Mixin to represent an Agent that can manipulate held Agents."""
+class HoldingAgent(GraspingAgent, WieldMixin, UnWieldMixin, ReadyMixin, UnReadyMixin, ContactMixin, UnContactMixin):
+    """Convenience Mixin to represent an Agent that can manipulate held Agents
+    in a variety of ways."""
     pass
 
 class ForceMixin(Mixin):
