@@ -45,8 +45,10 @@ class Item(Agent):
             yield CMD("Get")
             yield CMD("GetAll")
 
-        if not self.is_wielded() and agent.can(CMD("WieldWeapon", context, target=self)):
-            yield CMD("WieldWeapon")
+        if not self.is_wielded():
+            outcome, cause = agent.can(CMD("WieldWeapon", context, target=self))
+            if outcome:
+                yield CMD("WieldWeapon")
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
     def appearance(self):
