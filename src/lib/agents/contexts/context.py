@@ -63,6 +63,18 @@ class Context(object):
         """Update the intent of the Agent towards this Context."""
         self.intent.update(kwargs)
 
+    """Context argument getter methods."""
+
+    def get_argument(self, key, default):
+        """Add an argument to a Context."""
+        return self.arguments.get(key, default)
+
+    """Context argument setter methods."""
+
+    def set_argument(self, key, value):
+        """Add an argument to a Context."""
+        self.arguments[key] = value
+
     """Context data retrieval methods."""
 
     def get_data(self, entry_id):
