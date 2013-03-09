@@ -19,8 +19,8 @@ class Context(object):
         """The intent of the Agent towards the participants in this Context."""
         self.component = component
         """The Component that has control over this Context."""
-        self.data = {}
-        """Data storage for this Context, mostly used when processing Commands."""
+        # self.data = {}
+        # """Data storage for this Context, mostly used when processing Commands."""
         self.arguments = {}
         """Arguments for this context."""
         self.aliases = {}
@@ -144,38 +144,38 @@ class Context(object):
         """Set the alias to use when sending this argument to a method."""
         self.aliases[key] = value
 
-    """Context data retrieval methods."""
+    # """Context data retrieval methods."""
 
-    def get_data(self, entry_id):
-        """Return an entry in this Context's data."""
-        return self.data.get(entry_id, {})
+    # def get_data(self, entry_id):
+    #     """Return an entry in this Context's data."""
+    #     return self.data.get(entry_id, {})
 
-    def get(self, entry_id, key, default=None):
-        """Return a value from an entry in this Context's data."""
-        return self.get_data(entry_id).get(key, default)
+    # def get(self, entry_id, key, default=None):
+    #     """Return a value from an entry in this Context's data."""
+    #     return self.get_data(entry_id).get(key, default)
 
-    def multiget(self, entry_id, keys, default=None):
-        """Yield (key, value) tuples from an entry in this Context's data."""
-        data = self.get_data(entry_id)
-        for key in keys:
-            yield key, data.get(key, default)
+    # def multiget(self, entry_id, keys, default=None):
+    #     """Yield (key, value) tuples from an entry in this Context's data."""
+    #     data = self.get_data(entry_id)
+    #     for key in keys:
+    #         yield key, data.get(key, default)
 
-    """Context data update methods."""
+    # """Context data update methods."""
 
-    def append(self, entry_id, **kwargs):
-        """Append the value of (key, value) tuples to the value of existing keys from an entry in this Context's data."""
-        entry_data = self.get_data(entry_id)
-        for key, value in kwargs.items():
-            values = entry_data.get(key, [])
-            values.append(value)
-            entry_data[key] = values
-        self.data[entry_id] = entry_data
+    # def append(self, entry_id, **kwargs):
+    #     """Append the value of (key, value) tuples to the value of existing keys from an entry in this Context's data."""
+    #     entry_data = self.get_data(entry_id)
+    #     for key, value in kwargs.items():
+    #         values = entry_data.get(key, [])
+    #         values.append(value)
+    #         entry_data[key] = values
+    #     self.data[entry_id] = entry_data
 
-    def update(self, entry_id, **kwargs):
-        """Update an entry in this Context's data."""
-        entry_data = self.get_data(entry_id)
-        entry_data.update(kwargs)
-        self.data[entry_id] = entry_data
+    # def update(self, entry_id, **kwargs):
+    #     """Update an entry in this Context's data."""
+    #     entry_data = self.get_data(entry_id)
+    #     entry_data.update(kwargs)
+    #     self.data[entry_id] = entry_data
 
     """Context Command getter methods."""
 
