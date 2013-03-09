@@ -105,6 +105,29 @@ class Context(object):
         """Update this Context's arguments with multiple values."""
         self.arguments.update(kwargs)
 
+    """Context argument helper methods."""
+
+    def require_arguments(self, required_arguments):
+        """Update this Context's arguments with values from the Agent and
+        participants until all requirements are satisfied.
+
+        n.b. - TODO: This can cause infinite loops if an argument is never provided!"""
+
+        for required_argument in required_arguments:
+            if required_argument in self.arguments:
+                continue
+
+            provided_argument = self.get_agent().provide_argument(self, required_argument)
+            if provided_argument:
+                self.set_argument(required_argument, provided_argument)
+                continue
+
+            for participant in self.get_participants():
+                provided_argument = participant.provide_argument(self, required_argument)
+                if provided_argument:
+                    self.set_argument(required_argument, provided_argument)
+                    break
+
     """Context argument alias getter methods."""
 
     def get_alias(self, key):

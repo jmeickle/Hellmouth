@@ -107,14 +107,13 @@ class Agent(object):
         """Find the first Command matching an event, instantiate it, and process it."""
         Log.add("EVENT: %s" % event)
 
-        commands = self.sort_commands([interaction for interaction in context.get_interactions()])
-        for target, command_class in commands:
+        for command_class, command_arguments in context.get_commands():
             for command_event in command_class.get_events():
                 if event != command_event:
                     continue
 
                 command = command_class(context)
-                context.update(command.entry_id, target=target)
+                context.update_arguments(**command_arguments)
 
                 result = self.process_command(command)
                 context.add_result(command.entry_id, "command", result)
@@ -166,13 +165,10 @@ class Agent(object):
 
     """Command processing helper methods."""
 
-    def get_commands(self, context, domains=None):
-        """Return Commands relevant to a Context.
-
-        Optionally, only check within a list of domains.
-        """
-        if not domains:
-            domains = self.get_domains()
+    @agent_context
+    def get_commands(self, context):
+        """Yield the Commands this Agent makes available to itself within a Context."""
+        domains = context.domains if context.domains else self.get_domains()
 
         for domain in domains:
             for command in self.values(domain, "get_commands", context):
@@ -210,16 +206,18 @@ class Agent(object):
         # This is a generator, so we can check the Context object for a
         # different list of phases between go-arounds.
         for phase in action.get_phases():
+            phase, phase_arguments = phase[0], phase[1:]
             # On the other hand, prefixes are fixed per-pass.
             for prefix in action.context.get(action.entry_id, "prefixes"):
                 action.context.update(action.entry_id, active_prefix=prefix)
-                action.context.append(action.entry_id, phase=phase[0])
-                arguments = dict((k, v) for (k, v) in action.context.multiget(action.entry_id, phase[1:])) # TODO: Python 2.7+ offers dict comprehensions
-                result = getattr(action.context.agent, prefix + "_" + phase[0])(**arguments) # TODO: Pass in context and entry_id?
+                action.context.append(action.entry_id, phase=phase)
+                action.context.require_arguments(phase_arguments)
+                arguments = action.context.get_aliased_arguments(phase_arguments)
+                result = getattr(action.context.agent, prefix + "_" + phase)(**arguments)
                 action.context.add_result(action.entry_id, "phase", result)
 
                 outcome, cause = action.context.parse_result(result)
-                Log.add("P: %s (%s)." % (prefix + "_" + phase[0], outcome))
+                Log.add("P: %s (%s)." % (prefix + "_" + phase, outcome))
                 if outcome is False:
                     # Return to get_phases(), which typically means we're done
                     # in this function because there will be no next phase.
@@ -243,10 +241,24 @@ class Agent(object):
     """Miscellaneous methods."""
 
     @agent_context
+    def provide_argument(self, context, arg):
+        if arg == "manipulator":
+           return self.call("Body", "get_default_manipulator")
+        if arg == "weapon":
+           return self.call("Combat", "get_default_weapon")
+
+    @agent_context
+    def provide_arguments(self, context, required_arguments):
+        """Provide in a list of required arguments."""
+        for required_argument in required_arguments:
+            provided_argument = self.provide_argument(self, context, required_argument)
+            if provided_argument: yield provided_argument
+
+    @agent_context
     def provide_commands(self, context):
         """Yield the interaction options an Agent provides to another Agent."""
         if "Combat" in context.domains:
-            yield CMD("Attack")
+            yield CMD("Attack", target=self, weapon=None)
 
     # Return your own cell.
     # TODO: Multi-cell creatures.
