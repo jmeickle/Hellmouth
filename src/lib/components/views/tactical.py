@@ -6,7 +6,7 @@ from random import choice
 
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
-from src.lib.components.input import Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt
+from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt
 
 from src.lib.agents.contexts.context import Context
 from src.lib.util.command import CommandRegistry as CMD
