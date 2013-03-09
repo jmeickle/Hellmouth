@@ -86,17 +86,28 @@ class Confirm(Command):
 class CommandRegistry(object):
     registry = {}
 
-    def __new__(self, command_name, context=None, **kwargs):
-        """Return the Command class corresponding to a provided name.
+    def __new__(self, command_name, **kwargs):
+        """Override for conveniently accessing Commands from the registry.
 
-        If a Context is provided, return an instance of that Command instead."""
+        With a command name, return the corresponding Command class.
+
+        With a command name and keyworded arguments, return a tuple of the
+        corresponding Command class and a dict of keyworded arguments.
+
+        With a command name and a keyworded 'context' argument, update the
+        Context's arguments with any other keyworded arguments and return an
+        instance of that Command.
+        """
         command_class = CommandRegistry.get(command_name)
         assert command_class, "Attempted to retrieve unregistered command: '%s'" % command_name
 
+        context = kwargs.pop("context", None)
         if context:
             command = command_class(context)
             context.update(command.entry_id, **kwargs)
             return command
+        elif kwargs:
+            return command_class, kwargs
         else:
             return command_class
 
