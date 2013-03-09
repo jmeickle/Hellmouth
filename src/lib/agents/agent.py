@@ -157,7 +157,7 @@ class Agent(object):
             if outcome is False:
                 break
 
-        return action.context.parse_results(command.entry_id, "command")
+        return command.context.parse_results(command.entry_id, "command")
 
     def can(self, command):
         """Helper to check whether a Command object can be attempted within its Context."""
