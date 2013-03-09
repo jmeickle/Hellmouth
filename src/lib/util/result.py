@@ -6,8 +6,6 @@ class Result(object):
     def __init__(self, *args, **kwargs):
         self.results = []
 
-
-
     def describe(self):
         yield "%s called: %s.%s%s:\n" % (self.caller, self.method, self.domain, self.args)
         yield "\n"
@@ -34,6 +32,16 @@ class Result(object):
     def update_results(self, result):
         self.results.append(result)
         return True
+
+class ActionResult(Result):
+    def get_outcome(self):
+        if not self.results:
+            return False, "failure"
+        else:
+            for outcome, cause in self.results:
+                if not outcome:
+                    return outcome, cause
+        return True, "success"
 
 class CommandResult(Result):
     def __init__(self, *args, **kwargs):
