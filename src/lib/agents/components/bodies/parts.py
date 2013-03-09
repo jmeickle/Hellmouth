@@ -392,6 +392,10 @@ class Extremity(BodyPart):
     def crippling(self):
         return self.owner.MaxHP()/3
 
+class Hand(Extremity):
+    def __init__(self, type, owner):
+        super(Hand, self).__init__(type, owner)
+
 class Foot(Extremity):
     def __init__(self, type, owner):
         BodyPart.__init__(self, type, owner)
