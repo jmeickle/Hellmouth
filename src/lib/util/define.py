@@ -1,3 +1,7 @@
+import functools
+
+from src.lib.util.debug import die
+
 # HACK: Define termsize rather than figuring it out.
 TERM_X = 80
 TERM_Y = 24
@@ -126,8 +130,6 @@ postures = {
     "lying face up" : (-4, -3, -2, False),
 }
 
-import functools
-
 def STUB(fn):
     """Decorator to return True when calling a stub method."""
     @functools.wraps(fn)
@@ -139,5 +141,12 @@ def UNIMPLEMENTED(fn):
     """Decorator to assert on calling an unimplemented method."""    
     @functools.wraps(fn)
     def wrapper(self, *args, **kwargs):
-        assert False, "Unimplemented method!"
+        string = "Unimplemented method %s.%s" % (self.__class__.__name__, fn.__name__)
+        parts = []
+        if args:
+            parts.append("args: %s" % args)
+        if kwargs:
+            parts.append("kwargs: %s" % kwargs)
+        string += ", ".join(parts) + "."
+        die(string)
     return wrapper

@@ -11,10 +11,17 @@ debug_frequency = {}
 
 # TODO: Support setting level to info/warning
 def debug(message, level=logging.DEBUG):
+    """Send a message to the debug log."""
     msg = message.__str__()
     hits = debug_frequency.get(msg, 0) + 1
     debug_frequency[msg] = hits
-    logging.debug("%s:%s" % (hits, msg))
+    logging.log(level, "%s:%s" % (hits, msg))
+
+def die(message, **kwargs):
+    """Send a message to the debug log and then assert."""
+    kwargs.setdefault("level", logging.CRITICAL)
+    debug(message, **kwargs)
+    assert False, message
 
 def DEBUG(fn):
     """Decorator to log a method call to debug."""
