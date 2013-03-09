@@ -6,9 +6,11 @@ class Context(object):
     entry_ids = 0
     """The number of context IDs issued so far."""
 
-    def __init__(self, agent, participants=[], intent={}, component=None):
+    def __init__(self, agent, domains=None, participants=[], intent={}, component=None):
         self.agent = agent
         """The Agent that owns this Context."""
+        self.domains = domains
+        """The Domains that this Context focuses on."""
         self.participants = participants
         """The other Agents involved in this Context."""
         self.intent = intent
@@ -139,5 +141,5 @@ class Context(object):
                 for interaction in participant.get_interactions(self.agent, self):
                     yield (participant, interaction)
 
-        for command in self.agent.get_commands(self):
-            yield command
+        for command in self.agent.get_commands(self, self.domains):
+            yield (self.agent, command)
