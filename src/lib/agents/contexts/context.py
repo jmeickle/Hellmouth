@@ -19,9 +19,26 @@ class Context(object):
         """The Component that has control over this Context."""
         self.data = {}
         """Data storage for this Context, mostly used when processing Commands."""
+        self.arguments = {}
+        """Arguments for this context."""
 
-    """Context participant methods."""
-    
+    """Context participant getter methods."""
+
+    def is_participant(self, agent):
+        """Return whether an agent is a participant in a Context."""
+        return agent in self.participants
+
+    def get_participants(self):
+        """Yield the participants in a Context."""
+        for participant in self.participants:
+            yield participant
+
+    """Context participant setter methods."""
+
+    def set_participant(self, participant):
+        """Set this Context to have a single participant."""
+        self.participants = [participant]
+
     def add_participant(self, participant):
         """Add a participant to a Context."""
         self.participants.append(participant)
@@ -34,20 +51,13 @@ class Context(object):
         """Remove a participant from a Context."""
         self.participants.remove(participant)
 
-    def set_participant(self, participant):
-        """Set this Context to have a single participant."""
-        self.participants = [participant]
-
-    def get_participants(self):
-        """Yield the participants in a Context."""
-        for participant in self.participants:
-            yield participant
-
-    """Context intent methods."""
+    """Context intent getter methods."""
 
     def get_intent(self):
         """Return the intent of the Agent towards this Context."""
         return self.intent
+
+    """Context intent setter methods."""
 
     def update_intent(self, **kwargs):
         """Update the intent of the Agent towards this Context."""
@@ -86,11 +96,32 @@ class Context(object):
         entry_data.update(kwargs)
         self.data[entry_id] = entry_data
 
-    """Context result methods."""
+    """Context Command getter methods."""
 
-    def add_result(self, entry_id, key, result):
-        """Helper function to append a result to a key within this Context's data."""
-        self.append(entry_id, **{key + "_results" : result})
+    def get_agent_commands(self):
+        """Yield the Commands the Agent makes available to itself."""
+        return self.agent.get_commands(self)
+
+    def get_participant_commands(self, participant):
+        """Yield the Commands a single participant makes available to the Agent."""
+        for command in participant.provide_commands(self):
+            yield command
+
+    def get_participants_commands(self):
+        """Yield the Commands that each participant makes available to the Agent."""
+        for participant in self.participants:
+            for command in self.get_participant_commands(participant):
+                yield command
+
+    def get_commands(self):
+        """Yield all Commands made available to an Agent by this Context."""
+        for command in self.get_agent_commands():
+            yield command
+
+        for command in self.get_participants_commands():
+            yield command
+
+    """Context result getter methods."""
 
     # TODO: Rewrite
     def get_results(self, entry_id, key):
@@ -107,6 +138,14 @@ class Context(object):
                 yield caller, result
         except TypeError:
             exit("%s" % results)
+
+    """Context result setter methods."""
+
+    def add_result(self, entry_id, key, result):
+        """Helper function to append a result to a key within this Context's data."""
+        self.append(entry_id, **{key + "_results" : result})
+
+    """Context result helper methods."""
 
     # TODO: Move elsewhere
     def parse_result(self, result):
@@ -127,19 +166,10 @@ class Context(object):
                 return outcome, cause
         return True, "ok"
 
-    """Misc methods."""
+    """Misc. helper methods."""
 
     def get_id(self):
         """Return an ID global across Contexts."""
         Context.entry_ids += 1
         return Context.entry_ids
 
-    def get_interactions(self):
-        """Return the interactions made available to the subject by the Context's participants."""
-        for participant in self.participants:
-            if participant:
-                for interaction in participant.get_interactions(self):
-                    yield (participant, interaction)
-
-        for command in self.agent.get_commands(self, self.domains):
-            yield (self.agent, command)
