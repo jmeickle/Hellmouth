@@ -7,6 +7,7 @@ from src.lib.util.result import accumulate_results, ignore_results
 
 class Container(Component):
     """Allows an Agent to contain other Agents inside of itself."""
+    commands = []
 
     def __init__(self, owner):
         self.contents = {}

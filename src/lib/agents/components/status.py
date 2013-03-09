@@ -5,6 +5,7 @@ from src.lib.util.result import accumulate_results, ignore_results, single_resul
 
 class Status(Component):
     """Defines the ability to be afflicted by status effects."""
+    commands = []
 
     def __init__(self, owner):
         self.statuses = {}

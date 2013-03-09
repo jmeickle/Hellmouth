@@ -6,6 +6,8 @@ from src.lib.agents.components.component import Component, ignore_results
 
 # Body layouts - humanoid, hexapod, etc.
 class Body(Component):
+    commands = []
+        
     def __init__(self, owner):
         super(Body, self).__init__(owner)
         # Size (0 for a human)

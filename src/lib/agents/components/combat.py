@@ -57,6 +57,7 @@ CommandRegistry.register(Attack)
 
 class Combat(Component):
     """Allows an Agent to engage in combat with other Agents."""
+    commands = []
 
     def __init__(self, owner):
         super(Combat, self).__init__(owner)

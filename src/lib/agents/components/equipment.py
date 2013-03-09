@@ -52,6 +52,7 @@ CommandRegistry.register(Wear, Remove)
 
 class Equipment(Component):
     """Allows an Agent to equip Agents on itself."""
+    commands = []
 
     # TODO: Less hack-ish.
     def drop_grasped(self):

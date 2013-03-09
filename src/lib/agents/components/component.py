@@ -24,11 +24,14 @@ class Component(object):
             CommandRegistry.register(command)
 
     def get_commands(self, context):
-        """Yield the Commands provided by this Component.
+        """Yield the Commands provided by this Component in a context.
+
+        By default, anything in cls.commands is always checked.
 
         This is a generator because a yield-based return value is friendlier
         for classes that override to define commands only available in certain
         situations."""
+        assert self.__class__.commands is not None, "Class '%s' has no get_commands method and unset cls.commands" % self.__class__
         for command in self.__class__.commands:
             yield command
 
