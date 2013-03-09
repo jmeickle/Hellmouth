@@ -1,7 +1,9 @@
 from collections import deque
 
 from src.lib.agents.components.action import Action
+from src.lib.agents.contexts.context import action_context
 from src.lib.agents.components.component import Component
+
 from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
 
@@ -11,15 +13,17 @@ from src.lib.util.mixin import Mixin
 
 class AttackWithWielded(Action):
     """Attack a target with a weapon wielded in a manipulator."""
-    phases = [
-        ("touch", "weapon"),
-        ("grasp", "weapon"),
-        # ("lift", "weapon"),
-        # ("handle", "weapon"),
-        ("ready", "weapon"),
-        ("contact", "target", "weapon"),
-        ("use_at", "target", "weapon")
-    ]
+
+    @action_context
+    def get_phases(self, context):
+        yield "touch", "weapon"
+        if self("touch", "weapon"): yield "grasp", "weapon"
+        if self("grasp", "weapon"): yield "ready", "weapon"
+        # if self("lift", "weapon"):
+        # if self("handle", "weapon"):
+        if self("ready", "weapon"): yield "contact", "target", "weapon"
+        if self("contact", "target", "weapon"): yield "use_at", "target", "weapon"
+#        if self("use_at", "target", "weapon"):
 
     # # Use a ready item to disarm.
     # # n.b. - The 'target' is the other item!

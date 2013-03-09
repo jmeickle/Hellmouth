@@ -1,5 +1,7 @@
 """Defines the methods for the basic Agent class."""
 
+from src.lib.agents.contexts.context import agent_context
+
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.debug import DEBUG
 from src.lib.util.dynamic import caller
@@ -240,8 +242,9 @@ class Agent(object):
 
     """Miscellaneous methods."""
 
-    def get_interactions(self, context):
-        """List the interaction options this Agent exposes to another Agent when inside a Context."""
+    @agent_context
+    def provide_commands(self, context):
+        """Yield the interaction options an Agent provides to another Agent."""
         if "Combat" in context.domains:
             yield CMD("Attack")
 

@@ -1,5 +1,7 @@
 """Temporary objects that determine which responses are available to an event."""
 
+import functools
+
 from src.lib.util.result import Result
 
 class Context(object):
@@ -185,3 +187,46 @@ class Context(object):
         Context.entry_ids += 1
         return Context.entry_ids
 
+"""Variant default Contexts."""
+
+class NoContext(Context):
+    """Placeholder if there is no context available."""
+    pass
+
+class MultiContext(Context):
+    """A container for multiple Contexts that responds as if it were a single one."""
+    pass
+
+"""Decorators to manage the use of Contexts."""
+
+def action_context(fn):
+    """Decorator to provide a Context for an Action's methods.
+
+    If the Action has no Context defined, or calls this method with
+    'context=False', then a new NoContext instance will be created and used.
+    """
+    @functools.wraps(fn)
+    def wrapper(caller, *args, **kwargs):
+        context = args[0]
+        if kwargs.pop("context", True) is False:
+            context = NoContext()
+        elif not context:
+            context = caller.context if caller.context else NoContext()
+        args = (context,) + args[1:]
+        return fn(caller, *args, **kwargs)
+    return wrapper
+
+def agent_context(fn):
+    """Decorator to provide a Context for an Agent's methods.
+
+    If the method is called with no Context, or the method is called with
+    'context=False', then a new NoContext instance will be created and used.
+    """
+    @functools.wraps(fn)
+    def wrapper(caller, *args, **kwargs):
+        context = args[0]
+        if kwargs.pop("context", True) is False or not context:
+            context = NoContext()
+        args = (context,) + args[1:]
+        return fn(caller, *args, **kwargs)
+    return wrapper
