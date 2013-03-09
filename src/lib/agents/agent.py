@@ -146,9 +146,7 @@ class Agent(object):
 
         # This is a generator, so we can check the Context object for a
         # different list of actions between go-arounds.
-        for action in command.get_actions():
-            action_class, action_arguments = action[0], action[1:]
-
+        for action_class in command.get_actions():
             action = action_class(command)
             result = self.process_action(action)
             action.context.add_result(action.entry_id, "action", result)

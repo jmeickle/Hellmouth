@@ -54,7 +54,7 @@ class Attack(Command):
     defaults = ("a",)
 
     def get_actions(self):
-        yield AttackWithWielded, "target", "weapon"
+        yield AttackWithWielded
 
 CommandRegistry.register(Attack)
 

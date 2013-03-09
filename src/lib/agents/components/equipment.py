@@ -35,16 +35,16 @@ class Wear(Command):
     defaults = ("W",)
 
     def get_actions(self):
-        yield UnPack, "target"
-        if self(UnPack, "target"): yield UnEquip, "target"
+        yield UnPack
+        if self(UnPack): yield UnEquip
 
 class Remove(Command):
     description = "remove an item"
     defaults = ("R",)
 
     def get_actions(self):
-        yield UnEquip, "target"
-        if self(UnEquip, "target"): yield Pack, "target"
+        yield UnEquip
+        if self(UnEquip): yield Pack
 
 CommandRegistry.register(Wear, Remove)
 

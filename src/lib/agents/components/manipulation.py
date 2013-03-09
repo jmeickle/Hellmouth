@@ -162,8 +162,8 @@ class Get(Command):
     defaults = ("g",)
 
     def get_actions(self):
-        yield Pickup, "target", "manipulator"
-        if self(Pickup, "target"): yield Pack, "target", "container", "manipulator"
+        yield Pickup
+        if self(Pickup): yield Pack
 
 class GetAll(Command):
     """Pick up multiple nearby items."""
@@ -171,8 +171,8 @@ class GetAll(Command):
     defaults = ("G",)
 
     def get_actions(self):
-        yield Pickup, "target", "manipulator"
-        if self(Pickup, "target"): yield Pack, "target", "container", "manipulator"
+        yield Pickup
+        if self(Pickup): yield Pack
 
 CMD.register(Get, GetAll)
 
