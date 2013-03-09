@@ -4,10 +4,10 @@ from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import ManipulatingAgent
 from src.lib.agents.components.status import Status
 
-class Player(Actor, ManipulatingAgent):
+class PC(Actor, ManipulatingAgent):
 
     def __init__(self, components=[Equipment, Status]):
-        super(Player, self).__init__(components)
+        super(PC, self).__init__(components)
         self.glyph = '@'
         self.name = 'adventurer'
         self.color = 'cyan'
