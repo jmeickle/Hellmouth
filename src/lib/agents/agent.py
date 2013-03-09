@@ -244,7 +244,8 @@ class Agent(object):
 
     def get_interactions(self, context):
         """List the interaction options this Agent exposes to another Agent when inside a Context."""
-        yield CMD("Attack")
+        if "Combat" in context.domains:
+            yield CMD("Attack")
 
     # Return your own cell.
     # TODO: Multi-cell creatures.
