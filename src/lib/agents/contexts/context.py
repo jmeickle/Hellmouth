@@ -207,12 +207,12 @@ def action_context(fn):
     """
     @functools.wraps(fn)
     def wrapper(caller, *args, **kwargs):
-        context = args[0]
+        context = args[0:1]
         if kwargs.pop("context", True) is False:
-            context = NoContext()
+            context = (NoContext(),)
         elif not context:
-            context = caller.context if caller.context else NoContext()
-        args = (context,) + args[1:]
+            context = (caller.context,) if caller.context else (NoContext(),)
+        args = context + args[1:]
         return fn(caller, *args, **kwargs)
     return wrapper
 
@@ -224,9 +224,9 @@ def agent_context(fn):
     """
     @functools.wraps(fn)
     def wrapper(caller, *args, **kwargs):
-        context = args[0]
+        context = args[0:1]
         if kwargs.pop("context", True) is False or not context:
-            context = NoContext()
-        args = (context,) + args[1:]
+            context = (NoContext(),)
+        args = context + args[1:]
         return fn(caller, *args, **kwargs)
     return wrapper
