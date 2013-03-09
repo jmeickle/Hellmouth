@@ -34,10 +34,9 @@ class Agent(object):
         the last component has responded, the order reverses."""
 
         results = kwargs.pop("results", Result(self, domain, method, args, kwargs))
-        kwargs["results"] = results
 
         for component in self.get_components(domain):
-            getattr(component, method)(*args, **kwargs)
+            results.update_results(getattr(component, method)(*args, **kwargs))
 
         # TODO: Attempt to exit early if current result == None?
 
@@ -50,7 +49,7 @@ class Agent(object):
     def get(self, domain, key, default=None):
         """Convenience method to return the result of a keyed get method in a domain."""
         results = SingleResult(self, domain, "get", key)
-        return self.call(domain, "get", key, default, results=results).get_result()
+        return self.call(domain, "get", key, default, results=results).get_outcome()
 
     # def set(self, domain, key, *args):
     #     """Convenience method to return the parsed result of a keyed set method in a domain."""
@@ -116,8 +115,6 @@ class Agent(object):
                 context.update_arguments(**command_arguments)
 
                 result = self.process_command(command)
-                context.add_result(command.entry_id, "command", result)
-
                 outcome, cause = context.parse_result(result)
                 if outcome is True:
                     Log.add("(+): %s" % cause)
