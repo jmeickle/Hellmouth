@@ -322,11 +322,11 @@ class ContactMixin(Mixin):
     manipulator.
     """
 
-    def can_contact(self, contacted_target, contacting_target, manipulator):
-        """Whether you can touch a target with a second target."""
+    def can_contact(self, target, instrument, manipulator):
+        """Whether you can touch a target with an instrument."""
         # TODO: Restructure attack option structure so that items can figure
         # this out based on how they are being held
-        distance = self.dist(contacted_target)
+        distance = self.dist(target)
         attack_option = self.attack_options[self.attack_option]
         min_reach = attack_option[3][0] + self.min_reach()
         max_reach = attack_option[3][-1] + self.max_reach()
@@ -342,8 +342,8 @@ class ContactMixin(Mixin):
             return False, "too far"
         return True
 
-    def do_contact(self, contacted_target, contacting_target, manipulator):
-        """Touch a target with a second target."""
+    def do_contact(self, target, instrument, manipulator):
+        """Touch a target with an instrument."""
         return True
 
 class UnContactMixin(Mixin):
@@ -351,12 +351,12 @@ class UnContactMixin(Mixin):
     in a manipulator.
     """
 
-    def can_uncontact(self, contacted_target, contacting_target, manipulator):
-        """Whether you can stop touching a target with a second target."""
+    def can_uncontact(self, target, instrument, manipulator):
+        """Whether you can stop touching a target with an instrument."""
         pass
 
-    def do_uncontact(self, contacted_target, contacting_target, manipulator):
-        """Stop touching a target with a second target."""
+    def do_uncontact(self, target, instrument, manipulator):
+        """Stop touching a target with an instrument."""
         return True
 
 class HoldingAgent(GraspingAgent, WieldMixin, UnWieldMixin, ReadyMixin, UnReadyMixin, ContactMixin, UnContactMixin):
@@ -435,14 +435,14 @@ class UseAtMixin(Mixin):
 
 
     # STUB
-    def can_use_at(self, target, item, manipulator):
-        """Whether you can use a target at a second target."""
+    def can_use_at(self, target, instrument, manipulator):
+        """Whether you can use an instrument at a target."""
         return True
 
     # Use an item at a target.
     # STUB
-    def do_use_at(self, target, item, manipulator):
-        """Use a target at a second target."""
+    def do_use_at(self, target, instrument, manipulator):
+        """Use an instrument at a target."""
         return True
 
 class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
