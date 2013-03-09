@@ -25,13 +25,17 @@ class Context(object):
         """Arguments for this context."""
         self.aliases = {}
         """The alias to use when sending a named argument to a method."""
+        self.results = {}
+        """Results for this context."""
+        self.steps = []
+        """Steps taken within this Context."""
 
-    def __call__(self, next_phase, *arguments):
-        """Check whether a particular condition is being met within this Context."""
-        for called_phase, result in self.get_results(self.entry_id, "phase"):
-            if next_phase == called_phase:
-                outcome, cause = self.context.parse_result(result)
-                return outcome
+    def __call__(self, checked_step, *arguments):
+        """Check whether a particular phase is satisfied within this Context."""
+        if checked_step in self.steps:
+            results = self.get_results(checked_step)
+            outcome, cause = self.parse_result(results)
+            return outcome
         return False
 
     """Context agent getter methods."""
@@ -204,27 +208,17 @@ class Context(object):
 
     """Context result getter methods."""
 
-    # TODO: Rewrite
-    def get_results(self, entry_id, key):
-        """Helper function to yield (processed object/method, result) tuples from a key within this Context's data."""
-        callers, results = [v for k, v in self.multiget(entry_id, [key, key + "_results"], [None])]
-
-        # This can happen due to the generator stuff :(
-        # if len(callers) != len(results):
-        #     exit("%s, %s" % (callers, results))
-
-        import itertools
-        try:
-            for caller, result in itertools.izip(callers, results):
-                yield caller, result
-        except TypeError:
-            exit("%s" % results)
+    def get_results(self, key, default=[]):
+        """Return a list of keyed results."""
+        return self.results.get(key, default)
 
     """Context result setter methods."""
 
-    def add_result(self, entry_id, key, result):
-        """Helper function to append a result to a key within this Context's data."""
-        self.append(entry_id, **{key + "_results" : result})
+    def append_result(self, key, result):
+        """Set an event, command, or action result within this Context's results."""
+        results = self.results.get(key, [])
+        results.append(result)
+        self.results[key] = results
 
     """Context result helper methods."""
 
@@ -236,16 +230,22 @@ class Context(object):
         else:
             try:
                 return result[0], result[1:]
-            except TypeError:
+            except (IndexError, TypeError):
+                debug("Error parsing result: %s" % result)
                 return result, "unknown"
 
     # TODO: Move elsewhere
-    def parse_results(self, entry_id, key):
-        for caller, result in self.get_results(entry_id, key):
+    def parse_results(self, key):
+        for result in self.get_results(key):
             outcome, cause = self.parse_result(result)
             if outcome is False:
                 return outcome, cause
         return True, "ok"
+
+    """Context step setter methods."""
+
+    def set_active(self, step):
+        self.steps.append(step)
 
     """Misc. helper methods."""
 
