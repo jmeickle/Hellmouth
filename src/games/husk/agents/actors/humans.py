@@ -5,7 +5,7 @@ from src.lib.agents.actors.npc import NPC
 class Human(NPC):
 
     def __init__(self):
-        super(MeatSlave, self).__init__()
+        super(Human, self).__init__()
 
         self.glyph = '@'
         self.name = 'human'
