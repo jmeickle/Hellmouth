@@ -1,5 +1,5 @@
 # MEAT ARENA is a testing arena for Hellmouth, and a minigame in its own right.
-from src.lib.agents.actors.player import Player
+from src.lib.agents.actors.player import PC
 from src.lib.components.component import Component
 from src.lib.components.views.screens.screen import Screen, MenuScreen
 from src.lib.components.views.tactical import Window
@@ -22,7 +22,7 @@ class Game(Component):
         self.gameplay = True
 
         # Generate the player, a blank level, and a blank map.
-        self.player = Player()
+        self.player = PC()
         self.level = None
         self.map = None
 
