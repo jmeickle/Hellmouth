@@ -57,7 +57,7 @@ class Agent(object):
     #     return self.result(domain, "set", key, *args)
 
     def values(self, domain, method, *args, **kwargs):
-        """Yield the results of a method applied to a domain."""
+        """Yield the results of a method applied to a single domain."""
 
         for component in self.get_components(domain):
             for result in getattr(component, method)(*args, **kwargs):
@@ -71,7 +71,7 @@ class Agent(object):
 
         # return results
 
-    """Component utility methods."""
+    """Component helper methods."""
 
     def register_component(self, component, domain=None):
         """Initializes an instance of a Component class and registers it as the sole member of its domain."""
@@ -164,7 +164,7 @@ class Agent(object):
         command.context.update(command.entry_id, prefixes=["can"])
         return self.process_command(command)
 
-    """Command utility methods."""
+    """Command processing helper methods."""
 
     def get_commands(self, context, domains=None):
         """Return Commands relevant to a Context.
