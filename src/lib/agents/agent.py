@@ -185,7 +185,6 @@ class Agent(object):
 
     """Action processing methods."""
 
-    @DEBUG
     def process_action(self, action):
         """Process this Action by executing its phase sequence within a
         list of prefixes.
