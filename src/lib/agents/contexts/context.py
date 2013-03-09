@@ -34,6 +34,12 @@ class Context(object):
                 return outcome
         return False
 
+    """Context agent getter methods."""
+
+    def get_agent(self):
+        """Yield the participants in a Context."""
+        return self.agent
+
     """Context participant getter methods."""
 
     def is_participant(self, agent):
@@ -77,15 +83,43 @@ class Context(object):
 
     """Context argument getter methods."""
 
-    def get_argument(self, key, default):
-        """Add an argument to a Context."""
+    def get_argument(self, key, default=None):
+        """Get an argument from this Context."""
         return self.arguments.get(key, default)
+
+    def get_aliased_arguments(self, keys):
+        """Return a dictionary containing aliased versions of some of this Context's arguments."""
+        return dict([(self.get_alias(key), self.get_argument(key)) for key in keys])
 
     """Context argument setter methods."""
 
+    def delete_argument(self, key, value):
+        """Set an argument in this Context."""
+        del self.arguments[key]
+
     def set_argument(self, key, value):
-        """Add an argument to a Context."""
+        """Set an argument in this Context."""
         self.arguments[key] = value
+
+    def update_arguments(self, **kwargs):
+        """Update this Context's arguments with multiple values."""
+        self.arguments.update(kwargs)
+
+    """Context argument alias getter methods."""
+
+    def get_alias(self, key):
+        """Return the alias to use when sending this argument to a method."""
+        return self.aliases.get(key, key)
+
+    """Context argument alias setter methods."""
+
+    def delete_alias(self, key):
+        """Delete an argument alias."""
+        del self.aliases[key]
+
+    def set_alias(self, key, value):
+        """Set the alias to use when sending this argument to a method."""
+        self.aliases[key] = value
 
     """Context data retrieval methods."""
 
@@ -124,7 +158,7 @@ class Context(object):
 
     def get_agent_commands(self):
         """Yield the Commands the Agent makes available to itself."""
-        return self.agent.get_commands(self)
+        return self.get_agent().get_commands(self)
 
     def get_participant_commands(self, participant):
         """Yield the Commands a single participant makes available to the Agent."""
