@@ -5,7 +5,6 @@ from copy import copy
 from src.lib.util.define import *
 
 class Command(object):
-    actions = []
     description = "no command"
     defaults = []
 
@@ -33,8 +32,6 @@ class Command(object):
         Command's associated Context inside of a loop as long as this results
         in no actions being inserted before the most recently visited one.
         """
-        for action in self.__class__.actions:
-            yield action
 
     def get_default_actions(self):
         """Yield the Actions that would normally be required to complete this Command."""
