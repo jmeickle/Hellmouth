@@ -7,7 +7,7 @@ from src.lib.agents.components.status import Status
 class Player(PC):
 
     def __init__(self):
-        super(PC, self).__init__()
+        super(Player, self).__init__()
         self.glyph = '@'
         self.name = 'scarecrow'
         self.color = 'yellow'
