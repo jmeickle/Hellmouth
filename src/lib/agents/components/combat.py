@@ -53,6 +53,9 @@ class Attack(Command):
     description = "attack"
     defaults = ("a",)
 
+    def get_actions(self):
+        yield AttackWithWielded, "target", "weapon"
+
 CommandRegistry.register(Attack)
 
 class Combat(Component):
