@@ -6,7 +6,7 @@ class Context(object):
     entry_ids = 0
     """The number of context IDs issued so far."""
 
-    def __init__(self, agent, domains=None, participants=[], intent={}, component=None):
+    def __init__(self, agent, domains=[], participants=[], intent={}, component=None):
         self.agent = agent
         """The Agent that owns this Context."""
         self.domains = domains
