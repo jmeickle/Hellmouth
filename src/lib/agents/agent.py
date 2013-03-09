@@ -236,6 +236,11 @@ class Agent(object):
         # """Return a Context object containing information about the Agent's immediate surroundings."""
         # return Context(self, members, source)
 
+    @UNIMPLEMENTED
+    def update_context_variables(self, **kwargs):
+        """Update the variables available within a context."""
+        pass
+
     """Miscellaneous methods."""
 
     def get_interactions(self, context):
