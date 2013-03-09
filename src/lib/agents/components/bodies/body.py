@@ -64,6 +64,16 @@ class Body(Component):
                 else:
                     self.table[roll] = part
 
+    def get_default_manipulator(self, context):
+        """Return the default manipulator to use within a Context."""
+        part = self.get_part(self.__class__.primary_slot)
+        if part and part.can_manipulate(self):
+            return part
+
+        for part in self.get_parts():
+            if part.can_manipulate(self):
+                return part
+
     # Very simple display of body information.
     # TODO: Deprecated.
     def get_view_data(self):
