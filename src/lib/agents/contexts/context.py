@@ -14,9 +14,9 @@ class Context(object):
         self.participants = participants
         """The other Agents involved in this Context."""
         self.intent = intent
-        """The intent of the Agent towards this Context."""
+        """The intent of the Agent towards the participants in this Context."""
         self.component = component
-        """The Component that generated this Context."""
+        """The Component that has control over this Context."""
         self.data = {}
         """Data storage for this Context, mostly used when processing Commands."""
 
