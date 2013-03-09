@@ -6,9 +6,7 @@ class Result(object):
     def __init__(self, *args, **kwargs):
         self.results = []
 
-    def update(self, result):
-        self.results.append(result)
-        return True
+
 
     def describe(self):
         yield "%s called: %s.%s%s:\n" % (self.caller, self.method, self.domain, self.args)
@@ -21,15 +19,21 @@ class Result(object):
             text += line
         return text
 
-    def get_result(self):
+    """Result getter methods."""
+
+    def get_outcome(self):
         if not self.results:
             return False
+        exit(self.results)
 
-    def get_values(self):
+    def get_results(self):
         return self.results
 
-class ActionResult(Result):
-    pass
+    """Result setter methods."""
+
+    def update_results(self, result):
+        self.results.append(result)
+        return True
 
 class CommandResult(Result):
     def __init__(self, *args, **kwargs):
@@ -38,7 +42,7 @@ class CommandResult(Result):
     def update(self, result):
         self.results.append(result)
 
-    def get_result(self):
+    def get_outcome(self):
         if not self.results:
             return "failure", False
         else:
@@ -48,19 +52,29 @@ class CommandResult(Result):
         return "success", True
 
 class SingleResult(Result):
-    def update(self, result):
+
+    """Result getter methods."""
+
+    def get_outcome(self):
+        return self.results
+
+    def get_results(self):
+        return [self.results]
+
+    """Result setter methods."""
+
+    def update_results(self, result):
         if not self.results:
             self.results = result
             return True
         return False
 
+    """Result helper methods."""
+
     def can_update(self):
         if not self.results:
             return True
         return False
-
-    def get_result(self):
-        return self.results
 
 def accumulate_results(fn):
     """Decorator function for calls that accumulate results."""
