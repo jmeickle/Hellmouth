@@ -1,10 +1,13 @@
-from src.lib.util.dice import *
-from src.games.husk.generators.maps import outdoors
-from src.lib.generators.items import ItemGenerator, generate_item
-from src.lib.data.generators.items import generators
-from src.lib.maps.encounter import Encounter
 from src.lib.data import screens
+from src.lib.data.generators.items import generators
+from src.lib.generators.items import ItemGenerator, generate_item
+from src.lib.maps.encounter import Encounter
+
+from src.lib.util.dice import *
 from src.lib.util.hex import *
+
+from src.games.husk.generators.maps import outdoors
+from src.games.husk.agents.actors import humans
 
 # TODO: Genericize this class.
 class Cornfield(object):
@@ -112,7 +115,15 @@ class Cornfield(object):
 
     # TODO: Hand this off to mapgen?
     def place_monsters(self, depth):
-        pass
+        monster_class = humans.Human
+
+        while True:
+            cell = random.choice([cell for cell in self.map.cells])
+
+            monster = monster_class()
+            if self.map.put(monster, cell):
+                break
+
         # if depth == 5:
         #     from actors.npc import MeatCommander
         #     monster = MeatCommander()
