@@ -104,7 +104,7 @@ class CommandRegistry(object):
         context = kwargs.pop("context", None)
         if context:
             command = command_class(context)
-            context.update(command.entry_id, **kwargs)
+            context.update_arguments(**kwargs)
             return command
         elif kwargs:
             return command_class, kwargs
