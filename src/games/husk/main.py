@@ -1,13 +1,15 @@
-from src.lib.agents.actors.player import Player
+
 from src.lib.components.component import Component
 from src.lib.components.views.screens.screen import Screen, MenuScreen
 from src.lib.components.views.tactical import Window
 from src.lib.components.views.screens.help import HelpScreen
-from src.games.husk.data import screens as screen_data
-from src.games.husk.levels.outdoors import Cornfield
-from src.lib.data import screens
+
 from src.lib.util.key import *
 from src.lib.util import system
+
+from src.games.husk.agents.actors.player import Player
+from src.games.husk.data import screens as screen_data
+from src.games.husk.levels.outdoors import Cornfield
 
 class Game(Component):
     def __init__(self, **kwargs):
@@ -123,7 +125,7 @@ class Game(Component):
 
     # Functions called (before/when) (starting/finishing) the game.
     def before_start(self):
-        self.screen("start", {"callback" : self.start, "footer_text": screens.footer})
+        self.screen("start", {"callback" : self.start, "footer_text": screen_data.footer})
         self.spawn(HelpScreen(self.window))
 
     def start(self):
