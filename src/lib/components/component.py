@@ -153,7 +153,6 @@ class Component(object):
         context_class = kwargs.pop("context_class", Context)
 
         kwargs["agent"] = kwargs.get("agent", self.player)
-        kwargs["participants"] = kwargs.get("participants", [])
         kwargs["intent"] = kwargs.get("intent", {"attempt" : True})
         kwargs["component"] = kwargs.get("component", self)
 
