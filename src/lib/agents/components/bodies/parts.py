@@ -40,6 +40,7 @@ class BodyPart(object):
 
         self.sorting = 0
         self.crippleable = True
+        self.manipulator = False
 
     def appearance(self):
         appearance = hit_locations.get(self.type)
@@ -71,6 +72,17 @@ class BodyPart(object):
             items.update(itemlist)
 
         return items
+
+    # STUB
+    def can_manipulate(self):
+        """Return whether a BodyPart can serve as a manipulator."""
+        if not self.manipulator:
+            return False
+
+        if self.crippled():
+            return False
+
+        return True
 
     def weapons(self, natural=True, wielded=True, improvised=False):
         found_weapons = {}
@@ -395,6 +407,7 @@ class Extremity(BodyPart):
 class Hand(Extremity):
     def __init__(self, type, owner):
         super(Hand, self).__init__(type, owner)
+        self.manipulator = True
 
 class Foot(Extremity):
     def __init__(self, type, owner):
