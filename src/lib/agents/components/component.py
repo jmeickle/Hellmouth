@@ -5,7 +5,7 @@ from src.lib.util.define import *
 from src.lib.util.result import ignore_results
 
 class Component(object):
-    commands = []
+    commands = None
     dependencies = []
     """Mark a Component as having a dependency on another Component."""
 
