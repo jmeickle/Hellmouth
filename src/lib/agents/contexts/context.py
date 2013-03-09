@@ -138,7 +138,7 @@ class Context(object):
         """Return the interactions made available to the subject by the Context's participants."""
         for participant in self.participants:
             if participant:
-                for interaction in participant.get_interactions(self.agent, self):
+                for interaction in participant.get_interactions(self):
                     yield (participant, interaction)
 
         for command in self.agent.get_commands(self, self.domains):
