@@ -154,10 +154,11 @@ class Cursor(Component):
             self.parent.cursor = None
             self.suicide()
             return False
-        else:
+        elif c == ord('a'):
             agent = self.map.actors(self.pos)[self.selector.index]
-            context = Context(agent=self.player, participants=[agent], component=self)
-            self.player.process_event(c, context)
+            context = self.get_context(domains=["Combat"], participants=[agent])
+            event = chr(c)
+            return self.player.process_event(event, context)
         return True
 
     # Move the cursor (hexagonally).
