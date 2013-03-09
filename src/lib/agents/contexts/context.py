@@ -23,6 +23,16 @@ class Context(object):
         """Data storage for this Context, mostly used when processing Commands."""
         self.arguments = {}
         """Arguments for this context."""
+        self.aliases = {}
+        """The alias to use when sending a named argument to a method."""
+
+    def __call__(self, next_phase, *arguments):
+        """Check whether a particular condition is being met within this Context."""
+        for called_phase, result in self.get_results(self.entry_id, "phase"):
+            if next_phase == called_phase:
+                outcome, cause = self.context.parse_result(result)
+                return outcome
+        return False
 
     """Context participant getter methods."""
 

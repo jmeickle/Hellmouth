@@ -22,18 +22,6 @@ class Action(object):
         # if self("grasp", "target"): yield "force", "target"
         # if self("force", "target"): yield "ready", "target"
 
-    def __call__(self, next_phase, *arguments):
-        """Override __call__ to allow concisely checking phase status in get_phases()."""
-        if not self.context:
-            return True
-
-        for called_phase, result in self.context.get_results(self.entry_id, "phase"):
-            if next_phase == called_phase:
-                outcome, cause = self.context.parse_result(result)
-                return outcome
-
-        return False
-
     def get_phases(self):
         """Yield the phases required to complete this Action.
 
