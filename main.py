@@ -20,7 +20,7 @@ arguments["displaymode"] = displayflags["curses"]
 
 # Default to launching Meat Arena
 # TODO: If not provided, always get a game launcher
-arguments["gamemode"] = "meat_arena"
+# arguments["gamemode"] = "meat_arena"
 
 # Default to not using a save
 arguments["resume"] = False
