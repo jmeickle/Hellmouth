@@ -45,6 +45,12 @@ class BodyPart(object):
         self.crippleable = True
         self.manipulator = False
 
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        if "add_weapon" or "delete_weapon" in triggers:
+            for weapon in self.weapons:
+                weapon.trigger("rebuild")
+
     def appearance(self):
         appearance = hit_locations.get(self.type)
         if self.severed() is True:
