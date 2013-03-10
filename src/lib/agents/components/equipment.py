@@ -61,7 +61,7 @@ class Equipment(Component):
             self.process("drop", agent)
 
     def get_weapons(self):
-        return []
+        yield
 
     @ignore_results
     def get_worn(self):
