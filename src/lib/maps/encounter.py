@@ -79,6 +79,7 @@ class Encounter:
     def arrive(self):
         self.player.map = self
         self.put(self.player, self.entry)
+        self.player.trigger("spawned")
         # HACK: Highlights should be handled a bit more nicely than this.
         if self.exits is not None:
             for exit in self.exits:

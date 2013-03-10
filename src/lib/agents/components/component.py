@@ -12,6 +12,10 @@ class Component(object):
     def __init__(self, owner):
         self.owner = owner
 
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        pass
+
     def process(self, method, *args, **kwargs):
         """Process the results of a method call."""
         return getattr(self, method)(*args, **kwargs)

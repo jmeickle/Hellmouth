@@ -24,6 +24,15 @@ class Agent(object):
         self.pos = None
         self.subposition = CC
 
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        if "spawned" in triggers:
+            self.trigger_components("rebuild")
+        if "equipped" or "unequipped" in triggers:
+            self.trigger_components("modified", domain="Equipment")
+        if not self.controlled and "placed" in triggers:
+            self.trigger_components("placed", domain="AI")
+
     """Component processing methods."""
 
     def call(self, domain, method, *args, **kwargs):
@@ -113,6 +122,13 @@ class Agent(object):
         component = component_class(self)
         self.append_component(component, domain)
         component.trigger("registered")
+
+    """Component helper methods."""
+
+    def trigger_components(self, *triggers, **kwargs):
+        """Send a list of trigger triggers to each Component in a domain."""
+        for component in self.get_components(kwargs.pop("domain", None)):
+            component.trigger(*triggers)
 
     """Domain helper methods."""
 

@@ -135,6 +135,7 @@ class MeatArena():
         while num_mons > 0:
             monster = random.choice(monsters)()
             monster.generate_equipment()
+            monster.trigger("spawned")
             pos = random.choice(cells)
             if self.map.put(monster, pos) is not False:
                 num_mons -= 1
