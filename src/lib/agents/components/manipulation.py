@@ -33,7 +33,9 @@ simply wouldn't be able to *change* any of its manipulation states.
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
+
 from src.lib.util.command import Command, CommandRegistry as CMD
+from src.lib.util.debug import debug, die
 from src.lib.util.mixin import Mixin
 
 """Actions."""
@@ -466,7 +468,6 @@ class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
 class StoreMixin(Mixin):
     """Provides the ability to store targets into a Container."""
 
-    # TODO: Don't use a limit of 5 entries (testing only!).    
     def can_store(self, target, manipulator, container=None):
         """Whether you can store an item into a Container."""
 
@@ -477,6 +478,7 @@ class StoreMixin(Mixin):
         if container is None:
             return False
 
+        # TODO: Don't use a limit of 5 entries (testing only!).
         if container.count() > 5:
             return False
         return True
