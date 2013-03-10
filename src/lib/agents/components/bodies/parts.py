@@ -1,8 +1,10 @@
 import random
 
-from src.lib.util.define import *
+from src.lib.agents.components.manipulation import Wielded
 from src.lib.objects.items.item import Natural
 from src.lib.objects.items.carrion import PartialCorpse
+
+from src.lib.util.define import *
 
 # Hit location
 class BodyPart(object):
