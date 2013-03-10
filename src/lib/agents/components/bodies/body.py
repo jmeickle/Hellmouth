@@ -37,6 +37,10 @@ class Body(Component):
         for part in self.locs.values():
             yield part
 
+    def get_reach(self):
+        """Return the reach provided by this Body, exclusive of other factors."""
+        return self.size
+
     def get_weapons(self):
         """Yield the natural weapons provided by this Body."""
         for part in self.get_parts():
