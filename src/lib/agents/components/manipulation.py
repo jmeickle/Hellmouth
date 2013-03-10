@@ -207,6 +207,9 @@ CMD.register(UseTerrain)
 """Components."""
 
 class Manipulation(Component):
+    """Component that handles an Agent's manipulation capabilities."""
+
+    commands = []
 
     def get_reach(self, manipulator, wielded=None):
         min_reach, max_reach = manipulator.get_reach()
