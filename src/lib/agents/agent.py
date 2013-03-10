@@ -26,17 +26,19 @@ class Agent(object):
 
     """Component processing methods."""
 
-    def call(self, domain, method=None, *args, **kwargs):
+    def call(self, domain, method, *args, **kwargs):
         """Call a method across a number of Components, returning a Result object.
 
         Every Component (optionally, limited to a domain) is offered a chance
         to respond to the method call and contribute to the result set. After
         the last component has responded, the order reverses."""
 
-        results = kwargs.pop("results", Result(self, domain, method, args, kwargs))
+        results = kwargs.pop("results", Result)()
 
         for component in self.get_components(domain):
-            results.update_results(getattr(component, method)(*args, **kwargs))
+            results.add_result(getattr(component, method)(*args, **kwargs))
+            if not results.can_add_result():
+                break
 
         # TODO: Attempt to exit early if current result == None?
 
@@ -48,8 +50,7 @@ class Agent(object):
 
     def get(self, domain, key, default=None):
         """Convenience method to return the result of a keyed get method in a domain."""
-        results = SingleResult(self, domain, "get", key)
-        return self.call(domain, "get", key, default, results=results).get_outcome()
+        return self.call(domain, "get", key, default, results=SingleResult).get_outcome()
 
     # def set(self, domain, key, *args):
     #     """Convenience method to return the parsed result of a keyed set method in a domain."""
