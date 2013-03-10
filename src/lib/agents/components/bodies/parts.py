@@ -45,6 +45,9 @@ class BodyPart(object):
         self.crippleable = True
         self.manipulator = False
 
+        self.min_reach = 0
+        self.max_reach = 0
+
     def trigger(self, *triggers):
         """Respond to triggers."""
         if "add_weapon" or "delete_weapon" in triggers:
@@ -122,6 +125,10 @@ class BodyPart(object):
             return False
 
         return True
+
+    def get_reach(self):
+        """Returns the min and max reach of this BodyPart, exclusive of other factors."""
+        return self.min_reach, self.max_reach
 
     def weapons(self, natural=True, wielded=True, improvised=False):
         found_weapons = {}
