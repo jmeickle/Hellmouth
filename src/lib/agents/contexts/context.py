@@ -148,9 +148,9 @@ class Context(object):
         """Delete an argument alias."""
         del self.aliases[key]
 
-    def set_alias(self, key, value):
-        """Set the alias to use when sending this argument to a method."""
-        self.aliases[key] = value
+    def set_alias(self, **aliases):
+        """Set the alias(es) to use when sending this argument to a method."""
+        self.aliases.update(aliases)
 
     # """Context data retrieval methods."""
 
