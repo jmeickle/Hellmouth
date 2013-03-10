@@ -11,9 +11,9 @@ class Body(Component):
     def __init__(self, owner):
         super(Body, self).__init__(owner)
         # Size (0 for a human)
-        self.size = None
+        self.size = 0
         # Shape (tall, long, or full)
-        self.shape = None
+        # self.shape = None
         # Body parts indexed by key
         self.locs = {}
         # Body parts indexed by 3d6 roll
