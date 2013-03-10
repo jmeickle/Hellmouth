@@ -167,12 +167,12 @@ class Agent(object):
 
         Returns an outcome and a cause, based on the Context's parsing.
         """
-        command.context.append(command.entry_id, command=command)
+        ctx = command.context
+        ctx.set_active(command)
 
-        prefixes = command.context.get(command.entry_id, "prefixes")
+        prefixes = ctx.get_argument("prefixes")
         if not prefixes:
-            prefixes = command.get_prefixes()
-            command.context.update(command.entry_id, prefixes=prefixes)
+            ctx.set_argument("prefixes", command.get_prefixes())
 
         Log.add("CMD: %s (%s)." % (command.__class__.get_name(), prefixes))
 
@@ -180,19 +180,14 @@ class Agent(object):
         # different list of actions between go-arounds.
         for action_class in command.get_actions():
             action = action_class(command)
-            result = self.process_action(action)
-            action.context.add_result(action.entry_id, "action", result)
 
-            outcome, cause = action.context.parse_result(result)
+            result = self.process_action(action)
+            ctx.append_result(command, result)
+            outcome, cause = ctx.parse_result(result)
             if outcome is False:
                 break
 
-        return command.context.parse_results(command.entry_id, "command")
-
-    def can(self, command):
-        """Helper to check whether a Command object can be attempted within its Context."""
-        command.context.update(command.entry_id, prefixes=["can"])
-        return self.process_command(command)
+        return ctx.parse_results(command)
 
     """Command processing helper methods."""
 
@@ -230,31 +225,33 @@ class Agent(object):
         return value has variable length."""
         Log.add("ACT: %s" % action.__class__.get_name())
 
-        action.context.append(action.entry_id, action=action)
-        active_prefix = action.context.get(action.entry_id, "prefixes")[0]
-        action.context.update(action.entry_id, active_prefix=active_prefix)
+        ctx = action.context
+        ctx.set_active(action)
+
+        phase_results = ActionResult()
 
         # This is a generator, so we can check the Context object for a
         # different list of phases between go-arounds.
         for phase in action.get_phases():
             phase, phase_arguments = phase[0], phase[1:]
+            ctx.set_active(phase)
             # On the other hand, prefixes are fixed per-pass.
-            for prefix in action.context.get(action.entry_id, "prefixes"):
-                action.context.update(action.entry_id, active_prefix=prefix)
-                action.context.append(action.entry_id, phase=phase)
-                action.context.require_arguments(phase_arguments)
-                arguments = action.context.get_aliased_arguments(phase_arguments)
-                result = getattr(action.context.agent, prefix + "_" + phase)(**arguments)
-                action.context.add_result(action.entry_id, "phase", result)
+            for prefix in ctx.get_argument("prefixes"):
+                ctx.set_argument("active_prefix", prefix)
+                ctx.require_arguments(phase_arguments)
+                arguments = ctx.get_aliased_arguments(phase_arguments)
 
-                outcome, cause = action.context.parse_result(result)
+                result = getattr(ctx.agent, prefix + "_" + phase)(**arguments)
+                ctx.append_result(action, result)
+                ctx.append_result(phase, result) # TODO: ugh. only here so the ctx can get this info
+                outcome, cause = ctx.parse_result(result)
+                phase_results.add_result((outcome, cause))
                 Log.add("P: %s (%s)." % (prefix + "_" + phase, outcome))
                 if outcome is False:
                     # Return to get_phases(), which typically means we're done
                     # in this function because there will be no next phase.
                     break
-
-        return action.context.parse_results(action.entry_id, "action")
+        return ctx.parse_results(action)
 
     """Context utility methods."""
 
