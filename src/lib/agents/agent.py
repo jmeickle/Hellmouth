@@ -71,24 +71,14 @@ class Agent(object):
 
         # return results
 
-    """Component helper methods."""
-
-    def register_component(self, component, domain=None):
-        """Initializes an instance of a Component class and registers it as the sole member of its domain."""
-        if not domain:
-            domain = component.__name__
-        assert domain not in self.component_registry
-        self.component_registry[domain] = [component(self)]
+    """Component getter methods."""
 
     def get_component(self, domain):
-        """Return the first Component from a domain."""
+        """Return the first Component within a domain."""
         return self.component_registry.get(domain, [None])[0]
 
     def get_components(self, domain=None):
-        """Return an iterator over Components.
-
-        Optionally, limit to a domain.
-        """
+        """Yield this Agent's Components (optionally, within a domain)."""
         if domain:
             for component in self.component_registry.get(domain, []):
                 yield component
@@ -97,8 +87,37 @@ class Agent(object):
                 for component in self.get_components(domain):
                     yield component
 
+    """Component setter methods."""
+
+    def append_component(self, component, domain):
+        """Append a Component to a domain."""
+        components = self.component_registry.get(domain, [])
+        components.append(component)
+        self.component_registry[domain] = components
+
+    def prepend_component(self, component, domain):
+        """Prepend a Component to a domain."""
+        components = self.component_registry.get(domain, [])
+        components.insert(0, component)
+        self.component_registry[domain] = components
+
+    def register_component(self, component_class, domain=None):
+        """Initialize an instance of a Component class, register it as the sole
+        member of its domain, and send a "registration" trigger to it."""
+        if not domain:
+            domain = component_class.get_domain()
+
+        if domain in self.component_registry:
+            die("Tried to register a component '%s' in the domain '%s', which already has Components %s." % (component_class.__name__, domain, [component.__class__.__name__ for component in self.get_components(domain)]))
+
+        component = component_class(self)
+        self.append_component(component, domain)
+        component.trigger("registered")
+
+    """Domain helper methods."""
+
     def get_domains(self):
-        """Return an iterator over currently defined domains."""
+        """Yield all currently defined domains."""
         return self.component_registry.keys()
 
     """Event processing methods."""
