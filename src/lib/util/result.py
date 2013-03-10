@@ -20,19 +20,32 @@ class Result(object):
     """Result getter methods."""
 
     def get_outcome(self):
-        if not self.results:
-            return False
-        exit(self.results)
+        """Get the overall outcome of this Result."""
+        assert False, "Unimplemented!"
+
+    def get_result(self):
+        """Get a single result from this Result."""
+        for result in self.results:
+            return result
 
     def get_results(self):
+        """Get all results in this Result."""
         return self.results
 
     """Result setter methods."""
 
-    def update_results(self, result):
-        self.results.append(result)
+    def add_result(self, result):
+        if self.can_add_result():
+            self.results.append(result)
+            return True
+        return False
+
+    """Result helper methods."""
+
+    def can_add_result(self):
         return True
 
+# TODO: MultiResult?
 class ActionResult(Result):
     def get_outcome(self):
         if not self.results:
@@ -43,21 +56,9 @@ class ActionResult(Result):
                     return outcome, cause
         return True, "success"
 
-class CommandResult(Result):
-    def __init__(self, *args, **kwargs):
-        self.results = []
-
-    def update(self, result):
-        self.results.append(result)
-
-    def get_outcome(self):
-        if not self.results:
-            return "failure", False
-        else:
-            for method, result in self.results:
-                if not result:
-                    return method, result
-        return "success", True
+# TODO: Remove?
+class CommandResult(ActionResult):
+    pass
 
 class SingleResult(Result):
 
@@ -71,15 +72,15 @@ class SingleResult(Result):
 
     """Result setter methods."""
 
-    def update_results(self, result):
-        if not self.results:
+    def add_result(self, result):
+        if self.can_add_result():
             self.results = result
             return True
         return False
 
     """Result helper methods."""
 
-    def can_update(self):
+    def can_add_result(self):
         if not self.results:
             return True
         return False
