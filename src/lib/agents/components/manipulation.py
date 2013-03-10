@@ -436,11 +436,11 @@ class UseMixin(Mixin):
     # TODO: ^ What about canceling use of an item?
 
     # STUB
-    def can_use(self, target, manipulator):
+    def can_use(self, target, manipulator, use):
         """Whether you can use a target."""
         return True
 
-    def do_use(self, target, manipulator):
+    def do_use(self, target, manipulator, use):
         """Use a target."""
         target.react("on", self)
         return True
@@ -454,13 +454,13 @@ class UseAtMixin(Mixin):
 
 
     # STUB
-    def can_use_at(self, target, instrument, manipulator):
+    def can_use_at(self, target, instrument, manipulator, use):
         """Whether you can use an instrument at a target."""
         return True
 
     # Use an item at a target.
     # STUB
-    def do_use_at(self, target, instrument, manipulator):
+    def do_use_at(self, target, instrument, manipulator, use):
         """Use an instrument at a target."""
         return True
 
