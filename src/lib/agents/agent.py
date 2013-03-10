@@ -94,20 +94,29 @@ class Agent(object):
 
     """Component setter methods."""
 
-    def append_component(self, component, domain):
+    def append_component(self, component, domain=None):
         """Append a Component to a domain."""
+        if not domain:
+            domain = component.__class__.get_domain()
+
         components = self.component_registry.get(domain, [])
         components.append(component)
         self.component_registry[domain] = components
 
-    def prepend_component(self, component, domain):
+    def prepend_component(self, component, domain=None):
         """Prepend a Component to a domain."""
+        if not domain:
+            domain = component.__class__.get_domain()
+
         components = self.component_registry.get(domain, [])
         components.insert(0, component)
         self.component_registry[domain] = components
 
-    def remove_component(self, component, domain):
+    def remove_component(self, component, domain=None):
         """Remove a Component from a domain."""
+        if not domain:
+            domain = component.__class__.get_domain()
+
         components = self.component_registry.get(domain, [])
         components.remove(component)
         self.component_registry[domain] = components
