@@ -26,12 +26,8 @@ class Agent(object):
 
     def trigger(self, *triggers):
         """Respond to triggers."""
-        if "spawned" in triggers:
+        if "rebuild" in triggers:
             self.trigger_components("rebuild")
-        if "equipped" or "unequipped" in triggers:
-            self.trigger_components("modified", domain="Equipment")
-        if not self.controlled and "placed" in triggers:
-            self.trigger_components("placed", domain="AI")
 
     """Component processing methods."""
 
