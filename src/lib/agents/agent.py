@@ -249,7 +249,9 @@ class Agent(object):
 
                 result = getattr(ctx.agent, prefix + "_" + phase)(**arguments)
                 ctx.append_result(action, result)
-                ctx.append_result(phase, result) # TODO: ugh. only here so the ctx can get this info
+                # TODO: ugh. only here so the ctx can get this info in the get_phases loop.
+                if prefix == "do":
+                    ctx.append_result(phase, result)
                 outcome, cause = ctx.parse_result(result)
                 phase_results.add_result((outcome, cause))
                 Log.add("P: %s (%s)." % (prefix + "_" + phase, outcome))
@@ -257,6 +259,7 @@ class Agent(object):
                     # Return to get_phases(), which typically means we're done
                     # in this function because there will be no next phase.
                     break
+
         return ctx.parse_results(action)
 
     """Context utility methods."""
