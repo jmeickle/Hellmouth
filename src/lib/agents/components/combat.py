@@ -70,15 +70,44 @@ class Combat(Component):
     def __init__(self, owner):
         super(Combat, self).__init__(owner)
 
-        self.weapons = []
-        self.weapon = 0
-        self.attack_options = []
-        self.attack_option = 0
-        self.parries = []
-        self.parry = 0
+        self.weapons = deque()
+        self.attack_options = deque()
+        self.parries = deque()
+
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        if "rebuild" in triggers:
+            self.update_weapons()
+
+    """Weapon getter methods."""
+
+    def get_active_weapon(self):
+        """Return this Component's active weapon."""
+        if self.weapons:
+            return self.weapons[0]
+
+    # STUB
+    def get_default_weapon(self, context):
+        """Returns the weapon to default to in a Context."""
+        weapon = self.get_active_weapon()
+        if not weapon:
+            if self.weapons:
+                die("Had no active weapon despite having weapons: %s" % self.weapons)
+        return weapon
 
     def get_weapons(self):
-        return self.owner.get("Equipment", "usable_weapons") + self.owner.get("Body", "usable_weapons")
+        """Yield this Component's weapons."""
+        for weapon in self.weapons:
+            yield weapon
+
+    """Weapon setter methods."""
+
+    def update_weapons(self, body=True, equipment=True):
+        self.weapons = deque()
+        if body:
+            self.weapons.extend(self.owner.values("Body", "get_weapons"))
+        if equipment:
+            self.weapons.extend(self.owner.values("Equipment", "get_weapons"))
 
     # TODO: Support more than one weapon
     # TODO: Oh god this is terrible
