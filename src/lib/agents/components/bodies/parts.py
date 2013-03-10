@@ -100,20 +100,22 @@ class BodyPart(object):
 
     """Natural weapon setter methods."""
 
-    def add_natural_weapon(self, weapon):
+    def add_natural_weapon(self, weapon, trigger=True):
         """Add a natural weapon to this part."""
         weapon.register_component(Wielded)
         self.weapons.append(weapon)
-        self.trigger("add_weapon")
+        if trigger:
+            self.trigger("add_weapon")
 
-    def delete_natural_weapon(self, weapon):
+    def delete_natural_weapon(self, weapon, trigger=True):
         """Remove a natural weapon from this part."""
         self.weapons.remove(weapon)
 
         for component in weapon.get_components("Manipulated"):
             if component.owner == self.owner:
                 weapon.remove_component()
-        self.trigger("delete_weapon")
+        if trigger:
+            self.trigger("delete_weapon")
 
     # STUB
     def can_manipulate(self):

@@ -56,7 +56,7 @@ class Body(Component):
 
             # Generate natural weapons.
             for weapon_name in self.__class__.default_weapons.get(partname, []):
-                part.add_natural_weapon(items.generate_item(weapon_name))
+                part.add_natural_weapon(items.generate_item(weapon_name), trigger=False)
 
             # Set up relationships between parts.
             if parent is not None:
