@@ -3,33 +3,27 @@
 import functools
 
 class Result(object):
-    def __init__(self, *args, **kwargs):
+    """Container that stores method call results and provides a standard
+    interface for accessing them.
+    """
+    def __init__(self):
         self.results = []
 
-    def describe(self):
-        yield "%s called: %s.%s%s:\n" % (self.caller, self.method, self.domain, self.args)
-        yield "\n"
-        yield "Result: %s" % self.results
+    """Method result processing methods."""
 
-    def get_text(self):
-        text = ""
-        for line in self.describe():
-            text += line
-        return text
+    def process_outcome(self):
+        """Return the overall outcome of this Result."""
+        assert False, "Unimplemented!"
 
     """Result getter methods."""
 
-    def get_outcome(self):
-        """Get the overall outcome of this Result."""
-        assert False, "Unimplemented!"
-
     def get_result(self):
-        """Get a single result from this Result."""
+        """Return the first method result contained in this Result."""
         for result in self.results:
             return result
 
     def get_results(self):
-        """Get all results in this Result."""
+        """Return all method results contained in this Result."""
         return self.results
 
     """Result setter methods."""
