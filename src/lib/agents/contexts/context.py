@@ -2,6 +2,7 @@
 
 import functools
 
+from src.lib.util.debug import debug, die
 from src.lib.util.result import Result
 
 class Context(object):
@@ -114,11 +115,10 @@ class Context(object):
     def require_arguments(self, required_arguments):
         """Update this Context's arguments with values from the Agent and
         participants until all requirements are satisfied.
-
-        n.b. - TODO: This can cause infinite loops if an argument is never provided!"""
+        """
 
         for required_argument in required_arguments:
-            if required_argument in self.arguments:
+            if self.arguments.get(required_argument):
                 continue
 
             provided_argument = self.get_agent().provide_argument(self, required_argument)
@@ -131,6 +131,9 @@ class Context(object):
                 if provided_argument:
                     self.set_argument(required_argument, provided_argument)
                     break
+
+            if required_argument not in self.arguments:
+                die("Arguments (%s) didn't provide all required arguments (%s)." % self.arguments, required_arguments)
 
     """Context argument alias getter methods."""
 
