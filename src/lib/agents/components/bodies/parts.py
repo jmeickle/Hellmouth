@@ -16,7 +16,8 @@ class BodyPart(object):
         self.hp = 0
         self.dr = 0
         self.wounds = []
-        self.attack_options = {}
+        self.weapons = []
+        """Natural weapons."""
 
         self.multipliers = {
             "pi-" : .5,
@@ -74,6 +75,36 @@ class BodyPart(object):
             items.update(itemlist)
 
         return items
+
+    """Natural weapon getter methods."""
+
+    def get_natural_weapons(self):
+        """Yield this Part's natural weapons."""
+        for weapon in self.weapons:
+            yield weapon
+
+    def has_natural_weapon(self):
+        """Return whether this part has any natural weapons."""
+        if self.weapons:
+            return True
+        return False
+
+    """Natural weapon setter methods."""
+
+    def add_natural_weapon(self, weapon):
+        """Add a natural weapon to this part."""
+        weapon.register_component(Wielded)
+        self.weapons.append(weapon)
+        self.trigger("add_weapon")
+
+    def delete_natural_weapon(self, weapon):
+        """Remove a natural weapon from this part."""
+        self.weapons.remove(weapon)
+
+        for component in weapon.get_components("Manipulated"):
+            if component.owner == self.owner:
+                weapon.remove_component()
+        self.trigger("delete_weapon")
 
     # STUB
     def can_manipulate(self):
