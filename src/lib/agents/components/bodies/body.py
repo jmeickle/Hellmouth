@@ -37,6 +37,12 @@ class Body(Component):
         for part in self.locs.values():
             yield part
 
+    def get_weapons(self):
+        """Yield the natural weapons provided by this Body."""
+        for part in self.get_parts():
+            for weapon in part.get_natural_weapons():
+                yield weapon
+
     # Build a body from the class information.
     def build(self, owner):
         for order, partname, partclass, parent, sublocation, rolls in self.parts:
@@ -45,11 +51,8 @@ class Body(Component):
             self.locs[partname] = part
 
             # Generate natural weapons.
-            weapons = self.weapons.get(partname)
-            if weapons is not None:
-                for weapon in weapons:
-                    # List, for consistency elsewhere.
-                    part.attack_options[weapon] = [items.generate_item(weapon)]
+            for weapon_name in self.__class__.default_weapons.get(partname, []):
+                part.add_natural_weapon(items.generate_item(weapon_name))
 
             # Set up relationships between parts.
             if parent is not None:
@@ -146,7 +149,7 @@ class Humanoid(Body):
 
     primary_slot = 'RHand'
 
-    weapons = {
+    default_weapons = {
         'RHand' : ("fist",),
         'LHand' : ("fist",),
 #        'RFoot' : ("kick"),
@@ -211,7 +214,7 @@ class Vermiform(Body):
 
     primary_slot = None
 
-    weapons = {
+    default_weapons = {
         'Skull' : ("sharp teeth",),
     }
 
