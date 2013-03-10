@@ -7,6 +7,7 @@ from src.lib.util.result import ignore_results
 class Component(object):
     commands = None
     dependencies = []
+    domain = None
     """Mark a Component as having a dependency on another Component."""
 
     def __init__(self, owner):
@@ -15,6 +16,14 @@ class Component(object):
     def trigger(self, *triggers):
         """Respond to triggers."""
         pass
+
+    @classmethod
+    def get_domain(cls):
+        """Return the domain that instances of this Component class belong to.
+
+        If this class doesn't define a domain, the class name will be used.
+        """
+        return cls.domain if cls.domain else cls.__name__
 
     def process(self, method, *args, **kwargs):
         """Process the results of a method call."""
