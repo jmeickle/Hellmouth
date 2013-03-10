@@ -144,7 +144,7 @@ def UNIMPLEMENTED(fn):
         string = "Unimplemented method %s.%s" % (self.__class__.__name__, fn.__name__)
         parts = []
         if args:
-            parts.append("args: %s" % args)
+            parts.append("args: %s" % (args,))
         if kwargs:
             parts.append("kwargs: %s" % kwargs)
         string += ", ".join(parts) + "."
