@@ -106,6 +106,12 @@ class Agent(object):
         components.insert(0, component)
         self.component_registry[domain] = components
 
+    def remove_component(self, component, domain):
+        """Remove a Component from a domain."""
+        components = self.component_registry.get(domain, [])
+        components.remove(component)
+        self.component_registry[domain] = components
+
     """Component helper methods."""
 
     def register_component(self, component_class, domain=None):
