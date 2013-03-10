@@ -274,9 +274,9 @@ class Agent(object):
     @agent_context
     def provide_argument(self, context, arg):
         if arg == "manipulator":
-           return self.call("Body", "get_default_manipulator", context)
+           return self.call("Body", "get_default_manipulator", context).get_result()
         if arg == "weapon":
-           return self.call("Combat", "get_default_weapon", context)
+           return self.call("Combat", "get_default_weapon", context).get_result()
 
     @agent_context
     def provide_arguments(self, context, required_arguments):
