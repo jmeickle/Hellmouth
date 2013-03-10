@@ -309,9 +309,9 @@ class Agent(object):
     def dist(self, target):
         return dist(self.pos, target.pos)
 
-    def react(self, identifier, *args):
+    def react(self, *args, **kwargs):
         """Try to call a reaction method based on the calling method's name
-        and a sequence identifier.
+        and a sequence identifier (by default, the identifier is "on").
 
         Any string is valid as a sequence identifier, though the most common
         will be "before", "on", and "after". Any method is valid as a reaction
@@ -319,6 +319,6 @@ class Agent(object):
         "move". This results in callback names like "react_before_do_move" and
         "react_after_do_handle".
         """
-        reaction = getattr(self, "react_%s_%s" % (identifier, caller()), None)
+        reaction = getattr(self, "react_%s_%s" % (kwargs.pop("identifier", "on"), caller()), None)
         if reaction:
-            return reaction(*args)
+            return reaction(*args, **kwargs)
