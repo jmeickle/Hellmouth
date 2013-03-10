@@ -10,6 +10,8 @@ from src.lib.util.dynamic import * # TODO: Remove once items are agents.
 # Items.
 class Item(Agent):
     def __init__(self):
+        super(Item, self).__init__()
+
         # Flavor
         self.name = "debugger"
         self.description = "Debug description"
@@ -159,9 +161,11 @@ class Item(Agent):
     def is_equippable(self):
         pass
 
+"""Armor."""
+
 class Armor(Item):
     def __init__(self):
-        Item.__init__(self)
+        super(Armor, self).__init__()
         self.material = Bone
         self.glyph = "["
 
@@ -171,9 +175,12 @@ class Armor(Item):
     def can_be_weapon(self):
         return False
 
+"""Manufactured weapons."""
+
+# TODO: BaseWeapon
 class Weapon(Item):
     def __init__(self):
-        Item.__init__(self)
+        super(Weapon, self).__init__()
         self.material = Bone
         self.glyph = "/"
         self.color = "cyan-black"
@@ -198,99 +205,103 @@ class Weapon(Item):
 
 class Broadsword(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Broadsword, self).__init__()
         self.primary_skill = "Broadsword"
 
 class Shortsword(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Shortsword, self).__init__()
         self.primary_skill = "Shortsword"
         self.glyph = ","
 
 class Knife(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Knife, self).__init__()
         self.primary_skill = "Knife"
         self.glyph = ","
 
 class Dagger(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Dagger, self).__init__()
         self.primary_skill = "Knife"
         self.glyph = ","
 
 class Axe(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Axe, self).__init__()
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
         self.color = "red-black"
 
 class Mace(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Mace, self).__init__()
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
         self.color = "blue-black"
 
 class Pick(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Pick, self).__init__()
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
         self.color = "red-black"
 
 class Hammer(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Hammer, self).__init__()
         self.primary_skill = "Axe/Mace"
         self.glyph = "{"
         self.color = "blue-black"
 
 class Club(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Club, self).__init__()
         self.primary_skill = "Broadsword"
         self.glyph = "/"
         self.color = "yellow-black"
 
 class Flail(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Flail, self).__init__()
         self.primary_skill = "Flail"
         self.glyph = "{"
         self.color = "cyan-black"
 
 class Pollaxe(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Pollaxe, self).__init__()
         self.primary_skill = "Polearm"
         self.glyph = "|"
         self.color = "red-black"
 
 class Spear(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Spear, self).__init__()
         self.primary_skill = "Spear"
         self.glyph = "|"
         self.color = "yellow-black"
 
 class Staff(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Staff, self).__init__()
         self.primary_skill = "Staff"
         self.glyph = "|"
         self.color = "green-black"
 
+"""Natural weapons."""
+
 class Natural(Weapon):
     def __init__(self):
-        Weapon.__init__(self)
+        super(Natural, self).__init__()
         self.primary_skill = "Brawling"
 
     # HACK: Not true of all!
     def requires_empty_location(self):
         return True
 
+"""Tools."""
+
 class Tool(Item):
     def __init__(self):
-        Item.__init__(self)
+        super(Tool, self).__init__()
