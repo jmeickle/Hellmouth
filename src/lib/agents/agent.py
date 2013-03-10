@@ -3,9 +3,9 @@
 from src.lib.agents.contexts.context import agent_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
-from src.lib.util.debug import DEBUG
+from src.lib.util.debug import debug, DEBUG, die
 from src.lib.util.dynamic import caller
-from src.lib.util.result import Result, SingleResult
+from src.lib.util.result import Result, SingleResult, ActionResult
 from src.lib.util.hex import *
 from src.lib.util.log import Log
 
@@ -106,6 +106,8 @@ class Agent(object):
         components.insert(0, component)
         self.component_registry[domain] = components
 
+    """Component helper methods."""
+
     def register_component(self, component_class, domain=None):
         """Initialize an instance of a Component class, register it as the sole
         member of its domain, and send a "registration" trigger to it."""
@@ -118,8 +120,6 @@ class Agent(object):
         component = component_class(self)
         self.append_component(component, domain)
         component.trigger("registered")
-
-    """Component helper methods."""
 
     def trigger_components(self, *triggers, **kwargs):
         """Send a list of trigger triggers to each Component in a domain."""
