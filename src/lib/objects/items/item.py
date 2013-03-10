@@ -195,13 +195,35 @@ class Weapon(Item):
     def requires_empty_location(self):
         return True
 
-    # STUB
-    def min_reach(self, attack_option):
-        pass
+    # TODO: Refactor when item defs are normalized
+    def get_wielding_modes(self):
+        """Return the wielding modes of this Weapon."""
+        for skill, modes in self.attack_options.items():
+            for mode in modes:
+                yield (skill,) + mode
 
-    # STUB
-    def max_reach(self, attack_option):
-        pass
+    def get_reach(self, wielding_mode):
+        """Return the minimum and maximum reach of this Weapon's wielding mode."""
+        min_reach = wielding_mode[4][0]
+        max_reach = wielding_mode[4][-1]
+        return min_reach, max_reach
+
+    def get_reach_limits(self):
+        """Return the lowest minimum and highest maximum reach of this Weapon's wielding modes."""
+        min_reach = None
+        max_reach = None
+
+        for wielding_mode in self.get_wielding_modes():
+            mode_min, mode_max = self.get_reach(wielding_mode)
+            if not min_reach:
+                min_reach = mode_min
+            else:
+                min_reach = min(mode_min, min_reach)
+            if not max_reach:
+                max_reach = mode_max
+            else:
+                max_reach = max(mode_max, max_reach)
+        return min_reach, max_reach
 
 class Broadsword(Weapon):
     def __init__(self):
