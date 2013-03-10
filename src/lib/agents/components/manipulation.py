@@ -219,11 +219,41 @@ class Manipulation(Component):
             max_reach += body_reach
 
         if wielded:
-            wielded_min_reach, wielded_max_reach = wielded.call("Manipulated", "get_reach").get_result()
+            wielded_min_reach, wielded_max_reach = wielded.call("Wielded", "get_reach").get_result()
             min_reach += wielded_min_reach
             max_reach += wielded_max_reach
 
         return min_reach, max_reach
+
+class Wielded(Component):
+    """Component that handles a wielded Agent's functionality."""
+
+    def __init__(self, owner):
+        super(Wielded, self).__init__(owner)
+
+        self.wielding_mode = 0
+        self.wielding_modes = []
+
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        if "rebuild" in triggers:
+            self.rebuild_wielding_modes()
+
+    # TODO: this is definitely nottttttt the way to do this...
+    def rebuild_wielding_modes(self):
+        self.wielding_mode = 0
+        self.wielding_modes = []
+        if hasattr(self.owner, "get_wielding_modes"):
+            self.wielding_modes = [mode for mode in self.owner.get_wielding_modes()]
+
+    def get_wielding_mode(self):
+        """Return the current wielding mode."""
+        if self.wielding_modes:
+            return self.wielding_modes[self.wielding_mode]
+
+    def get_reach(self):
+        """Return the minimum and maximum reach of the current wielding mode."""
+        return self.owner.get_reach(self.get_wielding_mode())
 
 """Mixins."""
 
