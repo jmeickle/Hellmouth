@@ -140,13 +140,19 @@ def STUB(fn):
 def UNIMPLEMENTED(fn):
     """Decorator to assert on calling an unimplemented method."""    
     @functools.wraps(fn)
-    def wrapper(self, *args, **kwargs):
-        string = "Unimplemented method %s.%s" % (self.__class__.__name__, fn.__name__)
+    def wrapper(caller, *args, **kwargs):
+        if isinstance(caller, type):
+            string = "Unimplemented class method %s.%s()" % (caller.__name__, fn.__name__)
+        else:
+            string = "Unimplemented instance method %s.%s()" % (caller.__class__.__name__, fn.__name__)
+
         parts = []
         if args:
             parts.append("args: %s" % (args,))
         if kwargs:
             parts.append("kwargs: %s" % kwargs)
-        string += ", ".join(parts) + "."
+        if parts:
+            string += ".\n" + "    " + "    \n".join(parts)
+        string += "."
         die(string)
     return wrapper
