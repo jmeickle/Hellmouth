@@ -33,6 +33,8 @@ class Context(object):
 
     def __call__(self, checked_step, *arguments):
         """Check whether a particular phase is satisfied within this Context."""
+
+        # TODO: Check whether the checked step IS CURRENTLY MET, not whether it WAS PERFORMED.
         if checked_step in self.steps:
             results = self.get_results(checked_step)
             outcome, cause = self.parse_result(results)
@@ -116,7 +118,6 @@ class Context(object):
         """Update this Context's arguments with values from the Agent and
         participants until all requirements are satisfied.
         """
-
         for required_argument in required_arguments:
             if self.arguments.get(required_argument):
                 continue
