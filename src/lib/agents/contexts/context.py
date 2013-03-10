@@ -132,8 +132,8 @@ class Context(object):
                     self.set_argument(required_argument, provided_argument)
                     break
 
-            if required_argument not in self.arguments:
-                die("Arguments (%s) didn't provide all required arguments (%s)." % self.arguments, required_arguments)
+            if not self.arguments.get(required_argument):
+                die("Context arguments %s didn't provide all required arguments %s." % (self.arguments, required_arguments))
 
     """Context argument alias getter methods."""
 
