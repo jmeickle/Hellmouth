@@ -28,12 +28,12 @@ from src.lib.agents.agent import Agent
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.combat import Combat
 from src.lib.agents.components.container import Container
-from src.lib.agents.components.manipulation import ManipulatingAgent
+from src.lib.agents.components.manipulation import Manipulation, ManipulatingAgent
 
 class Actor(Agent, ManipulatingAgent):
     """Monster-like Agents. Most typically, players and monsters."""
 
-    components = [Combat, Container]
+    components = [Combat, Container, Manipulation]
 
     def __init__(self, components=[]):
         super(Actor, self).__init__(components + self.__class__.components)

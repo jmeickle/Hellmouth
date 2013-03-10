@@ -202,6 +202,24 @@ class UseTerrain(Command):
 
 CMD.register(UseTerrain)
 
+"""Components."""
+
+class Manipulation(Component):
+
+    def get_reach(self, manipulator, wielded=None):
+        min_reach, max_reach = manipulator.get_reach()
+
+        body_reach = self.owner.call("Body", "get_reach").get_result()
+        if body_reach:
+            max_reach += body_reach
+
+        if wielded:
+            wielded_min_reach, wielded_max_reach = wielded.call("Manipulated", "get_reach").get_result()
+            min_reach += wielded_min_reach
+            max_reach += wielded_max_reach
+
+        return min_reach, max_reach
+
 """Mixins."""
 
 class ReachMixin(Mixin):
@@ -327,17 +345,13 @@ class ContactMixin(Mixin):
         # TODO: Restructure attack option structure so that items can figure
         # this out based on how they are being held
         distance = self.dist(target)
-        attack_option = self.attack_options[self.attack_option]
-        min_reach = attack_option[3][0] + self.min_reach()
-        max_reach = attack_option[3][-1] + self.max_reach()
+        min_reach, max_reach = self.values("Manipulation", "get_reach", manipulator, wielded=instrument)
 
         # Check whether it's too close to reach
-#        min_reach = self.min_reach() + item.min_reach(self.attack_option)
         if distance < min_reach:
             return False, "too close"
 
         # Check whether it's too far to reach
-#        max_reach = self.max_reach() + item.max_reach(self.attack_option)
         if distance > max_reach:
             return False, "too far"
         return True
