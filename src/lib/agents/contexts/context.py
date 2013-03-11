@@ -309,3 +309,20 @@ def agent_context(fn):
         args = context + args[1:]
         return fn(caller, *args, **kwargs)
     return wrapper
+
+def command_context(fn):
+    """Decorator to provide a Context for a Command's methods.
+
+    If the Command has no Context defined, or calls this method with
+    'context=False', then a new NoContext instance will be created and used.
+    """
+    @functools.wraps(fn)
+    def wrapper(caller, *args, **kwargs):
+        context = args[0:1]
+        if kwargs.pop("context", True) is False:
+            context = (NoContext(),)
+        elif not context:
+            context = (caller.context,) if caller.context else (NoContext(),)
+        args = context + args[1:]
+        return fn(caller, *args, **kwargs)
+    return wrapper
