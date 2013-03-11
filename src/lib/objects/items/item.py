@@ -40,19 +40,15 @@ class Item(Agent):
         """React to being stored in an inventory."""
         self.cell()._get(self)
 
-    def provide_commands(self, context):
+    def provide_commands(self, ctx):
         """Yield the interaction commands an Agent provides to another Agent
         within a Context.
         """
-
-        if self not in context.agent.values("Container", "get_list"):
+        if not self.has_domain("Wielded") and self not in ctx.agent.values("Container", "get_list"):
             yield CMD("Get", target=self)
             yield CMD("GetAll", target=self)
 
-        if not self.has_domain("Wielded"):
-            # TODO: ???
-            # outcome, cause = agent.could(CMD("WieldWeapon"), context)
-            #if outcome:
+        if not self.has_domain("Wielded") and ctx.agent.call("Manipulation", "could_wield").get_result():
             yield CMD("WieldWeapon", target=self)
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
