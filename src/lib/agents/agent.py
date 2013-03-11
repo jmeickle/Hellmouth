@@ -95,7 +95,7 @@ class Agent(object):
 
     """Component setter methods."""
 
-    def append_component(self, component, domain=None):
+    def append_component(self, component, domain=None, trigger=True):
         """Append a Component to a domain."""
         if not domain:
             domain = component.__class__.get_domain()
@@ -104,7 +104,10 @@ class Agent(object):
         components.append(component)
         self.component_registry[domain] = components
 
-    def prepend_component(self, component, domain=None):
+        if trigger:
+            component.trigger("registered")
+
+    def prepend_component(self, component, domain=None, trigger=True):
         """Prepend a Component to a domain."""
         if not domain:
             domain = component.__class__.get_domain()
@@ -113,14 +116,24 @@ class Agent(object):
         components.insert(0, component)
         self.component_registry[domain] = components
 
-    def remove_component(self, component, domain=None):
+        if trigger:
+            component.trigger("registered")
+
+    def remove_component(self, component, domain=None, trigger=True):
         """Remove a Component from a domain."""
         if not domain:
             domain = component.__class__.get_domain()
 
         components = self.component_registry.get(domain, [])
         components.remove(component)
-        self.component_registry[domain] = components
+
+        if components:
+            self.component_registry[domain] = components
+        else:
+            del self.component_registry[domain]
+
+        if trigger:
+            component.trigger("deregistered")
 
     """Component helper methods."""
 
@@ -143,6 +156,10 @@ class Agent(object):
             component.trigger(*triggers)
 
     """Domain helper methods."""
+
+    def has_domain(self, domain):
+        """Return whether an Agent has any components in a Domain."""
+        return True if domain in self.component_registry else False
 
     def get_domains(self):
         """Yield all currently defined domains."""
