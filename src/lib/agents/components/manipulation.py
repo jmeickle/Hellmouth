@@ -364,7 +364,9 @@ class GraspMixin(Mixin):
 
     # STUB
     def do_grasp(self, target, manipulator):
-        return True
+        if manipulator.add_grasped(target):
+            return True
+        return False
 
 class UnGraspMixin(Mixin):
     """Provides the ability to let go of a target with a manipulator."""
@@ -375,7 +377,9 @@ class UnGraspMixin(Mixin):
 
     # STUB
     def do_ungrasp(self, target, manipulator):
-        return True
+        if manipulator.remove_grasped(target):
+            return True
+        return False
 
 class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
     """Convenience Mixin to represent an Agent with grasping capability."""
@@ -387,11 +391,15 @@ class WieldMixin(Mixin):
     """
     # STUB
     def can_wield(self, target, manipulator):
-        return True
+        if manipulator.can_wield(target):
+            return True
+        return False
 
     # STUB
     def do_wield(self, target, manipulator):
-        return True
+        if manipulator.set_wielded(target):
+            return True
+        return False
 
 class UnWieldMixin(Mixin):
     """Provides the ability to lower a target grasped with a manipulator
@@ -400,33 +408,43 @@ class UnWieldMixin(Mixin):
 
     # STUB
     def can_unwield(self, target, manipulator):
-        if not target.is_wielded(self):
-            return False
-        return True
+        if manipulator.can_unwield(target):
+            return True
+        return False
 
     # STUB
     def do_unwield(self, target, manipulator):
-        return True
+        if manipulator.set_unwielded(target):
+            return True
+        return False
 
 class ReadyMixin(Mixin):
     """Provides the ability to hold a wielded target in a way permitting its use as a tool."""
     # STUB
     def can_ready(self, target, manipulator):
-        return True
+        if target.call("Wielded", "can_ready").get_result():
+            return True
+        return False
 
     # STUB
     def do_ready(self, target, manipulator):
-        return True
+        if target.call("Wielded", "set_ready", True).get_result():
+            return True
+        return False
 
 class UnReadyMixin(Mixin):
     """Provides the ability to stop holding a wielding a target in a way permitting its use as a tool."""
     # STUB
     def can_unready(self, target, manipulator):
-        return True
+        if target.call("Wielded", "can_ready").get_result() is False:
+            return True
+        return False
 
     # STUB
     def do_unready(self, target, manipulator):
-        return True
+        if target.call("Wielded", "set_ready", False).get_result():
+            return True
+        return False
 
 class ContactMixin(Mixin):
     """Provides the ability to touch a target with a second target held in a
