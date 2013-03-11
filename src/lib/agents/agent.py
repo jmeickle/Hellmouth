@@ -55,7 +55,8 @@ class Agent(object):
 
     def get(self, domain, key, default=None):
         """Convenience method to return the result of a keyed get method in a domain."""
-        return self.call(domain, "get", key, default, results=SingleResult).get_outcome()
+        result = self.call(domain, "get", key, results=SingleResult).get_outcome()
+        return result if result is not None else default
 
     # def set(self, domain, key, *args):
     #     """Convenience method to return the parsed result of a keyed set method in a domain."""
