@@ -140,6 +140,36 @@ class BodyPart(object):
 
     """Grasping helper methods."""
 
+    def can_grasp(self, agent):
+        """Return whether an Agent can be grasped."""
+        if agent in self.get_grasped():
+            return False
+        return True
+
+    def could_grasp(self):
+        """Return whether an unspecified Agent could be grasped."""
+        if self.has_grasped():
+            return False
+        return True
+
+    def can_ungrasp(self, agent):
+        """Return whether an Agent can be ungrasped."""
+        if agent in self.get_grasped():
+            return False
+        return True
+
+    def could_ungrasp(self):
+        """Return whether an unspecified Agent could be ungrasped."""
+        if self.has_grasped():
+            return False
+        return True
+
+    def has_grasped(self):
+        """Return whether this part has any grasped Agents."""
+        for agent in self.get_grasped():
+            return True
+        return False
+
     """Wielding getter methods."""
 
     def get_wielded(self):
@@ -148,12 +178,6 @@ class BodyPart(object):
             for component in agent.get_controlled_components(self.owner, "Wielded"):
                 yield agent
                 break
-
-    def has_wielded(self):
-        """Return whether this part has any wielded Agents."""
-        for agent in self.get_wielded():
-            return True
-        return False
 
     """Wielding setter methods."""
 
@@ -197,6 +221,12 @@ class BodyPart(object):
         if not self.has_wielded():
             return False
         return True
+
+    def has_wielded(self):
+        """Return whether this part has any wielded Agents."""
+        for agent in self.get_wielded():
+            return True
+        return False
 
     def get_manipulate(self):
         """Return whether the Part is a manipulator."""

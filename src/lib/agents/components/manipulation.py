@@ -358,11 +358,11 @@ class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
 class GraspMixin(Mixin):
     """Provides the ability to hold a target with a manipulator."""
 
-    # STUB
     def can_grasp(self, target, manipulator):
-        return True
+        if manipulator.can_grasp(target):
+            return True
+        return False
 
-    # STUB
     def do_grasp(self, target, manipulator):
         if manipulator.add_grasped(target):
             return True
@@ -371,11 +371,11 @@ class GraspMixin(Mixin):
 class UnGraspMixin(Mixin):
     """Provides the ability to let go of a target with a manipulator."""
 
-    # STUB
     def can_ungrasp(self, target, manipulator):
-        return True
+        if manipulator.can_ungrasp(target):
+            return True
+        return False
 
-    # STUB
     def do_ungrasp(self, target, manipulator):
         if manipulator.remove_grasped(target):
             return True
@@ -389,13 +389,12 @@ class WieldMixin(Mixin):
     """Provides the ability to raise a target grasped with a manipulator outward
     from your body.
     """
-    # STUB
+
     def can_wield(self, target, manipulator):
         if manipulator.can_wield(target):
             return True
         return False
 
-    # STUB
     def do_wield(self, target, manipulator):
         if manipulator.set_wielded(target):
             return True
@@ -406,13 +405,11 @@ class UnWieldMixin(Mixin):
     inward towards your body.
     """
 
-    # STUB
     def can_unwield(self, target, manipulator):
         if manipulator.can_unwield(target):
             return True
         return False
 
-    # STUB
     def do_unwield(self, target, manipulator):
         if manipulator.set_unwielded(target):
             return True
