@@ -228,9 +228,11 @@ class Manipulation(Component):
 class Wielded(Component):
     """Component that handles a wielded Agent's functionality."""
 
-    def __init__(self, owner):
+    def __init__(self, owner, wielder, manipulator):
         super(Wielded, self).__init__(owner)
 
+        self.wielder = wielder
+        self.manipulator = manipulator
         self.wielding_mode = 0
         self.wielding_modes = []
 
@@ -244,7 +246,9 @@ class Wielded(Component):
         self.wielding_mode = 0
         self.wielding_modes = []
         if hasattr(self.owner, "get_wielding_modes"):
-            self.wielding_modes = [mode for mode in self.owner.get_wielding_modes()]
+            for mode in self.owner.get_wielding_modes():
+                if self.wielder.trait(mode[0]): # TODO: ICK. (Skipping past modes with no skill)
+                    self.wielding_modes.append(mode)
 
     def get_wielding_mode(self):
         """Return the current wielding mode."""

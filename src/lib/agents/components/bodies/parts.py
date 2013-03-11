@@ -102,7 +102,7 @@ class BodyPart(object):
 
     def add_natural_weapon(self, weapon, trigger=True):
         """Add a natural weapon to this part."""
-        weapon.register_component(Wielded)
+        weapon.append_component(Wielded(owner=weapon, wielder=self.owner, manipulator=self))
         self.weapons.append(weapon)
         if trigger:
             self.trigger("add_weapon")
