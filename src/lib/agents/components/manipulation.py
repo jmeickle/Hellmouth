@@ -326,10 +326,9 @@ class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
     pass
 
 class WieldMixin(Mixin):
-    """Provides the ability to hold a target with a manipulator in a way
-    permitting its use as a tool.
+    """Provides the ability to raise a target grasped with a manipulator outward
+    from your body.
     """
-
     # STUB
     def can_wield(self, target, manipulator):
         return True
@@ -339,8 +338,8 @@ class WieldMixin(Mixin):
         return True
 
 class UnWieldMixin(Mixin):
-    """Provides the ability to hold a target with a manipulator in a way
-    permitting its use as a tool.
+    """Provides the ability to lower a target grasped with a manipulator
+    inward towards your body.
     """
 
     # STUB
@@ -354,10 +353,7 @@ class UnWieldMixin(Mixin):
         return True
 
 class ReadyMixin(Mixin):
-    """Provides the ability to raise a target held with a manipulator outward
-    from your body.
-    """
-
+    """Provides the ability to hold a wielded target in a way permitting its use as a tool."""
     # STUB
     def can_ready(self, target, manipulator):
         return True
@@ -367,10 +363,7 @@ class ReadyMixin(Mixin):
         return True
 
 class UnReadyMixin(Mixin):
-    """Provides the ability to lower a target held with a manipulator to the
-    side of your body.
-    """
-
+    """Provides the ability to stop holding a wielding a target in a way permitting its use as a tool."""
     # STUB
     def can_unready(self, target, manipulator):
         return True
