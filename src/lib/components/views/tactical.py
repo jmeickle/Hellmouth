@@ -574,12 +574,16 @@ class Inventory(View):
         if self.commands.choices:
             self.cline("Available commands:")
             commands = []
-            chosen_target, chosen_command = self.commands.choice()
-#            exit(self.commands.choices)
-            for target, command in self.commands.choices:
-                string = command.__name__
-                if command == chosen_command:
-                    string = text.highlight_first(string)
+            chosen_class, chosen_arguments = self.commands.choice()
+            for command_class, command_arguments in self.commands.choices:
+                string = command_class.get_desc(short=True)
+                for event in command_class.get_events():
+                    pos = text.first(event, string)
+                    if pos is not None:
+                        replacement = "(%s)" % string[pos]
+                        if command_class == chosen_class:
+                            replacement = text.highlight(replacement)
+                        string = string[:pos] + replacement + string[pos+1:]
                 commands.append(string)
             self.cline("  %s." % text.commas(commands))
 
