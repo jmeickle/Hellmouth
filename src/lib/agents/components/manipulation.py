@@ -94,7 +94,7 @@ class Use(Action):
         ("touch", "target", "manipulator"),
         ("grasp", "target", "manipulator"),
         ("handle", "target", "manipulator"),
-        ("use", "target", "manipulator")
+        ("use", "target", "manipulator", "use")
     ]
 
 """Interacting with Agents using manipulators in a way requiring holding them."""
@@ -189,7 +189,7 @@ class WieldWeapon(Command):
     defaults = ("w",)
 
     def get_actions(self):
-        yield Wield, "target"
+        yield Wield
 
 CMD.register(ReadyWeapon, WieldWeapon)
 
@@ -200,7 +200,7 @@ class UseTerrain(Command):
     defaults = ("U",)
 
     def get_actions(self):
-        yield Use, "target"
+        yield Use
 
 CMD.register(UseTerrain)
 
