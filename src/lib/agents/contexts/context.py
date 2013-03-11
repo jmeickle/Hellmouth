@@ -12,7 +12,7 @@ class Context(object):
     def __init__(self, agent, domains=[], participants=[], intent={}, component=None):
         self.agent = agent
         """The Agent that owns this Context."""
-        self.domains = domains
+        self.domains = domains if domains else self.agent.get_domains()
         """The Domains that this Context focuses on."""
         self.participants = participants
         """The other Agents involved in this Context."""
