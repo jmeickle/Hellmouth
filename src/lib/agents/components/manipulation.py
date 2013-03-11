@@ -33,6 +33,7 @@ simply wouldn't be able to *change* any of its manipulation states.
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
+from src.lib.agents.contexts.context import action_context, command_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.debug import debug, die
@@ -44,11 +45,11 @@ from src.lib.util.mixin import Mixin
 
 class Pickup(Action):
     """Remove an Agent from the environment, placing it into your manipulator exclusively."""
-    phases = [
-        ("touch", "target", "manipulator"),
-        ("grasp", "target", "manipulator"),
-        ("force", "target", "manipulator"),
-    ]
+    @action_context
+    def get_phases(self, ctx):
+        yield "touch", "target", "manipulator"
+        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
+        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
 
 class Putdown(Action):
     """Remove an item from your manipulator, placing it into the environment exclusively."""
@@ -69,13 +70,17 @@ class Drop(Action):
 
 class Pack(Action):
     """Remove an item from your manipulator, placing it into a container exclusively."""
-    phases = [
-        ("touch", "target", "manipulator"),
-        ("grasp", "target", "manipulator"),
-        ("force", "target", "manipulator"),
-        ("store", "target", "container", "manipulator"),
-        ("ungrasp", "target", "manipulator"),
-    ]
+    @action_context
+    def get_phases(self, ctx):
+        yield "touch", "target", "manipulator"
+        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
+        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
+        if ctx("force", "target", "manipulator"):
+            yield "store", "target", "container", "manipulator"
+            if ctx("store", "target", "container", "manipulator"): yield "ungrasp", "target", "manipulator"
+        else:
+            yield "ungrasp", "target", "manipulator"
+        if ctx("ungrasp", "target", "manipulator"): yield "untouch", "target", "manipulator"
 
 class UnPack(Action):
     """Remove an item from a container, placing it into your manipulator exclusively."""
@@ -101,18 +106,12 @@ class Use(Action):
 
 class Wield(Action):
     """"Hold an item in a manipulator out in front of you."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("ready", "item", "manipulator"),
-    ]
-
-    def get_phases(self):
+    @action_context
+    def get_phases(self, ctx):
         yield "touch", "target", "manipulator"
-        if self("touch", "target"): yield "grasp", "target", "manipulator"
-        if self("grasp", "target"): yield "force", "target", "manipulator"
-        if self("force", "target"): yield "ready", "target", "manipulator"
+        if self("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
+        if self("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
+        if self("force", "target", "manipulator"): yield "ready", "target", "manipulator"
 
 class UnWield(Action):
     """Lower an item in a manipulator to your side."""
@@ -163,18 +162,20 @@ class Get(Command):
     description = "pick up an item"
     defaults = ("g",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield Pickup
-        if self(Pickup): yield Pack
+        if ctx(Pickup): yield Pack
 
 class GetAll(Command):
     """Pick up multiple nearby items."""
     description = "pick up all items"
     defaults = ("G",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield Pickup
-        if self(Pickup): yield Pack
+        if ctx(Pickup): yield Pack
 
 CMD.register(Get, GetAll)
 
@@ -188,7 +189,8 @@ class WieldWeapon(Command):
     description = "wield a weapon"
     defaults = ("w",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield Wield
 
 CMD.register(ReadyWeapon, WieldWeapon)
@@ -199,7 +201,8 @@ class UseTerrain(Command):
     description = "use a terrain feature"
     defaults = ("U",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield Use
 
 CMD.register(UseTerrain)

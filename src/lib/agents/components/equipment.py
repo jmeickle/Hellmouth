@@ -2,6 +2,7 @@
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component, ignore_results
+from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.manipulation import Pack
 from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.mixin import Mixin
@@ -20,13 +21,13 @@ class Equip(Action):
     ]
 
 class UnEquip(Action):
-    """Remove a target from your body."""
-    phases = [
-        ("touch", "target"),
-        ("grasp", "target"),
-        ("handle", "target"),
-        ("unequip", "target")
-    ]
+    """Remove a target from your body, leaving it in your manipulator."""
+    @action_context
+    def get_phases(self, ctx):
+        yield "touch", "target"
+        if ctx("touch", "target"): yield "grasp", "target"
+        if ctx("grasp", "target"): yield "handle", "target"
+        if ctx("handle", "target"): yield "unequip", "target"
 
 """Commands."""
 
@@ -34,17 +35,19 @@ class Wear(Command):
     description = "wear an item"
     defaults = ("W",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield UnPack
-        if self(UnPack): yield UnEquip
+        if ctx(UnPack): yield UnEquip
 
 class Remove(Command):
     description = "remove an item"
     defaults = ("R",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield UnEquip
-        if self(UnEquip): yield Pack
+        if ctx(UnEquip): yield Pack
 
 CommandRegistry.register(Wear, Remove)
 

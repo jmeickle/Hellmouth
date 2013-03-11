@@ -1,7 +1,7 @@
 from collections import deque
 
 from src.lib.agents.components.action import Action
-from src.lib.agents.contexts.context import action_context
+from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.component import Component
 
 from src.lib.util.command import Command, CommandRegistry
@@ -16,15 +16,19 @@ class AttackWithWielded(Action):
     """Attack a target with a weapon wielded in a manipulator."""
 
     @action_context
-    def get_phases(self, context):
-        yield "touch", "weapon"
-        if self("touch", "weapon"): yield "grasp", "weapon"
-        if self("grasp", "weapon"): yield "ready", "weapon"
+    def get_phases(self, ctx):
+        ctx.update_arguments(use="attack")
+
+        ctx.update_aliases(weapon="target")
+        yield "touch", "weapon", "manipulator"
+        if ctx("touch", "weapon", "manipulator"): yield "grasp", "weapon", "manipulator"
+        if ctx("grasp", "weapon", "manipulator"): yield "ready", "weapon", "manipulator"
         # if self("lift", "weapon"):
         # if self("handle", "weapon"):
-        if self("ready", "weapon"): yield "contact", "target", "weapon"
-        if self("contact", "target", "weapon"): yield "use_at", "target", "weapon"
-#        if self("use_at", "target", "weapon"):
+
+        ctx.update_aliases(weapon="instrument")
+        if ctx("ready", "weapon", "manipulator"): yield "contact", "target", "weapon", "manipulator"
+        if ctx("contact", "target", "weapon", "manipulator"): yield "use_at", "target", "weapon", "manipulator", "use"
 
     # # Use a ready item to disarm.
     # # n.b. - The 'target' is the other item!
@@ -58,7 +62,8 @@ class Attack(Command):
     description = "attack"
     defaults = ("a",)
 
-    def get_actions(self):
+    @command_context
+    def get_actions(self, ctx):
         yield AttackWithWielded
 
 CommandRegistry.register(Attack)
