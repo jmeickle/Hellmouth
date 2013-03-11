@@ -587,9 +587,6 @@ class StoreMixin(Mixin):
     # Store an item in your container.
     def do_store(self, target, manipulator, container):
         """Store an item into a Container."""
-        if target.react("on", container) is False:
-            return False
-
         if container.call("Container", "add_contents", target).get_result():
             return True
         return False
@@ -605,7 +602,6 @@ class UnstoreMixin(Mixin):
         """Unstore an item from a Container."""
         if container.call("Container", "remove_contents", target).get_result():
             return True
-
         return False
 
 class StoringAgent(StoreMixin, UnstoreMixin):
