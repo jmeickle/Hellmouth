@@ -2,6 +2,15 @@ from src.lib.util.define import *
 
 import re
 
+def first(character, string):
+    """Return the position of the first occurence of a character in a string."""
+    for i in xrange(len(string)):
+        if string[i] == character:
+            return i
+
+def replace(pattern, replacement, string):
+    return re.sub(pattern, replacement, string)
+
 # Strip tags out of a string. Used to calculate the length of strings with tags.
 def striptags(string):
     return re.sub('(<.*?>)', '', string)
