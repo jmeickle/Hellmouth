@@ -366,7 +366,7 @@ class Actor(Agent, ManipulatingAgent):
     # Get the actor's level in a skill/stat.
     def trait(self, traitname, temporary=True):
         level = self.stat(traitname, temporary)
-        if level is None:
+        if not level:
             level = self.skill(traitname, temporary)
         return level
 
@@ -386,32 +386,29 @@ class Actor(Agent, ManipulatingAgent):
     #
 
     # Retrieve actor stat.
-    def stat(self, stat, temporary=True):
-        if not hasattr(self, stat):
+    # TODO: Move to Trait component.
+    def stat(self, stat_name, temporary=True):
+        if not hasattr(self, stat_name):
             return
-        func = getattr(Actor, stat)
-        if temporary is True:
-            return func(self)
-        else:
-            return func(self, temporary)
+        return getattr(self, stat_name)(temporary)
 
     # Formulas for calculated stats.
     def ST(self, temporary=True):
         ST = self.attributes.get('ST')
-        if temporary is True:
+        if temporary:
             if self.get("Status", "Exhausted"):
                 ST = (ST + 1) / 2
         return ST
 
     def DX(self, temporary=True):
         DX = self.attributes.get('DX')
-        if temporary is True:
+        if temporary:
             DX -= self.get("Status", "Shock", 0)
         return DX
 
     def IQ(self, temporary=True):
         IQ = self.attributes.get('IQ')
-        if temporary is True:
+        if temporary:
             IQ -= self.get("Status", "Shock", 0)
         return IQ
 
@@ -421,36 +418,36 @@ class Actor(Agent, ManipulatingAgent):
         #    HT -= self.effects.get("Shock", 0)
         return HT
 
-    def HP(self):          return self.MaxHP() - self.hp_spent
-    def MaxHP(self):       return self.stat('ST', False) # + levels of HP
-    def FP(self):          return self.MaxFP() - self.fp_spent # + levels of FP
-    def MaxFP(self):       return self.stat('HT', False) # + levels of FP
-    def MP(self):          return self.MaxMP() - self.mp_spent # + levels of MP
-    def MaxMP(self):       return self.stat('IQ', False) # + levels of MP, magery
+    def HP(self, temporary=False):          return self.MaxHP(temporary) - self.hp_spent
+    def MaxHP(self, temporary=False):       return self.stat('ST', temporary) # + levels of HP
+    def FP(self, temporary=False):          return self.MaxFP(temporary) - self.fp_spent # + levels of FP
+    def MaxFP(self, temporary=False):       return self.stat('HT', temporary) # + levels of FP
+    def MP(self, temporary=False):          return self.MaxMP(temporary) - self.mp_spent # + levels of MP
+    def MaxMP(self, temporary=False):       return self.stat('IQ', temporary) # + levels of MP, magery
 
-    def Will(self):        return self.stat('IQ') # + levels of Will
-    def Perception(self):  return self.stat('IQ') # +levels of Per
+    def Will(self, temporary=False):        return self.stat('IQ', temporary) # + levels of Will
+    def Perception(self, temporary=False):  return self.stat('IQ', temporary) # +levels of Per
 
     # STUB: Insert formulas
-    def Move(self):
+    def Move(self, temporary=True):
 
         # TODO: Buying basic move.
-        move = int(self.Speed() * (1 - .2 * self.Encumbrance()))
+        move = int(self.Speed(temporary) * (1 - .2 * self.Encumbrance()))
 
-        # Penalty from reeling: halve move.
-        if self.reeling() is True:
-            move = (move + 1) / 2
+        if temporary:
+            # Penalty from reeling: halve move.
+            if self.get("Status", "Reeling"):
+                move = (move + 1) / 2
 
-        # Penalty from exhaustion: halve move.
-        if self.exhausted() is True:
-            move = (move + 1) / 2
+            # Penalty from exhaustion: halve move.
+            if self.get("Status", "Exhausted"):
+                move = (move + 1) / 2
 
         return move
 
-    def Speed(self):
-        # TODO: buying speed
-        speed = self.stat('DX', False) + self.stat('HT', False)
-        return speed
+    def Speed(self, temporary=True):
+        # TODO: buying levels of speed
+        return self.stat('DX', temporary) + self.stat('HT', temporary)
 
     # STUB: Can be modified by acrobatics, etc.
     def Dodge(self, retreat=False):
@@ -463,6 +460,7 @@ class Actor(Agent, ManipulatingAgent):
 
         posture_mod = postures[self.posture][1]
 
+        # TODO: per-skill
         retreat_mod = 0
         if retreat is True:
             retreat_mod += 3
