@@ -1,7 +1,7 @@
 # Terrain objects.
 
 from src.lib.agents.agent import Agent
-from src.lib.util.command import CommandRegistry
+from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.log import Log
 
 class Terrain(Agent):
@@ -44,18 +44,33 @@ class Lever(Terrain):
         self.glyph = "|"
         self.color = "magenta-black"
         self.blocking = False
+        self.enabled = False
 
-    def get_interactions(self, agent, source):
-        """List the interaction options exposed to another Agent within a given source."""
-        yield CommandRegistry("UseTerrain")
+    def provide_commands(self, context):
+        """Yield the interaction commands an Agent provides to another Agent
+        within a Context.
+        """
+        if "Manipulation" in context.domains:
+            if not self.enabled:
+                yield CMD("UseTerrain", target=self, use="enable")
+            else:
+                yield CMD("UseTerrain", target=self, use="disable")
 
-    def react_on_do_use(self, user):
-        Log.add("<magenta-black>-CLICK!-</> You toggle the lever.")
-        if self.color == 'magenta-black':
-            self.color = "black-magenta"
+    def react_on_do_use(self, agent, use):
+        """React to being used."""
+        if use == "enable" and self.enabled or use == 'disable' and not self.enabled:
+            Log.add("The lever won't budge.")
+            return True
         else:
-            self.color = "magenta-black"
-        return True
+            Log.add("<magenta-black>-CLICK!-</> %s %ss the lever." % (agent.appearance(), use))
+            if use == "enable" and not self.enabled:
+                self.color = "black-magenta"
+                self.enabled = True
+            elif use == "disable" and self.enabled:
+                self.color = "magenta-black"
+                self.enabled = False
+            return True
+        return False
 
 # Meat Arena
 class MeatWall(Terrain):

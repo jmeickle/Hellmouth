@@ -476,7 +476,7 @@ class UseMixin(Mixin):
 
     def do_use(self, target, manipulator, use):
         """Use a target."""
-        target.react("on", self)
+        target.react(self, use)
         return True
 
 class UseAtMixin(Mixin):
