@@ -309,6 +309,9 @@ class Agent(object):
            return self.call("Body", "get_default_manipulator", context).get_result()
         if arg == "weapon":
            return self.call("Combat", "get_default_weapon", context).get_result()
+        # TODO: Remove this default
+        if arg == "container" and self.has_domain("Container"):
+            return self
 
     @agent_context
     def provide_arguments(self, context, required_arguments):
