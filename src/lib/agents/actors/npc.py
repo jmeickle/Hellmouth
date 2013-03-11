@@ -9,8 +9,8 @@ from src.lib.util.hex import *
 
 class NPC(Actor):
 
-    def __init__(self):
-        super(NPC, self).__init__()
+    def __init__(self, components=[]):
+        super(NPC, self).__init__(components)
 
         # TODO: Make an AI class.
 

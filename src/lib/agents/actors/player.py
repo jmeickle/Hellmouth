@@ -6,7 +6,7 @@ from src.lib.agents.components.status import Status
 
 class PC(Actor, ManipulatingAgent):
 
-    def __init__(self, components=[Equipment, Status]):
+    def __init__(self, components=[]):
         super(PC, self).__init__(components)
         self.glyph = '@'
         self.name = 'adventurer'
