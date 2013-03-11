@@ -44,6 +44,12 @@ class Body(Component):
         for part in self.locs.values():
             yield part
 
+    def get_manipulators(self):
+        """Yield this Body's Parts that are defined as manipulators."""
+        for part in self.get_parts():
+            if part.get_manipulate():
+                yield part
+
     def get_reach(self):
         """Return the reach provided by this Body, exclusive of other factors."""
         return self.size
