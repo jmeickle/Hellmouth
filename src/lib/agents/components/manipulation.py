@@ -230,13 +230,21 @@ class Manipulation(Component):
 
         return min_reach, max_reach
 
+class Grasped(Component):
+    """Component that handles a grasped Agent's functionality."""
+    def __init__(self, owner, controller, manipulator):
+        super(Grasped, self).__init__(owner)
+
+        self.controller = controller
+        self.manipulator = manipulator
+
 class Wielded(Component):
     """Component that handles a wielded Agent's functionality."""
 
-    def __init__(self, owner, wielder, manipulator):
+    def __init__(self, owner, controller, manipulator):
         super(Wielded, self).__init__(owner)
 
-        self.wielder = wielder
+        self.controller = controller
         self.manipulator = manipulator
         self.wielding_mode = 0
         self.wielding_modes = []
@@ -252,7 +260,7 @@ class Wielded(Component):
         self.wielding_modes = []
         if hasattr(self.owner, "get_wielding_modes"):
             for mode in self.owner.get_wielding_modes():
-                if self.wielder.trait(mode[0]): # TODO: ICK. (Skipping past modes with no skill)
+                if self.controller.trait(mode[0]): # TODO: ICK. (Skipping past modes with no skill)
                     self.wielding_modes.append(mode)
 
     def get_wielding_mode(self):

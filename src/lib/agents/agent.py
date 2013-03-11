@@ -93,6 +93,12 @@ class Agent(object):
                 for component in self.get_components(domain):
                     yield component
 
+    def get_controlled_components(self, controller, domain=None):
+        """Yield Components controlled by another Agent (optionally, within a domain)."""
+        for component in self.get_components(domain):
+            if component.controller == controller:
+                yield component
+
     """Component setter methods."""
 
     def append_component(self, component, domain=None, trigger=True):
