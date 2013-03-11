@@ -16,12 +16,6 @@ class Action(object):
         self.context = command.context
         self.entry_id = command.entry_id
 
-        # Phase generator example:
-        # yield "touch", "target"
-        # if self("touch", "target"): yield "grasp", "target"
-        # if self("grasp", "target"): yield "force", "target"
-        # if self("force", "target"): yield "ready", "target"
-
     def get_phases(self):
         """Yield the phases required to complete this Action.
 
