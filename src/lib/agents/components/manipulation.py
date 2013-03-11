@@ -109,9 +109,9 @@ class Wield(Action):
     @action_context
     def get_phases(self, ctx):
         yield "touch", "target", "manipulator"
-        if self("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
-        if self("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
-        if self("force", "target", "manipulator"): yield "ready", "target", "manipulator"
+        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
+        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
+        if ctx("force", "target", "manipulator"): yield "ready", "target", "manipulator"
 
 class UnWield(Action):
     """Lower an item in a manipulator to your side."""
