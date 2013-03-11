@@ -383,10 +383,7 @@ class BodyPart(object):
     # TODO: Remove.
     def DR(self):
         dr = 0
-        # HACK: Use all items!
-        import random
-        for appearance, itemlist in self.worn.items():
-            item = random.choice(itemlist) # MEGA HACK.
+        for item in self.worn:
             dr += item.DR()
         dr += self.dr + self.owner.DR()
         return dr
