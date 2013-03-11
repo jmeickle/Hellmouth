@@ -274,6 +274,7 @@ class Wielded(Component):
         self.manipulator = manipulator
         self.wielding_mode = 0
         self.wielding_modes = []
+        self.ready = True
 
     def trigger(self, *triggers):
         """Respond to triggers."""
@@ -289,6 +290,8 @@ class Wielded(Component):
                 if self.controller.trait(mode[0]): # TODO: ICK. (Skipping past modes with no skill)
                     self.wielding_modes.append(mode)
 
+    """Wielding getter methods."""
+
     def get_wielding_mode(self):
         """Return the current wielding mode."""
         if self.wielding_modes:
@@ -297,6 +300,25 @@ class Wielded(Component):
     def get_reach(self):
         """Return the minimum and maximum reach of the current wielding mode."""
         return self.owner.get_reach(self.get_wielding_mode())
+
+    def get_ready(self):
+        """Return whether the wielded Agent is ready."""
+        return self.ready
+
+    """Wielding setter methods."""
+
+    def set_ready(self, readiness):
+        """Set whether the wielded Agent is ready."""
+        self.ready = readiness
+        return True
+
+    """Wielding helper methods."""
+
+    def can_ready(self):
+        """Return the wielded Agent can be made ready."""
+        if self.get_ready():
+            return False
+        return True
 
 """Mixins."""
 
