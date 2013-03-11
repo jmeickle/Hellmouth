@@ -75,18 +75,19 @@ class MainMap(View):
             items = []
             for appearance, itemlist in self.player.cell().get_items():
                 items.extend(itemlist)
-
-            context = self.get_context(participants=items)
-            event = chr(c)
-            return self.player.process_event(event, context)
+            if items:
+                context = self.get_context(participants=items)
+                event = chr(c)
+                return self.player.process_event(event, context)
 #        elif c == ord('g'):
 #            self.player.command()
 #            return False
         elif c == ord('U'):
             terrain = self.player.cell().get_terrain()
-            context = self.get_context(participants=terrain, domains=["Manipulation"])
-            event = chr(c)
-            return self.player.process_event(event, context)
+            if terrain:
+                context = self.get_context(participants=terrain, domains=["Manipulation"])
+                event = chr(c)
+                return self.player.process_event(event, context)
         elif c == ord('}'):
             """Zoom."""
             self.zoom = 2

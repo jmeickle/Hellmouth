@@ -62,10 +62,14 @@ class Context(object):
 
     def set_participant(self, participant):
         """Set this Context to have a single participant."""
+        if not participant:
+            die("Tried to add an invalid participant to context: %s" % self.__dict__)
         self.participants = [participant]
 
     def add_participant(self, participant):
         """Add a participant to a Context."""
+        if not participant:
+            die("Tried to add an invalid participant to context: %s" % self.__dict__)
         self.participants.append(participant)
 
     def add_participants(self, participants):
