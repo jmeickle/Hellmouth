@@ -233,8 +233,8 @@ class Actor(Agent, ManipulatingAgent):
         # TODO: Improve messaging
         Log.add("%s falls over!" % self.appearance())
 
-    # Do something in a dir - this could be an attack or a move.
-    def do(self, dir):
+    # Do something in a direction - this could be an attack or a move.
+    def do(self, direction):
         if self.controlled is True and self.can_maneuver() is False:
             if self.alive is False:
                 Log.add("%s is dead. Press Ctrl-q to quit the game." % self.appearance())
@@ -245,42 +245,45 @@ class Actor(Agent, ManipulatingAgent):
 
         # Actors that are in our cell.
         # HACK: Need to fix this function to not include self.
-        actors = self.cell().intervening_actors(self.subposition, dir)
+        # actors = self.cell().intervening_actors(self.subposition, dir)
 
         # Within-hex attacks.
-        if actors and self.preferred_reach(0) is True:
-            for actor in actors:
-                if self.controlled != actor.controlled:
-                    return self.attack(actor)
+        # if actors and self.preferred_reach(0) is True:
+        #     for actor in actors:
+        #         if self.controlled != actor.controlled:
+        #             return self.attack(actor)
 
         # Can't move if there are intervening actors in that direction.
-        if actors:
-            return False
+        # if actors:
+        #     return False
         # HACK
-        else:
-            self.subposition = CC
+        # else:
+        #     self.subposition = CC
 
         # OK, nobody in the way. We're doing something in another hex.
         # Which one?
-        pos = add(self.pos, dir)
+        pos = add(self.pos, direction)
 
-        # Range 1 bump-attacks.
         if self.map.cell(pos).occupied() is True:
-            for actor in self.map.actors(pos):
-                if self.controlled != actor.controlled:
-                    if self.preferred_reach(1) is True:
-                        return self.attack(actor)
+            return False
+
+        # TODO: Reinstate bump-attacks.
+        # if self.has_domain("Combat") and self.map.cell(pos).occupied() is True:
+        #     for actor in self.map.actors(pos):
+        #         if self.controlled != actor.controlled:
+                    # Generate an attack Context and use it for a command
 
         # Check for invalid hexes.
-        if self.map.valid(pos) is False:
-            if self.controlled is True:
+        if not self.map.valid(pos):
+            if self.controlled:
                 Log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
         # The only option left.
-        if self.can_move(pos, dir):
+        if self.can_move(pos, direction):
+            result = self.move(pos, direction)
             self.end_turn()
-            return self.move(pos, dir)
+            return result
 
     # Mark self as done acting.
     def end_turn(self):
