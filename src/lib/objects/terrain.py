@@ -6,6 +6,7 @@ from src.lib.util.log import Log
 
 class Terrain(Agent):
     def __init__(self, terrain_type=None):
+        super(Terrain, self).__init__()
         self.cell = None
         self.name = None
         self.color = None
@@ -24,7 +25,7 @@ class Terrain(Agent):
 # Generic staircase class.
 class Stairs(Terrain):
     def __init__(self, which, destination):
-        Terrain.__init__(self)
+        super(Stairs, self).__init__()
         self.name = "staircase " + which
         self.destination = destination
         self.glyph = ">"
@@ -38,7 +39,7 @@ class Stairs(Terrain):
 # Generic lever class.
 class Lever(Terrain):
     def __init__(self, target):
-        Terrain.__init__(self)
+        super(Lever, self).__init__()
         self.name = "lever"
         self.target = target
         self.glyph = "|"
@@ -75,7 +76,7 @@ class Lever(Terrain):
 # Meat Arena
 class MeatWall(Terrain):
     def __init__(self, terrain_type=None):
-        Terrain.__init__(self)
+        super(MeatWall, self).__init__()
         self.name = "meat wall"
         self.glyph = "X"
         self.color = "red-black"
@@ -89,7 +90,7 @@ class MeatWall(Terrain):
 # Caves
 class CaveWall(Terrain):
     def __init__(self, terrain_type=None):
-        Terrain.__init__(self)
+        super(CaveWall, self).__init__()
         self.name = "rough-hewn cave wall"
         self.glyph = "#"
         self.color = "yellow-black"
