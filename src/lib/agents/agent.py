@@ -196,7 +196,8 @@ class Agent(object):
                 # TODO: Instead return whether the event was consumed.
                 return outcome, cause
 
-        Log.add("( ): %s" % event)
+        if event not in ["Up", "Down"]:
+            Log.add("( ): %s" % event)
         # TODO: Instead return whether the event was consumed.
         return False
 
