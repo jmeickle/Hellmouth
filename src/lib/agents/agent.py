@@ -169,7 +169,8 @@ class Agent(object):
 
     def process_event(self, event, context):
         """Find the first Command matching an event, instantiate it, and process it."""
-        Log.add("EVENT: %s" % event)
+        if event not in ["Up", "Down"]:
+            Log.add("EVENT: %s" % event)
 
         for command_class, command_arguments in context.get_commands():
             for command_event in command_class.get_events():
