@@ -300,11 +300,12 @@ class Agent(object):
             provided_argument = self.provide_argument(self, context, required_argument)
             if provided_argument: yield provided_argument
 
-    @agent_context
+    @UNIMPLEMENTED
     def provide_commands(self, context):
-        """Yield the interaction options an Agent provides to another Agent."""
-        if "Combat" in context.domains:
-            yield CMD("Attack", target=self, weapon=None)
+        """Yield the interaction commands an Agent provides to another Agent
+        within a Context.
+        """
+        pass
 
     # Return your own cell.
     # TODO: Multi-cell creatures.

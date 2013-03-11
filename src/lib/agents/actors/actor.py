@@ -1,6 +1,7 @@
 from random import choice
 from operator import itemgetter
 
+from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.define import *
 from src.lib.util.dice import *
 from src.lib.util.hex import *
@@ -106,6 +107,12 @@ class Actor(Agent, ManipulatingAgent):
         if not self.controlled and "placed" in triggers:
             self.trigger_components("placed", domain="AI")
 
+    def provide_commands(self, context):
+        """Yield the interaction commands an Agent provides to another Agent
+        within a Context.
+        """
+        if "Combat" in context.domains:
+            yield CMD("Attack", target=self, weapon=None)
     #
     # MOVEMENT AND POSITIONING:
     #
