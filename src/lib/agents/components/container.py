@@ -1,6 +1,8 @@
 """Provides functionality for Agents to contain other Agents (typically items) inside of themselves."""
 
 from src.lib.agents.components.component import Component
+
+from src.lib.util.debug import debug, die
 from src.lib.util.result import accumulate_results, ignore_results
 
 """Components."""
@@ -13,24 +15,41 @@ class Container(Component):
         self.contents = {}
         self.owner = owner
 
-    def add(self, agent):
-        """Add an Agent to this Container."""
+    """Content getter methods."""
+
+    @accumulate_results
+    def get_contents(self):
+        """Yield keyed lists of Agents inside the Container."""
+        for key, itemlist in self.contents.items():
+            yield ((key, itemlist))
+
+    @accumulate_results
+    def get_list(self):
+        """Yield a flat list of Agents inside the Container."""
+        for itemlist in self.contents.values():
+            for item in itemlist:
+                yield item
+
+    """Content setter methods."""
+
+    def add_contents(self, agent):
+        """Add an Agent to a keyed list in this Container."""
         matches = self.contents.get(agent.appearance(), [])
 
         # This covers only the case of that exact item already being in container.
-        assert agent not in matches
+        if agent in matches: die("Tried to add agent %s to container %s." % (agent, self))
 
         matches.append(agent)
         self.contents[agent.appearance()] = matches
 
         return True
 
-    def remove(self, agent):
-        """Remove an Agent from this Container."""
+    def remove_contents(self, agent):
+        """Remove an Agent from a keyed list in this Container."""
         matches = self.contents.get(agent.appearance(), [])
 
         # This covers only the case of that exact item already being in container.
-        assert agent in matches
+        if agent not in matches: die("Tried to remove agent %s from container %s." % (agent, self))
 
         matches.remove(agent)
         if matches:
@@ -40,9 +59,11 @@ class Container(Component):
 
         return True
 
-    def count(self):
+    """Content utility methods."""
+
+    def count_contents(self):
         """Return the number of Agents inside this Container."""
-        return len(self.contents)
+        return len([agent for agent in self.get_list()])
 
     # Not currently working:
     # @ignore_results
@@ -56,19 +77,6 @@ class Container(Component):
     #             if key == item:
     #                 return True
     #     return False
-
-    @accumulate_results
-    def get_list(self):
-        """Yield a flat list of items inside a container."""
-        for itemlist in self.contents.values():
-            for item in itemlist:
-                yield item
-
-    @accumulate_results
-    def get_contents(self):
-        """Get Agents inside the Container."""
-        for key, itemlist in self.contents.items():
-            yield ((key, itemlist))
 
 #    def get_matches(self, appearance):
 #        for appearance, itemlist in self.contents.items():
