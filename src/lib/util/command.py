@@ -12,12 +12,16 @@ class Command(object):
         self.context = context
         self.entry_id = self.context.get_id()
 
+    # TODO: Only Context __call__ gets overriden like this.
     def __call__(self, next_action, *arguments):
         """Override __call__ to allow concisely checking Action status in get_phases()."""
         if not self.context:
             return True
 
-        for called_action, result in self.context.get_results(self.entry_id, "action"):
+        # TODO: Don't index into get_results like this!
+        # TODO: Clear the phase results between actions.
+        # TODO: Find a better scheme for storing results...
+        for called_action, result in self.context.get_results("action"):
             if next_action == called_action.__class__:
                 outcome, cause = self.context.parse_result(result)
                 return outcome
