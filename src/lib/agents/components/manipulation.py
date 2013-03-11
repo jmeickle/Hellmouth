@@ -187,14 +187,20 @@ class ReadyWeapon(Command):
     description = "ready an unreadied weapon"
     defaults = ("r",)
 
+    # TODO: Distinct Ready action?
+    @command_context
+    def get_actions(self, ctx):
+        yield Wield
+
 class WieldWeapon(Command):
     short_desc = "wield"
-    description = "wield a weapon"
+    description = "wield a weapon from inventory"
     defaults = ("w",)
 
     @command_context
     def get_actions(self, ctx):
-        yield Wield
+        yield UnPack
+        if ctx(UnPack): yield Wield
 
 CMD.register(ReadyWeapon, WieldWeapon)
 
