@@ -237,6 +237,25 @@ class Manipulation(Component):
 
         return min_reach, max_reach
 
+    def get_wielded(self, manipulators=None):
+        """Yield Agents wielded by this Agent."""
+        if not manipulators:
+            manipulators = self.owner.values("Body", "get_manipulators")
+
+        for manipulator in manipulators:
+            for agent in manipulator.get_wielded():
+                yield agent
+
+    # TODO: argh...
+    def could_wield(self, manipulators=None):
+        """Return whether the Agent could wield something."""
+        if not manipulators:
+            manipulators = self.owner.values("Body", "get_manipulators")
+
+        for manipulator in manipulators:
+            if manipulator.could_wield():
+                return True
+
 class Grasped(Component):
     """Component that handles a grasped Agent's functionality."""
     def __init__(self, owner, controller, manipulator):
