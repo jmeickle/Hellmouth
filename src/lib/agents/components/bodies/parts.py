@@ -1,6 +1,6 @@
 import random
 
-from src.lib.agents.components.manipulation import Wielded
+from src.lib.agents.components.manipulation import Grasped, Wielded
 from src.lib.objects.items.item import Natural
 from src.lib.objects.items.carrion import PartialCorpse
 
@@ -16,7 +16,7 @@ class BodyPart(object):
         self.hp = 0
         self.dr = 0
         self.wounds = []
-        self.weapons = []
+        self.natural_weapons = []
         """Natural weapons."""
 
         self.multipliers = {
@@ -32,11 +32,9 @@ class BodyPart(object):
         self.children = []
         self.sublocations = []
 
-        # TODO: These will have to be inventories later.
         # Item-related
-        self.held = {}
-        self.readied = {}
-        self.worn = {}
+        self.grasped = []
+        self.worn = []
 
         # A layer can have multiple items (like several rings).
         self.layers = [[]]
@@ -50,9 +48,9 @@ class BodyPart(object):
 
     def trigger(self, *triggers):
         """Respond to triggers."""
-        if "add_weapon" or "delete_weapon" in triggers:
-            for weapon in self.weapons:
-                weapon.trigger("rebuild")
+        if "added_natural_weapon" or "removed_natural_weapon" or "wielded" or "unwielded" or "grasped" or "ungrasped" in triggers:
+            for natural_weapon in self.natural_weapons:
+                natural_weapon.trigger("rebuild")
 
     def appearance(self):
         appearance = hit_locations.get(self.type)
@@ -89,37 +87,124 @@ class BodyPart(object):
 
     def get_natural_weapons(self):
         """Yield this Part's natural weapons."""
-        for weapon in self.weapons:
-            yield weapon
+        for natural_weapon in self.natural_weapons:
+            yield natural_weapon
 
     def has_natural_weapon(self):
-        """Return whether this part has any natural weapons."""
-        if self.weapons:
+        """Return whether this Part has any natural weapons."""
+        if self.natural_weapons:
             return True
         return False
 
     """Natural weapon setter methods."""
 
-    def add_natural_weapon(self, weapon, trigger=True):
-        """Add a natural weapon to this part."""
-        weapon.append_component(Wielded(owner=weapon, wielder=self.owner, manipulator=self))
-        self.weapons.append(weapon)
+    def add_natural_weapon(self, natural_weapon, trigger=True):
+        """Add a natural weapon to this Part."""
+        natural_weapon.append_component(Wielded(owner=natural_weapon, controller=self.owner, manipulator=self))
+        self.natural_weapons.append(natural_weapon)
         if trigger:
-            self.trigger("add_weapon")
+            self.trigger("added_natural_weapon")
 
-    def delete_natural_weapon(self, weapon, trigger=True):
-        """Remove a natural weapon from this part."""
-        self.weapons.remove(weapon)
-
-        for component in weapon.get_components("Manipulated"):
-            if component.owner == self.owner:
-                weapon.remove_component()
+    def remove_natural_weapon(self, natural_weapon, trigger=True):
+        """Remove a natural weapon from this Part."""
+        self.natural_weapons.remove(natural_weapon)
+        for component in self.get_wielded_components(natural_weapon):
+            natural_weapon.remove_component(component)
         if trigger:
-            self.trigger("delete_weapon")
+            self.trigger("removed_natural_weapon")
+
+    """Grasping getter methods."""
+
+    def get_grasped(self):
+        for agent in self.grasped:
+            yield agent
+
+    """Grasping setter methods."""
+
+    def add_grasped(self, agent, trigger=True):
+        """Grasp an Agent."""
+        agent.append_component(Grasped(owner=agent, controller=self.owner, manipulator=self))
+        self.grasped.append(agent)
+        if trigger:
+            self.trigger("grasped")
+        return True
+
+    def remove_grasped(self, agent, trigger=True):
+        """Ungrasp an Agent."""
+        self.grasped.remove(agent)
+        for component in agent.get_controlled_components(self.owner, "Grasped"):
+            agent.remove_component(component)
+        if trigger:
+            self.trigger("ungrasped")
+        return True
+
+    """Grasping helper methods."""
+
+    """Wielding getter methods."""
+
+    def get_wielded(self):
+        """Yield this Part's wielded Agents."""
+        for agent in self.get_grasped():
+            for component in agent.get_controlled_components(self.owner, "Wielded"):
+                yield agent
+                break
+
+    def has_wielded(self):
+        """Return whether this part has any wielded Agents."""
+        for agent in self.get_wielded():
+            return True
+        return False
+
+    """Wielding setter methods."""
+
+    def set_wielded(self, agent, trigger=True):
+        """Set a grasped Agent as wielded."""
+        agent.append_component(Wielded(owner=agent, controller=self.owner, manipulator=self))
+        if trigger:
+            self.trigger("wielded")
+        return True
+
+    def set_unwielded(self, agent, trigger=True):
+        """Set a grasped Agent as unwielded."""
+        for component in agent.get_controlled_components(self.owner, "Wielded"):
+            agent.remove_component(component)
+        if trigger:
+            self.trigger("unwielded")
+        return True
+
+    """Wielding helper methods."""
+
+    def can_wield(self, agent):
+        """Return whether an Agent can be wielded."""
+        if agent in self.get_wielded():
+            return False
+        return True
+
+    def could_wield(self):
+        """Return whether an unspecified Agent could be wielded."""
+        if self.has_wielded():
+            return False
+        return True
+
+    def can_unwield(self, agent):
+        """Return whether an Agent can be unwielded."""
+        if agent not in self.get_wielded():
+            return False
+        return True
+
+    def could_unwield(self):
+        """Return whether an unspecified Agent could be unwielded."""
+        if not self.has_wielded():
+            return False
+        return True
+
+    def get_manipulate(self):
+        """Return whether the Part is a manipulator."""
+        return self.manipulator
 
     # STUB
     def can_manipulate(self):
-        """Return whether a BodyPart can serve as a manipulator."""
+        """Return whether a Part can serve as a manipulator."""
         if not self.manipulator:
             return False
 
@@ -132,16 +217,16 @@ class BodyPart(object):
         """Returns the min and max reach of this BodyPart, exclusive of other factors."""
         return self.min_reach, self.max_reach
 
-    def weapons(self, natural=True, wielded=True, improvised=False):
-        found_weapons = {}
-        if natural is True:
-            for appearance, weapons in self.attack_options.items():
-                if self.holding() is False or random.choice(weapons).requires_empty_location is False:
-                    found_weapons[appearance] = weapons
-        if wielded is True:
-            for appearance, weapons in self.readied.items():
-                found_weapons[appearance] = weapons
-        return found_weapons
+    # def weapons(self, natural=True, wielded=True, improvised=False):
+    #     found_weapons = {}
+    #     if natural is True:
+    #         for appearance, weapons in self.attack_options.items():
+    #             if self.holding() is False or random.choice(weapons).requires_empty_location is False:
+    #                 found_weapons[appearance] = weapons
+    #     if wielded is True:
+    #         for appearance, weapons in self.readied.items():
+    #             found_weapons[appearance] = weapons
+    #     return found_weapons
 
     # Information about this location.
     def get_view_data(self):
@@ -185,58 +270,58 @@ class BodyPart(object):
     def sublocation(self, part):
         self.sublocations.append(part)
 
-    # ITEMS
-    # Return whether we're holding anything.
-    def holding(self):
-        if len(self.held) > 0:
-            return True
-        return False
+    # # ITEMS
+    # # Return whether we're holding anything.
+    # def holding(self):
+    #     if len(self.held) > 0:
+    #         return True
+    #     return False
 
-    # STUB: Can we hold the item?
-    def can_hold(self, item):
-        # HACK: It's possible to hold multiple items.
-        if self.holding():
-            return False
-        return True
+    # # STUB: Can we hold the item?
+    # def can_hold(self, item):
+    #     # HACK: It's possible to hold multiple items.
+    #     if self.holding():
+    #         return False
+    #     return True
 
-    def hold(self, item):
-        held = self.held.get(item.appearance(), [])
-        held.append(item)
-        self.held[item.appearance()] = held
-        item.held.append(self)
+    # def hold(self, item):
+    #     held = self.held.get(item.appearance(), [])
+    #     held.append(item)
+    #     self.held[item.appearance()] = held
+    #     item.held.append(self)
 
-    def ready(self, item):
-        readied = self.readied.get(item.appearance(), [])
-        readied.append(item)
-        self.readied[item.appearance()] = readied
-        item.readied.append(self)
+    # def ready(self, item):
+    #     readied = self.readied.get(item.appearance(), [])
+    #     readied.append(item)
+    #     self.readied[item.appearance()] = readied
+    #     item.readied.append(self)
 
-    def wear(self, item):
-        worn = self.worn.get(item.appearance(), [])
-        worn.append(item)
-        self.worn[item.appearance()] = worn
-        item.worn.append(self)
+    # def wear(self, item):
+    #     worn = self.worn.get(item.appearance(), [])
+    #     worn.append(item)
+    #     self.worn[item.appearance()] = worn
+    #     item.worn.append(self)
 
-    def unhold(self, item):
-        held = self.held.pop(item.appearance(), [])
-        held.remove(item)
-        if held:
-            self.held[item.appearance()] = held
-        item.held.remove(self)
+    # def unhold(self, item):
+    #     held = self.held.pop(item.appearance(), [])
+    #     held.remove(item)
+    #     if held:
+    #         self.held[item.appearance()] = held
+    #     item.held.remove(self)
 
-    def unready(self, item):
-        readied = self.readied.pop(item.appearance(), [])
-        readied.remove(item)
-        if readied:
-            self.readied[item.appearance()] = readied
-        item.readied.remove(self)
+    # def unready(self, item):
+    #     readied = self.readied.pop(item.appearance(), [])
+    #     readied.remove(item)
+    #     if readied:
+    #         self.readied[item.appearance()] = readied
+    #     item.readied.remove(self)
 
-    def unwear(self, item):
-        worn = self.worn.pop(item.appearance(), [])
-        worn.remove(item)
-        if worn:
-            self.worn[item.appearance()] = worn
-        item.worn.remove(self)
+    # def unwear(self, item):
+    #     worn = self.worn.pop(item.appearance(), [])
+    #     worn.remove(item)
+    #     if worn:
+    #         self.worn[item.appearance()] = worn
+    #     item.worn.remove(self)
 
     # COMBAT
 
