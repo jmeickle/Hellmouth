@@ -182,10 +182,12 @@ CMD.register(Get, GetAll)
 """Change how an item is manipulated."""
 
 class ReadyWeapon(Command):
+    short_desc = "ready"
     description = "ready an unreadied weapon"
     defaults = ("r",)
 
 class WieldWeapon(Command):
+    short_desc = "wield"
     description = "wield a weapon"
     defaults = ("w",)
 

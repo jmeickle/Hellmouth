@@ -5,6 +5,7 @@ from copy import copy
 from src.lib.util.define import *
 
 class Command(object):
+    short_desc = None
     description = "no command"
     defaults = []
 
@@ -57,6 +58,12 @@ class Command(object):
     @classmethod
     def get_name(cls):
         return cls.__name__
+
+    @classmethod
+    def get_desc(cls, short=False):
+        if short and cls.short_desc:
+            return cls.short_desc
+        return cls.description
 
 class Save(Command):
     description = "save the game"
