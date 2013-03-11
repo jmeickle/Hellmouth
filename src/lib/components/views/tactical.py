@@ -456,33 +456,33 @@ class Inventory(View):
 
     # TODO: Fire this on events that require a refresh.
     def refresh(self):
-        self.items = [item for item in self.player.values("Container", "get_contents")]
+        self.inventory = [item for item in self.player.values("Container", "get_list")]
+        self.wielded = [wielded for wielded in self.player.values("Manipulation", "get_wielded")]
         self.equipment = [equipment for equipment in self.player.values("Equipment", "get_worn")]
-        self.parts = [part for part in self.player.values("Body", "get_parts")]
-        # TODO: Add sorting back in once it's fixed.
-        #self.slots = sorted(sorted(self.player.body.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting"))
         self.ground = [ground for ground in self.map.player.cell().get_items()]
 
         self.tabs.set_choices([choice for choice in self.active_tabs()])
 
         if self.tabs.choice() == "Inventory":
-            self.selection.set_choices(self.items)
+            self.selection.set_choices(self.inventory)
         elif self.tabs.choice() == "Equipment":
-            self.selection.set_choices(self.equipment)
+            self.selection.set_choices(self.wielded + self.equipment)
         elif self.tabs.choice() == "Ground":
             self.selection.set_choices(self.ground)
 
         self.context = self.get_context()
 
-        if self.tabs.choice() == "Inventory" and self.items:
-            appearance, itemlist = self.items[self.selection.index]
-            self.context.set_participant(itemlist[0])
+        participant = None
+
+        if self.tabs.choice() == "Inventory" and self.inventory:
+            participant = self.inventory[self.selection.index]
         elif self.tabs.choice() == "Equipment" and self.equipment:
-            part_appearance, item_dict = self.equipment[self.selection.index]
-            self.context.set_participant(item_dict)
+            participant = self.equipment[self.selection.index]
         elif self.tabs.choice() == "Ground" and self.ground:
-            appearance, itemlist = self.ground[self.selection.index]
-            self.context.set_participant(itemlist[0])
+            participant = self.ground[self.selection.index]
+
+        if participant:
+            self.context.set_participant(participant)
 
         self.commands.set_choices([command for command in self.context.get_commands()])
 
@@ -498,75 +498,77 @@ class Inventory(View):
     def render(self):
         self.cline("Inventory")
         self.y_acc += 1
-        if len(self.items) > 0:
-            for x in range(len(self.items)):
-                appearance, items = self.items[x]
-                if len(items) > 1:
-                    string = "%d %ss" % (len(items), appearance)
-                else:
-                    string = appearance
+        if not self.inventory:
+            self.cline("No items")
+        else:
+            for x in range(len(self.inventory)):
+                agent = self.inventory[x]
+                string = agent.appearance()
 
                 # Highlight tab, if present.
-                if self.tabs.index == 0 and x == self.selection.index:
-                    self.cline("<green-black>%s</>" % string)
-                else:
-                    self.cline(string)
-        else:
-            self.cline("No items")
+                if self.tabs.choice() == "Inventory" and self.selection.choice() == agent:
+                    string = text.highlight(string)
+                self.cline(string)
 
         self.y_acc += 1
 
         # Print what's on the ground, too.
 
-        if len(self.ground) > 0:
-            self.cline("Ground:")
-            self.y_acc += 1
-            for x in range(len(self.ground)):
-                appearance, items = self.ground[x]
-                if len(items) > 1:
-                    string = "%d %ss" % (len(items), appearance)
-                else:
-                    string = appearance
+        # if len(self.ground) > 0:
+        #     self.cline("Ground:")
+        #     self.y_acc += 1
+        #     for x in range(len(self.ground)):
+        #         appearance, items = self.ground[x]
+        #         if len(items) > 1:
+        #             string = "%d %ss" % (len(items), appearance)
+        #         else:
+        #             string = appearance
 
-                if self.tabs.choice() == "Ground" and x == self.selection.index:
-                    string = text.highlight(string)
+        #         if self.tabs.choice() == "Ground" and x == self.selection.index:
+        #             string = text.highlight(string)
 
-                self.cline(string)
+        #         self.cline(string)
 
         self.y_acc = 0
         self.x_acc += 20
 
-        # TODO: Fix this messaging.
         self.cline("Equipped")
         self.y_acc += 1
-        for x in range(len(self.parts)):
-            part = self.parts[x]
-            equipped = ""
-            for appearance, items in part.readied.items():
-                for item in items: # Ick. Definitely need to move this printing!
-                    if item.is_wielded():
-                        equipped += "%s" % appearance # (wielded)
-                    else:
-                        equipped += "%s" % appearance # (readied)
-            for appearance, items in part.held.items():
-                for item in items:
-                    if not item.is_wielded():
-                        equipped += "%s" % appearance # (held)
-            for appearance, items in part.worn.items():
-                for item in items:
-                    equipped += "%s" % appearance # (worn)
 
-            # If we don't have a string yet:
-            if not equipped:
-                continue
+        for agent in self.wielded:
+            self.cline(agent.appearance())
 
-            colon = "%s:" % part.appearance()
+        for agent in self.equipment:
+            self.cline(agent.appearance())
 
-            # Highlights.
-            if self.tabs.index == 1 and x == self.selection.index:
-                self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
-            else:
-                self.cline("%-11s %s" % (colon, equipped))
+        # for x in range(len(self.parts)):
+        #     part = self.parts[x]
+        #     equipped = ""
+        #     for appearance, items in part.readied.items():
+        #         for item in items: # Ick. Definitely need to move this printing!
+        #             if item.is_wielded():
+        #                 equipped += "%s" % appearance # (wielded)
+        #             else:
+        #                 equipped += "%s" % appearance # (readied)
+        #     for appearance, items in part.held.items():
+        #         for item in items:
+        #             if not item.is_wielded():
+        #                 equipped += "%s" % appearance # (held)
+        #     for appearance, items in part.worn.items():
+        #         for item in items:
+        #             equipped += "%s" % appearance # (worn)
+
+        #     # If we don't have a string yet:
+        #     if not equipped:
+        #         continue
+
+        #     colon = "%s:" % part.appearance()
+
+        #     # Highlights.
+        #     if self.tabs.index == 1 and x == self.selection.index:
+        #         self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
+        #     else:
+        #         self.cline("%-11s %s" % (colon, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
