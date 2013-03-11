@@ -40,7 +40,7 @@ class Body(Component):
 
     # TODO: Filter?
     def get_parts(self):
-        """Generate all parts."""
+        """Yield this body's Parts."""
         for part in self.locs.values():
             yield part
 
