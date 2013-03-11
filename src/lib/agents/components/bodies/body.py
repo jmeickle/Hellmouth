@@ -28,10 +28,11 @@ class Body(Component):
             for part in self.get_parts():
                 part.trigger("rebuild")
 
-    @ignore_results
     def get_worn(self, *args, **kwargs):
-        for loc in self.locs.values():
-            yield loc.appearance(), loc.worn
+        """Yield all worn agents in all Parts."""
+        for part in self.get_parts():
+            for worn in part.worn:
+                yield worn
 
     def get_part(self, part_name):
         """Return the part matching a part name."""
