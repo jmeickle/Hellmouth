@@ -352,3 +352,11 @@ class Agent(object):
         reaction = getattr(self, "react_%s_%s" % (kwargs.pop("identifier", "on"), caller()), None)
         if reaction:
             return reaction(*args, **kwargs)
+
+    # Mark self as done acting.
+    # TODO: Make this part of a Queue component.
+    def end_turn(self):
+        if self.map.acting == self:
+            self.after_turn()
+            self.map.acting = None
+            self.map.queue.append(self)

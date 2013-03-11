@@ -285,13 +285,6 @@ class Actor(Agent, ManipulatingAgent):
             self.end_turn()
             return result
 
-    # Mark self as done acting.
-    def end_turn(self):
-        if self.map.acting == self:
-            self.after_turn()
-            self.map.acting = None
-            self.map.queue.append(self)
-
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
         if self.get("Status", "Unconscious"):

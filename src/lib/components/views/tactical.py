@@ -112,7 +112,7 @@ class MainMap(View):
         elif c == ord('3'):
             self.map.player.do(SE)
         elif c == ord('5'):
-            self.map.player.over()
+            self.map.player.end_turn()
         elif c == ord('>') or c == ord('<'):
             """Stairs."""
             self.map.player.stairs()
