@@ -484,7 +484,7 @@ class Inventory(View):
             appearance, itemlist = self.ground[self.selection.index]
             self.context.set_participant(itemlist[0])
 
-        self.commands.set_choices([command for command in self.context.get_interactions()])
+        self.commands.set_choices([command for command in self.context.get_commands()])
 
     # Stored here for convenience.
     def before_draw(self):
