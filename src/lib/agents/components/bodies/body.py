@@ -22,6 +22,12 @@ class Body(Component):
 #        self.primary_slot = None
         self.build(self.owner)
 
+    def trigger(self, *triggers):
+        """Respond to triggers."""
+        if "rebuild" in triggers:
+            for part in self.get_parts():
+                part.trigger("rebuild")
+
     @ignore_results
     def get_worn(self, *args, **kwargs):
         for loc in self.locs.values():
