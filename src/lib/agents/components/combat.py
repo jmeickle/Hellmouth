@@ -86,9 +86,8 @@ class Combat(Component):
         if self.weapons:
             return self.weapons[0]
 
-    # STUB
     def get_default_weapon(self, context):
-        """Returns the weapon to default to in a Context."""
+        """Returns the weapon to default to within a Context."""
         weapon = self.get_active_weapon()
         if not weapon:
             if self.weapons:
