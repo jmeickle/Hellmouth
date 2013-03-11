@@ -84,7 +84,7 @@ class MainMap(View):
 #            return False
         elif c == ord('U'):
             terrain = self.player.cell().get_terrain()
-            context = self.get_context(participants=terrain)
+            context = self.get_context(participants=terrain, domains=["Manipulation"])
             event = chr(c)
             return self.player.process_event(event, context)
         elif c == ord('}'):
