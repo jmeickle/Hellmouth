@@ -508,69 +508,36 @@ class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
 class StoreMixin(Mixin):
     """Provides the ability to store targets into a Container."""
 
-    def can_store(self, target, manipulator, container=None):
+    def can_store(self, target, manipulator, container):
         """Whether you can store an item into a Container."""
-
-        # TODO: Remove default
-        if container is None:
-            container = self.get_component("Container")
-
-        if container is None:
-            return False
-
         # TODO: Don't use a limit of 5 entries (testing only!).
-        if container.count() > 5:
+        if container.call("Container", "count_contents").get_result() > 5:
             return False
         return True
 
     # Store an item in your container.
-    def do_store(self, target, manipulator, container=None):
+    def do_store(self, target, manipulator, container):
         """Store an item into a Container."""
-
-        # TODO: Remove default
-        if container is None:
-            container = self.get_component("Container")
-
-        if container is None:
-            return False
-
         if target.react("on", container) is False:
             return False
 
-        if container.add(target):
+        if container.call("Container", "add_contents", target).get_result():
             return True
         return False
 
 class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from a Container."""
 
-    def can_unstore(self, target, manipulator, container=None):
+    def can_unstore(self, target, manipulator, container):
         """Whether you can unstore an item from a Container."""
-
-        # TODO: Remove default
-        if container is None:
-            container = self.get_component("Container")
-
-        if container is None:
-            return False
-
         return True
 
-    def do_unstore(self, target, manipulator, container=None,):
+    def do_unstore(self, target, manipulator, container):
         """Unstore an item from a Container."""
+        if container.call("Container", "remove_contents", target).get_result():
+            return True
 
-        # TODO: Remove default
-        if container is None:
-            container = self.get_component("Container")
-
-        if container is None:
-            return False
-
-        matches = container.get(target.appearance(), [])
-        assert target in matches
-        matches.remove(target)
-        container[target.appearance()] = matches
-        return True
+        return False
 
 class StoringAgent(StoreMixin, UnstoreMixin):
     """Convenience Mixin to represent an Agent that can use its manipulators to store items in Containers."""
