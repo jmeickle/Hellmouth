@@ -138,7 +138,7 @@ class Agent(object):
         component.trigger("registered")
 
     def trigger_components(self, *triggers, **kwargs):
-        """Send a list of trigger triggers to each Component in a domain."""
+        """Send a list of triggers to each Component in a domain."""
         for component in self.get_components(kwargs.pop("domain", None)):
             component.trigger(*triggers)
 
