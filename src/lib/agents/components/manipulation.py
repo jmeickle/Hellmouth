@@ -34,6 +34,7 @@ simply wouldn't be able to *change* any of its manipulation states.
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.agents.contexts.context import action_context, command_context
+from src.lib.agents.components.phase import Phase
 
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.debug import debug, die
@@ -96,12 +97,13 @@ class UnPack(Action):
 
 class Use(Action):
     """Use a target using a manipulator."""
-    phases = [
-        ("touch", "target", "manipulator"),
-        ("grasp", "target", "manipulator"),
-        ("handle", "target", "manipulator"),
-        ("use", "target", "manipulator", "use")
-    ]
+
+    @action_context
+    def get_phases(self, ctx):
+        yield Phase("touch", "target", "manipulator")
+        if ctx(): yield Phase("grasp", "target", "manipulator")
+        if ctx(): yield Phase("handle", "target", "manipulator")
+        if ctx(): yield Phase("use", "target", "manipulator", "use")
 
 """Interacting with Agents using manipulators in a way requiring holding them."""
 
