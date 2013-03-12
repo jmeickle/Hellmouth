@@ -112,11 +112,11 @@ class Wield(Action):
     """"Hold an item in a manipulator out in front of you."""
     @action_context
     def get_phases(self, ctx):
-        yield "touch", "target", "manipulator"
-        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
-        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
-        if ctx("force", "target", "manipulator"): yield "wield", "target", "manipulator"
-        if ctx("wield", "target", "manipulator"): yield "ready", "target", "manipulator"
+        yield Phase("touch", "target", "manipulator")
+        if ctx(): yield Phase("grasp", "target", "manipulator")
+        if ctx(): yield Phase("force", "target", "manipulator")
+        if ctx(): yield Phase("wield", "target", "manipulator")
+        if ctx(): yield Phase("ready", "target", "manipulator")
 
 # class UnWield(Action):
 #     """Lower an item in a manipulator to your side."""
@@ -373,7 +373,7 @@ class GraspMixin(Mixin):
         return False
 
     def do_grasp(self, target, manipulator):
-        if manipulator.add_grasp(target):
+        if manipulator.do_grasp(target):
             return True
         return False
 
@@ -394,12 +394,12 @@ class UnGraspMixin(Mixin):
         return False
 
     def do_ungrasp(self, target, manipulator):
-        if manipulator.remove_grasp(target):
+        if manipulator.do_ungrasp(target):
             return True
         return False
 
     def is_ungrasp(self, target, manipulator):
-        if manipulator.is_grasp(target):
+        if manipulator.is_ungrasp(target):
             return True
         return False
 
@@ -426,12 +426,12 @@ class WieldMixin(Mixin):
         return False
 
     def do_wield(self, target, manipulator):
-        if manipulator.set_wielded(target):
+        if manipulator.do_unwield(target):
             return True
         return False
 
     def is_wield(self, target, manipulator):
-        if manipulator.is_wielded(target):
+        if manipulator.is_wield(target):
             return True
         return False
 
@@ -446,7 +446,7 @@ class UnWieldMixin(Mixin):
         return False
 
     def do_unwield(self, target, manipulator):
-        if manipulator.set_unwielded(target):
+        if manipulator.do_unwield(target):
             return True
         return False
 

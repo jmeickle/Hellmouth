@@ -121,7 +121,7 @@ class BodyPart(object):
 
     """Grasping setter methods."""
 
-    def add_grasp(self, agent, trigger=True):
+    def do_grasp(self, agent, trigger=True):
         """Grasp an Agent."""
         agent.append_component(Grasped(owner=agent, controller=self.owner, manipulator=self))
         self.grasped.append(agent)
@@ -129,7 +129,7 @@ class BodyPart(object):
             self.trigger("grasped")
         return True
 
-    def remove_grasp(self, agent, trigger=True):
+    def do_ungrasp(self, agent, trigger=True):
         """Ungrasp an Agent."""
         self.grasped.remove(agent)
         for component in agent.get_controlled_components(self.owner, "Grasped"):
@@ -176,7 +176,7 @@ class BodyPart(object):
         return False
 
     def is_ungrasp(self, agent):
-        return not self.is_grasped(agent)
+        return not self.is_grasp(agent)
 
     """Wielding getter methods."""
 
@@ -189,14 +189,14 @@ class BodyPart(object):
 
     """Wielding setter methods."""
 
-    def set_wield(self, agent, trigger=True):
+    def do_wield(self, agent, trigger=True):
         """Set a grasped Agent as wielded."""
         agent.append_component(Wielded(owner=agent, controller=self.owner, manipulator=self))
         if trigger:
             self.trigger("wielded")
         return True
 
-    def set_unwield(self, agent, trigger=True):
+    def do_unwield(self, agent, trigger=True):
         """Set a grasped Agent as unwielded."""
         for component in agent.get_controlled_components(self.owner, "Wielded"):
             agent.remove_component(component)
