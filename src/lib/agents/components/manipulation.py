@@ -341,12 +341,19 @@ class TouchMixin(Mixin):
 class UnTouchMixin(Mixin):
     """Provides the ability to stop touching a target with a manipulator."""
 
+    def could_untouch(self):
+        return True
+
     # STUB
     def can_untouch(self, target, manipulator):
         return True
 
     # STUB
     def do_untouch(self, target, manipulator):
+        return True
+
+    # STUB
+    def is_untouch(self, target, manipulator):
         return True
 
 class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
@@ -376,6 +383,9 @@ class GraspMixin(Mixin):
 
 class UnGraspMixin(Mixin):
     """Provides the ability to let go of a target with a manipulator."""
+
+    def could_ungrasp(self):
+        return True
 
     def can_ungrasp(self, target, manipulator):
         if manipulator.can_ungrasp(target):
@@ -533,12 +543,21 @@ class ForceMixin(Mixin):
     """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
 
     # STUB
+    def could_force(self):
+        return True
+
+    # STUB
     def can_force(self, target, manipulator):
         """Whether you can exert force to reposition a target whose mass is controlled by you.."""
         return True
 
     # STUB
     def do_force(self, target, manipulator):
+        """Exert force to reposition a target whose mass is controlled by you."""
+        return True
+
+    # STUB
+    def is_force(self, target, manipulator):
         """Exert force to reposition a target whose mass is controlled by you."""
         return True
 
@@ -582,6 +601,10 @@ class GetMixin(Mixin):
     """Provides the ability to get a target from an environment."""
 
     # STUB
+    def could_get(self):
+        return True
+
+    # STUB
     def can_get(self, target, environment, manipulator):
         """Whether you can get a target from an environment."""
         return True
@@ -590,6 +613,10 @@ class GetMixin(Mixin):
     def do_get(self, target, environment, manipulator):
         """Get a target from an environment."""
         environment._get(target)
+        return True
+
+    # STUB
+    def is_get(self, target, environment, manipulator):
         return True
 
 class PutMixin(Mixin):
@@ -662,6 +689,9 @@ class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
 class StoreMixin(Mixin):
     """Provides the ability to store targets into a Container."""
 
+    def could_store(self):
+        return True
+
     def can_store(self, target, manipulator, container):
         """Whether you can store an item into a Container."""
         # TODO: Don't use a limit of 5 entries (testing only!).
@@ -675,6 +705,9 @@ class StoreMixin(Mixin):
         if container.call("Container", "add_contents", target).get_result():
             return True
         return False
+
+    def is_store(self, target, manipulator, container):
+        return True
 
 class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from a Container."""
