@@ -102,6 +102,10 @@ class Context(object):
         """Get an argument from this Context."""
         return self.arguments.get(key, default)
 
+    def get_aliased_argument(self, key, default=None):
+        """Get an aliased argument from this Context."""
+        return self.arguments.get(self.get_alias(key), default)
+
     def get_aliased_arguments(self, keys):
         """Return a dictionary containing aliased versions of some of this Context's arguments."""
         return dict([(self.get_alias(key), self.get_argument(key)) for key in keys])
