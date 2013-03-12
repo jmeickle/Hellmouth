@@ -50,6 +50,7 @@ class Pickup(Action):
         yield "touch", "target", "manipulator"
         if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
         if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
+        if ctx("force", "target", "manipulator"): yield "get", "target", "environment", "manipulator"
 
 class Putdown(Action):
     """Remove an item from your manipulator, placing it into the environment exclusively."""
@@ -527,7 +528,35 @@ class HandleMixin(Mixin):
         """Exert force to reposition or manipulate part of a target."""
         return True
 
-class PositioningAgent(TouchingAgent, ForceMixin, SlideMixin, HandleMixin):
+class GetMixin(Mixin):
+    """Provides the ability to get a target from an environment."""
+
+    # STUB
+    def can_get(self, target, environment, manipulator):
+        """Whether you can get a target from an environment."""
+        return True
+
+    # STUB
+    def do_get(self, target, environment, manipulator):
+        """Get a target from an environment."""
+        environment._get(target)
+        return True
+
+class PutMixin(Mixin):
+    """Provides the ability to put a target into an environment."""
+
+    # STUB
+    def can_put(self, target, environment, manipulator):
+        """Whether you can put a target into an environment."""
+        return True
+
+    # STUB
+    def do_put(self, target, environment, manipulator):
+        """Put a target into an environment."""
+        environment._put(target)
+        return True
+
+class PositioningAgent(TouchingAgent, ForceMixin, SlideMixin, HandleMixin, GetMixin, PutMixin):
     """Convenience Mixin to represent an Agent that can use its manipulators to position other Agents."""
     pass
 

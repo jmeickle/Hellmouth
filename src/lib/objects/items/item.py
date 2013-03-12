@@ -40,6 +40,10 @@ class Item(Agent):
         """React to being stored in an inventory."""
         self.cell()._get(self)
 
+    def provide_argument(self, context, arg):
+        if arg == "environment":
+            return self.cell()
+
     def provide_commands(self, ctx):
         """Yield the interaction commands an Agent provides to another Agent
         within a Context.
