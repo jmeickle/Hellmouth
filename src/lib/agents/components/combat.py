@@ -3,6 +3,7 @@ from collections import deque
 from src.lib.agents.components.action import Action
 from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.component import Component
+from src.lib.agents.components.phase import Phase
 
 from src.lib.util.command import Command, CommandRegistry
 from src.lib.util.debug import debug, die
@@ -15,20 +16,33 @@ from src.lib.util.mixin import Mixin
 class AttackWithWielded(Action):
     """Attack a target with a weapon wielded in a manipulator."""
 
+    # Phase(required=): whether checking this condition is required for future phases
+    # ctx(): override __call__ to check whether all currently required phases are met
+    # ctx.start_rollback(): start tracking the phases being run
+    # ctx.do_rollback(): iterate through phases since the rollback started in reverse
+    #                    order, yielding the "un" version of each phase (e.g., "unwield)
+
     @action_context
     def get_phases(self, ctx):
         ctx.update_arguments(use="attack")
+        # ctx.update_aliases(weapon="target")
 
-        ctx.update_aliases(weapon="target")
-        yield "touch", "weapon", "manipulator"
-        if ctx("touch", "weapon", "manipulator"): yield "grasp", "weapon", "manipulator"
-        if ctx("grasp", "weapon", "manipulator"): yield "ready", "weapon", "manipulator"
-        # if self("lift", "weapon"):
-        # if self("handle", "weapon"):
+        # Attacking requires a readied weapon.
+        yield Phase("touch", "weapon", "manipulator")
+        if ctx(): yield Phase("grasp", "weapon", "manipulator")
+        if ctx(): yield Phase("ready", "weapon", "manipulator")
 
-        ctx.update_aliases(weapon="instrument")
-        if ctx("ready", "weapon", "manipulator"): yield "contact", "target", "weapon", "manipulator"
-        if ctx("contact", "target", "weapon", "manipulator"): yield "use_at", "target", "weapon", "manipulator", "use"
+        if ctx():
+            # ctx.start_rollback()
+            # ctx.update_aliases(weapon="instrument")
+
+            yield Phase("contact", "target", "weapon", "manipulator", required=False)
+            # any number of these fallthrough if not satisfied:
+            # if ctx(): yield ...
+            if ctx(): yield Phase("use_at", "target", "weapon", "manipulator", "use")
+            # does the reverse operation of any operations since the rollback started
+            # for phase in ctx.do_rollback():
+            #     yield phase
 
     # # Use a ready item to disarm.
     # # n.b. - The 'target' is the other item!
