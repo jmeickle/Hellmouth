@@ -424,7 +424,7 @@ class WieldMixin(Mixin):
         return False
 
     def do_wield(self, target, manipulator):
-        if manipulator.do_unwield(target):
+        if manipulator.do_wield(target):
             return True
         return False
 
