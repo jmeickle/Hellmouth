@@ -703,7 +703,7 @@ class StoreMixin(Mixin):
     def could_store(self):
         return True
 
-    def can_store(self, target, manipulator, container):
+    def can_store(self, target, container, manipulator):
         """Whether you can store an item into a Container."""
         # TODO: Don't use a limit of 5 entries (testing only!).
         if container.call("Container", "count_contents").get_result() > 5:
@@ -711,7 +711,7 @@ class StoreMixin(Mixin):
         return True
 
     # Store an item in your container.
-    def do_store(self, target, manipulator, container):
+    def do_store(self, target, container, manipulator):
         """Store an item into a Container."""
         if container.call("Container", "add_contents", target).get_result():
             return True
@@ -726,11 +726,11 @@ class UnstoreMixin(Mixin):
     def could_unstore(self):
         return True
 
-    def can_unstore(self, target, manipulator, container):
+    def can_unstore(self, target, container, manipulator):
         """Whether you can unstore an item from a Container."""
         return True
 
-    def do_unstore(self, target, manipulator, container):
+    def do_unstore(self, target, container, manipulator):
         """Unstore an item from a Container."""
         if container.call("Container", "remove_contents", target).get_result():
             return True
