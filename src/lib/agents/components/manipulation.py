@@ -84,14 +84,15 @@ class Pack(Action):
             yield Phase("ungrasp", "target", "manipulator")
         if ctx(): yield Phase("untouch", "target", "manipulator")
 
-# class UnPack(Action):
-#     """Remove an item from a container, placing it into your manipulator exclusively."""
-#     phases = [
-#         ("touch", "target", "manipulator"),
-#         ("grasp", "target", "manipulator"),
-#         ("force", "target", "manipulator"),
-#         ("unstore", "target", "container", "manipulator"),
-#     ]
+class Unpack(Action):
+    """Remove an item from a container, placing it into your manipulator exclusively."""
+    @action_context
+    def get_phases(self, ctx):
+        yield Phase("touch", "target", "manipulator")
+        if ctx(): yield Phase("grasp", "target", "manipulator")
+        if ctx(): yield Phase("force", "target", "manipulator")
+        if ctx():
+            yield Phase("unstore", "target", "container", "manipulator")
 
 """Interacting with Agents using manipulators."""
 
@@ -202,8 +203,8 @@ class WieldWeapon(Command):
 
     @command_context
     def get_actions(self, ctx):
-        yield UnPack
-        if ctx(UnPack): yield Wield
+        yield Unpack
+        yield Wield
 
 CMD.register(ReadyWeapon, WieldWeapon)
 
@@ -414,7 +415,7 @@ class WieldMixin(Mixin):
     # TODO: argh...
     def could_wield(self):
         """Return whether the Agent could wield something."""
-        for manipulator in self.owner.values("Body", "get_manipulators"):
+        for manipulator in self.values("Body", "get_manipulators"):
             if manipulator.could_wield():
                 return True
         return False
@@ -712,6 +713,9 @@ class StoreMixin(Mixin):
 class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from a Container."""
 
+    def could_unstore(self):
+        return True
+
     def can_unstore(self, target, manipulator, container):
         """Whether you can unstore an item from a Container."""
         return True
@@ -721,6 +725,10 @@ class UnstoreMixin(Mixin):
         if container.call("Container", "remove_contents", target).get_result():
             return True
         return False
+
+    def is_unstore(self, target, manipulator, container):
+        """Whether you can unstore an item from a Container."""
+        return True
 
 class StoringAgent(StoreMixin, UnstoreMixin):
     """Convenience Mixin to represent an Agent that can use its manipulators to store items in Containers."""
