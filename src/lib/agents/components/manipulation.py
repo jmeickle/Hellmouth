@@ -98,7 +98,6 @@ class Unpack(Action):
 
 class Use(Action):
     """Use a target using a manipulator."""
-
     @action_context
     def get_phases(self, ctx):
         yield Phase("touch", "target", "manipulator")
