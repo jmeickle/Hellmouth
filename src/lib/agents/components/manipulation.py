@@ -249,16 +249,6 @@ class Manipulation(Component):
             for agent in manipulator.get_wielded():
                 yield agent
 
-    # TODO: argh...
-    def could_wield(self, manipulators=None):
-        """Return whether the Agent could wield something."""
-        if not manipulators:
-            manipulators = self.owner.values("Body", "get_manipulators")
-
-        for manipulator in manipulators:
-            if manipulator.could_wield():
-                return True
-
 class Grasped(Component):
     """Component that handles a grasped Agent's functionality."""
     def __init__(self, owner, controller, manipulator):
@@ -304,10 +294,6 @@ class Wielded(Component):
         """Return the minimum and maximum reach of the current wielding mode."""
         return self.owner.get_reach(self.get_wielding_mode())
 
-    def get_ready(self):
-        """Return whether the wielded Agent is ready."""
-        return self.ready
-
     """Wielding setter methods."""
 
     def set_ready(self, readiness):
@@ -315,32 +301,41 @@ class Wielded(Component):
         self.ready = readiness
         return True
 
-    """Wielding helper methods."""
-
-    def can_ready(self):
-        """Return the wielded Agent can be made ready."""
-        if self.get_ready():
-            return False
-        return True
-
 """Mixins."""
 
 class ReachMixin(Mixin):
     """Provides the ability to reach a target with a manipulator."""
 
+    def could_reach(self):
+        """Whether the Agent could reach an unspecified target."""
+        return True
+
     def can_reach(self, target, manipulator):
+        """Whether the Agent can reach a target with a manipulator."""
         return True
 
     def do_reach(self, target, manipulator):
+        """Reach a target with a manipulator."""
+        return True
+
+    def is_reach(self, target, manipulator):
+        """Whether the Agent is reaching a target with a manipulator."""
         return True
 
 class TouchMixin(Mixin):
     """Provides the ability to touch a target with a manipulator."""
 
+    def could_touch(self):
+        return True
+
     def can_touch(self, target, manipulator):
         return True
 
     def do_touch(self, target, manipulator):
+        return True
+
+    # REWRITE
+    def is_touch(self, target, manipulator):
         return True
 
 class UnTouchMixin(Mixin):
@@ -361,13 +356,21 @@ class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
 class GraspMixin(Mixin):
     """Provides the ability to hold a target with a manipulator."""
 
+    def could_grasp(self):
+        return True
+
     def can_grasp(self, target, manipulator):
         if manipulator.can_grasp(target):
             return True
         return False
 
     def do_grasp(self, target, manipulator):
-        if manipulator.add_grasped(target):
+        if manipulator.add_grasp(target):
+            return True
+        return False
+
+    def is_grasp(self, target, manipulator):
+        if manipulator.is_grasp(target):
             return True
         return False
 
@@ -380,7 +383,12 @@ class UnGraspMixin(Mixin):
         return False
 
     def do_ungrasp(self, target, manipulator):
-        if manipulator.remove_grasped(target):
+        if manipulator.remove_grasp(target):
+            return True
+        return False
+
+    def is_ungrasp(self, target, manipulator):
+        if manipulator.is_grasp(target):
             return True
         return False
 
@@ -393,6 +401,14 @@ class WieldMixin(Mixin):
     from your body.
     """
 
+    # TODO: argh...
+    def could_wield(self):
+        """Return whether the Agent could wield something."""
+        for manipulator in self.owner.values("Body", "get_manipulators"):
+            if manipulator.could_wield():
+                return True
+        return False
+
     def can_wield(self, target, manipulator):
         if manipulator.can_wield(target):
             return True
@@ -400,6 +416,11 @@ class WieldMixin(Mixin):
 
     def do_wield(self, target, manipulator):
         if manipulator.set_wielded(target):
+            return True
+        return False
+
+    def is_wield(self, target, manipulator):
+        if manipulator.is_wielded(target):
             return True
         return False
 
@@ -421,10 +442,14 @@ class UnWieldMixin(Mixin):
 class ReadyMixin(Mixin):
     """Provides the ability to hold a wielded target in a way permitting its use as a tool."""
     # STUB
+    def could_ready(self):
+        return True
+
+    # STUB
     def can_ready(self, target, manipulator):
-        if target.call("Wielded", "can_ready").get_result():
-            return True
-        return False
+        if self.is_ready(target, manipulator):
+            return False
+        return True
 
     # STUB
     def do_ready(self, target, manipulator):
@@ -432,8 +457,18 @@ class ReadyMixin(Mixin):
             return True
         return False
 
+    def is_ready(self, target, manipulator):
+        """Return whether the wielded Agent is ready."""
+        # TODO: access via method instead
+        return target.get_component("Wielded").ready
+
 class UnReadyMixin(Mixin):
     """Provides the ability to stop holding a wielding a target in a way permitting its use as a tool."""
+
+    # STUB
+    def could_unready(self):
+        return True
+
     # STUB
     def can_unready(self, target, manipulator):
         if target.call("Wielded", "can_ready").get_result() is False:
@@ -445,6 +480,11 @@ class UnReadyMixin(Mixin):
         if target.call("Wielded", "set_ready", False).get_result():
             return True
         return False
+
+    def is_unready(self, target, manipulator):
+        """Return whether the wielded Agent is ready."""
+        # TODO: fix
+        return not self.is_ready(target)
 
 class ContactMixin(Mixin):
     """Provides the ability to touch a target with a second target held in a
@@ -521,6 +561,10 @@ class HandleMixin(Mixin):
     n.b. - You can handle some targets even if you can't Force or Slide them."""
 
     # STUB
+    def could_handle(self):
+        return True
+
+    # STUB
     def can_handle(self, target, manipulator):
         """Whether you can exert force to reposition or manipulate part of a target."""
         return True
@@ -528,6 +572,10 @@ class HandleMixin(Mixin):
     # STUB
     def do_handle(self, target, manipulator):
         """Exert force to reposition or manipulate part of a target."""
+        return True
+
+    # STUB
+    def is_handle(self, target, manipulator):
         return True
 
 class GetMixin(Mixin):
@@ -570,13 +618,22 @@ class UseMixin(Mixin):
     # TODO: ^ What about canceling use of an item?
 
     # STUB
+    def could_use(self):
+        return True
+
+    # STUB
     def can_use(self, target, manipulator, use):
         """Whether you can use a target."""
         return True
 
+    # Rewrite!
     def do_use(self, target, manipulator, use):
         """Use a target."""
         target.react(self, use)
+        return True
+
+    # STUB
+    def is_use(self, target, manipulator):
         return True
 
 class UseAtMixin(Mixin):
