@@ -176,7 +176,7 @@ class Agent(object):
     def process_event(self, event, context):
         """Find the first Command matching an event, instantiate it, and process it."""
         if event not in ["Up", "Down"]:
-            Log.add("EVENT: %s" % event)
+            debug("EVENT: %s" % event)
 
         for command_class, command_arguments in context.get_commands():
             for command_event in command_class.get_events():
@@ -189,14 +189,17 @@ class Agent(object):
                 result = self.process_command(command)
                 outcome, cause = context.parse_result(result)
                 if outcome is True:
+                    debug("(+): %s" % cause)
                     Log.add("(+): %s" % cause)
                 else:
+                    debug("(-): %s" % cause)
                     Log.add("(-): %s" % cause)
 
                 # TODO: Instead return whether the event was consumed.
                 return outcome, cause
 
         if event not in ["Up", "Down"]:
+            debug("( ): %s" % event)
             Log.add("( ): %s" % event)
         # TODO: Instead return whether the event was consumed.
         return False
@@ -215,13 +218,13 @@ class Agent(object):
         if not prefixes:
             ctx.set_argument("prefixes", command.get_prefixes())
 
-        Log.add("CMD: %s (%s)." % (command.__class__.get_name(), prefixes))
+        # Log.add("CMD: %s (%s)." % (command.__class__.get_name(), prefixes))
+        debug("CMD: %s." % command.__class__.get_name())
 
         # This is a generator, so we can check the Context object for a
         # different list of actions between go-arounds.
 
         for action_class in command.get_actions(ctx):
-            debug("Starting action: %s" % action_class)
             action = action_class(command)
 
             result = self.process_action(action)
@@ -266,7 +269,7 @@ class Agent(object):
         
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
-        Log.add("ACT: %s" % action.__class__.get_name())
+        debug("ACT: %s" % action.__class__.get_name())
 
         ctx = action.context
         ctx.set_active(action.__class__)
