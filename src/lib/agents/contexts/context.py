@@ -142,7 +142,7 @@ class Context(object):
                     break
 
             if not self.arguments.get(required_argument):
-                die("Context arguments %s didn't provide all required arguments %s." % (self.arguments, required_arguments))
+                die("Context %s didn't provide all required arguments %s." % (self.__dict__, required_arguments))
 
     """Context argument alias getter methods."""
 
@@ -247,7 +247,7 @@ class Context(object):
             try:
                 return result[0], result[1:]
             except (IndexError, TypeError):
-                debug("Error parsing result: %s" % result)
+                # debug("Error parsing result: %s" % result)
                 return result, "unknown"
 
     # TODO: Move elsewhere
