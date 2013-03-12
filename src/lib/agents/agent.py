@@ -212,13 +212,7 @@ class Agent(object):
         Returns an outcome and a cause, based on the Context's parsing.
         """
         ctx = command.context
-        ctx.set_active(command.__class__)
-
-        prefixes = ctx.get_argument("prefixes")
-        if not prefixes:
-            ctx.set_argument("prefixes", command.get_prefixes())
-
-        # Log.add("CMD: %s (%s)." % (command.__class__.get_name(), prefixes))
+        # ctx.set_active(command.__class__)
         debug("CMD: %s." % command.__class__.get_name())
 
         # This is a generator, so we can check the Context object for a
@@ -272,32 +266,51 @@ class Agent(object):
         debug("ACT: %s" % action.__class__.get_name())
 
         ctx = action.context
-        ctx.set_active(action.__class__)
+        # ctx.set_active(action.__class__)
 
         # This is a generator, so we can check the Context object for a
         # different list of phases between go-arounds.
         for phase in action.get_phases():
-            phase, phase_arguments = phase[0], phase[1:]
-            ctx.set_active(phase)
-            # On the other hand, prefixes are fixed per-pass.
-            for prefix in ctx.get_argument("prefixes"):
-                ctx.set_argument("active_prefix", prefix)
-                ctx.require_arguments(phase_arguments)
-                arguments = ctx.get_aliased_arguments(phase_arguments)
+            phase.context = ctx
 
-                result = getattr(ctx.agent, prefix + "_" + phase)(**arguments)
-                ctx.append_result(action.__class__, result)
-                # TODO: ugh. only here so the ctx can get this info in the get_phases loop.
-                if prefix == "do":
-                    ctx.append_result(phase, result)
-                outcome, cause = ctx.parse_result(result)
-                Log.add("P: %s (%s)." % (prefix + "_" + phase, outcome))
-                if outcome is False:
-                    # Return to get_phases(), which typically means we're done
-                    # in this function because there will be no next phase.
-                    break
+            result = self.process_phase(phase)
+            ctx.append_result(phase.__class__, result)
+            outcome, cause = ctx.parse_result(result)
+            if outcome is False:
+                break
 
         return ctx.parse_results(action.__class__)
+
+    """Phase processing methods."""
+
+    def process_phase(self, phase):
+        """Process a Phase object.
+
+        Returns an outcome and a cause, based on the Context's parsing.
+        """
+        ctx = phase.context
+        ctx.set_active(phase)
+        debug("PHASE: %s" % phase.name)
+
+        ctx.require_arguments(phase.required_arguments)
+        arguments = ctx.get_aliased_arguments(phase.required_arguments)
+
+        # TODO: Rewrite this entire section, augh
+        could_result = getattr(ctx.agent, "could" + "_" + phase.name)()
+        outcome, cause = ctx.parse_result(could_result)
+        debug("METHOD: %s (%s)" % ("could" + "_" + phase.name, outcome))
+        if not outcome: return False, "could"
+
+        can_result = getattr(ctx.agent, "can" + "_" + phase.name)(**arguments)
+        outcome, cause = ctx.parse_result(could_result)
+        debug("METHOD: %s (%s)" % ("can" + "_" + phase.name, outcome))
+        if not outcome: return False, "can"
+
+        result = getattr(ctx.agent, "do" + "_" + phase.name)(**arguments)
+        outcome, cause = ctx.parse_result(result)
+        debug("METHOD: %s (%s)" % ("do" + "_" + phase.name, outcome))
+        ctx.append_result(phase.__class__, result)
+        return outcome, cause
 
     """Context utility methods."""
 
