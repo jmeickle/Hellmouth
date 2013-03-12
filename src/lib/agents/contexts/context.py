@@ -31,15 +31,19 @@ class Context(object):
         self.steps = []
         """Steps taken within this Context."""
 
-    def __call__(self, checked_step, *arguments):
-        """Check whether a particular phase is satisfied within this Context."""
+    def __call__(self):
+        """Check whether all required are satisfied within this Context."""
+        for step in self.steps:
+            if step.required:
+                phase = step
+                arguments = self.get_aliased_arguments(phase.required_arguments)
 
-        # TODO: Check whether the checked step IS CURRENTLY MET, not whether it WAS PERFORMED.
-        if checked_step in self.steps:
-            results = self.get_results(checked_step)
-            outcome, cause = self.parse_result(results)
-            return outcome
-        return False
+                is_result = getattr(self.agent, "is" + "_" + phase.name)(**arguments)
+                outcome, cause = self.parse_result(is_result)
+                debug("METHOD: %s (%s)" % ("is" + "_" + phase.name, outcome))
+                if not outcome:
+                    return False
+        return True
 
     """Context agent getter methods."""
 
