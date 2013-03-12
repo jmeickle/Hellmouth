@@ -121,7 +121,7 @@ class BodyPart(object):
 
     """Grasping setter methods."""
 
-    def add_grasped(self, agent, trigger=True):
+    def add_grasp(self, agent, trigger=True):
         """Grasp an Agent."""
         agent.append_component(Grasped(owner=agent, controller=self.owner, manipulator=self))
         self.grasped.append(agent)
@@ -129,7 +129,7 @@ class BodyPart(object):
             self.trigger("grasped")
         return True
 
-    def remove_grasped(self, agent, trigger=True):
+    def remove_grasp(self, agent, trigger=True):
         """Ungrasp an Agent."""
         self.grasped.remove(agent)
         for component in agent.get_controlled_components(self.owner, "Grasped"):
@@ -139,6 +139,12 @@ class BodyPart(object):
         return True
 
     """Grasping helper methods."""
+
+    def has_grasped(self):
+        """Return whether this Part has any grasped Agents."""
+        for agent in self.get_grasped():
+            return True
+        return False
 
     def can_grasp(self, agent):
         """Return whether an Agent can be grasped."""
@@ -164,11 +170,13 @@ class BodyPart(object):
             return False
         return True
 
-    def has_grasped(self):
-        """Return whether this part has any grasped Agents."""
-        for agent in self.get_grasped():
+    def is_grasp(self, agent):
+        if agent in self.get_grasped():
             return True
         return False
+
+    def is_ungrasp(self, agent):
+        return not self.is_grasped(agent)
 
     """Wielding getter methods."""
 
@@ -181,14 +189,14 @@ class BodyPart(object):
 
     """Wielding setter methods."""
 
-    def set_wielded(self, agent, trigger=True):
+    def set_wield(self, agent, trigger=True):
         """Set a grasped Agent as wielded."""
         agent.append_component(Wielded(owner=agent, controller=self.owner, manipulator=self))
         if trigger:
             self.trigger("wielded")
         return True
 
-    def set_unwielded(self, agent, trigger=True):
+    def set_unwield(self, agent, trigger=True):
         """Set a grasped Agent as unwielded."""
         for component in agent.get_controlled_components(self.owner, "Wielded"):
             agent.remove_component(component)
@@ -197,6 +205,12 @@ class BodyPart(object):
         return True
 
     """Wielding helper methods."""
+
+    def has_wielded(self):
+        """Return whether this part has any wielded Agents."""
+        for agent in self.get_wielded():
+            return True
+        return False
 
     def can_wield(self, agent):
         """Return whether an Agent can be wielded."""
@@ -222,15 +236,21 @@ class BodyPart(object):
             return False
         return True
 
-    def has_wielded(self):
-        """Return whether this part has any wielded Agents."""
-        for agent in self.get_wielded():
+    def is_wield(self, agent):
+        if agent in self.get_wielded():
             return True
         return False
+
+    def is_unwield(self, agent):
+        return not self.is_wield(agent)
+
+    """Manipulator getter methods."""
 
     def get_manipulate(self):
         """Return whether the Part is a manipulator."""
         return self.manipulator
+
+    """Manipulator helper methods."""
 
     # STUB
     def can_manipulate(self):
