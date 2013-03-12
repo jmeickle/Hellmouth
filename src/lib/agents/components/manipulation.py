@@ -48,10 +48,10 @@ class Pickup(Action):
     """Remove an Agent from the environment, placing it into your manipulator exclusively."""
     @action_context
     def get_phases(self, ctx):
-        yield "touch", "target", "manipulator"
-        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
-        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
-        if ctx("force", "target", "manipulator"): yield "get", "target", "environment", "manipulator"
+        yield Phase("touch", "target", "manipulator")
+        if ctx(): yield Phase("grasp", "target", "manipulator")
+        if ctx(): yield Phase("force", "target", "manipulator")
+        if ctx(): yield Phase("get", "target", "environment", "manipulator")
 
 # class Putdown(Action):
 #     """Remove an item from your manipulator, placing it into the environment exclusively."""
@@ -74,15 +74,15 @@ class Pack(Action):
     """Remove an item from your manipulator, placing it into a container exclusively."""
     @action_context
     def get_phases(self, ctx):
-        yield "touch", "target", "manipulator"
-        if ctx("touch", "target", "manipulator"): yield "grasp", "target", "manipulator"
-        if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
-        if ctx("force", "target", "manipulator"):
-            yield "store", "target", "container", "manipulator"
-            if ctx("store", "target", "container", "manipulator"): yield "ungrasp", "target", "manipulator"
+        yield Phase("touch", "target", "manipulator")
+        if ctx(): yield Phase("grasp", "target", "manipulator")
+        if ctx(): yield Phase("force", "target", "manipulator")
+        if ctx():
+            yield Phase("store", "target", "container", "manipulator")
+            if ctx(): yield Phase("ungrasp", "target", "manipulator")
         else:
-            yield "ungrasp", "target", "manipulator"
-        if ctx("ungrasp", "target", "manipulator"): yield "untouch", "target", "manipulator"
+            yield Phase("ungrasp", "target", "manipulator")
+        if ctx(): yield Phase("untouch", "target", "manipulator")
 
 # class UnPack(Action):
 #     """Remove an item from a container, placing it into your manipulator exclusively."""
@@ -179,7 +179,7 @@ class GetAll(Command):
     @command_context
     def get_actions(self, ctx):
         yield Pickup
-        if ctx(Pickup): yield Pack
+        yield Pack
 
 CMD.register(Get, GetAll)
 
