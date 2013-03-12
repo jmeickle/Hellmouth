@@ -319,9 +319,9 @@ class ReachMixin(Mixin):
         """Reach a target with a manipulator."""
         return True
 
-    def is_reach(self, target, manipulator):
-        """Whether the Agent is reaching a target with a manipulator."""
-        return True
+    # def is_reach(self, target, manipulator):
+    #     """Whether the Agent is reaching a target with a manipulator."""
+    #     return True
 
 class TouchMixin(Mixin):
     """Provides the ability to touch a target with a manipulator."""
@@ -335,9 +335,8 @@ class TouchMixin(Mixin):
     def do_touch(self, target, manipulator):
         return True
 
-    # REWRITE
-    def is_touch(self, target, manipulator):
-        return True
+    # def is_touch(self, target, manipulator):
+    #     return True
 
 class UnTouchMixin(Mixin):
     """Provides the ability to stop touching a target with a manipulator."""
@@ -353,9 +352,9 @@ class UnTouchMixin(Mixin):
     def do_untouch(self, target, manipulator):
         return True
 
-    # STUB
-    def is_untouch(self, target, manipulator):
-        return True
+    # # STUB
+    # def is_untouch(self, target, manipulator):
+    #     return True
 
 class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
     """Convenience Mixin to represent an Agent with touching capability."""
@@ -557,10 +556,10 @@ class ForceMixin(Mixin):
         """Exert force to reposition a target whose mass is controlled by you."""
         return True
 
-    # STUB
-    def is_force(self, target, manipulator):
-        """Exert force to reposition a target whose mass is controlled by you."""
-        return True
+    # # STUB
+    # def is_force(self, target, manipulator):
+    #     """Exert force to reposition a target whose mass is controlled by you."""
+    #     return True
 
 class SlideMixin(Mixin):
     """Provides the ability to exert force to drag, slide, or shove a target against a surface."""
@@ -594,9 +593,9 @@ class HandleMixin(Mixin):
         """Exert force to reposition or manipulate part of a target."""
         return True
 
-    # STUB
-    def is_handle(self, target, manipulator):
-        return True
+    # # STUB
+    # def is_handle(self, target, manipulator):
+    #     return True
 
 class GetMixin(Mixin):
     """Provides the ability to get a target from an environment."""
@@ -616,9 +615,9 @@ class GetMixin(Mixin):
         environment._get(target)
         return True
 
-    # STUB
-    def is_get(self, target, environment, manipulator):
-        return True
+    # # STUB
+    # def is_get(self, target, environment, manipulator):
+    #     return True
 
 class PutMixin(Mixin):
     """Provides the ability to put a target into an environment."""
@@ -660,9 +659,9 @@ class UseMixin(Mixin):
         target.react(self, use)
         return True
 
-    # STUB
-    def is_use(self, target, manipulator):
-        return True
+    # # STUB
+    # def is_use(self, target, manipulator, use):
+    #     return True
 
 class UseAtMixin(Mixin):
     """Provides the ability to use a target at a second target.
@@ -707,8 +706,8 @@ class StoreMixin(Mixin):
             return True
         return False
 
-    def is_store(self, target, manipulator, container):
-        return True
+    # def is_store(self, target, manipulator, container):
+    #     return True
 
 class UnstoreMixin(Mixin):
     """Provides the ability to unstore targets from a Container."""
@@ -726,9 +725,9 @@ class UnstoreMixin(Mixin):
             return True
         return False
 
-    def is_unstore(self, target, manipulator, container):
-        """Whether you can unstore an item from a Container."""
-        return True
+    # def is_unstore(self, target, manipulator, container):
+    #     """Whether you can unstore an item from a Container."""
+    #     return True
 
 class StoringAgent(StoreMixin, UnstoreMixin):
     """Convenience Mixin to represent an Agent that can use its manipulators to store items in Containers."""
