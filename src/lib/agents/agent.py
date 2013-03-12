@@ -298,6 +298,14 @@ class Agent(object):
         ctx.require_arguments(phase.required_arguments)
         arguments = ctx.get_aliased_arguments(phase.required_arguments)
 
+        is_method = getattr(ctx.agent, "is" + "_" + phase.name, None)
+        if is_method:
+            is_result = is_method(**arguments)
+            outcome, cause = ctx.parse_result(is_result)
+            if outcome:
+                debug("***PHASE SATISFIED***: %s (%s)" % ("is" + "_" + phase.name, outcome))
+                return True, "done"
+
         # TODO: Rewrite this entire section, augh
         could_result = getattr(ctx.agent, "could" + "_" + phase.name)()
         outcome, cause = ctx.parse_result(could_result)

@@ -38,11 +38,13 @@ class Context(object):
                 phase = step
                 arguments = self.get_aliased_arguments(phase.required_arguments)
 
-                is_result = getattr(self.agent, "is" + "_" + phase.name)(**arguments)
-                outcome, cause = self.parse_result(is_result)
-                debug("METHOD: %s (%s)" % ("is" + "_" + phase.name, outcome))
-                if not outcome:
-                    return False
+                is_method = getattr(self.agent, "is" + "_" + phase.name, None)
+                if is_method:
+                    is_result = is_method(**arguments)
+                    outcome, cause = self.parse_result(is_result)
+                    debug("CTX(): %s (%s)" % ("is" + "_" + phase.name, outcome))
+                    if not outcome:
+                        return False
         return True
 
     """Context agent getter methods."""
