@@ -500,6 +500,10 @@ class ContactMixin(Mixin):
     manipulator.
     """
 
+    # STUB
+    def could_contact(self):
+        return True
+
     def can_contact(self, target, instrument, manipulator):
         """Whether you can touch a target with an instrument."""
         # TODO: Restructure attack option structure so that items can figure
@@ -525,9 +529,12 @@ class UnContactMixin(Mixin):
     in a manipulator.
     """
 
+    def could_uncontact(self):
+        return True
+
     def can_uncontact(self, target, instrument, manipulator):
         """Whether you can stop touching a target with an instrument."""
-        pass
+        return True
 
     def do_uncontact(self, target, instrument, manipulator):
         """Stop touching a target with an instrument."""
@@ -621,6 +628,9 @@ class GetMixin(Mixin):
 class PutMixin(Mixin):
     """Provides the ability to put a target into an environment."""
 
+    def could_put(self):
+        return True
+
     # STUB
     def can_put(self, target, environment, manipulator):
         """Whether you can put a target into an environment."""
@@ -669,6 +679,8 @@ class UseAtMixin(Mixin):
     this is an instantaneous effect with no 'on' state."""
     # TODO: ^ What about canceling use of an item?
 
+    def could_use_at(self):
+        return True
 
     # STUB
     def can_use_at(self, target, instrument, manipulator, use):
