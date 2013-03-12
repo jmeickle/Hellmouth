@@ -24,6 +24,9 @@ class Agent(object):
         self.pos = None
         self.subposition = CC
 
+    def __call__(self, method):
+        return getattr(self, method)()
+
     def trigger(self, *triggers):
         """Respond to triggers."""
         if "rebuild" in triggers:

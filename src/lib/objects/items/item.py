@@ -52,7 +52,7 @@ class Item(Agent):
             yield CMD("Get", target=self)
             yield CMD("GetAll", target=self)
 
-        if not self.has_domain("Wielded") and ctx.agent.call("Manipulation", "could_wield").get_result():
+        if not self.has_domain("Wielded") and ctx.agent("could_wield"): # TODO: ick
             yield CMD("WieldWeapon", target=self)
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
