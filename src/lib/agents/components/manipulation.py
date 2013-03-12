@@ -53,22 +53,22 @@ class Pickup(Action):
         if ctx("grasp", "target", "manipulator"): yield "force", "target", "manipulator"
         if ctx("force", "target", "manipulator"): yield "get", "target", "environment", "manipulator"
 
-class Putdown(Action):
-    """Remove an item from your manipulator, placing it into the environment exclusively."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("ungrasp", "item", "manipulator"),
-    ]
+# class Putdown(Action):
+#     """Remove an item from your manipulator, placing it into the environment exclusively."""
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("force", "item", "manipulator"),
+#         ("ungrasp", "item", "manipulator"),
+#     ]
 
-class Drop(Action):
-    """Let an item fall from your manipulator into the environment (uncontrolled)."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("ungrasp", "item", "manipulator"),
-    ]
+# class Drop(Action):
+#     """Let an item fall from your manipulator into the environment (uncontrolled)."""
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("ungrasp", "item", "manipulator"),
+#     ]
 
 class Pack(Action):
     """Remove an item from your manipulator, placing it into a container exclusively."""
@@ -84,14 +84,14 @@ class Pack(Action):
             yield "ungrasp", "target", "manipulator"
         if ctx("ungrasp", "target", "manipulator"): yield "untouch", "target", "manipulator"
 
-class UnPack(Action):
-    """Remove an item from a container, placing it into your manipulator exclusively."""
-    phases = [
-        ("touch", "target", "manipulator"),
-        ("grasp", "target", "manipulator"),
-        ("force", "target", "manipulator"),
-        ("unstore", "target", "container", "manipulator"),
-    ]
+# class UnPack(Action):
+#     """Remove an item from a container, placing it into your manipulator exclusively."""
+#     phases = [
+#         ("touch", "target", "manipulator"),
+#         ("grasp", "target", "manipulator"),
+#         ("force", "target", "manipulator"),
+#         ("unstore", "target", "container", "manipulator"),
+#     ]
 
 """Interacting with Agents using manipulators."""
 
@@ -117,45 +117,45 @@ class Wield(Action):
         if ctx("force", "target", "manipulator"): yield "wield", "target", "manipulator"
         if ctx("wield", "target", "manipulator"): yield "ready", "target", "manipulator"
 
-class UnWield(Action):
-    """Lower an item in a manipulator to your side."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("unready", "item", "manipulator"),
-    ]
+# class UnWield(Action):
+#     """Lower an item in a manipulator to your side."""
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("force", "item", "manipulator"),
+#         ("unready", "item", "manipulator"),
+#     ]
 
-class Brandish(Action):
-    """Point at a target using a second, wielded target.
+# class Brandish(Action):
+#     """Point at a target using a second, wielded target.
 
-    n.b. - This may unready your second target! For example, pointing a
-    warhammer at someone makes it rather useless for combat.
-    """
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("ready", "item", "manipulator"),
-    ]
+#     n.b. - This may unready your second target! For example, pointing a
+#     warhammer at someone makes it rather useless for combat.
+#     """
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("force", "item", "manipulator"),
+#         ("ready", "item", "manipulator"),
+#     ]
 
-class UnBrandish(Action):
-    """Stop pointing at a target using a second, wielded target."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("unready", "item", "manipulator"),
-    ]
+# class UnBrandish(Action):
+#     """Stop pointing at a target using a second, wielded target."""
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("force", "item", "manipulator"),
+#         ("unready", "item", "manipulator"),
+#     ]
 
-class Throw(Action):
-    """Throw a target at a second target."""
-    phases = [
-        ("touch", "item", "manipulator"),
-        ("grasp", "item", "manipulator"),
-        ("force", "item", "manipulator"),
-        ("unready", "item", "manipulator"),
-    ]
+# class Throw(Action):
+#     """Throw a target at a second target."""
+#     phases = [
+#         ("touch", "item", "manipulator"),
+#         ("grasp", "item", "manipulator"),
+#         ("force", "item", "manipulator"),
+#         ("unready", "item", "manipulator"),
+#     ]
 
 """Commands."""
 
