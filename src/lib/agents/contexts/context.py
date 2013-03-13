@@ -114,7 +114,7 @@ class Context(object):
 
     """Context argument setter methods."""
 
-    def delete_argument(self, key, value):
+    def delete_argument(self, key):
         """Set an argument in this Context."""
         del self.arguments[key]
 
