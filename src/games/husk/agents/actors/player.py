@@ -1,13 +1,11 @@
 # The player character(s).
 from src.lib.agents.actors.player import PC
-from src.lib.agents.components.equipment import Equipment
-from src.lib.agents.components.manipulation import ManipulatingAgent
-from src.lib.agents.components.status import Status
+from src.lib.agents.components.commander import Commander, CommandingAgent
 
-class Player(PC):
+class Player(PC, CommandingAgent):
 
-    def __init__(self):
-        super(Player, self).__init__()
+    def __init__(self, components=[Commander]):
+        super(Player, self).__init__(components)
         self.glyph = 'T'
         self.name = 'scarecrow'
         self.color = 'yellow'
