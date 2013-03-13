@@ -133,9 +133,33 @@ class Body(Component):
         part = self.get_part(part_name)
         return self.get_paperdoll_part_colors(part), '<%s>%s</>' % (self.get_paperdoll_part_dr_colors(part), self.get_paperdoll_part_dr_glyph(part))
 
-    # Implement this for anything that needs a paperdoll.
-    def get_paperdoll(self):
-        """Return this body's ASCII paperdoll."""
+    def get_paperdoll(self, format, size):
+        """Return a paperdoll matching the provided format and size."""
+
+        """Paperdoll Frames:
+
+        Small Paperdoll (format='ASCII', size=(8,11)):
+
+        The preferred size is actually 8x10, but 8x11 is acceptable because the
+        interface provides 2 units of right padding.
+
+        ##################
+        # Paperdoll Name #
+        ##################
+        #    1234567890* #
+        #   ###########% #
+        # 1 #          % #
+        # 2 #          % #
+        # 3 #          % #
+        # 4 #          % #
+        # 5 #          % #
+        # 6 #          % #
+        # 7 #          % #
+        # 8 #          % #
+        #   ###########% #
+        #    1234567890* #
+        ##################
+        """
         yield ''
 
 class Humanoid(Body):
@@ -211,7 +235,6 @@ class Humanoid(Body):
         yield '   <%s>|</>   <%s>|</>   ' % (ll, rl)
         yield ' %s<%s>--</>   <%s>--</>%s ' % (LF, lf, rf, RF)
 
-
 class Vermiform(Body):
     # These tuples represent:
     # 1: Sorting order (lowest first).
@@ -281,67 +304,162 @@ class Octopod(Body):
 
     primary_slot = 'Arm1'
 
-# WIP:
-# Winged Humanoid
-#/-\ [ ] /-\
-#| .--+--. |
-#/ | = = | \
-#  ' -|- ' 
-#   .\=/.  
-#   |   |  
-#   |   |  
-#  --   -- 
 
-# Quadruped
-#/-\ [ ] /-\
-#| .--+--. |
-#/ | = = | \
-#  ' -|- ' 
-#   .\=/.  
-#   |   |  
-#   |   |  
-#  --   -- 
-# *Taur
-#     ( )   
-#  , .-|-. ,
-#  \/ = = \|
-#   ___-\-  
-#.:(______)
-#: |\   |  \
-# / |   |  / 
-#"  "   "  "
+class Avian(Body):
+    # These tuples represent:
+    # 1: Sorting order (lowest first).
+    # 2: Part name.
+    # 3: Class.
+    # 4: Parent part. Only list parts that have already been listed.
+    # 5: True if it's a sublocation rather than a real one.
+    # 6: List representing what 3d6 rolls hit that spot.
+    #    If a further d6 roll is required, use a list like:
+    #        [15, [16, 1, 2, 3], 17]
+    parts = (
+             (2, 'Torso', BodyPart, None, False, [9, 10, 11]),
+             (1, 'Neck', Neck, 'Torso', False, [6]),
+             (1, 'Skull', Skull, 'Neck', False, [3, 4]),
+             (1, 'Face', Face, 'Skull', False, [5]),
+             (3, 'RWing', Limb, 'Torso', False, [(7, (1, 2, 3)), (8, (1, 2, 3))]),
+             (3, 'LWing', Limb, 'Torso', False, [(7, (4, 5, 6)), (8, (4, 5, 6))]),
+             (5, 'Groin', BodyPart, 'Torso', False, [12]),
+             (6, 'RLeg', Leg, 'Groin', False, [(13, (1, 2, 3)), (14, (1, 2, 3))]),
+             (6, 'LLeg', Leg, 'Groin', False, [(13, (4, 5, 6)), (14, (4, 5, 6))]),
+             (7, 'RFoot', Foot, 'RLeg', False, [(15, (1, 2, 3)), (16, (1, 2, 3))]),
+             (7, 'LFoot', Foot, 'LLeg', False, [(15, (4, 5, 6)), (16, (4, 5, 6))]),
+             (8, 'Tail', Limb, 'Groin', False, [17, 18]),             
+    )
 
-# Snaketaur
-#    ( )   
-#  .--|--. ,
-# /  = =  \|
-# \,  -\-   
-# ___ \ \ \  
-#// _) | \ \
-#\\____/ | |
-# \_______/
+    primary_slot = 'Skull'
 
-# Humanoid
-#    ( )
-#  .--|--.
-# /  = =  \
+    default_weapons = {
+        'Skull' : ("beak"),    
+        'RFoot' : ("sharp claws"),
+        'LFoot' : ("sharp claws"),
+    }
+
+    @ignore_results
+    def get_paperdoll(self):
+
+        ############
+        # Avian    #
+        ############
+        #/-\  __ /-\
+        #|,,\/o_\,,|
+        #|,,/  \),,|
+        #/,,|   /,,\
+        #,, |   | ,,
+        #,  .\ /.  ,
+        #  / |\  \  
+        #,`, |_\ ,`,
+        ############
+
+        s, S = self.get_paperdoll_parts('Skull')
+        n, N = self.get_paperdoll_parts('Neck')
+        la, LA = self.get_paperdoll_parts('LArm')
+        ra, RA = self.get_paperdoll_parts('RArm')
+        lh, LH = self.get_paperdoll_parts('LHand')
+        rh, RH = self.get_paperdoll_parts('RHand')
+        t, T = self.get_paperdoll_parts('Torso')
+        g, G = self.get_paperdoll_parts('Groin')
+        ll, LL = self.get_paperdoll_parts('LLeg')
+        rl, RL = self.get_paperdoll_parts('RLeg')
+        lf, LF = self.get_paperdoll_parts('LFoot')
+        rf, RF = self.get_paperdoll_parts('RFoot')
+
+        yield '    <%s>[</>%s<%s>]</>   ' % (s, S, s)
+        yield '  <%s>.--</><%s>+</><%s>--.</> ' % (la, n, ra)
+        yield ' %s<%s>|</> <%s>=</>%s<%s>=</> <%s>|</>%s' % (LA, la, t, T, t, ra, RA)
+        yield ' %s<%s>\'</> <%s>-|-</> <%s>\'</>%s ' % (LH, lh, t, rh, RH)
+        yield '   <%s>.\</><%s>=</><%s>/.</>   ' % (ll, g, rl)
+        yield '  %s<%s>|</>   <%s>|</>%s  ' % (LL, ll, rl, RL)
+        yield '   <%s>|</>   <%s>|</>   ' % (ll, rl)
+        yield ' %s<%s>--</>   <%s>--</>%s ' % (LF, lf, rf, RF)
+
+# TODO: reframe all WIPs
+
+############
+# Humanoid #
+############
+#    ( )   #
+#  .--|--. #
+# /  = =  \#
 # \  -|-   | 
 #  '.\-/.  ' 
-#   |    \ 
-#   |    / 
-#  _|   /_ 
+#   |    \ #
+#   |    / #
+#  _|   /_ #
+############
 
-# Winged Humanoid
+############
+# Humanoid (Alt.)
+############
+#    ( )   #
+#  .--|--. #
+# /  = =  \#
+# \  -|-   | 
+#  '.\-/.  ' 
+#   |    \ #
+#   |    / #
+#  _|   /_ #
+############
+
+############
+# Winged   #
+# Humanoid #
+############
+#/-\ [ ] /-\
+#| .--+--. |
+#/ | = = | \
+#  ' -|- ' #
+#   .\=/.  #
+#   |   |  #
+#   |   |  #
+#  --   -- #
+
+############
+# Alt Winged
+# Humanoid #
+############
 #/-\     /-\
 #|,,\( )/,,|
 #/ .--|--. \
-# /  = =  \ 
+# /  = =  \# 
 #/   -|-   \ 
 #`  .\-/.  '
-#  /     \ 
-#  _\   /_ 
+#  /     \ #
+#  _\   /_ #
+############
 
-# Avian
+############
+# Quadtaur #
+############
+#     ( )  #
+#  , .-|-. ,
+#  \/ = = \|
+#   ___-\- #
+#.:(______)#
+#: |\   |  \
+# / |   |  / 
+#"  "   "  "
+############
+
+############
+# Snaketaur#
+############
+#    ( )   #
+#  .--|--. ,
+# /  = =  \|
+# \,  -\-  #
+# ___ \ \ \# 
+#// _) | \ \
+#\\____/ | |
+# \_______/#
+############
+
+############
+# Avian    #
+############
 #/-\  __ /-\
 #|,,\/o_\,,|
 #|,,/  \),,|
@@ -350,74 +468,149 @@ class Octopod(Body):
 #,  .\ /.  ,
 #  / |\  \  
 #,`, |_\ ,`,
+############
 
-# Spidertaur
-# /` ( )   
+##################
+# Crow           #
+##################
+#    1234567890* #
+#   ###########% #
+# 1 #/-\  ,--._% #
+# 2 #|,,\-  o,-` #
+# 3 #\,\     ; % #
+# 4 # `/    |  % #
+# 5 # /  __/   % #
+# 6 #/// |  \,_ #
+# 7 #//  \ _-`,- #
+# 8 #/   ,`,-` % #
+#   ###########% #
+#    1234567890* #
+##################
+
+# ASCII birds from the internet! http://www.geocities.com/soho/7373/birds.htm
+#                .--._
+#               /  o,-`
+#            .-/.--;
+#          .'.`/    |
+#          |/.'    /
+#         .'/___.-'
+#       .'  / \\\_
+# jgs  '-'|/ -'='==
+#          ,   _
+#         { \/`o;====-
+#    .----'-/`-/
+#     `'-..-| /
+#   jgs    /\/\
+#          `--`
+#            _   ,
+#      -====;o`\/ }
+#            \-`\-'----.
+#             \ |-..-'`
+#             /\/\
+# jgs         `--`
+#          .   ,
+#        '. '.  \  \
+#       ._ '-.'. `\  \
+#         '-._; .'; `-.'. 
+#        `~-.; '.       '.
+#         '--,`           '.
+#            -='.          ;
+#  .--=~~=-,    -.;        ;
+#  .-=`;    `~,_.;        /
+# `  ,-`'    .-;         |
+#    .-~`.    .;         ;
+#     .;.-   .-;         ,\
+#       `.'   ,=;     .-'  `~.-._
+#        .';   .';  .'      .'   '-.
+#          .\  ;  ;        ,.' _  a',
+#         .'~";-`   ;      ;"~` `'-=.)
+#       .' .'   . _;  ;',  ;
+#       '-.._`~`.'  \  ; ; :
+#            `~'    _'\\_ \\_ 
+#                  /=`^^=`""/`)-.
+#             jgs  \ =  _ =     =\
+#                   `""` `~-. =   ;
+
+############
+# Arachno- #
+# taur     #
+############
+# /` ( )   #
 # \.--+--. ,
 #  __ = = \|
-# /  \_-\-  
-# \/_/_/_/)
-# /\/\/\/\
-#| |\|\|\ \
+# /  \_-\- #
+# \/_/_/_/)#
+# /\/\/\/\ #
+#| |\|\|\ \#
+############
 
-# Arachnoid-
+############
+# Arachnoid#
+############
 #__  /^\  __
-# _\(   )/_
+# _\(   )/_#
 #/ \\\ /// \
-# __\) (/__
+# __\) (/__#
 #/ /( ::)\ \
 #| | \;;/ || 
 #\ \     / /   
-#    
+#          #
+############
 
-# Humanoid
-#    ( )
-#  .--|--.
-# /  = =  \
-# \  -|-   | 
-#  '.\-/.  ' 
-#   |    \ 
-#   |    / 
-#  _|   /_ 
-
-# ??? 
-#0    o   0
+############
+# ???      #
+############
+#0    o   0#
 #,,'`',`'',`',,
 #`',,   ,'`,'` o
-# O  `'' 0
+# O  `'' 0 #
+#          #
+#          #
+#          #
+#          #
+############
 
-# Devil
+############
+# Devil    #
+############
 #/-\ ( ) /-\
 #| .'-|-'. |
 #'/  = = | '
-# \, -|- \,   
+# \, -|- \,#  
 # `'.\-/. '`
-#   \ | / 
-#   / v \
-#  m     m
+#   \ | /  #
+#   / v \  #
+#  m     m #
+############
 
-# Devil
-# /\ ( ) /\
+############
+# Alt. Devil
+############
+# /\ ( ) /\#
 #/ .>-|-<. \
 #^/  = = |^^ 
-# \, -|- \,   
+# \, -|- \,#  
 # `'.\-/.' `
-#   \ | / 
-#   / v \
-#  n     n
+#   \ | /  #
+#   / v \  #
+#  n     n #
+############
 
-# Octopod
-#     _   
+############
+# Octopod  #
+############
+#     _    #
 # _  /4)   _ 
 #(3\ \ _  /5)
-# _ \ / \/ 
+# _ \ / \/ #
 #(2) (   )__ 
 # \__/\w/  6)
-# __/ /  \_    
+# __/ /  \_#   
 #(1  (8   7)
-#
+############
 
-# Much better octopod
+############
+# Alt. Much better octopod
 #     _   _
 # _  / ) ( )
 #( \ \___ \
@@ -427,15 +620,21 @@ class Octopod(Body):
 # __/ /``  )     
 #(   (    (
 
-# Hexapod---
-#       _
-# ___  / __ 
+############
+# Hexapod  #
+############
+#       _  #
+# ___  / __#
 #/   \_\/__\
 #\___/  \_ \
-#  __\__/ \
-# / /|  \_/
-#  / |  { }
+#  __\__/ \#
+# / /|  \_/#
+#  / |  { }#
+############
 
+############
+# Hexapod (Alt.)
+############
 # ___      
 #/   \  __   
 #\___/_/ __
@@ -444,3 +643,47 @@ class Octopod(Body):
 # / / / \  
 #/ |  \_/
 #     { }
+############
+
+# ASCII Body Parts:
+
+# Clawed feet
+
+#########
+# / #  /#
+#,`,#,`,#
+#########
+
+#####
+# / # 
+#,|\#
+# ` #
+#####
+
+########
+# \    #
+#,-`==;#
+########
+# \    #
+#,-'==,#
+########
+
+
+   #    jgs    _/_   |
+   #        -'`/  .--;--
+   #          '    .'
+
+   #         |   _\_
+   #       --;--.  \`--
+   # jgs      '.    `
+
+
+# Clawed hands
+
+########
+#\,#\, #  
+#`'#' `#
+########
+#\,#\, #  
+#'`# '`#
+########
