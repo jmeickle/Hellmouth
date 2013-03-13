@@ -33,8 +33,8 @@ simply wouldn't be able to *change* any of its manipulation states.
 
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
-from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.phase import Phase
+from src.lib.agents.contexts.context import action_context, command_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.debug import debug, die
