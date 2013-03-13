@@ -170,6 +170,14 @@ class Agent(object):
         """Return whether an Agent has any components in a Domain."""
         return True if domain in self.component_registry else False
 
+    def has_domains(self, *domains):
+        """Return whether an Agent has components in all provided Domains."""
+        current_domains = [domain for domain in self.get_domains()]
+        for domain in domains:
+            if domain not in current_domains:
+                return False
+        return True
+
     def get_domains(self):
         """Yield all currently defined domains."""
         return self.component_registry.keys()
