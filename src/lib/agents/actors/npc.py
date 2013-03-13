@@ -39,9 +39,9 @@ class NPC(Actor):
             return False
 
         self.distance = dist(self.pos, self.target.pos)
-        if self.preferred_reach(self.distance) is True:
-            self.do(sub(self.target.pos, self.pos))
-            return False
+        # if self.preferred_reach(self.distance) is True:
+        #     self.do(sub(self.target.pos, self.pos))
+        #     return False
 
         # TODO: Refactor some of this so that it is less buggy, but for now, it kinda-sorta-works.
         if self.distance > 1 and self.path is False:
