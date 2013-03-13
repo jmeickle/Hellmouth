@@ -87,10 +87,11 @@ class NPC(Actor):
         self.path = self.astar.path(self.pos, self.destination)
 
     def retarget(self):
-        debug("%s retargeted." % self.appearance())
-        if self.map.player:
-            self.target = self.map.player
+        target = self.call("Faction", "get_target").get_result()
+        if target:
+            self.target = target
             self.destination = self.target.pos
+            debug("%s retargeted to %s." % (self.appearance(), self.target.appearance()))
             return True
         debug("%s failed to retarget." % self.appearance())
         return False
