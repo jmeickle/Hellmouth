@@ -386,6 +386,19 @@ item_list = {
             "DX"       : [("punch", "thr-1", "cr", (0,), 0, None, None)],
         },
     },
+
+    # TODO: work this into advantage
+
+    "sharp claws" : {
+        "class" : Natural,
+        "attack_options" : { # Damage, type, reach, parry, min ST
+            "Boxing"   : [("claw", "thr-1", "cut", (0,), 0, None, None)],
+            "Brawling" : [("claw", "thr-1", "cut", (0,), 0, None, None)],
+            "Karate"   : [("claw", "thr-1", "cut", (0,), 0, None, None)],
+            "DX"       : [("claw", "thr-1", "cut", (0,), 0, None, None)],
+        },
+    },
+
     "blunt teeth" : {
         "class" : Natural,
         "attack_options" : {
