@@ -53,6 +53,13 @@ class Context(object):
         """Yield the participants in a Context."""
         return self.agent
 
+    """Context domain getter methods."""
+
+    def get_domains(self):
+        """Yield the domains in a Context."""
+        for domain in self.domains:
+            yield domain
+
     """Context participant getter methods."""
 
     def is_participant(self, agent):
