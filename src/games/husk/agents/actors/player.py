@@ -8,7 +8,7 @@ class Player(PC):
 
     def __init__(self):
         super(Player, self).__init__()
-        self.glyph = '@'
+        self.glyph = 'T'
         self.name = 'scarecrow'
         self.color = 'yellow'
         self.description = "A tatterdemalion shape of straw and rags. And... skin?"
