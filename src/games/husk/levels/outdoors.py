@@ -8,6 +8,7 @@ from src.lib.util.hex import *
 
 from src.games.husk.generators.maps import outdoors
 from src.games.husk.agents.actors import humans
+from src.games.husk.agents.actors import crows
 
 # TODO: Genericize this class.
 class Cornfield(object):
@@ -115,11 +116,11 @@ class Cornfield(object):
 
     # TODO: Hand this off to mapgen?
     def place_monsters(self, depth):
-        monster_class = humans.Human
-
-        while True:
+        import random
+        for x in xrange(10):
             cell = random.choice([cell for cell in self.map.cells])
 
+            monster_class = random.choice([humans.Human, crows.Crow])
             monster = monster_class()
             if self.map.put(monster, cell):
                 break
