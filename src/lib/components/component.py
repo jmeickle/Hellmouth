@@ -171,4 +171,10 @@ class RootComponent(Component):
         gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['Game'])
  
         # Spawn the game as a child process and then launch it.
-        self.spawn(gamemodule.Game()).launch()
+        self.game = self.spawn(gamemodule.Game())
+        self.game.launch()
+
+    def loop(self):
+        super(RootComponent, self).loop()
+        if self.alive:
+            self.game.loop()
