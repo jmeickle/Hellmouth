@@ -117,13 +117,15 @@ class Cornfield(object):
     # TODO: Hand this off to mapgen?
     def place_monsters(self, depth):
         import random
-        for x in xrange(10):
+
+        num_mons = 10
+        while num_mons > 0:
             cell = random.choice([cell for cell in self.map.cells])
 
             monster_class = random.choice([humans.Human, crows.Crow])
             monster = monster_class()
             if self.map.put(monster, cell):
-                break
+                num_mons -= 1
 
         # if depth == 5:
         #     from actors.npc import MeatCommander
