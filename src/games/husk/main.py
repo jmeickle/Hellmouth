@@ -6,6 +6,7 @@ from src.lib.components.views.screens.help import HelpScreen
 
 from src.lib.util.key import *
 from src.lib.util import system
+from src.lib.util.queue import Queue
 
 from src.games.husk.agents.actors.player import Player
 from src.games.husk.data import screens as screen_data
@@ -87,7 +88,8 @@ class Game(Component):
 
             # When we're in a map, we have to play nice with keyin.
             # HACK: This is likely to break during travel at some point.
-            if self.map.acting is None or self.map.acting.controlled is False:
+            acting = Queue.get_acting()
+            if not acting or not acting.controlled:
                 return True
 
             # Get screens from the level (which may have gotten some from the map.)
@@ -115,7 +117,7 @@ class Game(Component):
     def conditions(self):
         # TODO: Move this to the map.
         if self.map is not None:
-            if self.map.acting is None and len(self.map.queue) == 0:
+            if not Queue.get_acting():
                 self.finish()#before_finish()
                 return False
             if self.player.alive is False:

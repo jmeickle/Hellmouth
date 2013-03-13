@@ -8,6 +8,7 @@ from src.lib.util.dynamic import caller
 from src.lib.util.result import Result, SingleResult, ActionResult
 from src.lib.util.hex import *
 from src.lib.util.log import Log
+from src.lib.util.queue import Queue
 
 class Agent(object):
     # TODO: What Components do all Agents have?
@@ -186,6 +187,10 @@ class Agent(object):
 
     def process_event(self, event, context):
         """Find the first Command matching an event, instantiate it, and process it."""
+
+        if not self.turn():
+            die("acting: %s, queue: %s" % (Queue.get_acting(), [a.appearance() for a in Queue.queue]))
+
         if event not in ["Up", "Down"]:
             debug("EVENT: %s" % event)
 
@@ -396,10 +401,15 @@ class Agent(object):
         if reaction:
             return reaction(*args, **kwargs)
 
+    def turn(self):
+        """Whether it's this Agent's turn."""
+        if self == Queue.get_acting():
+            return True
+        return False
+
     # Mark self as done acting.
     # TODO: Make this part of a Queue component.
     def end_turn(self):
-        if self.map.acting == self:
+        if self.turn():
+            Queue.next()
             self.after_turn()
-            self.map.acting = None
-            self.map.queue.append(self)

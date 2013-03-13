@@ -285,6 +285,8 @@ class Actor(Agent, ManipulatingAgent):
             self.end_turn()
             return result
 
+        self.end_turn()
+
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
         if self.get("Status", "Unconscious"):
@@ -660,10 +662,9 @@ class Actor(Agent, ManipulatingAgent):
     # Remove self from the map and the queue
     def die(self):
         if self.death() is True:
+            self.end_turn()
+            Queue.remove(self)
             self.alive = False
-            if self == self.map.acting:
-                self.map.acting = None
-            self.map.queue.remove(self)
             self.drop_all()
             self.cell().remove(self)
             if self.controlled is True:

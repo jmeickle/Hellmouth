@@ -2,12 +2,13 @@
 # TODO: Not cells in the map.
 from collections import deque
 
+from src.lib.data import screens
+from cell import Cell
+
+from src.lib.util.debug import debug
 from src.lib.util.text import *
 from src.lib.util.log import Log
-
-from src.lib.data import screens
-
-from cell import Cell
+from src.lib.util.queue import Queue
 
 class Encounter:
     def __init__(self, level):
@@ -35,10 +36,6 @@ class Encounter:
         # TODO: Expand!
         self.floor = None
 
-        # Action queue and current actor
-        self.queue = deque()
-        self.acting = None
-
         # Where we're traveling to.
         self.destination = None
 
@@ -48,15 +45,12 @@ class Encounter:
         if self.destination is not None:
             return False
 
-        # If nobody is acting, let the first in the queue act.
-        if self.acting is None:
-            self.acting = self.queue.popleft()
-            self.acting.before_turn()
+        actor = Queue.get_acting()
 
-        # NPCs use act() until the player's turn comes up.
-        if self.acting is not None:
-            if self.acting.controlled is False:
-                self.acting.act()
+        if actor:
+            if not actor.controlled:
+                actor.before_turn()
+                actor.act()
 
     # Go to another map, or if destination is False, let the level figure it out.
     def go(self, destination):
@@ -153,7 +147,7 @@ class Encounter:
         if terrain is False:
             # Update the map
             cell.add(obj, terrain)
-            self.queue.append(obj)
+            Queue.add(obj)
 
             # Update the actor
             obj.pos = pos
