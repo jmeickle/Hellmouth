@@ -221,7 +221,7 @@ def perimeter(origin, rank, data=False):
         return [(cell, rank) for cell in cells]
 
 # Find all hexes up to a given rank.
-def area(origin, rank, data=False):
+def area(origin, rank=1, data=False):
     cells = []
     for r in range(rank+1):
         cells.extend(perimeter(origin, r, data))
