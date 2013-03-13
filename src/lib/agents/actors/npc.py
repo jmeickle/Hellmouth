@@ -41,9 +41,9 @@ class NPC(Actor):
             die("Player-controlled actor %s tried to hit AI code." % self.appearance())
 
         # If we don't have a target, try to find a new one.
-        if not self.target:
-            if not self.retarget():
-                return
+        if not self.target and not self.retarget():
+            # wander aimlessly
+            return self.do(random.choice(dirs))
 
         # Repath if our current target isn't correct
         if self.target.pos != self.destination:
