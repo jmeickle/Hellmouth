@@ -2,6 +2,7 @@ from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.agents.components.phase import Phase
 from src.lib.agents.contexts.context import action_context, command_context
+from src.lib.agents.components.faction import NeutralFaction
 
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util.debug import debug, die
@@ -61,6 +62,9 @@ class Commander(Component):
         """Yield the Commands this Component makes available to its Agent
         within a Context.
         """
+        if "Combat" in context.get_domains() and self.has_commanded():
+            yield CMD("IssueCommand", command="attack")
+
         for participant in context.get_participants():
             if self.can_command(participant):
                 yield CMD("IssueCommand", target=participant)
@@ -79,14 +83,18 @@ class Commander(Component):
 
     def add_commanded(self, agent):
         """Command an Agent."""
-        agent.append_component(Commanded(owner=agent, controller=self))
+        agent.append_component(Commanded(owner=agent, controller=self.owner))
+        agent.append_component(CommandedFaction(owner=agent, controller=self.owner))
         self.commanded.append(agent)
         return True
 
     def remove_commanded(self, agent):
         """Uncommand an Agent."""
         self.grasped.remove(agent)
+        # TODO: 7drl
         for component in agent.get_controlled_components(self.owner, "Commanded"):
+            agent.remove_component(component)
+        for component in agent.get_controlled_components(self.owner, "Faction"):
             agent.remove_component(component)
         return True
 
@@ -118,6 +126,12 @@ class Commanded(Component):
         super(Commanded, self).__init__(owner)
 
         self.controller = controller
+
+class CommandedFaction(NeutralFaction):
+    """Commanded faction."""
+    def get_target(self):
+        """default to player"""
+        return self.get_faction()
 
 """Mixins."""
 
