@@ -1,11 +1,12 @@
 # Poor, defenseless humans.
 
 from src.lib.agents.actors.npc import NPC
+from src.lib.agents.components.faction import NeutralFaction
 
 class Crow(NPC):
-
-    def __init__(self):
-        super(Crow, self).__init__()
+    """Default crow."""
+    def __init__(self, components=[]):
+        super(Crow, self).__init__(components)
 
         self.glyph = "C"
         self.name = 'crow'
@@ -15,3 +16,5 @@ class Crow(NPC):
         self.loadouts = []
         self.generator = "slave"
         self.build(25)
+
+        self.append_component(NeutralFaction(owner=self, controller=None))

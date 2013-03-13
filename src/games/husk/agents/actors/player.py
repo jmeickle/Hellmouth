@@ -3,7 +3,7 @@ from src.lib.agents.actors.player import PC
 from src.lib.agents.components.commander import Commander, CommandingAgent
 
 class Player(PC, CommandingAgent):
-
+    """Default player."""
     def __init__(self, components=[Commander]):
         super(Player, self).__init__(components)
         self.glyph = 'T'
