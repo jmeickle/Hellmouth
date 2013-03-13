@@ -9,7 +9,7 @@ class Human(NPC):
 
         self.glyph = '@'
         self.name = 'human'
-        self.color = 'blue'
+        self.color = 'white'
         self.description = "A normal human."
 
         self.loadouts = []
