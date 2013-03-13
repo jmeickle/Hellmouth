@@ -154,14 +154,6 @@ class Cursor(Component):
             self.parent.cursor = None
             self.suicide()
             return False
-        elif c == ord('a'):
-            actors = self.map.actors(self.pos)
-            if actors:
-                actor = actors[self.selector.index]
-                if actor:
-                    context = self.get_context(domains=["Combat"], participants=[actor])
-                    event = chr(c)
-                    return self.player.process_event(event, context)
         return True
 
     # Move the cursor (hexagonally).

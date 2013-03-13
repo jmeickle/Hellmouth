@@ -208,12 +208,25 @@ class Examine(View):
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
-            if self.children:
-                return True
-            child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
-        else:
-            return True
-        return False
+            if not self.children:
+                child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
+        elif c == ord('a'):
+            actors = self.map.actors(self.parent.pos)
+            if actors:
+                actor = actors[self.parent.selector.index]
+                if actor:
+                    context = self.get_context(domains=["Combat"], participants=[actor])
+                    event = chr(c)
+                    return self.player.process_event(event, context)
+        elif c == ord('t') or c == ord('C'):
+            actors = self.map.actors(self.parent.pos)
+            if actors:
+                actor = actors[self.parent.selector.index]
+                if actor:
+                    context = self.get_context(domains=["Command"], participants=[actor])
+                    event = chr(c)
+                    return self.player.process_event(event, context)
+        return True
 
     def draw(self):
         pos = self.parent.pos
@@ -221,7 +234,7 @@ class Examine(View):
         if not self.children:
             self.line("Space: Exit. Enter: Inspect. */: Style.")
         else:
-            self.line("Space: Stop Inspecting. /*: Cursor style.")
+            self.line("Space: Stop Inspecting. /*: Style.")
         if cell is not None:
             string = cell.contents()
             self.line("Cursor: %s." % string)
