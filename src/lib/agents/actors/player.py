@@ -4,8 +4,7 @@ from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import ManipulatingAgent
 from src.lib.agents.components.status import Status
 
-class PC(Actor, ManipulatingAgent):
-
+class PC(Actor):
     def __init__(self, components=[]):
         super(PC, self).__init__(components)
         self.glyph = '@'
@@ -19,14 +18,3 @@ class PC(Actor, ManipulatingAgent):
         self.build(200)
         self.recalculate()
         self.controlled = True
-
-    # Use stairs that you are standing on.
-    def stairs(self):
-        stairs = self.map.terrain(self.pos)
-        if stairs is not None:
-            return self.interact(stairs)
-
-    # Interact with terrain.
-    # TODO: Flags, etc.
-    def interact(self, terrain):
-        return terrain.interact(self)
