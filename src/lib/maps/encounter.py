@@ -133,18 +133,17 @@ class Encounter:
 
     # TODO: FIGURE OUT THIS SECTION, WHAT THE FUCK
     # TODO: It's still awful. I'm scared to touch it because so much relies on it.
-    # Place an object on the map.
+    # Place an object (either agent or terrain) on the map.
     def put(self, obj, pos, terrain=False):
 
         cell = self.cells.get(pos)
 
-        if cell is None:
-            return False
-
-        if cell.blocked() is True:
+        if not cell:
             return False
 
         if terrain is False:
+            if cell.occupied():
+                return False
             # Update the map
             cell.add(obj, terrain)
             Queue.add(obj)
@@ -155,6 +154,8 @@ class Encounter:
             obj.ready()
 
         else:
+            if cell.get_terrain():
+                return False
             # Update the map
             obj.cell = cell
             cell.add(obj, terrain)
