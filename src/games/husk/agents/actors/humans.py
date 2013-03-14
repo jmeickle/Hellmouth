@@ -14,7 +14,7 @@ class Human(NPC):
         self.description = "A normal human."
 
         self.loadouts = []
-        self.generator = "slave"
-        self.build(25)
-
+        self.generator = "farmer"
+        self.build(50)
+        self.recalculate()
         self.append_component(EnemyFaction(owner=self, controller=None))

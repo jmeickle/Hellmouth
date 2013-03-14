@@ -12,8 +12,7 @@ class Player(Actor, CommandingAgent):
         self.description = "A tatterdemalion shape of straw and rags. And... skin?"
         self.highlights = {}
 
-        # self.points["traits"]["DX"] += 100
-        # self.points["traits"]["ST"] += 100
-        self.build(50)
+        self.generator = "scarecrow"
+        self.build(100)
         self.recalculate()
         self.controlled = True

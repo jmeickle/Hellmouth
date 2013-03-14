@@ -15,6 +15,12 @@ class Crow(NPC):
 
         self.loadouts = []
         self.generator = "wild"
-        self.build(25)
-
+        self.points["traits"]["DX"] += 40
+        self.points["traits"]["ST"] -= 60
+        self.build(5)
+        self.recalculate()
         self.append_component(NeutralFaction(owner=self, controller=None))
+
+    def get_movement_modes(self):
+        yield "walk"
+        yield "flight"

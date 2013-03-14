@@ -71,6 +71,30 @@ generators = {
         "2H Flail" : {},
         "2H Sword" : {},
     }}, # </skills>
-} # </elite>
+}, # </elite>
+
+# Farmer generator.
+"farmer" : {
+    "traits" : { "options" : {
+        "ST" : {"multiplier" : 6},
+        "DX" : {"multiplier" : 2},
+        "IQ" : {"multiplier" : 1},
+        "HT" : {"multiplier" : 6},
+    }}, # </traits>
+    "skills" : { "options" : {
+        "Knife" : {},
+    }}, # </skills>
+}, # </farmer>
+
+# Scarecrow generator.
+"scarecrow" : {
+    "traits" : { "options" : {
+        "ST" : {"multiplier" : 3},
+        "HT" : {"multiplier" : 3},
+    }}, # </traits>
+    "skills" : { "options" : {
+        "Knife" : {},
+    }}, # </skills>
+}, # </scarecrow>
 
 } # </generators>
