@@ -264,7 +264,7 @@ class Context(object):
             return result.get_outcome(), result.get_cause()
         else:
             try:
-                return result[0], result[1:]
+                return result[0], result[1]
             except (IndexError, TypeError):
                 # debug("Error parsing result: %s" % result)
                 return result, "unknown"
