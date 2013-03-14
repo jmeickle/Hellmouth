@@ -128,7 +128,7 @@ class Combat(Component):
 
     """Weapon setter methods."""
 
-    def update_weapons(self, body=True, equipment=True):
+    def update_weapons(self, natural=True, wielded=True):
         self.weapons = deque()
 
         for weapon in self.owner.values("Body", "get_natural_weapons"):
