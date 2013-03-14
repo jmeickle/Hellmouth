@@ -373,6 +373,9 @@ class Wielded(Component):
         # TODO: Handle previous parries
         return parry_value, retreat_position
 
+    def get_manipulator(self):
+        return self.manipulator
+
     def get_reach(self):
         """Return the minimum and maximum reach of the current wielding mode."""
         return self.owner.get_reach(self.get_wielding_mode())
