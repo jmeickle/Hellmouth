@@ -20,7 +20,7 @@ class Cornfield(object):
 
         # DISPLAY:
         # Descriptive information about the level itself.
-        self.name = "A cornfield"
+        self.name = "cornfield"
         self.screens = []
 
         # Handle anything that should happen before arriving at this level is guaranteed.
@@ -118,11 +118,12 @@ class Cornfield(object):
     def place_monsters(self, depth):
         import random
 
-        num_mons = 10
+        num_mons = 1
         while num_mons > 0:
-            cell = random.choice([cell for cell in self.map.cells])
-
-            monster_class = random.choice([humans.Human, crows.Crow])
+#            cell = random.choice([cell for cell in self.map.cells])
+            cell = (5,0)
+#            monster_class = random.choice([humans.Human, crows.Crow])
+            monster_class = crows.Crow
             monster = monster_class()
             if self.map.put(monster, cell):
                 num_mons -= 1
