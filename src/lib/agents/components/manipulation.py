@@ -228,17 +228,46 @@ class Manipulation(Component):
 
     commands = []
 
-    def get_reach(self, manipulator, wielded=None):
-        min_reach, max_reach = manipulator.get_reach()
+    def can_reach(self, target, wielded=None, manipulator=None):
+        """Return whether the Agent can reach when manipulating."""
+        if not wielded and not manipulator: die("Tried to check reach without providing an item or manipulator.")
+        if wielded and not manipulator:
+            manipulator = wielded.call("Wielded", "get_manipulator").get_result()
+        # die("target %s, wielded %s, manip %s" % (target, wielded, manipulator))
+
+        min_reach, max_reach = self.get_reach(wielded, manipulator)
+        distance = self.owner.dist(target)
+        # die("dist %s, min %s, max %s" % (distance, min_reach, max_reach))
+
+        # Check whether it's too close to reach
+        if distance < min_reach:
+            return False#, "too close"
+
+        # Check whether it's too far to reach
+        if distance > max_reach:
+            return False#, "too far"
+
+        return True
+
+    def get_reach(self, wielded=None, manipulator=None):
+        min_reach = 0
+        max_reach = 0
 
         body_reach = self.owner.call("Body", "get_reach").get_result()
         if body_reach:
             max_reach += body_reach
 
         if wielded:
-            wielded_min_reach, wielded_max_reach = wielded.call("Wielded", "get_reach").get_result()
-            min_reach += wielded_min_reach
-            max_reach += wielded_max_reach
+            wielded_reach = wielded.call("Wielded", "get_reach").get_result()
+            if wielded_reach:
+                wielded_min_reach, wielded_max_reach = wielded_reach
+                min_reach += wielded_min_reach
+                max_reach += wielded_max_reach
+
+        if manipulator:
+            manipulator_min_reach, manipulator_max_reach = manipulator.get_reach()
+            min_reach += manipulator_min_reach
+            max_reach += manipulator_max_reach
 
         return min_reach, max_reach
 
