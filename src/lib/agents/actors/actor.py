@@ -569,12 +569,13 @@ class Actor(Agent, ManipulatingAgent):
                 return wounds
 
     # Decide which entire-actor effects will happen in response to injury.
+    # TODO: Componentize!
     def prepare_hurt(self, attack):
         # Shock:
         attack["shock"] = min(attack["injury"], 4)
 
         # Effects of a major wound:
-        if attack.get("major wound") is True:
+        if attack.get("major_wound") is True:
             # TODO: Face/vital/etc. hits
             check, margin = self.sc('HT')
             if check < TIE:
@@ -589,7 +590,7 @@ class Actor(Agent, ManipulatingAgent):
                 # Disarmament:
                 # TODO: Force dropping held items
                 if self.is_holding_items() is True:
-                    attack["dropped items"] = True
+                    attack["dropped_items"] = True
 
                 # Knockout:
                 if margin <= -5 or check == CRIT_FAIL:

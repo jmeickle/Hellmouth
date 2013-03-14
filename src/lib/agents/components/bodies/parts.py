@@ -381,20 +381,20 @@ class BodyPart(object):
         # TODO: (Source, DR blocked) for messaging
         # TODO: Damage to items.
         # TODO: Min damage properly
-        attack["basic damage blocked"] = self.DR()
-        attack["penetrating damage"] = max(0, attack["basic damage"] - attack["basic damage blocked"])
-        attack["multiplier"] = self.multiplier(attack["damage type"])
+        attack["basic_damage_blocked"] = self.DR()
+        attack["penetrating_damage"] = max(0, attack["basic_damage"] - attack["basic_damage_blocked"])
+        attack["multiplier"] = self.multiplier(attack["damage_type"])
         # No wound is necessarily no injury.
-        if attack["penetrating damage"] <= 0:
+        if attack["penetrating_damage"] <= 0:
             attack["wound"] = 0
             attack["injury"] = 0
         else:
             # Wounds are always at least one damage, but they may not cause injury.
-            attack["wound"] = max(1, int(attack["penetrating damage"] * attack["multiplier"]))
+            attack["wound"] = max(1, int(attack["penetrating_damage"] * attack["multiplier"]))
 
             # Any hit location can suffer a major wound.
             if attack["wound"] > self.owner.MaxHP()/2:
-                attack["major wound"] = True
+                attack["major_wound"] = True
 
             # Less complicated case.
             if self.crippling() is False:
@@ -403,10 +403,10 @@ class BodyPart(object):
             # More complicated case: some hit locations can be crippled.
             else:
                 if attack["wound"] > self.crippling():
-                    attack["major wound"] = True
-                    attack["crippling wound"] = True
+                    attack["major_wound"] = True
+                    attack["crippling_wound"] = True
                     if attack["wound"] > 2*self.crippling():
-                        attack["dismembering wound"] = True
+                        attack["dismembering_wound"] = True
 
                 # Further damage to a crippled limb causes wounds - but it
                 # doesn't cause further injury over the crippling amount!
