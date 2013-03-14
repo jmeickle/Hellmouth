@@ -240,14 +240,35 @@ class Manipulation(Component):
 
         return min_reach, max_reach
 
+    # TODO: redo manipulation as a controlled component
+
+    def get_manipulators(self):
+        """Yield manipulators."""
+        return self.owner.values("Body", "get_manipulators")
+
+    def get_grasped(self, manipulators=None):
+        """Yield Agents grasped by this Agent."""
+        if not manipulators:
+            manipulators = self.get_manipulators()
+
+        for manipulator in manipulators:
+            for agent in manipulator.get_grasped():
+                yield agent
+
     def get_wielded(self, manipulators=None):
         """Yield Agents wielded by this Agent."""
         if not manipulators:
-            manipulators = self.owner.values("Body", "get_manipulators")
+            manipulators = self.get_manipulators()
 
         for manipulator in manipulators:
             for agent in manipulator.get_wielded():
                 yield agent
+
+    # TODO: Less hack-ish.
+    def drop_grasped(self):
+        """Drop all grasped items."""
+        for agent in self.get_grasped():
+            yield self.call("Manipulation", Drop, agent)
 
 class Grasped(Component):
     """Component that handles a grasped Agent's functionality."""

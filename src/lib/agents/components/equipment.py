@@ -57,15 +57,6 @@ class Equipment(Component):
     """Allows an Agent to equip Agents on itself."""
     commands = []
 
-    # TODO: Less hack-ish.
-    def drop_grasped(self):
-
-        for agent in self.grasped():
-            self.process("drop", agent)
-
-    def get_weapons(self):
-        yield
-
     @ignore_results
     def get_worn(self):
         """Get a list representation of the Agent's worn Equipment."""
