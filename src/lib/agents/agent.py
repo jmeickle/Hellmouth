@@ -368,7 +368,7 @@ class Agent(object):
             target = context.get_argument("target")
             if target:
                 weapon = self.call("Combat", "get_default_weapon", context).get_result()
-                if self.call("Manipulation", "can_reach", target, weapon).get_result():
+                if weapon:# and self.call("Manipulation", "can_reach", target, weapon).get_result():
                     return weapon
         # TODO: Remove this default
         if arg == "container" and self.has_domain("Container"):
