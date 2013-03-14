@@ -54,7 +54,7 @@ class Body(Component):
         """Return the reach provided by this Body, exclusive of other factors."""
         return self.size
 
-    def get_weapons(self):
+    def get_natural_weapons(self):
         """Yield the natural weapons provided by this Body."""
         for part in self.get_parts():
             for weapon in part.get_natural_weapons():
