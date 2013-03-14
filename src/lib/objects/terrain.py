@@ -11,11 +11,14 @@ class Terrain(Agent):
         self.name = None
         self.color = None
         self.glyph = None
-        self.blocking = True
         self.terrain_type = terrain_type
 
     # Do additional setup based on the provided terrain type.
     def setup(self):
+        return False
+
+    def can_block(self, agent, direction):
+        """Return whether this cell can block an Agent coming from a direction."""
         return False
 
 # Generic staircase class.
@@ -26,7 +29,6 @@ class Stairs(Terrain):
         self.destination = destination
         self.glyph = ">"
         self.color = "green-black"
-        self.blocking = False
 
     def react_on_do_use(self, user):
         self.cell.map.go(self.destination)
@@ -40,7 +42,6 @@ class Lever(Terrain):
         self.target = target
         self.glyph = "|"
         self.color = "magenta-black"
-        self.blocking = False
         self.enabled = False
 
     def provide_commands(self, context):
@@ -69,8 +70,12 @@ class Lever(Terrain):
             return True
         return False
 
+class Wall(Terrain):
+    def can_block(self, agent, direction):
+        return True
+
 # Meat Arena
-class MeatWall(Terrain):
+class MeatWall(Wall):
     def __init__(self, terrain_type=None):
         super(MeatWall, self).__init__()
         self.name = "meat wall"
@@ -84,7 +89,7 @@ class MeatWall(Terrain):
             self.name = "inner " + self.name
 
 # Caves
-class CaveWall(Terrain):
+class CaveWall(Wall):
     def __init__(self, terrain_type=None):
         super(CaveWall, self).__init__()
         self.name = "rough-hewn cave wall"

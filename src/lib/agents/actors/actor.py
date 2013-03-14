@@ -132,6 +132,10 @@ class Actor(Agent, ManipulatingAgent):
         else:
             return False
 
+    # TODO: Componentize
+    def get_movement_modes(self):
+        yield "walk"
+
     # Whether we can actually move to a pos.
     # TODO: Action chain
     def can_move(self, pos, dir=CC):
@@ -142,15 +146,14 @@ class Actor(Agent, ManipulatingAgent):
         return True
 
     # Check move validity.
-    def valid_move(self, pos, dir=CC):
+    def valid_move(self, pos, direction=CC):
         # Map border checking:
         if self.map.valid(pos) is False:
             return False
 
         # Cell content checking:
-        if self.map.cell(pos).blocked(dir) is True:
+        if self.map.cell(pos).can_block(self, direction):
             return False
-
         return True
 
     # TODO: Componentize.

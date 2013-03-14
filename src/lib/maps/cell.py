@@ -177,45 +177,38 @@ class Cell:
             return True
         return False
 
-    # A list of actors that are blocking movement within a hex.
-    def intervening_actors(self, subposition, dir):
-        actors = []
+    # # A list of actors that are blocking movement within a hex.
+    # def intervening_actors(self, subposition, dir):
+    #     actors = []
 
-        for actor in self.actors:
-            # You can always move out of a subposition you're in.
-            if subposition == actor.subposition:
-                continue
+    #     for actor in self.actors:
+    #         # You can always move out of a subposition you're in.
+    #         if subposition == actor.subposition:
+    #             continue
 
-            blocked = []
-            # Centrally-located actors block four spots in total.
-            if actor.subposition == CC:
-                blocked = [CC]
-                blocked.extend(arc(flip(subposition)))
-            else:
-                blocked.extend(arc(actor.subposition))
-            if dir in blocked:
-                actors.append(actor)
-        return actors
+    #         blocked = []
+    #         # Centrally-located actors block four spots in total.
+    #         if actor.subposition == CC:
+    #             blocked = [CC]
+    #             blocked.extend(arc(flip(subposition)))
+    #         else:
+    #             blocked.extend(arc(actor.subposition))
+    #         if dir in blocked:
+    #             actors.append(actor)
+    #     return actors
 
-    # Whether it's possible to enter a hex from a given direction.
-    def accessible_from(self, dir):
-        if self.intervening_actors(flip(dir), dir):
-            return False
-        return True
+    # # Whether it's possible to enter a hex from a given direction.
+    # def accessible_from(self, dir):
+    #     if self.intervening_actors(flip(dir), dir):
+    #         return False
+    #     return True
 
-    # Return whether the cell has blocking terrain in it.
-    def impassable(self):
-        if self.terrain is not None:
-            if self.terrain.blocking is True:
-                return True
-        return False
-
-    # Return whether the cell is passable
-    def blocked(self, dir=CC):
-        if self.impassable() is True:
+    def can_block(self, agent, direction):
+        """Return whether this cell can block an Agent."""
+        if self.occupied():
             return True
-        if self.occupied() is True:
-            if self.accessible_from(dir) is True:
+        for terrain in self.get_terrain():
+            if terrain.can_block(agent, direction):
                 return True
         return False
 
