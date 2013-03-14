@@ -209,6 +209,8 @@ class Examine(View):
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
             if not self.children:
+                # TODO: Character sheet takes place of stats screen
+#                child = self.spawn(CharacterSheet(self.screen, PANE_X, STATS_Y, PANE_START_X, PANE_START_Y))
                 child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
         elif c == ord('a'):
             actors = self.map.actors(self.parent.pos)
@@ -646,7 +648,7 @@ class CharacterSheet(View):
         return False
 
     def draw(self):
-        self.border(" ")
+        self.border("#")
         pos = self.cursor.pos
         actors = self.map.actors(pos)
 
