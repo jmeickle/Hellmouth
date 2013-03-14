@@ -18,10 +18,6 @@ class Terrain(Agent):
     def setup(self):
         return False
 
-    # What the terrain does when an actor interacts with it.
-    def interact(self, actor):
-        return False
-
 # Generic staircase class.
 class Stairs(Terrain):
     def __init__(self, which, destination):
