@@ -14,9 +14,9 @@ def combat(attack):
             strings.append("%s tries to jump back!" % attack["target"].appearance())
 
         # Damage level tokens
-        if attack.get("dismembering wound") is not None:
+        if attack.get("dismembering_wound") is not None:
             damage_level = "dismember"
-        elif attack.get("crippling wound") is not None:
+        elif attack.get("crippling_wound") is not None:
             damage_level = "cripple"
         # HACK: Torsos and the like can't be crippled, but should still
         # display gorier damage messages when hit for large amounts of damage.
@@ -25,7 +25,7 @@ def combat(attack):
             damage_level = "dismember"
         elif attack["wound"] > attack["target"].MaxHP():
             damage_level = "cripple"
-        elif attack.get("major wound") is not None:
+        elif attack.get("major_wound") is not None:
             damage_level = "wound"
         elif attack["wound"] > 1:
             damage_level = "injure"
@@ -40,17 +40,17 @@ def combat(attack):
         if attack.get("dismembered") is not None:
             wound = ", maiming it"
             punctuation = "!"
-            if attack.get("dismembering wound") is True and attack["damage type"] == "cut":
-                attack["severing wound"] = True
+            if attack.get("dismembering_wound") is True and attack["damage type"] == "cut":
+                attack["severing_wound"] = True
                 wound = ", severing it"
         elif attack.get("crippled") is not None:
             wound = ", crippling it"
             punctuation = "!"
-        elif attack.get("major wound") is not None:
+        elif attack.get("major_wound") is not None:
             punctuation = "!"
 
         # TODO: Have other kinds of basic strings.
-        string = "%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage type"], attack["attack name"], attack["target"].appearance(), attack["location"].appearance(), wound, punctuation)
+        string = "%s @dmg-%s-%s-%s@ %s's %s%s%s" % (attack["attacker"].appearance(), damage_level, attack["damage_type"], attack["attack_name"], attack["defender"].appearance(), attack["location"].appearance(), wound, punctuation)
 
         # DEBUG:
         #formula = "%s, [%s = (%s-%s)*%s]" % (attack["injury"], attack["wound"], attack["basic damage"], attack["basic damage blocked"], attack["multiplier"])
@@ -61,18 +61,18 @@ def combat(attack):
         # Shouting if a major wound
         # TODO: Check to not cry out
         # TODO: Move out of this file.
-        if attack.get("major wound") is not None:
-            if attack["target"].voice is not None and attack["target"].get("Status", "unconscious") is False:
-                strings.append("%s @%s-dmg-%s@!" % (attack["target"].appearance(), attack["target"].voice, damage_level))
+        if attack.get("major_wound") is not None:
+            if attack["defender"].voice is not None and attack["defender"].get("Status", "unconscious") is False:
+                strings.append("%s @%s-dmg-%s@!" % (attack["defender"].appearance(), attack["target"].voice, damage_level))
 
     # Hit, but the target defended.
-    elif attack.get("defense-check") > TIE:
+    elif attack.get("defense_check") > TIE:
         # Defense level tokens
-        margin = attack["defense-margin"]
+        margin = attack["defense_margin"]
         punctuation = "."
 
         # Critical successes
-        if attack["defense-check"] == CRIT_SUCC:
+        if attack["defense_check"] == CRIT_SUCC:
             defense_level = "crit-"
             punctuation = "!"
             if margin >= 6:
@@ -106,14 +106,14 @@ def combat(attack):
         if attack.get("retreat position") is not None:
             defense_level += "-retreat"
 
-        strings.append("%s @def-%s-%s@ %s's %s%s" % (attack["target"].appearance(), attack["defense"], defense_level, attack["attacker"].appearance(), attack["attack name"], punctuation))
+        strings.append("%s @def-%s-%s@ %s's %s%s" % (attack["defender"].appearance(), attack["defense_name"], defense_level, attack["attacker"].appearance(), attack["attack_name"], punctuation))
 
     # Miss!
     else:
-        margin = attack["attack-margin"]
+        margin = attack["attack_margin"]
         punctuation = "."
         # Critical misses
-        if attack["attack-check"] == CRIT_FAIL:
+        if attack["attack_check"] == CRIT_FAIL:
             miss_level = "crit-"
             punctuation = "!"
             if margin <= -6:
@@ -142,7 +142,7 @@ def combat(attack):
                 miss_level = "unlucky"
                 punctuation = "!"
 
-        strings.append("%s @miss-%s@ %s%s" % (attack["attacker"].appearance(), miss_level, attack["target"].appearance(), punctuation))
+        strings.append("%s @miss-%s@ %s%s" % (attack["attacker"].appearance(), miss_level, attack["defender"].appearance(), punctuation))
 
     formatted = []
     for string in strings:
