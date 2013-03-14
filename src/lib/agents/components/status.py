@@ -49,18 +49,9 @@ class Status(Component):
         """Return the status in question."""
         return self.statuses.get(status_name, default)
 
-    def update(self):
-#        if change in ('HP', 'MaxHP'):
-#            self.
-        pass
-
     def set_status(self, status_name, value=None):
-        """Sets the value of a status. If no value is provided, """
-        # if self.get_status(status_name) != value:
-        #     return False
-        # else:
-        #     return True        
-        pass
+        """Sets the value of a status."""
+        self.statuses[status_name] = value
 
     def has(self, status_name, value=None, results=None):
         """Returns whether a status exists within this Component (optionally, only statuses matching a value.)"""
