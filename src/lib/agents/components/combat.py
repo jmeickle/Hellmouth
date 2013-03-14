@@ -187,45 +187,6 @@ class Combat(Component):
     # def get_blocks(self, can_retreat, retreat_positions):
     #     yield "block", blocking, block_value, retreat_position
 
-    # # STUB: Currently always returns highest parry.
-    # def Parry(self, retreat=False, list=False):
-    #     if self.can_defend() is False:
-    #         return None
-
-    #     status_mod = 0
-    #     if self.get("Status", "Stun"):
-    #         status_mod -= 4
-
-    #     posture_mod = postures[self.posture][1]
-
-    #     parries = []
-    #     for slot, appearance, trait, trait_level, attack_data, weapon in self.get_parries():
-    #         # Get the parry modifier from the attack data.
-    #         parry_mod = attack_data[4]
-    #         # HACK: Weapon balance.
-    #         if isinstance(parry_mod, tuple):
-    #             parry_mod, balanced = parry_mod
-
-    #         # Recalculate trait level for this weapon.
-    #         trait_level = self.trait(trait, False)
-
-    #         # TODO: Check whether the skill has had points paid for it (imp. retreat)
-    #         if retreat is True:
-    #             retreat_mod = 1
-    #             if trait in skills.skill_list:
-    #                 retreat_mod = skills.skill_list[trait].get("retreat", 1)
-    #         else:
-    #             retreat_mod = 0
-
-    #         parry = 3 + trait_level/2 + parry_mod + status_mod + posture_mod + retreat_mod
-    #         parries.append((slot, appearance, trait, parry, attack_data, weapon))
-
-    #     if list is True:
-    #         return sorted(parries, key=itemgetter(3), reverse=True)
-    #     else:
-    #         if parries:
-    #             return sorted(parries, key=itemgetter(3), reverse=True)[0][3]
-
     # TODO: Dodge object
     # TODO: Multiple kinds of dodge (e.g., normal vs. acrobatic)
     def get_dodges(self, can_retreat, retreat_positions):
@@ -261,29 +222,6 @@ class Combat(Component):
             parry_value, retreat_position = weapon.call("Wielded", "get_parry", can_retreat, retreat_positions).get_result()
             if parry_value:
                 yield "parry", weapon, parry_value, retreat_position
-
-#     def check_weapons(self):
-#         weapons = []
-#         parries = []
-#         for slot, loc in self.get("Equipment", "weapons"):
-#             if loc is None:
-#                 continue
-#             for appearance, weaponlist in loc.weapons().items():
-#                 for weapon in weaponlist:
-#                     for trait, attack_options in weapon.attack_options.items():
-#                         trait_level = self.trait(trait)
-#                         if trait_level > 0: # HACK: Magic number!
-#                             weapons.append((slot, appearance, trait, trait_level, weapon))
-#                             for attack_data in attack_options:
-#                                 parry_mod = attack_data[4]
-#                                 if parry_mod is not None:
-#                                     # HACK: Handle balanced status.
-#                                     if isinstance(parry_mod, tuple):
-#                                         parry_mod, balanced = parry_mod
-#                                     # TODO: Handle U weapons.
-#                                     parries.append((slot, appearance, trait, trait_level + parry_mod, attack_data, weapon))
-#         self.weapons = sorted(weapons, key=itemgetter(3,0,2,1), reverse=True)
-#         self.parries = sorted(parries, key=itemgetter(3,0,2,1), reverse=True)
 
     """Defense helper methods."""
 
@@ -352,28 +290,6 @@ class Combat(Component):
 #         attack_option = self.attack_options[self.attack_option]
 #         return weapon, attack_option
 
-#     def choose_weapon(self, scroll):
-#         weapons = self.get
-# #        assert len(self.weapons) != 0, "Had 0 weapons: %s" % self.__dict__
-#         self.weapon += scroll
-#         if self.weapon >= len(self.weapons):
-#             self.weapon = 0
-#         if self.weapon < 0:
-#             self.weapon = len(self.weapons) - 1
-
-#         weapon = self.weapons[self.weapon]
-#         slot, appearance, trait, trait_level, item = weapon
-#         self.attack_options = item.attack_options[trait]
-#         self.attack_option = 0
-
-#     def choose_attack_option(self, scroll):
-#         assert len(self.attack_options) != 0, "Had 0 attack options: %s" % self.__dict__
-#         self.attack_option += scroll
-#         if self.attack_option >= len(self.attack_options):
-#             self.attack_option = 0
-#         if self.attack_option < 0:
-#             self.attack_option = len(self.attack_options) - 1
-
 #     # Find eligible weapons.
 #     # TODO: Rewrite.
 #     def check_weapons(self):
@@ -402,29 +318,3 @@ class Combat(Component):
 #         # HACK: Shouldn't always reset like this.
 #         self.parry = 0
 #         self.choose_weapon(0)
-
-#     # Function called to produce a simple, single attack maneuver.
-#     # TODO: Rewrite.
-
-#     # STUB: Handle movement on a retreat.
-#     def retreat(self, attack):
-#         self.move(attack["retreat position"])
-
-#     # Returns true if the currently preferred weapon has reach.
-#     # TODO: Remove this function.
-#     def preferred_reach(self, dist):
-#         attack_option = self.attack_options[self.attack_option]
-#         min_reach = attack_option[3][0]
-#         max_reach = attack_option[3][-1]
-#         if dist >= min_reach and dist <= max_reach:
-#             return True
-#         else:
-#             return False
-
-#     # STUB: Natural reach. Always 0.
-#     def min_reach(self):
-#         return 0
-
-#     # STUB: Natural reach. Depends on size.
-#     def max_reach(self):
-#         return 0
