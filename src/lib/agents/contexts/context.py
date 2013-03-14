@@ -36,7 +36,13 @@ class Context(object):
         for step in self.steps:
             if step.required:
                 phase = step
-                arguments = self.get_aliased_arguments(phase.required_arguments)
+                # exit(phase.__dict__)
+                arguments = {}
+                for argument in phase.required_arguments:
+                    send = self.get_argument(argument)
+                    send_as = phase.aliases.get(argument, argument)
+                    arguments[send_as] = send 
+                # arguments = self.get_aliased_arguments(phase.required_arguments)
 
                 is_method = getattr(self.agent, "is" + "_" + phase.name, None)
                 if is_method:

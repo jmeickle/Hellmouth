@@ -308,8 +308,17 @@ class Agent(object):
         ctx.set_active(phase)
         debug("PHASE: %s" % phase.name)
 
+        # TODO: 7DRL
         ctx.require_arguments(phase.required_arguments)
-        arguments = ctx.get_aliased_arguments(phase.required_arguments)
+        # arguments = {}
+        # for argument in phase.required_arguments:
+        #     arguments[phase.aliases.get(argument, argument)] = ctx.get_argument(argument)
+
+        arguments = {}
+        for argument in phase.required_arguments:
+            send = ctx.get_argument(argument)
+            send_as = phase.aliases.get(argument, argument)
+            arguments[send_as] = send 
 
         is_method = getattr(ctx.agent, "is" + "_" + phase.name, None)
         if is_method:

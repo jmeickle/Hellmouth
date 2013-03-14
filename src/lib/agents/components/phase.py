@@ -9,3 +9,5 @@ class Phase(object):
         """Whether this Phase is required for completion of later Phases."""
         self.rollback = options.pop("rollback", True)
         """Whether this Phase has a corresponding rollback Phase."""
+        self.aliases = options
+        """Aliases for arguments in this phase."""

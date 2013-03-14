@@ -28,18 +28,18 @@ class AttackWithWielded(Action):
         # ctx.update_aliases(weapon="target")
 
         # Attacking requires a readied weapon.
-        yield Phase("touch", "weapon", "manipulator")
-        if ctx(): yield Phase("grasp", "weapon", "manipulator")
-        if ctx(): yield Phase("ready", "weapon", "manipulator")
+        yield Phase("touch", "weapon", "manipulator", weapon="target")
+        if ctx(): yield Phase("grasp", "weapon", "manipulator", weapon="target")
+        if ctx(): yield Phase("ready", "weapon", "manipulator", weapon="target")
 
         if ctx():
             # ctx.start_rollback()
             # ctx.update_aliases(weapon="instrument")
 
-            yield Phase("contact", "target", "weapon", "manipulator", required=False)
+            yield Phase("contact", "target", "weapon", "manipulator", weapon="instrument", required=False)
             # any number of these fallthrough if not satisfied:
             # if ctx(): yield ...
-            if ctx(): yield Phase("use_at", "target", "weapon", "manipulator", "use")
+            if ctx(): yield Phase("use_at", "target", "weapon", "manipulator", "use", weapon="instrument")
             # does the reverse operation of any operations since the rollback started
             # for phase in ctx.do_rollback():
             #     yield phase
