@@ -377,8 +377,11 @@ class Wielded(Component):
         return self.manipulator
 
     def get_reach(self):
-        """Return the minimum and maximum reach of the current wielding mode."""
-        return self.owner.get_reach(self.get_wielding_mode())
+        """Return the minimum and maximum reach of the current wielding mode, exclusive of manipulator."""
+        wielded = self.get_wielding_mode()
+        if wielded:
+            return self.owner.get_reach(self.get_wielding_mode())
+        return False
 
     """Wielding setter methods."""
 
