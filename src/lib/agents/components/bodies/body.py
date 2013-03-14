@@ -62,6 +62,19 @@ class Body(Component):
             for weapon in part.get_natural_weapons():
                 yield weapon
 
+    def get_random_part(self):
+        """Return a random part based on a roll."""
+        # TODO: Refactor this so that a while isn't necessary
+        # TODO: Handle severed rerolling.
+        part = None
+        loops = 0
+        while part is None and loops < 100:
+            loops += 1
+            roll = r3d6()
+            part = self.table.get(roll, self.table.get((roll, r1d6())))
+            if part: return part
+        die("Couldn't find any random part in %s after %s loops." % (self.__dict__, loops))
+
     # Build a body from the class information.
     def build(self, owner):
         for order, partname, partclass, parent, sublocation, rolls in self.parts:
@@ -79,12 +92,7 @@ class Body(Component):
 
             # Add the location to the hit location chart.
             for roll in rolls:
-                if isinstance(roll, tuple) is True:
-                    base, subrolls = roll
-                    for subroll in subrolls:
-                        self.table["%s-%s" % (base, subroll)] = part
-                else:
-                    self.table[roll] = part
+                self.table[roll] = part
 
     def get_default_manipulator(self, context):
         """Return the default manipulator to use within a Context."""

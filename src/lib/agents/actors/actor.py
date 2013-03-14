@@ -547,17 +547,6 @@ class Actor(Agent, ManipulatingAgent):
    
     # INJURY / HIT LOCATIONS
 
-    # TODO: Move this to body class.
-    # Choose a random hit location
-    # TODO: Handle severed rerolling.
-    def randomloc(self):
-        roll = r3d6()
-        loc = self.body.table.get(roll, None)
-        if loc is None:
-            subroll = r1d6()
-            loc = self.body.table[("%s-%s" % (roll, subroll))]
-        return loc
-
     # Calculate how many points of wounds a location has, then return
     # it as a single character. Optional parameter: wrap the character
     # in a color tag.
