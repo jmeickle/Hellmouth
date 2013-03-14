@@ -115,8 +115,7 @@ class Combat(Component):
         """Returns the weapon to default to within a Context."""
         weapon = self.get_active_weapon()
         if not weapon:
-            if self.weapons:
-                die("Had no active weapon despite having weapons: %s" % self.weapons)
+            die("Had no active weapon from list of weapons: %s" % self.weapons)
         return weapon
 
     def get_weapons(self):
