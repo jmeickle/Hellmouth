@@ -1,5 +1,4 @@
 from random import choice
-from operator import itemgetter
 
 from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.define import *
@@ -19,7 +18,6 @@ from src.lib.data import traits
 import src.lib.generators.points
 from src.lib.agents.components.bodies import body
 
-from src.lib.agents.contexts.combat import CombatAction
 from src.lib.util.log import Log
 
 from src.lib.objects.items.carrion import Corpse
@@ -160,6 +158,7 @@ class Actor(Agent, ManipulatingAgent):
 
         return True
 
+    # TODO: Componentize.
     # Change posture.
     def change_posture(self, posture):
         self.posture = posture
@@ -218,8 +217,8 @@ class Actor(Agent, ManipulatingAgent):
             return False
         if self.controlled is True:
             self.screen("KO")
-        self.set("Status", "unconscious", True)
-        self.process("Equipment", "drop_all_held")
+        self.call("Status", "set_status", "Unconscious", True)
+        self.call("Manipulation", "drop_grasped")
         self.knockdown()
 
     # Get knocked down.
@@ -307,12 +306,6 @@ class Actor(Agent, ManipulatingAgent):
             return False
         # HACK
         if self.prone() is True:
-            return False
-        return True
-
-    # STUB: Whether actor can defend.
-    def can_defend(self):
-        if self.can_act() is False:
             return False
         return True
 
@@ -447,83 +440,6 @@ class Actor(Agent, ManipulatingAgent):
         # TODO: buying levels of speed
         return self.stat('DX', temporary) + self.stat('HT', temporary)
 
-    # STUB: Can be modified by acrobatics, etc.
-    def Dodge(self, retreat=False):
-        if self.can_defend() is False:
-            return None
-
-        status_mod = 0
-        if self.get("Status", "Stun"):
-            status_mod -= 4
-
-        posture_mod = postures[self.posture][1]
-
-        # TODO: per-skill
-        retreat_mod = 0
-        if retreat is True:
-            retreat_mod += 3
-
-        dodge = self.Speed()/4 + 3 + status_mod + posture_mod + retreat_mod# /4 because no /4 in speed.
-
-        # Penalty from reeling: halve dodge.
-        if self.get("Status", "Reeling"):
-            dodge = (dodge + 1) / 2
-
-        # Penalty from exhaustion: halve dodge.
-        if self.get("Status", "Exhausted"):
-            dodge = (dodge + 1) / 2
-
-        return dodge
-
-    # STUB: depends on skill
-    def Block(self, retreat=False):
-        if self.can_defend() is False:
-            return None
-        return None
-
-    # STUB!!!
-    def get_parries(self):
-        return []
-
-    # STUB: Currently always returns highest parry.
-    def Parry(self, retreat=False, list=False):
-        if self.can_defend() is False:
-            return None
-
-        status_mod = 0
-        if self.get("Status", "Stun"):
-            status_mod -= 4
-
-        posture_mod = postures[self.posture][1]
-
-        parries = []
-        for slot, appearance, trait, trait_level, attack_data, weapon in self.get_parries():
-            # Get the parry modifier from the attack data.
-            parry_mod = attack_data[4]
-            # HACK: Weapon balance.
-            if isinstance(parry_mod, tuple):
-                parry_mod, balanced = parry_mod
-
-            # Recalculate trait level for this weapon.
-            trait_level = self.trait(trait, False)
-
-            # TODO: Check whether the skill has had points paid for it (imp. retreat)
-            if retreat is True:
-                retreat_mod = 1
-                if trait in skills.skill_list:
-                    retreat_mod = skills.skill_list[trait].get("retreat", 1)
-            else:
-                retreat_mod = 0
-
-            parry = 3 + trait_level/2 + parry_mod + status_mod + posture_mod + retreat_mod
-            parries.append((slot, appearance, trait, parry, attack_data, weapon))
-
-        if list is True:
-            return sorted(parries, key=itemgetter(3), reverse=True)
-        else:
-            if parries:
-                return sorted(parries, key=itemgetter(3), reverse=True)[0][3]
-
     def Lift(self):        return int(round(self.stat('ST')*self.stat('ST') / float(5)))
     def Encumbrance(self): return 0 # STUB
 
@@ -575,7 +491,7 @@ class Actor(Agent, ManipulatingAgent):
         attack["shock"] = min(attack["injury"], 4)
 
         # Effects of a major wound:
-        if attack.get("major_wound") is True:
+        if attack.get("major_wound"):
             # TODO: Face/vital/etc. hits
             check, margin = self.sc('HT')
             if check < TIE:
@@ -589,8 +505,7 @@ class Actor(Agent, ManipulatingAgent):
 
                 # Disarmament:
                 # TODO: Force dropping held items
-                if self.is_holding_items() is True:
-                    attack["dropped_items"] = True
+                attack["dropped_items"] = self.values("Manipulation", "get_wielded")
 
                 # Knockout:
                 if margin <= -5 or check == CRIT_FAIL:
@@ -611,15 +526,14 @@ class Actor(Agent, ManipulatingAgent):
             self.drop_all_held()
 
         if attack.get("stun") is not None and self.get("Status", "Unconscious") is False:
-            self.set("Status", "status", "Stun", attack["stun"])
+            self.call("Status", "set_status", "Stun", attack["stun"])
             # TODO: Change message.
             Log.add("%s is stunned!" % self.appearance())
 
         # Handle shock (potentially from multiple sources.)
         if attack.get("shock") is not None:
             shock = self.get("Status", "Shock", 0)
-            # shock = self.effects.get("Shock", 0)
-            self.set("Status", "Shock", min(4, shock + attack["shock"]))
+            self.call("Status", "set_status", "Shock", min(4, shock + attack["shock"]))
 
         # Cause HP loss.
         hp = self.HP()

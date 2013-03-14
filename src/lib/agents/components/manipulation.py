@@ -31,6 +31,8 @@ capability, e.g., to return whether it is currently grasping a weapon. It
 simply wouldn't be able to *change* any of its manipulation states.
 """
 
+import random
+
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.component import Component
 from src.lib.agents.components.phase import Phase
@@ -310,6 +312,37 @@ class Wielded(Component):
         """Return the current wielding mode."""
         if self.wielding_modes:
             return self.wielding_modes[self.wielding_mode]
+
+    def get_parry(self, can_retreat, retreat_positions):
+        """Get the parry value of this wielded agent."""
+        wielding_mode = self.get_wielding_mode()
+        # Wielding mode, for now:
+        #  0      1        2      3      4      5       6,     7
+        # trait, name, damage, d.type, reach, parry, min ST, hands
+
+        parry_mod = wielding_mode[5]
+        # TODO: Handle balanced
+        # if isinstance(parry_mod, tuple):
+        #     parry_mod, balanced = parry_mod
+        # else:
+        #     balanced = True
+
+        trait_name = wielding_mode[0]
+        trait_level = self.controller.trait(trait_name)
+
+        if not trait_level:
+            return False, None
+
+        parry_value = trait_level/2 + 3 + parry_mod
+
+        # TODO: Choose retreat position more intelligently
+        retreat_position = random.choice(retreat_positions) if retreat_positions else None
+
+        if can_retreat:
+            parry_value += 1
+
+        # TODO: Handle previous parries
+        return parry_value, retreat_position
 
     def get_reach(self):
         """Return the minimum and maximum reach of the current wielding mode."""
@@ -712,7 +745,12 @@ class UseAtMixin(Mixin):
     # STUB
     def do_use_at(self, target, instrument, manipulator, use):
         """Use an instrument at a target."""
-        return True
+        domain, callback = instrument.get_use_callback(use)
+        if domain and callback:
+            self.call(domain, callback, target, instrument, manipulator).get_result()
+            # TODO: Figure out whether we can continue the process
+            return True
+        return False
 
 class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
     """Convenience Mixin to represent an Agent that use its manipulators to use other Agents."""

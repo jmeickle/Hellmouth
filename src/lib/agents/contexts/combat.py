@@ -35,93 +35,117 @@ from src.lib.generators.text.combat import combat
 #     skill          name     dmg    dtype  reach parry minST hands
 #  "Broadsword" : { "swing" : ("sw+1", "cut", (1,), 0, 10, 1),
 
-class CombatAction:
-    def __init__(self, attacks):
-        self.attacks = attacks
-        self.hits = {}
+# TODO: Make this actually a type of Context!
+class CombatContext(object):
+
+    maneuver_id = 0
+
+    def __init__(self):
+        self.attacks = {}
         self.results = {}
 
-    # Decide which attacks are or aren't going to work, but don't actually
-    # do anything to actors yet.
-    def setup(self):
-        # Key ripostes / etc. off of maneuver (a hashable tuple)
+    # TODO: Better way of getting IDs
+    @staticmethod
+    def get_maneuver_id():
+        CombatContext.maneuver_id += 1
+        return CombatContext.maneuver_id
+
+    """Attack getter methods."""
+
+    def get_attacks(self):
+        return self.attacks.items()
+
+    """Attack setter methods."""
+
+    def add_attack(self, attacker, target, weapon, wielding_mode):
+        # Wielding mode, for now:
+        #  0      1        2      3      4      5       6,     7
+        # trait, name, damage, d.type, reach, parry, min ST, hands
+        trait, name, damage, damage_type, reach, parry, min_st, hands = wielding_mode
+        min_reach, max_reach = weapon.call("Wielded", "get_reach").get_result()
+
+        # TODO: better way of keying these
+        maneuver = CombatContext.get_maneuver_id()
+
+        self.attacks[maneuver] = {
+            "attacker" : attacker,
+            "target" : target,
+            "weapon" : weapon,
+            "trait_name" : trait,
+            "attack_name" : name,
+            "damage_roll" : damage,
+            "damage_type" : damage_type,
+            "min_reach" : min_reach,
+            "max_reach" : max_reach,
+         }
+
+    """Attack processing methods."""
+
+    def process_attacks(self):
+        # TODO: different loop structure. Generator based?
+        hits = []
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
             
-            # Attack roll
-            attack["attack-check"], attack["attack-margin"] = attack["attacker"].sc(attack["skill"])
+            # Attack roll.
+            attack["attack_check"], attack["attack_margin"] = attack["attacker"].sc(attack["trait_name"])
 
-            # Early exit.
-            if attack["attack-check"] < TIE:
-                attack["status"] = "missed"
+            # TODO: defender not always == target, e.g., crit fails or cover
+            attack["defender"] = attack["target"]
+            # TODO: better way of choosing location
+            attack.setdefault("location", attack["defender"].call("Body", "get_random_part").get_result())
+
+            # Early exit if missed.
+            if attack["attack_check"] < TIE:
+                attack["outcome"] = "missed"
                 self.results[maneuver] = attack
             else:
-                hits = self.hits.get(attack["target"], [])
+                attack["outcome"] = "hit"
                 hits.append((maneuver, attack))
-                self.hits[attack["target"]] = hits
 
-        if len(self.hits) > 0:
-            return True
+        landed = []
+        for maneuver, attack in hits:
+            # Example defense:
+            # ('parry', <Natural object>, 15, (-1, 0))
+            attack["defense_name"], attack["defense_weapon"], attack["defense_level"], attack["retreat_position"] = attack["defender"].call("Combat", "get_defense", attack).get_result()
 
-    # Attack(s) are stored relative to the defender. The defender chooses a
-    # response - or multiple responses - based on the attack(s).
-    def fire(self):
-        for defender, hits in self.hits.items():
-            for maneuver, attack in hits:
-                # Permit the actor to decide which defense they want to use.
-                attack["target"].choose_defense(attack)
-                if attack.get("defense") is not None:
-                    attack["defense-check"], attack["defense-margin"] = sc(attack["defense level"])
-                    if attack["defense-check"] > TIE:
-                        attack["status"] = "defended"
-                        self.results[maneuver] = attack
-                        continue
+            # Let the defender retreat and store whether it was a success
+            if attack.get("retreat_position"):
+                if attack["defender"].move(attack["retreat_position"]):
+                    attack["defender"].call("Status", "set_status", "Retreat", attack["attacker"])
+                    attack["retreat"] = True
+                else:
+                    attack["retreat"] = False
 
-                # Didn't defend? Generate damage for the attack.
-                attack["damage roll"] = attack["attack stats"][0]
-                attack["damage type"] = attack["attack stats"][1]
-                attack["basic damage"] = attack["attacker"].damage(attack["damage roll"])
-                if attack.get("location") is None:
-                    attack["location"] = attack["target"].randomloc()
-                attack["location"].prepare_hurt(attack)
-                attack["target"].prepare_hurt(attack)
-                attack["status"] = "hit"
+            # Check whether the defense succeeded
+            # TODO: componentize...
+            attack["defense_check"], attack["defense_margin"] = sc(attack["defense_level"])
+            if attack["defense_check"] > TIE:
+                attack["outcome"] = "defended"
                 self.results[maneuver] = attack
+            else:
+                attack["outcome"] = "landed"
+                landed.append((maneuver, attack))
 
-    # Do everything that occurs at the *end* of this attack sequence.
-    # Examples: falling, retreating, shock, etc.
-    def cleanup(self):
-        for maneuver, attack in self.results.items():
-            if attack.get("retreat position") is not None:
-                attack["target"].retreat(attack)
+        for maneuver, attack in landed:
+            # Didn't defend? Generate damage for the attacks.
+            attack["basic_damage"] = attack["attacker"].damage(attack["damage_roll"])
+            attack["location"].prepare_hurt(attack)
+            attack["defender"].prepare_hurt(attack)
+            self.results[maneuver] = attack
+
+        # Do everything that occurs at the *end* of this attack sequence.
+        for maneuver, attack in landed:
             # Cause wounds to limbs.
             # TODO: Better tracking of wounds.
             if attack.get("wound") > 0:
                 attack["location"].hurt(attack)
             # Cause wounds to actors.
             if attack.get("injury") > 0:
-                attack["target"].hurt(attack)
+                attack["defender"].hurt(attack)
             # Check for dead actors.
-            if attack["target"].check_dead() is True:
-                attack["target"].die()
-
-    # TODO: Duplicated code with actor reach method.
-    # Check whether the attack is within the weapon's valid reach.
-    def reach(self, attack, actual=False):
-        distance = dist(attack["attacker"].pos, attack["target"].pos)
-        min_reach = attack["attack stats"][3][0]
-        max_reach = attack["attack stats"][3][-1]
-
-        # TODO: Check current reach on weapons that require shifting distance.
-        # TODO: Different return values
-        if distance < min_reach:
-            return False
-        if distance > max_reach:
-            return False
-
-        # The attack's reach is the current dist.
-        attack["reach"] = distance
-        return True
+            if attack["defender"].check_dead():
+                attack["defender"].die()
 
     # TODO: Move to generator file.
     # TODO: Generate a message (using text generator)
