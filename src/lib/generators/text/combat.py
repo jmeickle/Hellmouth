@@ -3,7 +3,6 @@ from src.lib.util.text import *
 
 from src.lib.generators.text.describe import describe
 
-
 def combat(attack):
     strings = []
 
@@ -40,7 +39,7 @@ def combat(attack):
         if attack.get("dismembered") is not None:
             wound = ", maiming it"
             punctuation = "!"
-            if attack.get("dismembering_wound") is True and attack["damage type"] == "cut":
+            if attack.get("dismembering_wound") is True and attack["damage_type"] == "cut":
                 attack["severing_wound"] = True
                 wound = ", severing it"
         elif attack.get("crippled") is not None:
@@ -63,7 +62,7 @@ def combat(attack):
         # TODO: Move out of this file.
         if attack.get("major_wound") is not None:
             if attack["defender"].voice is not None and attack["defender"].get("Status", "unconscious") is False:
-                strings.append("%s @%s-dmg-%s@!" % (attack["defender"].appearance(), attack["target"].voice, damage_level))
+                strings.append("%s @%s-dmg-%s@!" % (attack["defender"].appearance(), attack["defender"].voice, damage_level))
 
     # Hit, but the target defended.
     elif attack.get("defense_check") > TIE:
