@@ -261,14 +261,16 @@ class Actor(Agent, ManipulatingAgent):
         # Which one?
         pos = add(self.pos, direction)
 
-        if self.map.cell(pos).occupied() is True:
-            return False
-
-        # TODO: Reinstate bump-attacks.
-        # if self.has_domain("Combat") and self.map.cell(pos).occupied() is True:
-        #     for actor in self.map.actors(pos):
-        #         if self.controlled != actor.controlled:
-                    # Generate an attack Context and use it for a command
+        # TODO: Make bump attacks cleaner
+        if self.map.cell(pos).occupied() and self.has_domain("Combat"):
+            context = Context(agent=self, domains=["Combat"], intent={"attempt" : True}, participants=self.map.actors(pos))
+            for command_class, command_arguments in context.get_commands():
+                command = command_class(context)
+                context.update_arguments(**command_arguments)
+                result = self.process_command(command)
+                outcome, cause = context.parse_result(result)
+                self.end_turn()
+                return outcome
 
         # Check for invalid hexes.
         if not self.map.valid(pos):
@@ -278,11 +280,14 @@ class Actor(Agent, ManipulatingAgent):
 
         # The only option left.
         if self.can_move(pos, direction):
-            result = self.move(pos, direction)
-            self.end_turn()
-            return result
-
-        self.end_turn()
+            if self.move(pos, direction):
+                self.end_turn()
+                return True
+            Log.add("Bonk! You ran headfirst into a bug. Report it.")
+            return False
+        else:
+            Log.add("Something's blocking the way.")
+            return False
 
     # STUB: Whether the actor can take *any* actions.
     def can_act(self):
