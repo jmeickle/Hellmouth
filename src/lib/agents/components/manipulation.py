@@ -597,17 +597,7 @@ class ContactMixin(Mixin):
         """Whether you can touch a target with an instrument."""
         # TODO: Restructure attack option structure so that items can figure
         # this out based on how they are being held
-        distance = self.dist(target)
-        min_reach, max_reach = self.values("Manipulation", "get_reach", manipulator, wielded=instrument)
-
-        # Check whether it's too close to reach
-        if distance < min_reach:
-            return False, "too close"
-
-        # Check whether it's too far to reach
-        if distance > max_reach:
-            return False, "too far"
-        return True
+        return self.call("Manipulation", "can_reach", target, instrument, manipulator).get_result()
 
     def do_contact(self, target, instrument, manipulator):
         """Touch a target with an instrument."""
