@@ -785,6 +785,8 @@ class Actor(Agent, ManipulatingAgent):
     def get_view_data(self, view=None):
         yield self.description
         yield ""
+        yield "HP: %s/%s" % (self.HP(), self.MaxHP())
+        yield ""
         yield "--Wielding--"
         for wielded in self.values("Manipulation", "get_wielded"):
             yield wielded.appearance()
