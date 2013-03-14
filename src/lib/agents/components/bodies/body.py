@@ -1,8 +1,10 @@
-from src.lib.agents.components.bodies.parts import *
-from src.lib.generators import items
 from operator import attrgetter
 
+from src.lib.agents.components.bodies.parts import *
 from src.lib.agents.components.component import Component, ignore_results
+from src.lib.generators import items
+
+from src.lib.util.dice import *
 
 # Body layouts - humanoid, hexapod, etc.
 class Body(Component):
