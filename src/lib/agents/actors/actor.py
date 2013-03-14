@@ -1,35 +1,30 @@
 from random import choice
 
-from src.lib.util.command import CommandRegistry as CMD
-from src.lib.util.define import *
-from src.lib.util.dice import *
-from src.lib.util.hex import *
-from src.lib.util.key import *
-from src.lib.util.text import *
-
-from src.lib.generators.text.describe import describe
-from src.lib.generators.items import EquipmentGenerator
-
-# TODO: Better data importing.
-import src.lib.data
-from src.lib.data import skills
-from src.lib.data import traits
-
-import src.lib.generators.points
-from src.lib.agents.components.bodies import body
-
-from src.lib.util.log import Log
-
-from src.lib.objects.items.carrion import Corpse
-
 from src.lib.agents.agent import Agent
-
 from src.lib.agents.components.action import Action
+from src.lib.agents.components.bodies import body
 from src.lib.agents.components.combat import Combat
 from src.lib.agents.components.container import Container
 from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import Manipulation, ManipulatingAgent
 from src.lib.agents.components.status import Status
+from src.lib.agents.contexts.context import Context
+# TODO: Better data importing.
+import src.lib.data
+from src.lib.data import skills
+from src.lib.data import traits
+from src.lib.generators.items import EquipmentGenerator
+from src.lib.generators.text.describe import describe
+import src.lib.generators.points
+from src.lib.objects.items.carrion import Corpse
+
+from src.lib.util.command import CommandRegistry as CMD
+from src.lib.util.define import *
+from src.lib.util.dice import *
+from src.lib.util.hex import *
+from src.lib.util.key import *
+from src.lib.util.log import Log
+from src.lib.util.text import *
 
 class Actor(Agent, ManipulatingAgent):
     """Monster-like Agents. Most typically, players and monsters."""
