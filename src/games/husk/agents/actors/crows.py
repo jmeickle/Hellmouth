@@ -14,7 +14,7 @@ class Crow(NPC):
         self.description = "A dark shape flitting between the branches."
 
         self.loadouts = []
-        self.generator = "slave"
+        self.generator = "wild"
         self.build(25)
 
         self.append_component(NeutralFaction(owner=self, controller=None))
