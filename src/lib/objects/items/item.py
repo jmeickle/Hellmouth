@@ -36,9 +36,9 @@ class Item(Agent):
         self.readied = []
         self.worn = []
 
-    def react_on_do_store(self, inventory):
-        """React to being stored in an inventory."""
-        self.cell()._get(self)
+    # TODO: Componentize
+    def get_use_callback(self, use):
+        return None, None
 
     def provide_argument(self, context, arg):
         if arg == "environment":
@@ -191,6 +191,12 @@ class Weapon(Item):
         # Combat-only stats
         self.primary_skill = None # Primary skill, for descriptions - there can be others.
         self.attack_options = {} # Min ST in attackline
+
+    # TODO: Componentize
+    def get_use_callback(self, use):
+        if use == "attack":
+            return "Combat", "process_attack"
+        return None, None
 
     def can_be_weapon(self):
         return True
