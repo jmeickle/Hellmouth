@@ -106,11 +106,10 @@ class Body(Component):
 
     # Very simple display of body information.
     # TODO: Deprecated.
-    def get_view_data(self):
-        for loc in sorted(sorted(self.locs.values(), key=attrgetter("type"), reverse=True), key=attrgetter("sorting")):
-            if loc is not None:
-                for line in loc.get_view_data():
-                    yield line
+    def get_view_data(self, view=None):
+        for part in sorted(self.get_parts(), key=attrgetter("sorting")):
+            for line in part.get_view_data():
+                yield line
 
     def get_paperdoll_part_colors(self, part, fg=True, bg=True):
         """Return the colors matching a part."""

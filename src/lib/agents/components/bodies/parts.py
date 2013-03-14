@@ -279,18 +279,24 @@ class BodyPart(object):
     #     return found_weapons
 
     # Information about this location.
-    def get_view_data(self):
+    def get_view_data(self, view=None):
         yield self.appearance()
-#        yield "<%s-black>%s:</>" % (self.get_color(), self.appearance())
-        for k, v in self.worn.items():
-            if k: yield "  %s (worn)" % k
-        for k, v in self.held.items():
-            if k: yield "  %s (held)" % k
-        for k, v in self.readied.items():
-            if k: yield "  %s (ready)" % k
-        if len(self.attack_options) > 0:
-            for weapon in self.attack_options.keys():
-                if weapon: yield "  %s (natural)" % weapon
+        wielded = [wielded for wielded in self.get_wielded()]
+
+        # TODO: formatting function here
+        for agent in wielded:
+            yield "  " + "%s (wielded)" % agent.appearance()
+
+        for agent in self.get_grasped():
+            if agent not in wielded:
+                yield "  " + "%s (grasped)" % agent.appearance()
+
+        for agent in self.get_natural_weapons():
+            yield "  " + "%s (natural)" % agent.appearance()
+
+        # TODO: worn items
+        # for agent in self.get_worn():
+        #     yield "%s (worn)" % agent.appearance()
 
     # Return the healthiness of the limb
     # TODO: Injured status for extremities, rather than using 'major wound'.

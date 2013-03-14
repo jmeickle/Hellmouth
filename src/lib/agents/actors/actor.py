@@ -779,18 +779,20 @@ class Actor(Agent, ManipulatingAgent):
 
     # Returns a list of lines to go into a character sheet.
     # TODO: Move to a View!
-    def character_sheet(self, chargen=False):
-        if chargen is False:
-            yield self.description
-            yield ""
+    def get_view_data(self, view=None):
+        yield self.description
+        yield ""
+        yield "--Wielding--"
+        for wielded in self.values("Manipulation", "get_wielded"):
+            yield wielded.appearance()
         # sheet.append("--Weapons--")
         # for slot, appearance, trait, trait_level, item in self.weapons:
         #     sheet.append("  %s: %s (%s-%s)" % (slot, appearance, trait, trait_level))
-        # sheet.append("")
+        yield ""
         yield "--Effects--"
         for effect, details in self.values("Status", "get_view_data"):
             yield "%s: %s" % (effect, details)
-#        sheet.append("Posture: %s" % self.posture)
+        yield "Posture: %s" % self.posture
         yield ""
         yield "--Attributes--"
         for attribute in primary_attributes:
@@ -816,7 +818,7 @@ class Actor(Agent, ManipulatingAgent):
 
         # Print information about your body.
         yield ""
-        yield "--Skill Levels--"
+        yield "--DEBUG--"
         for line in self.values("Body", "get_view_data"):
             yield line
 

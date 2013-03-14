@@ -664,7 +664,7 @@ class CharacterSheet(View):
         self.cline('%s(+-)</> %s' % (scroller, self.actor.appearance()))
         self.cline("-"*self.width)
 
-        self.text = text.wrap_string(self.actor.character_sheet(), self.width)
+        self.text = text.wrap_string(self.actor.get_view_data(self), self.width)
         self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
 
         offset = 0
