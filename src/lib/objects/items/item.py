@@ -1,10 +1,10 @@
 import random
 
 from src.lib.agents.agent import Agent
-
 from src.lib.objects.items.modifiers import * # TODO: Better way of handling imports/data
 
 from src.lib.util.command import Command, CommandRegistry as CMD
+from src.lib.util.debug import debug, die
 from src.lib.util.dynamic import * # TODO: Remove once items are agents.
 
 # Items.
