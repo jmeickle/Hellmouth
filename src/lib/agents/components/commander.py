@@ -62,14 +62,15 @@ class Commander(Component):
         """Yield the Commands this Component makes available to its Agent
         within a Context.
         """
-        if "Combat" in context.get_domains() and self.has_commanded():
-            yield CMD("IssueCommand", command="attack")
+        if "Command" in context.get_domains():
+            if "Combat" in context.get_domains() and self.has_commanded():
+                yield CMD("IssueCommand", command="attack")
 
-        for participant in context.get_participants():
-            if self.can_command(participant):
-                yield CMD("IssueCommand", target=participant)
-            elif self.can_commanded(participant):
-                yield CMD("TakeCommand", target=participant)
+            for participant in context.get_participants():
+                if self.can_command(participant):
+                    yield CMD("IssueCommand", target=participant)
+                elif self.can_commanded(participant):
+                    yield CMD("TakeCommand", target=participant)
 
     """Commanded getter functions."""
 
@@ -105,6 +106,12 @@ class Commander(Component):
         if agent.has_domain("Commanded"):
             return False
         return True
+
+    def has_commanded(self):
+        """Return whether this Component is commanding any Agents."""
+        for agent in self.get_commanded():
+            return True
+        return False
 
     def is_commanded(self, agent):
         """Return whether this Component's Agent is commanding another Agent."""
