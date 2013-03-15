@@ -216,6 +216,11 @@ class Weapon(Item):
         """Return the minimum and maximum reach of this Weapon's wielding mode."""
         min_reach = wielding_mode[4][0]
         max_reach = wielding_mode[4][-1]
+
+        # TODO: Remove after 7DRL, just here to make daggers and such usable
+        if max_reach == 0:
+            max_reach += 1
+
         return min_reach, max_reach
 
     def get_reach_limits(self):
