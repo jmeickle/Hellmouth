@@ -57,7 +57,8 @@ class Item(Agent):
 
     # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
     def appearance(self):
-        return "%s %s" % (self.material.appearance, self.name)
+        return self.name
+#        return "%s %s" % (self.material.appearance, self.name)
 
     # STUB: Preferred slot for this kind of item.
     def preferred_slot(self):
