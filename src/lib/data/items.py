@@ -170,15 +170,9 @@ item_list = {
             "2H Axe/Mace" : [("swing", "sw+3", "cut", (1,2), U0, 12, 3)]
         },
     },
+
 # Maces.
-    "mace" : {
-        "class" : Mace,
-        "cost" : 50,
-        "weight" : 5,
-        "attack_options" : {
-            "Axe/Mace" : [("swing", "sw+3", "cr", (1,), U0, 12, 1)]
-        },
-    },
+
     "small mace" : {
         "class" : Mace,
         "cost" : 35,
@@ -187,7 +181,29 @@ item_list = {
             "Axe/Mace" : [("swing", "sw+2", "cr", (1,), U0, 10, 1)]
         },
     },
-# Picks and hammers.
+
+    "mace" : {
+        "class" : Mace,
+        "cost" : 50,
+        "weight" : 5,
+        "attack_options" : {
+            "Axe/Mace" : [("swing", "sw+3", "cr", (1,), U0, 12, 1)]
+        },
+    },
+
+# Picks, hammers, and sickles.
+    "sickle" : {
+        "class" : Pick,
+        "cost" : 15,
+        "weight" : 2,
+        "attack_options" : {
+            "Axe/Mace" : [
+                ("slice", "sw", "cut", (1,), 0, 8, 1),
+                ("swing", "sw", "imp", (1,), U0, 8, 1),
+#                ("hook", "thr-2", "cut", (1,), U0, 8, 1),
+            ],
+        },
+    },
     "pick" : {
         "class" : Pick,
         "cost" : 70,
@@ -206,7 +222,7 @@ item_list = {
         },
     },
     "warhammer" : {
-        "class" : Hammer,
+        "class" : Pick,
         "cost" : 100,
         "weight" : 7,
         "primary_skill" : "2H Axe/Mace",
@@ -216,6 +232,7 @@ item_list = {
     },
 
 # Clubs.
+
     "baton" : {
         "class" : Club,
         "cost" : 20,
@@ -239,7 +256,9 @@ item_list = {
             ],
         },
     },
+
 # Flails.
+
     "morningstar" : {
         "class" : Flail,
         "cost" : 80,
@@ -295,6 +314,18 @@ item_list = {
 
 # Shorter polearms.
 
+    "dueling pollaxe" : {
+        "class" : Pollaxe,
+        "cost" : 100,
+        "weight" : 8,
+        "attack_options" : {
+            "Polearm" : [
+               ("chop", "sw+3", "cut", (1,2), U0, 11, 3),
+               ("thrust", "sw+3", "cr", (1,2), U0, 11, 3),
+            ],
+        },
+    },
+
 # Spears.
     "spear" : {
         "class" : Spear,
@@ -318,7 +349,21 @@ item_list = {
             ],
         },
     },
+    # Unimplemented: -2 to hit, Target at -1 to Dodge, +1 to Block or Parry.
+    "trident" : {
+        "class" : Spear,
+        "cost" : 80,
+        "weight" : 5,
+        "attack_options" : {
+            "Spear" : [
+               ("thrust", "thr+3", "imp", (1,), U0, 11, 1),
+               ("thrust", "thr+4", "imp", (1,2), 0, 10, 2),
+            ],
+        },
+    },
+
 # Staves
+
     "quarterstaff" : {
         "class" : Staff,
         "cost" : 10,
@@ -336,6 +381,7 @@ item_list = {
     },
 
 # Unarmed-augmentors.
+
     "brass knuckles" : {
         "cost" : 10,
         "weight" : .25,
@@ -346,6 +392,7 @@ item_list = {
            "DX"       : [("thrust", "thr", "cr", (0,), 0, None, None)],
         },
     },
+
     "blackjack" : {
         "class" : Weapon,
         "cost" : 20,
@@ -355,7 +402,9 @@ item_list = {
            "DX"       : [("hit", "thr", "cr", (0,), 0, 7, 1)],
         },
     },
-# Improvised weapons.
+
+# Small improvised weapons.
+
     "wooden stake" : {
         "class" : Weapon,
         "cost" : 4,
@@ -364,6 +413,65 @@ item_list = {
            "Knife" : [("thrust", "thr(.05)", "imp", (0,), -1, 5, 1)],
         },
     },
+
+    "chain" : {
+        "variant" : "flail",
+    },
+
+# Small farm tools.
+
+    "trowel" : {
+        "variant" : "dagger",
+    },
+
+    "machete" : {
+        "variant" : "shortsword",
+    },
+
+    "pruning shears" : {
+        "variant" : "small knife",
+    },
+
+    "hedge trimmers" : {
+        "variant" : "shortsword",
+    },
+
+# Small shop tools.
+
+    "pliers" : {
+        "variant" : "dagger",
+    },
+
+    "screwdriver" : {
+        "variant" : "dagger",
+    },
+
+    "auger" : {
+        "variant" : "dagger",
+    },
+
+    "wrench" : {
+        "variant" : "small mace",
+    },
+
+    "claw hammer" : {
+        "class" : Pick,
+        "cost" : 70,
+        "weight" : 3,
+        "attack_options" : {
+            "Axe/Mace" : [
+                ("swing", "sw+1", "cr", (1,), U0, 10, 1),
+                ("swing", "sw", "imp", (1,), U0, 10, 1)
+            ]
+        },
+    },
+
+    "ball-peen hammer" : {
+        "variant" : "small mace",
+    },
+
+# Large improvised weapons.
+
     "scythe" : {
         "class" : Tool,
         "cost" : 15,
@@ -375,8 +483,49 @@ item_list = {
             ],
         },
     },
+
+    "pitchfork" : {
+        "variant" : "trident",
+    },
+
+    "wood ax" : {
+        "variant" : "greataxe",
+    },
+
+    "mattock" : {
+        "variant" : "warhammer",
+    },
+
+    "hoe" : {
+        "variant" : "dueling pollaxe",
+    },
+
+    "shovel" : {
+        "class" : Tool,
+        "cost" : 80,
+        "weight" : 5,
+        "primary_skill" : "2H Axe/Mace",
+        "attack_options" : {
+            "2H Axe/Mace" : [("swing", "sw+2", "cr", (1,2), U0, 12, 3)],
+        },
+    },
+
+    "rake" : {
+        "class" : Pollaxe,
+        "cost" : 100,
+        "weight" : 3,
+        "attack_options" : {
+            "Polearm" : [
+               ("swing", "sw+1", "imp", (1,2), U0, 11, 3),
+               ("swing", "sw+1", "cr", (1,2), U0, 11, 3),
+            ],
+        },
+    },
+
 # Fake items.
+
 # Natural attacks.
+
     "fist" : {
         "class" : Natural,
         "attack_options" : { # Damage, type, reach, parry, min ST

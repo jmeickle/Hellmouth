@@ -60,4 +60,39 @@ generators = {
 
 }}, #</weapons>
 
+"implements" : { "weight" : 15, "options" : {
+    "farming tools" : { "options" : {
+        "trowel" : {},
+        "sickle" : {},
+        "machete" : {},
+        "pruning shears" : {},
+        "hedge trimmers" : {},
+    }}, #</farming tools>
+
+    "shop tools" : { "weight" : 5, "options" : {
+        "ball-peen hammer" : { "weight" : 1 },
+        "claw hammer" : {},
+        "pliers" : {},
+        "needle-nose pliers" : {},
+        "wrench" : {},
+        "screwdriver" : {},
+        "auger" : {},
+        "chain" : {}
+    }}, #</shop tools>
+
+    "large farming tools" : { "weight" : 5, "options" : {
+        "pitchfork" : {},
+        "hoe" : {},
+        "scythe" : {},
+        "shovel" : {},
+        "wood ax" : {},
+        "rake" : {},
+        "mattock" : {}
+    }}, #</large farming tools>
+    # "power tools" : { "weight" : 1, "options" : {
+    #     "chainsaw" : {},
+    #     "circular saw" : {},
+    #     "power drill" : {},
+    # }}, #</power tools>
+}}, #</implements>
 } #</generators>

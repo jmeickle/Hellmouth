@@ -156,8 +156,12 @@ class Cornfield(object):
         #         num_mons -= 1
 
     def place_items(self, depth):
-        item_count = r3d6() + 10 + depth
+        loops = 1000
+        item_count = r3d6() + 30 + depth
         generator = ItemGenerator(generators)
-        for x in range(item_count):
-            item = generator.random_item("weapons")
-            random.choice(self.map.cells.values()).put(item)
+        while item_count > 0 and loops > 0:
+            loops -= 1
+            item = generator.random_item("implements")
+            if item:
+                random.choice(self.map.cells.values()).put(item)
+                item_count -= 1
