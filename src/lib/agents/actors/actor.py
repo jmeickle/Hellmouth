@@ -282,10 +282,12 @@ class Actor(Agent, ManipulatingAgent):
             if self.move(pos, direction):
                 self.end_turn()
                 return True
-            Log.add("Bonk! You ran headfirst into a bug. Report it.")
+            if self.controlled:
+                Log.add("Bonk! You ran headfirst into a bug. Report it.")
             return False
         else:
-            Log.add("Something's blocking the way.")
+            if self.controlled:
+                Log.add("Something's blocking the way.")
             return False
 
     # STUB: Whether the actor can take *any* actions.
