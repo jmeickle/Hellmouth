@@ -243,7 +243,7 @@ class Agent(object):
             if outcome is False:
                 break
 
-        return ctx.parse_results(command)
+        return ctx.parse_results(command.__class__)
 
     """Command processing helper methods."""
 
@@ -290,7 +290,7 @@ class Agent(object):
             phase.context = ctx
 
             result = self.process_phase(phase)
-            ctx.append_result(phase.__class__, result)
+            ctx.append_result(action.__class__, result)
             outcome, cause = ctx.parse_result(result)
             if outcome is False:
                 break
