@@ -253,40 +253,40 @@ class Stats(View):
             self.cline(line)
 
         # Show the chosen weapon/attack option combination.
-        # for weapon, attackline in self.player.get("Combat", "view_data"):
+        weapon, wielding_mode = self.player.call("Combat", "get_view_data").get_result()
+        # Wielding mode, for now:
+        #  0      1        2      3      4      5       6,     7
+        # trait, name, damage, d.type, reach, parry, min ST, hands
+        trait, attack_name, damage, damage_type, reach_def, parry, min_st, hands = wielding_mode
+        trait_level = self.player.trait(trait)
+        appearance = weapon.appearance()[:20]
+        manipulator = weapon.call("Wielded", "get_manipulator").get_result()
 
-            # weapon, attack_option = attackline
-            # slot, appearance, trait, trait_level, item = weapon
-            # # Override this with the current value.
-            # trait_level = self.player.trait(trait)
+        reach = []
+        for distance in reach_def:
+            if distance == 0:
+                reach.append("C")
+            else:
+                reach.append("%s" % distance)
+        try:
+            reach = "(%s)" % ",".join(reach)
+        except TypeError:
+            exit("reach: %s" % reach)
 
-            # # Print reach
-            # # TODO: Move to weapon display function.
-            # reach = ""
-            # for dist in attack_option[3]:
-            #     if reach:
-            #         reach += ","
-            #     if dist == 0:
-            #         reach += "C"
-            #     else:
-            #         reach += "%s" % dist
-            #     # TODO: selected reach for variable weaons
-            #         #reach += "*"
-            # reach = "(%s)" % reach
+        # HACK: Should ask the item to display a shorter appearance.
+        self.cline("(/*) %s: %s" % (manipulator.appearance(), appearance))
 
-            # # HACK: Should ask the item to display a shorter appearance.
-            # self.cline("(/*) %s: %s" % (self.player.body.locs[slot].appearance(), appearance[:20]))
+        color = "white-black"
+        if self.player.base_skills.get(trait) is None:
+            color = "red-black"
 
-            # color = "white-black"
-            # if self.player.base_skills.get(trait) is None:
-            #     color = "red-black"
+        self.cline("%s, <%s>%s-%s</>" % (manipulator.appearance(), color, trait, trait_level))
 
-            # self.cline("%s, <%s>%s-%s</>" % (self.player.body.locs[slot].appearance(), color, trait, trait_level))
-
-            # selector = ""
-            # if len(self.player.attack_options) > 1:
-            #     selector = "(+-) "
-            # self.cline("%5s%s %s %s %s" % (selector, attack_option[0], self.player.damage(attack_option[1], False), attack_option[2], reach))
+        selector = ""
+        weapons = [w for w in self.player.values("Combat", "get_weapons")]
+        if len(weapons) > 1:
+            selector = "(+-) "
+        self.cline("%5s%s %s %s %s" % (selector, attack_name, self.player.damage(damage, False), damage_type, reach))
 
         # Col 2: Combat information
         self.x_acc += 12
@@ -339,13 +339,15 @@ class Stats(View):
 
     def keyin(self, c):
         if c == ord("+"):
-            self.player.choose_attack_option(1)
+            weapon = self.player.call("Combat", "get_active_weapon").get_result()
+            weapon.call("Wielded", "set_wielding_mode", 1)
         elif c == ord("-"):
-            self.player.choose_attack_option(-1)
+            weapon = self.player.call("Combat", "get_active_weapon").get_result()
+            weapon.call("Wielded", "set_wielding_mode", -1)
         elif c == ord("*"):
-            self.player.choose_weapon(1)
+            self.player.call("Combat", "set_active_weapon", 1)
         elif c == ord("/"):
-            self.player.choose_weapon(-1)
+            self.player.call("Combat", "set_active_weapon", -1)
         else:
             return True
         return False

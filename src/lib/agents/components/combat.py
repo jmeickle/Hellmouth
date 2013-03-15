@@ -138,6 +138,10 @@ class Combat(Component):
             if not weapon: die("Component %s tried to add an invalid equipped weapon: %s." % (self, weapon))
             self.weapons.append(weapon)
 
+    def set_active_weapon(self, amount):
+        """Return the current wielding mode."""
+        self.weapons.rotate(amount)
+
     """Attack processing methods."""
 
     def process_attack(self, target, weapon, manipulator):
@@ -272,23 +276,12 @@ class Combat(Component):
         else:
             return False, None
 
-#     # TODO: Support more than one weapon
-#     # TODO: Oh god this is terrible
-#     def get_view_data(self):
-#         """Get view data about the chosen weapon and attack option."""
-#         weapon = self.weapons[self.weapon]
-#         attack_option = self.attack_options[self.attack_option]
-
-#         return weapon, attack_option
+    def get_view_data(self, view=None):
+        weapon = self.get_active_weapon()
+        if weapon:
+            return weapon, weapon.call("Wielded", "get_wielding_mode").get_result()
 
 #     # TODO: Move all combat 'thinking' into src/lib/actor/ai/combat.
-
-#     # Display the attack line for the current combination of weapon/attack option.
-#     # TODO: Multiple attacks.
-#     def attackline(self):
-#         weapon = self.weapons[self.weapon]
-#         attack_option = self.attack_options[self.attack_option]
-#         return weapon, attack_option
 
 #     # Find eligible weapons.
 #     # TODO: Rewrite.

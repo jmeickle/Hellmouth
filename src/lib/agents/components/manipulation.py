@@ -345,6 +345,11 @@ class Wielded(Component):
     def get_parry(self, can_retreat, retreat_positions):
         """Get the parry value of this wielded agent."""
         wielding_mode = self.get_wielding_mode()
+
+        # TODO: Bug!
+        if not wielding_mode:
+            return False, None
+
         # Wielding mode, for now:
         #  0      1        2      3      4      5       6,     7
         # trait, name, damage, d.type, reach, parry, min ST, hands
@@ -389,6 +394,15 @@ class Wielded(Component):
         """Set whether the wielded Agent is ready."""
         self.ready = readiness
         return True
+
+    def set_wielding_mode(self, amount):
+        """Return the current wielding mode."""
+        self.wielding_mode += amount
+
+        if self.wielding_mode >= len(self.wielding_modes):
+            self.wielding_mode = 0
+        elif self.wielding_mode < 0:
+            self.wielding_mode = len(self.wielding_modes) - 1
 
 """Mixins."""
 
