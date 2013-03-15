@@ -51,6 +51,7 @@ class BodyPart(object):
         if "added_natural_weapon" or "removed_natural_weapon" or "wielded" or "unwielded" or "grasped" or "ungrasped" in triggers:
             for natural_weapon in self.natural_weapons:
                 natural_weapon.trigger("rebuild")
+            self.owner.call("Combat", "trigger", "rebuild")
 
     def appearance(self):
         appearance = hit_locations.get(self.type)
@@ -192,6 +193,7 @@ class BodyPart(object):
     def do_wield(self, agent, trigger=True):
         """Set a grasped Agent as wielded."""
         agent.append_component(Wielded(owner=agent, controller=self.owner, manipulator=self))
+        agent.call("Wielded", "trigger", "rebuild")
         if trigger:
             self.trigger("wielded")
         return True
