@@ -180,12 +180,11 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
-        if self.controlled is False:
-            self.attempts = 0
-
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
             self.end_turn()
+            return False
+        return True
 
     # STUB: Things to do at the end of your turn.
     def after_turn(self):

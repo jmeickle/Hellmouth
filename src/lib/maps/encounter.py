@@ -47,10 +47,8 @@ class Encounter:
 
         actor = Queue.get_acting()
 
-        if actor:
-            if not actor.controlled:
-                actor.before_turn()
-                actor.act()
+        if actor and not actor.controlled and actor.before_turn():
+            actor.act()
 
     # Go to another map, or if destination is False, let the level figure it out.
     def go(self, destination):
