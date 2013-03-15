@@ -332,12 +332,12 @@ class Agent(object):
         could_result = getattr(ctx.agent, "could" + "_" + phase.name)()
         outcome, cause = ctx.parse_result(could_result)
         debug("METHOD: %s (%s)" % ("could" + "_" + phase.name, outcome))
-        if not outcome: return False, "could"
+        if not outcome: return False, "could" + "_" + phase.name
 
         can_result = getattr(ctx.agent, "can" + "_" + phase.name)(**arguments)
         outcome, cause = ctx.parse_result(can_result)
         debug("METHOD: %s (%s)" % ("can" + "_" + phase.name, outcome))
-        if not outcome: return False, "can"
+        if not outcome: return False, "can" + "_" + phase.name
 
         result = getattr(ctx.agent, "do" + "_" + phase.name)(**arguments)
         outcome, cause = ctx.parse_result(result)
