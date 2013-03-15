@@ -6,12 +6,12 @@ from src.lib.maps.encounter import Encounter
 from src.lib.util.dice import *
 from src.lib.util.hex import *
 
-from src.games.husk.generators.maps import outdoors
+from src.games.husk.generators.maps import outdoors, indoors
 from src.games.husk.agents.actors import humans
 from src.games.husk.agents.actors import crows
 
 # TODO: Genericize this class.
-class Cornfield(object):
+class Farm(object):
     def __init__(self, player):
         # References.
         self.player = player
@@ -88,13 +88,20 @@ class Cornfield(object):
         self.map.depth = destination
 
         # Map properties that are the same for all depths.
-        self.map.name = "Floor %s" % self.map.depth
-        self.map.floor = (".", "white-black")
-        self.map.layout = outdoors.Cornfield
+        # self.map.name = "Floor %s" % self.map.depth
+        # self.map.floor = (".", "white-black")
+        # self.map.layout = outdoors.Cornfield
 
-        # if self.map.depth < 5:
-        #     self.map.exits = { "down" : (self.map.depth+1, ANYWHERE) }
-
+        if self.map.depth == 1:
+            self.map.name = "cornfield"
+            self.map.floor = (".", "yellow-black")
+            self.map.layout = outdoors.Cornfield
+            self.map.exits = { "next" : (self.map.depth+1, ANYWHERE) }
+        if self.map.depth == 2:
+            self.map.name = "farmhouse"
+            self.map.floor = (".", "green-black")
+            self.map.layout = indoors.Farmhouse
+            self.map.exits = { "next" : (self.map.depth+1, ANYWHERE) }
         # TODO: Move these to other level classes.
         # if self.map.depth == 5:
         #     self.name = "The Grand Gate"

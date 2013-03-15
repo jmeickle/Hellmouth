@@ -1,11 +1,15 @@
-from src.lib.generators.maps.mapgen import MapGen
-from src.lib.util.hex import *
 from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
+
+from src.lib.generators.maps.mapgen import MapGen
+from src.lib.objects.terrain import Stairs
+
+from src.lib.util.hex import *
 
 class Cornfield(MapGen):
     def __init__(self, exits=None):
-        MapGen.__init__(self, exits)
+        super(Cornfield, self).__init__(exits)
         self.wall_width = 3
+        self.entry = mult(SW, self.size-self.wall_width)
 
     def attempt(self):
         hexes = area(self.center, self.size, True)
@@ -44,3 +48,16 @@ class Cornfield(MapGen):
             return TrampledCorn()
         else:
             return Corn()
+
+    # Place random stairs, then set their positions in a list.
+    def place_exits(self):
+        if self.exits is None:
+            return False
+        exits = []
+        for which, exit in self.exits.items():
+            where, pos = exit
+            if not pos:
+                pos = mult(NE, self.size - self.wall_width)
+            self.cells[pos] = (None, Stairs(which, where))
+            exits.append((which, pos))
+        self.exits = exits

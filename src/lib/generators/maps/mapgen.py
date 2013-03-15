@@ -5,7 +5,7 @@ from src.lib.util.hex import *
 from src.lib.objects.terrain import *
 
 # Map generator class. If called, builds a hexagonal shape of plain tiles.
-class MapGen():
+class MapGen(object):
     def __init__(self, exits=None):
         self.center = (0,0)
         self.size = 25

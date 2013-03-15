@@ -94,7 +94,7 @@ class Encounter:
         # TODO: Possibly checks for validity first
         # TODO: This is kind of backwards! We should be feeding this into the generator. C'est la vie.
         self.center = generator.center
-        self.entry = self.center
+        self.entry = generator.entry if generator.entry else self.center
         self.size = generator.size
         # Final step.
         self.populate(cells)

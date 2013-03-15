@@ -10,7 +10,7 @@ from src.lib.util.queue import Queue
 
 from src.games.husk.agents.actors.player import Player
 from src.games.husk.data import screens as screen_data
-from src.games.husk.levels.outdoors import Cornfield
+from src.games.husk.levels.outdoors import Farm
 
 class Game(Component):
     def __init__(self, **kwargs):
@@ -132,7 +132,7 @@ class Game(Component):
 
     def start(self):
         # Go to the first level.
-        self.go(Cornfield)
+        self.go(Farm)
 
         # Spawn the main game window.
         self.view = self.spawn(Window(self.window))
