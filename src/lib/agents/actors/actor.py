@@ -260,8 +260,16 @@ class Actor(Agent, ManipulatingAgent):
         # Which one?
         pos = add(self.pos, direction)
 
+        # Check for invalid hexes.
+        if not self.map.valid(pos):
+            if self.controlled:
+                Log.add("It would be a long, long way down into that yawning abyss.")
+            return False
+
+        cell = self.map.cell(pos)
+
         # TODO: Make bump attacks cleaner
-        if self.map.cell(pos).occupied() and self.has_domain("Combat"):
+        if cell and cell.occupied() and self.has_domain("Combat"):
             context = Context(agent=self, domains=["Combat"], intent={"attempt" : True}, participants=self.map.actors(pos))
             for command_class, command_arguments in context.get_commands():
                 command = command_class(context)
@@ -270,12 +278,6 @@ class Actor(Agent, ManipulatingAgent):
                 outcome, cause = context.parse_result(result)
                 self.end_turn()
                 return outcome
-
-        # Check for invalid hexes.
-        if not self.map.valid(pos):
-            if self.controlled:
-                Log.add("It would be a long, long way down into that yawning abyss.")
-            return False
 
         # The only option left.
         if self.can_move(pos, direction):
