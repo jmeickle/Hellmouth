@@ -211,6 +211,9 @@ class Agent(object):
                     debug("(-): %s" % cause)
                     Log.add("(-): %s" % cause)
 
+                # TODO: Something else to decide this
+                self.end_turn()
+
                 # TODO: Instead return whether the event was consumed.
                 return outcome, cause
 
