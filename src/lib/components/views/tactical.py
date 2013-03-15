@@ -115,7 +115,11 @@ class MainMap(View):
             self.map.player.end_turn()
         elif c == ord('>') or c == ord('<'):
             """Stairs."""
-            self.map.player.stairs()
+            terrain = self.player.cell().get_terrain()
+            if terrain:
+                context = self.get_context(participants=terrain, domains=["Manipulation"])
+                event = chr(c)
+                return self.player.process_event(event, context)
         else: return True
         return False
 

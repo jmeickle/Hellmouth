@@ -30,8 +30,15 @@ class Stairs(Terrain):
         self.glyph = ">"
         self.color = "green-black"
 
-    def react_on_do_use(self, user):
-        self.cell.map.go(self.destination)
+    def provide_commands(self, context):
+        """Yield the interaction commands an Agent provides to another Agent
+        within a Context.
+        """
+        yield CMD("UseStairs", target=self, use="travel")
+
+    def react_on_do_use(self, agent, use):
+        if use == 'travel':
+            agent.cell().map.go(self.destination)
         return True
 
 # Generic lever class.
