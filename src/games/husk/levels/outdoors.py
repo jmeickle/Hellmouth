@@ -20,7 +20,7 @@ class Cornfield(object):
 
         # DISPLAY:
         # Descriptive information about the level itself.
-        self.name = "cornfield"
+        self.name = "Smith Farm"
         self.screens = []
 
         # Handle anything that should happen before arriving at this level is guaranteed.

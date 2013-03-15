@@ -60,7 +60,7 @@ class Encounter:
         entryscreen = self.level.name
         if self.name is not None:
             entryscreen  += ", " + self.name # HACK: Later it should choose different dict for different levels.
-        Log.add("You enter a %s." % entryscreen)
+        Log.add("You enter %s's %s." % (self.level.name, self.name))
         if screens.text.get(striptags(entryscreen)) is not None:
             arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
             self.screen(striptags(entryscreen), arguments)
