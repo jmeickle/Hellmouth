@@ -157,7 +157,7 @@ class Level(object):
                 assert map_obj.put(terrain, pos, True) is not False
 
     def generate_map_monsters(self, map_obj):
-        num_mons = 15
+        num_mons = 3
         loops = 1000
         while num_mons > 0 and loops > 0:
             loops -= 1
