@@ -46,12 +46,15 @@ class NPC(Actor):
             return self.do(random.choice(dirs))
 
         # Repath if our current target isn't correct
-        if self.target.pos != self.destination:
-            self.destination = self.target.pos
-            self.repath()
+        if self.target:
+            if self.target.pos != self.destination:
+                self.destination = self.target.pos
+                self.repath()
 
-        # Calculate the distance to the target.
-        self.distance = dist(self.pos, self.target.pos)
+            # Calculate the distance to the target.
+            self.distance = dist(self.pos, self.target.pos)
+        else:
+            self.repath()
 
         # TODO: If within attack range, do so.
         # if self.preferred_reach(self.distance) is True:
@@ -66,7 +69,7 @@ class NPC(Actor):
             # if dir not in dirs:
             #     self.path.append(pos)
             #     dir = CC
-            if self.map.cell(next_step).blocked(next_dir):
+            if self.map.cell(next_step).can_block(self, next_dir):
                 # TODO: Randomize choice here
                 for alt_dir in arc(next_dir)[1:]: # We already checked the first one
                     alt_next = add(self.pos, alt_dir)
@@ -93,5 +96,10 @@ class NPC(Actor):
             self.destination = self.target.pos
             debug("%s retargeted to %s." % (self.appearance(), self.target.appearance()))
             return True
-        debug("%s failed to retarget." % self.appearance())
-        return False
+        else:
+            self.destination = self.call("Faction", "get_destination").get_result()
+            if self.destination:
+                debug("%s found no target but instead a destination." % self.appearance())
+                return True
+            debug("%s failed to retarget." % self.appearance())
+            return False
