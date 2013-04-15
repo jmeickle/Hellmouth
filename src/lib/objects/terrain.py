@@ -25,7 +25,7 @@ class Terrain(Agent):
 class Stairs(Terrain):
     def __init__(self, which, destination):
         super(Stairs, self).__init__()
-        self.name = "staircase " + which
+        self.name = "staircase to the " + which
         self.destination = destination
         self.glyph = ">"
         self.color = "green-black"
@@ -40,6 +40,12 @@ class Stairs(Terrain):
         if use == 'travel':
             agent.cell().map.go(self.destination)
         return True
+
+# Generic staircase class.
+class Path(Stairs):
+    def __init__(self, which, destination):
+        super(Path, self).__init__(which, destination)
+        self.name = "path to the " + which
 
 # Generic lever class.
 class Lever(Terrain):
@@ -78,6 +84,32 @@ class Lever(Terrain):
         return False
 
 class Wall(Terrain):
+    def __init__(self, terrain_type=None):
+        super(Wall, self).__init__()
+        self.name = "wall"
+        self.glyph = "#"
+        self.color = "yellow-black"
+
+    def can_block(self, agent, direction):
+        return True
+
+class EastWestWall(Terrain):
+    def __init__(self, terrain_type=None):
+        super(EastWestWall, self).__init__()
+        self.name = "wall"
+        self.glyph = "|"
+        self.color = "yellow-black"
+
+    def can_block(self, agent, direction):
+        return True
+
+class NorthSouthWall(Terrain):
+    def __init__(self, terrain_type=None):
+        super(NorthSouthWall, self).__init__()
+        self.name = "wall"
+        self.glyph = "-"
+        self.color = "yellow-black"
+
     def can_block(self, agent, direction):
         return True
 
@@ -101,4 +133,21 @@ class CaveWall(Wall):
         super(CaveWall, self).__init__()
         self.name = "rough-hewn cave wall"
         self.glyph = "#"
+        self.color = "yellow-black"
+
+class Window(Terrain):
+    def __init__(self, terrain_type=None):
+        super(Window, self).__init__()
+        self.name = "window"
+        self.glyph = "|"
+        self.color = "cyan-black"
+
+    def can_block(self, agent, direction):
+        return True
+
+class DirtRoad(Terrain):
+    def __init__(self, terrain_type=None):
+        super(DirtRoad, self).__init__()
+        self.name = "dirt road"
+        self.glyph = "~"
         self.color = "yellow-black"
