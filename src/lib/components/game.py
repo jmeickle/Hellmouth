@@ -72,10 +72,10 @@ class Game(Component):
         # TODO: Move this to the map.
         if self.map is not None:
             if not Queue.get_acting():
-                self.finish()#before_finish()
+                self.before_finish()
                 return False
             if self.player.alive is False:
-            #    self.before_finish()
+                self.before_finish()
                 return False
         return True
 
