@@ -1,3 +1,6 @@
+"""Components are the minimal base user interface class. They participate in
+keyin and draw loops, but do not have direct access to drawing methods."""
+
 import curses
 
 from src.lib.util.color import Color
@@ -6,27 +9,25 @@ from src.lib.util.define import *
 from src.lib.util import key
 import random
 
-# Component is the minimal base class. They participate in keyin and draw
-# loops, but do not have direct access to drawing functions.
 class Component(object):
+    """An interface Component taking part in UI control flow."""
     def __init__(self):
         self.alive = True
         self.children = []
         self.parent = None
         self.prompt = False
 
-    # CREATION / DELETION
-
-    # Spawn a child and return it.
     def spawn(self, child):
+        """Spawn a child and return it."""
         self.children.append(child)
         child.parent = self
         child.inherit()
         child.ready()
         return child
 
-    # Pass on values that need to be shared across components.
     def inherit(self):
+        """Pass on values that need to be shared across components."""
+        # TODO: Dependency injection?
         if self.parent is not None:
             if hasattr(self.parent, 'cursor'):
                 self.cursor = self.parent.cursor
@@ -40,22 +41,21 @@ class Component(object):
         for child in self.children:
             child.inherit()
 
-    # Abstract. Perform actions that the child couldn't during init.
     def ready(self):
+        """Abstract. Perform actions that the child couldn't during init."""
         return True
 
-    # Kills children (recursively) and then itself.
     def suicide(self):
-        self.alive = False
+        """Recursively kill this Component's children, and then itself."""
+
         for child in self.children:
             child.suicide()
         if self.parent is not None:
             self.parent.children.remove(self)
+        self.alive = False
 
-    # DRAWING:
-
-    # Draw yourself, then recurse through your children to draw them.
     def _draw(self):
+        """Draw yourself, then recurse through your children to draw them."""
         self._reset()
         self.before_draw()
         if self.draw() is not False:
@@ -66,20 +66,20 @@ class Component(object):
         else:
             return False
 
-    # Reset yourself to prepare for drawing. Abstract.
     def _reset(self):
-        return True
+        """Abstract. Reset yourself to prepare for drawing."""
+        pass
 
-    # Do something before drawing yourself. Abstract.
     def before_draw(self):
-        return True
+        """Abstract. Do something before drawing yourself."""
+        pass
 
-    # Draw self. Abstract.
     def draw(self):
-        return True
+        """Abstract. Draw self."""
+        pass
 
-    # Returns true if a screen coordinate cannot be drawn to.
     def undrawable(self, pos):
+        """Returns true if a screen coordinate cannot be drawn to."""
         x, y = pos
         if x < 0 or y < 0:
             return True
@@ -87,10 +87,10 @@ class Component(object):
             return True
         return False
 
-    # Set up curses attributes on a string
-    # TODO: Handle anything but basic colors
-    # TODO: Replace with a curses mixin
     def attr(self, color=None, attr=None):
+        """Set up curses attributes on a string."""
+        # TODO: Handle anything but basic colors
+        # TODO: Replace with a curses mixin
         if color is not None:
             col = Color.pairs.get(color)
             if col is None:
@@ -101,37 +101,38 @@ class Component(object):
             return curses.color_pair(col)
         return 0
 
-    # KEYIN
-
-    # Recurse through children trying their keyin functions,
-    # until you've done your own.
     def _keyin(self, c):
+        """Recurse through children trying their keyin functions until you've
+        done your own."""
         for child in reversed(self.children):
             if child._keyin(c) is False:
                 return False
+        # TODO: Remove?
 #        if self.parent is not None and self.prompt is False:
 #            if c < 256:
 #                if key.globals.get(c) is True:
 #                    return None
         return self.keyin(c)
 
-    # Handle keyin. Abstract.
     def keyin(self, c):
+        """Abstract. Handle keyin."""
         return True
 
-    # Recurse through children trying their keyin functions,
-    # until you've done your own.
     def _event(self, e):
+        """Recurse through children trying their keyin functions until you've
+        done your own."""
         for child in reversed(self.children):
             if child._event(e) is False:
                 return False
         return self.event(e)
 
-    # Handle keyin. Abstract.
     def event(self, e):
+        """Abstract. Handle keyin."""
         return True
 
     def loop(self):
+        """Loop drawing, keyin, and event processing through this Component and
+        into its children."""
         # Draw tree.
         self.window.erase()
         self._draw()
@@ -150,6 +151,8 @@ class Component(object):
             self.alive = False
 
     def get_context(self, **kwargs):
+        """Build a Context for this Component."""
+        # TODO: Rename?
         context_class = kwargs.pop("context_class", Context)
 
         kwargs["agent"] = kwargs.get("agent", self.player)
@@ -158,23 +161,26 @@ class Component(object):
 
         return context_class(**kwargs)
 
-# The first component called, containing window information.
 class RootComponent(Component):
+    """The first component called, containing window information."""
     def __init__(self, window):
         Component.__init__(self)
         self.window = window
 
-    def launch(self, module):
-        # Import the chosen game module (in the form of src.games.__GAMEMODE__.main.py).
+    def launch(self, selected_module):
+        """Spawn the selected module's main.Game as a child Component and then
+        launch it."""
+        # Import the chosen game module (as src.games.__GAMEMODE__.main.py).
         # TODO: Permit a classname other than 'Game'
-        module_name, module_info = module
+        module_name, module_info = selected_module
         gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['Game'])
  
-        # Spawn the game as a child process and then launch it.
+        # Spawn the game as a child Component, and then launch it.
         self.game = self.spawn(gamemodule.Game())
         self.game.launch()
 
     def loop(self):
+        """Perform a Component loop. If still alive, perform a Game loop."""
         super(RootComponent, self).loop()
         if self.alive:
             self.game.loop()
