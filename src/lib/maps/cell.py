@@ -203,7 +203,7 @@ class Cell:
     #         return False
     #     return True
 
-    def can_block(self, agent, direction):
+    def can_block(self, agent, direction=CC):
         """Return whether this cell can block an Agent."""
         if self.occupied():
             return True
