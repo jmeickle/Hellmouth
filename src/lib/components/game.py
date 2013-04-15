@@ -27,17 +27,19 @@ class Game(Component):
         # Whether we're interacting with maps and levels.
         self.gameplay = True
 
-        # Generate the player, a blank level, and a blank map.
+        # Generate the Player.
+        # TODO: Move.
         self.player = Player()
-        self.level = None
-        self.map = None
+
+    def get_controller(self):
+        """Return the Actor serving as primary controller in this Game."""
+        return self.player
 
     def launch(self, resume=False):
         """Prepare the game for play."""
 
         # Store the provided curses window.
         self.window = self.parent.window # TODO: Unnecessary?
-        self.screens = []
 
         # Set up the save if necessary.
         if resume is False:
@@ -45,21 +47,26 @@ class Game(Component):
         else:
             self.resume_game()
 
-        # Perform any actions before starting the game.
+        # Start the game!
         self.before_start()
 
     """Game start methods."""
 
     def before_start(self):
         """Do anything required before turning over control to the first level."""
+
+        # Generate the first level.
+        self.level = self.generate_level(Farm)
+
+        # Spawn a help screen and a start screen.
         self.screen("start", {"callback" : self.start, "footer_text": screen_data.footer})
         self.spawn(HelpScreen(self.window))
 
     def start(self):
         """Turn over control to the first level."""
 
-        # Instantiate and then go to the first level.
-        self.go(Farm)
+        # Travel to the first level.
+        self.enter_level(self.level, map_id=1, entrance_id="prev", exit_id=None)
 
         # Spawn the main game window.
         self.view = self.spawn(EncounterWindow(self.window, self.level.map))
@@ -81,7 +88,11 @@ class Game(Component):
         """Perform one iteration of the game loop."""
 
         # Don't continue looping if the game is over.
-        if self.alive is False:
+        if not self.gameplay or not self.alive:
+            return False
+
+        # Don't continue looping while a screen is up.
+        if self.children:
             return False
 
         # Check whether we should continue to play.
@@ -107,45 +118,26 @@ class Game(Component):
         """The game is over. Do anything required before finishing."""
         self.screen("credits", {"callback" : self.suicide})
 
-    """UI methods."""
-
-    def keyin(self, c):
-        # Always allow help.
-        if c == ord('?'):
-            self.spawn(HelpScreen(self.window))
-        # Always allow quitting.
-        elif c == ctrl('q'):
-            self.before_finish()
-        return True
-
-    # Spawn a screen based on a screen name, attributes, and class.
-    def screen(self, screenname="blank", arguments=None, screenclass=None):
-        if screenclass == None:
-            screenclass = Screen
-
-        screendata = screen_data.text.get(screenname, {})
-        if arguments is not None:
-            screendata.update(arguments)
-        self.spawn(screenclass(self.window, **screendata))
-
     """Level management methods."""
 
-    def generate_level(self, level_class):
-        """Instantiate a Level from a class and return it."""
-        return level_class()
+    def generate_level(self, level_class, **level_data):
+        """Instantiate a Level from a class and argument dict, and then return it."""
+        return level_class(self, **level_data)
 
-    # Go to a new level.
-    def go(self, destination):
-        # If this is called with False as a destination, no more levels.
-        # This means the game is likely over.
-        if destination is False:
-            return self.before_finish()
+    def enter_level(self, level, map_id=None, entrance_id=None, exit_id=None):
+        """Enter a Level, optionally including information about the trip."""
+        if self.level:
+            # TODO: Save old levels?
+            self.exit_level(level, map_id=None, entrance_id=None, exit_id=None)
+        level.before_arrive(map_id, entrance_id, exit_id)
+        level.arrive(map_id, entrance_id, exit_id)
+        self.level = level
 
-        # Generate the level and store it.
-        self.level = destination(self.player)
-
-        # Store the generated map.
-        self.map = self.level.map
+    def exit_level(self, level=None, map_id=None, entrance_id=None, exit_id=None):
+        """Exit a Level, optionally including information about the trip."""
+        self.level.before_depart(map_id, entrance_id, exit_id)
+        self.level.depart(map_id, entrance_id, exit_id)
+        del self.level
 
     """Game data methods."""
 
@@ -168,3 +160,25 @@ class Game(Component):
     # STUB: Resume a game from a directory.
     def resume_game(self):
         pass
+
+    """UI methods."""
+
+    def keyin(self, c):
+        """Handle keyin."""
+        # Always allow help.
+        if c == ord('?'):
+            self.spawn(HelpScreen(self.window))
+        # Always allow quitting.
+        elif c == ctrl('q'):
+            self.before_finish()
+        return True
+
+    def screen(self, screenname="blank", arguments=None, screenclass=None):
+        """Spawn a Screen based on a screen name, attributes, and class."""
+        if screenclass == None:
+            screenclass = Screen
+
+        screendata = screen_data.text.get(screenname, {})
+        if arguments is not None:
+            screendata.update(arguments)
+        self.spawn(screenclass(self.window, **screendata))

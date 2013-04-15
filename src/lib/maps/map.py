@@ -21,98 +21,84 @@ from cell import BaseCell
 from src.lib.util.debug import debug
 from src.lib.util.text import *
 from src.lib.util.log import Log
-from src.lib.util.queue import Queue
 
 class BaseMap(object):
     """An area of game space partitioned into Cells."""
 
     cell_class = BaseCell
 
-    def __init__(self, level):
+    def __init__(self, level, map_id):
         # Maps don't make sense without an associated Level.
         self.level = level
-        # We'll use the level's player by default.
-        self.player = self.level.player
+
+        # Use the provided map ID (~depth).
+        self.map_id = map_id
 
         # Display information.
         self.name = None
-        self.screens = []
 
-        # Map generation parameters.
-        self.layout = None
-        self.size = None
-        self.center = None
-        self.exits = None
-        self.depth = None
-        self.entry = None # Player start point. TODO: Replace by bidirectional stairs!
+        # # Map generation parameters.
+        # self.layout = None
+        # self.size = None
+        # self.center = None
+        # self.passages = None
+        # self.depth = None
+        # self.entry = None # Player start point. TODO: Replace by bidirectional stairs!
 
         # Dict of (hex) cell objects, indexed by pos.
         self.cells = {}
 
-        # Default information if a cell doesn't exist.
-        # TODO: Expand!
-        self.floor = None
+        # # Default information if a cell doesn't exist.
+        # # TODO: Expand!
+        # self.floor = None
 
-        # Where we're traveling to.
-        self.destination = None
+    def get_controller(self):
+        """Return the Actor serving as primary controller in this Map."""
+        return self.level.get_controller()
 
-    # Go to another map, or if destination is False, let the level figure it out.
-    def go(self, destination):
-        self.before_leave(destination)
+    """Map arrival methods."""
 
     # By default, before_arrive tries to load the matching screen and plugs in a
     # callback to self.arrive. Otherwise, it calls it itself.
-    def before_arrive(self):
+    def before_arrive(self, entrance_id, exit_id):
         entryscreen = self.level.name
         if self.name is not None:
             entryscreen  += ", " + self.name # HACK: Later it should choose different dict for different levels.
         Log.add("You enter %s's %s." % (self.level.name, self.name))
-        if screens.text.get(striptags(entryscreen)) is not None:
-            arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
-            self.screen(striptags(entryscreen), arguments)
-        else:
-            return self.arrive()
+        # if screens.text.get(striptags(entryscreen)) is not None:
+        #     arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
+        #     self.screen(striptags(entryscreen), arguments)
 
-    # Handle arriving at the map.
-    def arrive(self):
-        self.player.map = self
-        self.put(self.player, self.entry)
-        self.player.trigger("spawned")
-        # HACK: Highlights should be handled a bit more nicely than this.
-        if self.exits is not None:
-            for exit in self.exits:
-                which, pos = exit
-                self.player.highlights[which] = pos
+    def arrive(self, entrance_id, exit_id):
+        for passage_id, passage_obj in self.get_passages():
+            self.get_controller().highlights[passage_id] = passage_obj
 
-    # Do anything that needs to happen before confirming that we've left this map.
-    def before_leave(self, destination):
-        self.leave(destination)
+    def arriving_actor(self, actor, entrance_id, exit_id):
+        passage = self.get_passage(entrance_id)
+        assert self.put(actor, passage.pos) is not False
 
-    # Do anything that needs to happen as we actually leave this map.
-    def leave(self, destination):
-        self.player.highlights = {}
-        self.destination = destination
+    """Map departure methods."""
 
-    # Call on the dark powers of the terrain generator.
-    def generate_terrain(self):
-        generator = self.layout(self.exits)
-        cells, self.exits = generator.attempt()
-        # TODO: Possibly checks for validity first
-        # TODO: This is kind of backwards! We should be feeding this into the generator. C'est la vie.
-        self.center = generator.center
-        self.entry = generator.entry if generator.entry else self.center
-        self.size = generator.size
-        # Final step.
-        self.populate(cells)
+    def before_depart(self, map_id, entrance_id, exit_id):
+        """Do anything that needs to happen before leaving this Map."""
+        pass
 
-    # Take a provided dict of {pos : (other data)} and turn it into cell objects.
-    def populate(self, cells):
-        for pos, contents in cells.items():
-            distance, terrain = contents # HACK: This won't always be a tuple like this.
-            cell = self.add_cell(pos)
+    def depart(self, map_id, entrance_id, exit_id):
+        """Do anything that needs to happen as we actually leave this Map."""
+        self.get_controller().highlights = {}
 
-            if terrain is not None:
-                cell.put_terrain(terrain)
+    def departing_actor(self, actor, map_id, entrance_id, exit_id):
+        pass
+
+    """Map passage methods."""
+
+    def get_passage(self, passage_id):
+        """Return a passage from a passage ID."""
+        return self.layout.passages.get(passage_id)
+
+    def get_passages(self):
+        """Return an iterator over all passages."""
+        return self.layout.passages.items()
 
     def add_cell(self, pos):
         """Create a Cell, store it within this map, and return it."""
@@ -155,7 +141,6 @@ class BaseMap(object):
                 return False
             # Update the map
             cell.add(obj, terrain)
-            Queue.add(obj)
 
             # Update the actor
             obj.pos = pos
@@ -167,8 +152,9 @@ class BaseMap(object):
                 return False
             # Update the map
             obj.cell = cell
+            obj.pos = pos
+            obj.map = self
             cell.add(obj, terrain)
-
         return obj
 
     # Decides whether a position is a valid one.
@@ -177,10 +163,6 @@ class BaseMap(object):
         if self.cells.get(pos) is None:
             return False
         return True
-
-    # Add a screen to self.screens, which will eventually result in it being displayed.
-    def screen(self, screenname, arguments=None, screenclass=None):
-        self.screens.append((screenname, arguments, screenclass))
 
     # TODO: Move to a file output util file.
     # # Print a large text version of the map.

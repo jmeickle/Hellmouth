@@ -1,13 +1,14 @@
 from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
 
-from src.lib.generators.maps.mapgen import MapGen
+from src.lib.generators.maps.layout import LayoutGenerator
 from src.lib.objects.terrain import Path
 
 from src.lib.util.hex import *
 
-class Cornfield(MapGen):
-    def __init__(self, exits=None):
-        super(Cornfield, self).__init__(exits)
+class Cornfield(LayoutGenerator):
+    def __init__(self, map_obj):
+        super(Cornfield, self).__init__(map_obj)
+
         self.wall_width = 3
 
         self.size += 10
@@ -41,8 +42,8 @@ class Cornfield(MapGen):
                         self.cells[row_pos] = (dist, self.place_corn())
                 row_start = add(row_start, mult(d, spacing))
 
-        self.place_exits()
-        return self.cells, self.exits
+        self.place_passages()
+        return self.cells, self.passages
 
     def place_corn(self):
         import random
@@ -51,18 +52,19 @@ class Cornfield(MapGen):
         else:
             return Corn()
 
-    # Place random stairs, then set their positions in a list.
-    def place_exits(self):
-        if self.exits is None:
+    def place_passages(self):
+        """Place random stairs, then set their positions in a dict."""
+        if not self.passages:
             return False
-        exits = []
-        for which, exit in self.exits.items():
-            where, pos = exit
+        passages = {}
+        perimeter = random_perimeter(self.center, self.size - self.wall_width, len(self.passages))
+        for which, passage in self.passages.items():
+            where, pos = passage
             if not pos:
-                pos = mult(NE, self.size - self.wall_width)
-
+                pos = perimeter.pop()
+            # Block off the immediate surroundings (rank=1)
             for cell in area(pos):
                 self.cells[cell] = (None, None)
-            self.cells[pos] = (None, Path(which, where))
-            exits.append((which, pos))
-        self.exits = exits
+            passages[which] = Path(which, where)
+            self.cells[pos] = (None, passages[which])
+        self.passages = passages

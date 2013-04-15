@@ -4,42 +4,43 @@ from src.lib.util.dice import *
 from src.lib.util.hex import *
 from src.lib.objects.terrain import *
 
-# Map generator class. If called, builds a hexagonal shape of plain tiles.
-class MapGen(object):
-    def __init__(self, exits=None):
-        self.center = (0,0)
-        self.size = 25
+class LayoutGenerator(object):
+    """Base layout generator class. If called, builds a simple hexagonal
+    layout."""
+    def __init__(self, map_obj):
+        self.center = map_obj.center
+        self.size = map_obj.size
+        self.passages = map_obj.passages
+
         self.cells = {}
-        self.exits = exits
 
     def attempt(self):
         hexes = area(self.center, self.size, True)
         for pos, dist in hexes:
             self.cells[pos] = (dist, None)
-        self.place_exits()
-        return self.cells, self.exits
+        self.place_passages()
 
     # Place random stairs, then set their positions in a list.
-    def place_exits(self):
-        if self.exits is None:
+    def place_passages(self):
+        if not self.passages:
             return False
-        exits = []
-        for which, exit in self.exits.items():
-            where, pos = exit
-            if pos is None:
+        passages = {}
+        for which, passage in self.passages.items():
+            where, pos = passage
+            if not pos:
                 dist = r1d(self.size/2) + self.size/2 - 4
                 pos = random_perimeter(self.center, dist).pop()
                 self.cells[pos] = (dist, Stairs(which, where))
             else:
                 self.cells[pos] = (None, Stairs(which, where))
-            exits.append((which, pos))
-        self.exits = exits
+            passages[which] = self.cells[pos][1] # The terrain above
+        self.passages = passages
 
-    def connect_exits(self):
-        if self.exits is None:
+    def connect_passages(self):
+        if self.passages is None:
             return False
         # HACK: Dig line from exit to center.
-        for which, pos in self.exits:
+        for which, pos in self.passages:
             cells = line(self.center, pos)
             cells.pop()
             for cell in cells:
@@ -50,9 +51,9 @@ class MapGen(object):
         pos = random_perimeter(self.center, dist).pop()
         self.cells[pos] = (None, Lever(None))
 
-class Cave(MapGen):
-    def __init__(self, exits=None):
-        MapGen.__init__(self, exits)
+class Cave(LayoutGenerator):
+    def __init__(self, **kwargs):
+        super(Cave, self).__init__(**kwargs)
         self.max_connections = 30
         self.max_nodes = 40
         self.scale = 1
@@ -83,8 +84,7 @@ class Cave(MapGen):
 #        for pos, dist in self.cells.items():
 #            cells[pos] = (dist, None)
 
-        self.place_exits()
-        return self.cells, self.exits
+        self.place_passages()
 
     # Connect nodes with a line.
     def connect_nodes(self, pos1, pos2):

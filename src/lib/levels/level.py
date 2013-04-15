@@ -1,7 +1,8 @@
 """A Level contains game state in a given scenario. This typically includes a
 Map and an action queue."""
 
-from src.lib.components.component import Component
+import random
+
 from src.lib.data import screens
 from src.lib.data.generators.items import generators
 from src.lib.generators.items import ItemGenerator, generate_item
@@ -15,19 +16,46 @@ from src.games.husk.generators.maps import outdoors, indoors
 from src.games.husk.agents.actors import humans
 from src.games.husk.agents.actors import crows
 
-class Level(Component):
-    def __init__(self, player):
-        # References.
-        self.player = player
-        self.map = None
-        self.destination = None
+class Level(object):
+    """A Level containing game state."""
 
-        # Descriptive information about the level itself.
-        self.name = "Smith Farm"
-        self.screens = []
+    def __init__(self, game, **kwargs):
+        self.game = game
+        self.map_class = kwargs.pop("map_class", EncounterMap)
 
-        # Handle anything that should happen before arriving at this level is guaranteed.
-        self.before_arrive()
+        self.name = kwargs.pop("name", "Smith Farm")
+        self.map = self.generate_map(kwargs.pop("map_id", 1))
+
+    def get_controller(self):
+        """Return the Actor serving as primary controller in this Level."""
+        return self.game.get_controller()
+
+    """Level arrival methods."""
+
+    def before_arrive(self, map_id, entrance_id, exit_id):
+        """Do anything required before turning over control to this level's first Map."""
+        if self.map:
+            self.map.before_arrive(entrance_id, exit_id)
+
+    def arrive(self, map_id, entrance_id, exit_id):
+        """Turn over control to the first Map."""
+        if self.map:
+            player = self.get_controller()
+            self.map.arriving_actor(player, entrance_id, exit_id)
+            self.map.arrive(entrance_id, exit_id)
+            player.trigger("arrived")
+            Queue.add(player)
+                
+    """Level loop methods."""
+
+    def can_continue_gameplay(self):
+        """Return whether the level portion of the game loop."""
+        if not Queue.get_acting():
+            return False
+        for controlled in Queue.get_all_controlled():
+            if controlled.alive:
+                return True
+        return False
 
     def loop(self):
         """Perform one iteration of the level portion of the game loop."""
@@ -35,141 +63,100 @@ class Level(Component):
         if actor and not actor.controlled and actor.before_turn():
             actor.act()
 
-    def can_continue_gameplay(self):
-        """Return whether the level portion of the game loop."""
-        if not Queue.get_acting():
-            return False
-        # TODO: Replace with check for controlled characters
-        if not self.player.alive:
-            return False
-        return True
+    """Level departure methods."""
 
-    # Go to a specific map.
-    def go(self, destination):
-        # If this is called with False as a destination, there are no more maps.
-        if destination is False:
-            return self.before_leave(destination)
+    def before_depart(self, map_id, entrance_id, exit_id):
+        """Do anything required before leaving this Level."""
+        if self.map:
+            self.map.before_depart(map_id, entrance_id, exit_id)
 
-        # Otherwise, generate the map and trigger before_arrive() in it.
-        self.generate_map(destination)
-        self.map.before_arrive()
+    def depart(self, map_id, entrance_id, exit_id):
+        """Leave this Level."""
+        if self.map:
+            self.map.depart(map_id, entrance_id, exit_id)
 
-    # Functions called (before/when) (arriving at/leaving) the level.
-    def before_arrive(self):
-        self.arrive()
+    """Map factory methods."""
 
-    def arrive(self):
-        # When arriving at a level, go to its first map.
-        self.go(1)
+    def generate_map(self, map_id):
+        """Generate and return a Map within this Level."""
+        # Retrieve and instantiate the appropriate BaseMap subclass.
+        map_obj = self.map_class(self, map_id)
 
-    def before_leave(self, destination):
-        return self.leave(destination)
+        # Configure map settings, typically based on map_id.
+        self.configure_map(map_obj)
 
-    def leave(self, destination):
-        self.destination = destination
+        # Map layout.
+        self.generate_map_layout(map_obj)
 
-    # Generate a map. The destination parameter can be anything, but depth makes a
-    # lot of sense. It's up to you to use it (or not).
-    def generate_map(self, destination):
-        # Create the map.
-        self.map = EncounterMap(self)
-
-        # Configure map settings, typically based on depth (destination).
-        self.configure_map(destination)
-
-        # Call the map's terrain generator
-        self.map.generate_terrain()
+        # Terrain placement.
+        self.generate_map_terrain(map_obj)
 
         # Monster placement.
-        self.place_monsters(destination)
+        self.generate_map_monsters(map_obj)
 
         # Loot placement.
-        self.place_items(destination)
+        self.generate_map_items(map_obj)
 
-    # Configure the map. (Here, we use destination as a depth parameter.)
-    def configure_map(self, destination):
-        self.map.depth = destination
+        return map_obj
 
-        # Map properties that are the same for all depths.
-        # self.map.name = "Floor %s" % self.map.depth
-        # self.map.floor = (".", "white-black")
-        # self.map.layout = outdoors.Cornfield
+    def configure_map(self, map_obj):
+        """Configure a Map's setings based on provided travel information."""
 
-        if self.map.depth == 1:
-            self.map.name = "cornfield"
-            self.map.floor = (".", "yellow-black")
-            self.map.layout = outdoors.Cornfield
-            self.map.exits = { "next" : (self.map.depth+1, ANYWHERE) }
-        if self.map.depth == 2:
-            self.map.name = "farmhouse"
-            self.map.floor = (".", "green-black")
-            self.map.layout = indoors.Farmhouse
-            self.map.exits = { "next" : (self.map.depth+1, ANYWHERE) }
-        # TODO: Move these to other level classes.
-        # if self.map.depth == 5:
-        #     self.name = "The Grand Gate"
-        #     self.map.name = None
-        #     self.map.exits = {}# "down" : (MeatArena, (25, 0)) }
-        #     self.map.layout = meat.MeatTunnel
-#        if depth == 4:
-#            self.map.name = "Caves of Primal Meat"
-#            self.map.exits = self.exits
-#            self.map.layout = meat.MeatArena
-#        if depth == 5:
-#            self.map.name = "Sauce Vats"
-#            self.map.exits = self.exits
-#            self.map.layout = meat.MeatArena
-#        if depth == 6:
-#            self.map.name = "Tower of the Sauceror"
-#            self.map.exits = None
-#            self.map.layout = meat.MeatTower
+        # Map properties that are the same for all map_ids.
+        map_obj.center = (0,0)
+        map_obj.size = 30
+        map_obj.passages = { "prev" : (0, ANYWHERE)}
 
-    # TODO: Hand this off to mapgen?
-    def place_monsters(self, depth):
-        import random
+        if map_obj.map_id == 1:
+            map_obj.name = "cornfield"
+            map_obj.floor = (".", "yellow-black")
+            map_obj.layout_generator = outdoors.Cornfield
+            map_obj.passages.update({ "next" : (map_obj.map_id+1, ANYWHERE) })
+        elif map_obj.map_id == 2:
+            map_obj.name = "farmhouse"
+            map_obj.floor = (".", "green-black")
+            map_obj.layout_generator = indoors.Farmhouse
+            map_obj.passages.update({ "next" : (map_obj.map_id+1, ANYWHERE) })
 
+    def generate_map_layout(self, map_obj):
+        """Generate a layout according to the Map configuration."""
+        layout_generator = map_obj.layout_generator(map_obj)
+        layout_generator.attempt()
+
+        # TODO: Check for validity of the layout
+
+        map_obj.layout = layout_generator
+
+    def generate_map_terrain(self, map_obj):
+        """Generate terrain according to the Map layout."""
+        # TODO: Method to parse layout generator return values
+        for pos, contents in map_obj.layout.cells.items():
+            distance, terrain = contents # HACK: This won't always be a tuple like this.
+            map_obj.add_cell(pos)
+
+            if terrain:
+                assert map_obj.put(terrain, pos, True) is not False
+
+    def generate_map_monsters(self, map_obj):
         num_mons = 15
-        while num_mons > 0:
-            cell = random.choice([cell for cell in self.map.cells])
+        loops = 1000
+        while num_mons > 0 and loops > 0:
+            loops -= 1
+            cell = random.choice([cell for cell in map_obj.cells])
             monster_class = random.choice([humans.Human, crows.Crow])
             monster = monster_class()
-            if self.map.put(monster, cell):
+            # monster.generate_equipment()
+            if map_obj.put(monster, cell):
+                Queue.add(monster)
                 num_mons -= 1
 
-        # if depth == 5:
-        #     from actors.npc import MeatCommander
-        #     monster = MeatCommander()
-        #     monster.generate_equipment()
-        #     self.map.put(monster, (25, 0))
-        #     return True
-
-        # # Define NPCs to be placed
-        # from src.games.meat_arena.agents.actors.monsters import MeatSlave, MeatWorm, MeatGolem, MeatHydra
-        # monsters = [MeatSlave] * 10
-        # for x in range(depth-1 * 3):
-        #     monsters.append(MeatWorm)
-        # for x in range(depth-1 * 2):
-        #     monsters.append(MeatGolem)
-        # for x in range(depth-1 * 1):
-        #     monsters.append(MeatHydra)
-
-        # # Place monsters
-        # num_mons = sum(roll(r1d6, depth+1))
-        # cells = area(self.map.center, self.map.size)
-        # while num_mons > 0:
-        #     monster = random.choice(monsters)()
-        #     monster.generate_equipment()
-        #     pos = random.choice(cells)
-        #     if self.map.put(monster, pos) is not False:
-        #         num_mons -= 1
-
-    def place_items(self, depth):
-        loops = 1000
-        item_count = r3d6() + 30 + depth
+    def generate_map_items(self, map_obj):
+        item_count = 30 + r3d6() * map_obj.map_id
         generator = ItemGenerator(generators)
+        loops = 1000
         while item_count > 0 and loops > 0:
             loops -= 1
             item = generator.random_item("implements")
             if item:
-                random.choice(self.map.cells.values()).put(item)
-                item_count -= 1    
+                random.choice(map_obj.cells.values()).put(item)
+                item_count -= 1
