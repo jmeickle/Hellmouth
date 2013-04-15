@@ -253,6 +253,7 @@ class Stats(View):
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
+        self.y_acc = 1
         for line in self.get_controller().values("Body", "get_paperdoll"):
             self.cline(line)
 
@@ -278,13 +279,13 @@ class Stats(View):
             exit("reach: %s" % reach)
 
         # HACK: Should ask the item to display a shorter appearance.
-        self.cline("(/*) %s: %s" % (manipulator.type, appearance))
+        self.cline("(/*) %s" % (appearance))
 
         color = "white-black"
         if self.get_controller().base_skills.get(trait) is None:
             color = "red-black"
 
-        self.cline("%s, <%s>%s-%s</>" % (manipulator.appearance(), color, trait, trait_level))
+        self.cline("     %s, <%s>%s-%s</>" % (manipulator.type, color, trait, trait_level))
 
         selector = ""
         weapons = [w for w in self.get_controller().values("Combat", "get_weapons")]
@@ -295,6 +296,12 @@ class Stats(View):
         # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0
+
+        # Place header
+        self.line("%s" % (self.get_controller().appearance()))
+        self.line("%s" % "-"*20)
+#        self.y_acc += 1
+
         self.statline('HP')
         self.statline('MP')
         self.statline('FP')
@@ -305,7 +312,7 @@ class Stats(View):
 
         # Col 3: Stats
         self.x_acc += 14
-        self.y_acc = 0
+        self.y_acc = 2
 
         self.statline("ST")
         self.statline("DX")
@@ -378,7 +385,7 @@ class LogViewer(View):
         View.__init__(self, window, x, y, start_x, start_y)
         self.autoscroll = True
         self.events = 0
-        self.shrink = 2
+        self.shrink = 0
 
     # Spawn a scroller and add the log to the map.
     def ready(self):
