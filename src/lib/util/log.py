@@ -2,7 +2,7 @@
 
 from collections import deque
 
-class Log:
+class Log(object):
     events = deque()
 
     @classmethod
