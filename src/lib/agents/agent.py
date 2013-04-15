@@ -189,7 +189,7 @@ class Agent(object):
         """Find the first Command matching an event, instantiate it, and process it."""
 
         if not self.turn():
-            die("acting: %s, queue: %s" % (Queue.get_acting(), [a.appearance() for a in Queue.queue]))
+            die("Event %s by %s; should be acting: %s; queue: %s" % (event, self.appearance(), Queue.get_acting().appearance(), [a.appearance() for a in Queue.queue]))
 
         if event not in ["Up", "Down"]:
             debug("EVENT: %s" % event)
