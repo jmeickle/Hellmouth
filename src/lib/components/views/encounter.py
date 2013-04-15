@@ -18,10 +18,12 @@ from src.lib.util.log import Log
 
 from src.lib.data.skills import skill_list
 
-# Main tactical window class.
-class Window(View):
-    def __init__(self, window):
-        View.__init__(self, window, TERM_X, TERM_Y)
+
+class EncounterWindow(View):
+    """Main tactical window class."""
+    def __init__(self, window, map_obj):
+        self.map = map_obj
+        super(EncounterWindow, self).__init__(window, TERM_X, TERM_Y)
 
     def ready(self):
         self.spawn(SidePane(self.screen))
@@ -165,10 +167,7 @@ class MainMap(View):
         return self.map.cell(pos).draw(subpositions)
 
     def draw(self):
-        if self.cursor is not None:
-            self.center = self.cursor.pos
-        else:
-            self.center = self.player.pos
+        self.center = self.cursor.pos if self.cursor else self.player.pos
 
         cells = area(self.center, self.zoom)
         for cell in cells:
@@ -196,10 +195,12 @@ class MainMap(View):
                     self.hd(add(pos, subposition), glyph, col)
 
         if len(self.player.highlights) > 0:
-            for highlight, pos in self.player.highlights.items():
-                if dist(self.center, pos) > self.viewport_rank:
-                    cells = line(self.center, pos, self.viewport_rank+2)
+            for highlight_id, highlight_obj in self.player.highlights.items():
+                if dist(self.center, highlight_obj.pos) > self.viewport_rank:
+                    # TODO: Don't use Bresenham here, it flickers!
+                    cells = line(self.center, highlight_obj.pos, self.viewport_rank+2)
                     cell = cells.pop()
+                    # TODO: Highlight color
                     glyph, col = "*", "green-black"
                     self.hd(cell, glyph, col)
 

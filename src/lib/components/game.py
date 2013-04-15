@@ -7,7 +7,7 @@ etc.) followed by instantiating a Level containing initial state."""
 
 from src.lib.components.component import Component
 from src.lib.components.views.screens.screen import Screen, MenuScreen
-from src.lib.components.views.tactical import Window
+from src.lib.components.views.encounter import EncounterWindow
 from src.lib.components.views.screens.help import HelpScreen
 
 from src.lib.util.key import *
@@ -62,7 +62,7 @@ class Game(Component):
         self.go(Farm)
 
         # Spawn the main game window.
-        self.view = self.spawn(Window(self.window))
+        self.view = self.spawn(EncounterWindow(self.window, self.level.map))
 
     """Game loop methods."""
 
