@@ -28,6 +28,7 @@ class Component(object):
     def inherit(self):
         """Pass on values that need to be shared across components."""
         # TODO: Dependency injection?
+        # TODO: Remove entirely?
         if self.parent is not None:
             if hasattr(self.parent, 'cursor'):
                 self.cursor = self.parent.cursor
