@@ -11,6 +11,18 @@ class Queue(object):
             return Queue.queue[0]
 
     @staticmethod
+    def get_all_controlled():
+        for actor in Queue.queue:
+            if actor.controlled:
+                yield actor
+
+    @staticmethod
+    def get_next_controlled():
+        for actor in Queue.queue:
+            if actor.controlled:
+                return actor
+
+    @staticmethod
     def next():
         Queue.queue.rotate()
 
