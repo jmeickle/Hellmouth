@@ -20,7 +20,7 @@ from src.games.husk.levels.outdoors import Farm
 
 class Game(Component):
     def __init__(self, **kwargs):
-        Component.__init__(self)
+        super(Game, self).__init__()
 
         # Whether to keep playing.
         self.alive = True
