@@ -1,7 +1,7 @@
 from src.lib.data import screens
 from src.lib.data.generators.items import generators
 from src.lib.generators.items import ItemGenerator, generate_item
-from src.lib.maps.encounter import Encounter
+from src.lib.maps.encounter.map import EncounterMap
 
 from src.lib.util.dice import *
 from src.lib.util.hex import *
@@ -69,7 +69,7 @@ class Farm(object):
     # lot of sense. It's up to you to use it (or not).
     def generate_map(self, destination):
         # Create the map.
-        self.map = Encounter(self)
+        self.map = EncounterMap(self)
 
         # Configure map settings, typically based on depth (destination).
         self.configure_map(destination)
