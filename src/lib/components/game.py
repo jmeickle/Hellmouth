@@ -25,7 +25,7 @@ class Game(Component):
         self.alive = True
 
         # Whether we're interacting with maps and levels.
-        self.gameplay = True
+        self.gameplay = False
 
         # Generate the Player.
         # TODO: Move.
@@ -65,11 +65,13 @@ class Game(Component):
     def start(self):
         """Turn over control to the first level."""
 
+        # Spawn the main game window.
+        self.view = self.spawn(EncounterWindow(self.window, self.level.map))
+
         # Travel to the first level.
         self.enter_level(self.level, map_id=1, entrance_id="prev", exit_id=None)
 
-        # Spawn the main game window.
-        self.view = self.spawn(EncounterWindow(self.window, self.level.map))
+        self.gameplay = True
 
     """Game loop methods."""
 
@@ -91,9 +93,9 @@ class Game(Component):
         if not self.gameplay or not self.alive:
             return False
 
-        # Don't continue looping while a screen is up.
-        if self.children:
-            return False
+        # Don't continue looping if we haven't started, or have a screen.
+        # if self.children
+        #     return False
 
         # Check whether we should continue to play.
         self.gameplay = self.can_continue_gameplay()
