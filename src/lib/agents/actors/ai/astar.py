@@ -5,72 +5,77 @@
 # and found through:
 #     http://www.amagam.com/hexpath/
 
-if __name__ != '__main__':
-    from src.lib.util.define import *
-    from src.lib.util.hex import *
+from src.lib.util.define import *
+from src.lib.util.hex import *
 
-# Simple heuristic: hexagonal distance.
 def heuristic(pos1, pos2):
+    """Simple heuristic: hexagonal distance."""
     return dist(pos1, pos2)
 
-class AStar:
-    def __init__(self, map):
+class AStar(object):
+
+    def __init__(self, agent, map, heuristic=heuristic):
         self.open_list = {}
         self.closed_list = {}
+        self.agent = agent
         self.map = map
+        self.heuristic = heuristic
 
-    def add_open(self, pos, parent=None, blocked=False):
+    def add_open(self, pos, parent=None, first_node=False):
         cell = self.map.cell(pos)
-        if cell is not None:
-            # Can pass through. Use it.
-            if blocked is True and cell.blocked() is False:
-                node = Node(pos, parent)
-                self.open_list[pos] = node
-                return node
-            elif blocked is False and cell.impassable() is False:
-                node = Node(pos, parent)
-                self.open_list[pos] = node
-                return node
-            # Can't pass through, but keep it around.
-            else:
-                self.add_closed(pos, parent)
-                return False
-        # No need to even create a node if it's not even a cell.
-        else:
+        if not cell:
+            """No need to even create a node if it's not even a cell."""
             self.closed_list[pos] = None
             return False
+        else:
+            if first_node or not cell.can_block(self.agent):
+                """Can pass through this cell. Add it to the open list."""
+                node = AStarNode(self, pos, parent)
+                self.open_list[pos] = node
+                return node
+            # TODO: Figure these conditions out?
+            # elif blocked is False and cell.can_block(self.agent) is False:
+            #     node = AStarNode(self, pos, parent)
+            #     self.open_list[pos] = node
+            #     return node
+            # Can't pass through, but keep it around.
+            else:
+                """Cannot pass through this cell."""
+                self.add_closed(pos, parent)
+                return False
 
-    # Create a node, but move it directly to the closed list.
     def add_closed(self, pos, parent=None):
-        node = Node(pos, parent)
+        """Create an AStarNode, but move it directly to the closed list."""
+        node = AStarNode(self, pos, parent)
         self.closed_list[pos] = node
         return node
 
     def move_open(self, pos):
+        """Move an AStarNode from the open list to the closed list."""
         self.open_list[pos] = self.closed_list[pos]
         del self.closed_list[pos]
 
     def move_closed(self, pos):
+        """Move an AStarNode from the closed list to the open list."""
         self.closed_list[pos] = self.open_list[pos]
         del self.open_list[pos]
 
     def lower(self, node1, node2):
+        """Return the AStarNode with the lower cost."""
         if node1.cost < node2.cost:
             return node1
         else:
             return node2
 
-    # Return the lowest value from the open list.
     def lowest(self):
-        #return min(self.open_list.values(), key=lambda x:x.cost)
+        """Return the AStarNode with the lowest cost from the open list."""
         return reduce(lambda x, y: self.lower(x, y), self.open_list.values())
 
-    # Request a path from a destination to one.
     def path(self, pos, dest):
-        curr = self.add_open(pos)
-
+        """Request a path from a position to a destination."""
+        curr = self.add_open(pos, None, True)
         for dir in dirs:
-            pos = self.add_open(add(curr.pos, dir), curr, True)
+            pos = self.add_open(add(curr.pos, dir), curr)
             if pos is not False:
                 pos.set_cost(curr.pos, dest)
 
@@ -88,6 +93,7 @@ class AStar:
         return False
 
     def _path(self, curr, dest):
+        """Internal method to request a path from a position to a destination."""
         self.move_closed(curr.pos)
         if curr.pos == dest:
             return curr
@@ -105,8 +111,10 @@ class AStar:
                     existing.set_cost(curr.pos, dest, False)
         return False
 
-class Node:
-    def __init__(self, pos, parent):
+class AStarNode(object):
+    """A node within an AStar object."""
+    def __init__(self, astar, pos, parent):
+        self.astar = astar
         self.pos = pos
         self.parent = parent
         self.g = 0
@@ -114,18 +122,18 @@ class Node:
         self.cost = 0
 
     def set_cost(self, start, dest, calculate=True):
-        self.g = 1 # Static move cost for now. Later, based on terrain of square moving into / out of.
+        """Set the cost of moving into this AStarNode."""
+        self.g = 1 # Later: base move cost on involved terrain.
         if calculate is True:
-            self.h = heuristic(self.pos, dest)
+            self.h = self.astar.heuristic(self.pos, dest)
         self.cost = self.g + self.h
 
     def get_path(self):
+        """Return the path to this AStarNode's parent."""
         if self.parent is None:
             return []
         else:
-            list = [self.pos]
-            list.extend(self.parent.get_path())
-            return list
+            return [self.pos] + self.parent.get_path()
 
 # Test code.
 if __name__ == "__main__":

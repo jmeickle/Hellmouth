@@ -86,7 +86,7 @@ class NPC(Actor):
     # Reset A* and generate a new path.
     def repath(self):
         debug("%s repathed." % self.appearance())
-        self.astar = AStar(self.map)
+        self.astar = AStar(self, self.map)
         self.path = self.astar.path(self.pos, self.destination)
 
     def retarget(self):
