@@ -1,8 +1,12 @@
+"""A Cell is a partition of a Map. Like Maps, there can be Cells of different
+scales, such as an overworld Cell containing an encounter Map."""
+
 import random
 from src.lib.util.hex import *
 from src.lib.util.text import *
 
-class Cell:
+class BaseCell(object):
+    """An abstract partition of a Map."""
     def __init__(self, pos, parent):
         self.map = parent
         self.pos = pos
