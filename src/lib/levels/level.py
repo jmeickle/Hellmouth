@@ -39,13 +39,8 @@ class Level(object):
 
     def arrive(self, map_id, entrance_id, exit_id):
         """Turn over control to the first Map."""
-        if self.map:
-            player = self.get_controller()
-            self.map.arriving_actor(player, entrance_id, exit_id)
-            self.map.arrive(entrance_id, exit_id)
-            player.trigger("arrived")
-            Queue.add(player)
-                
+        self.enter_map(map_id, entrance_id, exit_id)
+
     """Level loop methods."""
 
     def can_continue_gameplay(self):
@@ -59,9 +54,13 @@ class Level(object):
 
     def loop(self):
         """Perform one iteration of the level portion of the game loop."""
-        actor = Queue.get_acting()
-        if actor and not actor.controlled and actor.before_turn():
-            actor.act()
+        while True:
+            actor = Queue.get_acting()
+            if actor and not actor.controlled:
+                if actor.before_turn():
+                    actor.act()
+            else:
+                break
 
     """Level departure methods."""
 
@@ -74,6 +73,27 @@ class Level(object):
         """Leave this Level."""
         if self.map:
             self.map.depart(map_id, entrance_id, exit_id)
+
+    """Map management methods."""
+
+    def enter_map(self, map_id, entrance_id="prev", exit_id="next"):
+        """Enter a Map, optionally including information about the trip."""
+        Queue.clear()
+        self.exit_map(map_id, entrance_id, exit_id)
+        self.map = self.generate_map(map_id)
+        player = self.get_controller()
+        self.map.arriving_actor(player, entrance_id, exit_id)
+        self.map.arrive(entrance_id, exit_id)
+        player.trigger("arrived")
+        Queue.addleft(player)
+        self.game.view.map = self.map
+        self.game.view.inherit()
+
+    def exit_map(self, map_id=None, entrance_id=None, exit_id=None):
+        """Exit a Map, optionally including information about the trip."""
+        self.map.before_depart(map_id, entrance_id, exit_id)
+        self.map.depart(map_id, entrance_id, exit_id)
+        del self.map
 
     """Map factory methods."""
 
@@ -105,18 +125,17 @@ class Level(object):
         # Map properties that are the same for all map_ids.
         map_obj.center = (0,0)
         map_obj.size = 30
-        map_obj.passages = { "prev" : (0, ANYWHERE)}
 
         if map_obj.map_id == 1:
             map_obj.name = "cornfield"
             map_obj.floor = (".", "yellow-black")
             map_obj.layout_generator = outdoors.Cornfield
-            map_obj.passages.update({ "next" : (map_obj.map_id+1, ANYWHERE) })
+            map_obj.passages = { "prev" : (map_obj.map_id-1, ANYWHERE), "next" : (map_obj.map_id+1, ANYWHERE) }
         elif map_obj.map_id == 2:
             map_obj.name = "farmhouse"
             map_obj.floor = (".", "green-black")
             map_obj.layout_generator = indoors.Farmhouse
-            map_obj.passages.update({ "next" : (map_obj.map_id+1, ANYWHERE) })
+            map_obj.passages = { "prev" : (map_obj.map_id-1, ANYWHERE), "next" : (map_obj.map_id+1, ANYWHERE) }
 
     def generate_map_layout(self, map_obj):
         """Generate a layout according to the Map configuration."""
