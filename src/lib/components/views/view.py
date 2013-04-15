@@ -9,7 +9,6 @@ from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util import key
 
-
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):
         Component.__init__(self)
