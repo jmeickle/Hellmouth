@@ -1,4 +1,4 @@
-from src.lib.objects.terrain import Terrain
+from src.lib.agents.terrain.terrain import Terrain
 
 class Corn(Terrain):
     def __init__(self, terrain_type=None):

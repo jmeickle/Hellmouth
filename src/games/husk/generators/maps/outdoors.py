@@ -1,7 +1,7 @@
 from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
 
+from src.lib.agents.terrain.passage import Path
 from src.lib.generators.maps.layout import LayoutGenerator
-from src.lib.objects.terrain import Path
 
 from src.lib.util.hex import *
 

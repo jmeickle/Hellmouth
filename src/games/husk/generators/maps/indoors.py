@@ -1,8 +1,8 @@
 import random
 
-from src.games.husk.generators.maps.outdoors import Cornfield
+from src.lib.agents.terrain.terrain import Wall, EastWestWall, NorthSouthWall, DirtRoad
 from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
-from src.lib.objects.terrain import Wall, EastWestWall, NorthSouthWall, DirtRoad
+from src.games.husk.generators.maps.outdoors import Cornfield
 
 from src.lib.util.debug import *
 from src.lib.util.dice import *
@@ -58,8 +58,7 @@ class Farmhouse(Cornfield):
         #         self.cells[cell] = (None, NorthSouthWall())
         #     x += 1
 
-        self.place_exits()
-        return self.cells, self.exits
+        self.place_passages()
 
     def random_directions(self, num):
         assert num <= 6
