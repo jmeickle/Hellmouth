@@ -1,16 +1,33 @@
-# The map and cells in the map.
-# TODO: Not cells in the map.
+"""A Map defines an area of game space in which the primary interactions are
+quantized actions (most commonly, movement). It is the canonical representation
+of a portion of the game's 'reality', and it is responsible for managing all
+gameplay occurring within its scope.
+
+Maps typically quantize time into a turn or energy system and quantize space
+into Cells.
+
+Maps can be of different scales. The most typical scales are:
+
+    * Encounter: a 'combat map' with one Actor per Cell
+    * Location: a 'site map' with one 'band' or 'patrol' of Actors per Cell
+    * Region: a 'country map' with one Location per Cell
+    * World: a 'zoomed out' world map with one Region per Cell
+"""
 from collections import deque
 
 from src.lib.data import screens
-from cell import Cell
+from cell import BaseCell
 
 from src.lib.util.debug import debug
 from src.lib.util.text import *
 from src.lib.util.log import Log
 from src.lib.util.queue import Queue
 
-class Map(object):
+class BaseMap(object):
+    """An area of game space partitioned into Cells."""
+
+    cell_class = BaseCell
+
     def __init__(self, level):
         # Maps don't make sense without an associated Level.
         self.level = level
@@ -103,11 +120,16 @@ class Map(object):
     def populate(self, cells):
         for pos, contents in cells.items():
             distance, terrain = contents # HACK: This won't always be a tuple like this.
-            cell = Cell(pos, self)
+            cell = self.add_cell(pos)
+
             if terrain is not None:
                 cell.put_terrain(terrain)
 
-            self.cells[pos] = cell
+    def add_cell(self, pos):
+        """Create a Cell, store it within this map, and return it."""
+        cell = self.cell_class(pos, self)
+        self.cells[pos] = cell
+        return cell
 
     # Return a cell at a pos tuple.
     def cell(self, pos):
@@ -171,8 +193,6 @@ class Map(object):
     def screen(self, screenname, arguments=None, screenclass=None):
         self.screens.append((screenname, arguments, screenclass))
 
-class Encounter(Map):
-    pass
     # TODO: Move to a file output util file.
     # # Print a large text version of the map.
     # def dump(self, size=100, origin=(0,0)):
