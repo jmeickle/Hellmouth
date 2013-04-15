@@ -16,3 +16,7 @@ class Player(Actor, CommandingAgent):
         self.build(100)
         self.recalculate()
         self.controlled = True
+
+    def get_movement_modes(self):
+        yield "walk"
+        yield "flight"
