@@ -1,3 +1,6 @@
+"""A Level contains game state in a given scenario. This typically includes a
+Map and an action queue."""
+
 from src.lib.components.component import Component
 from src.lib.data import screens
 from src.lib.data.generators.items import generators
@@ -6,6 +9,7 @@ from src.lib.maps.encounter.map import EncounterMap
 
 from src.lib.util.dice import *
 from src.lib.util.hex import *
+from src.lib.util.queue import Queue
 
 from src.games.husk.generators.maps import outdoors, indoors
 from src.games.husk.agents.actors import humans
@@ -18,7 +22,6 @@ class Level(Component):
         self.map = None
         self.destination = None
 
-        # DISPLAY:
         # Descriptive information about the level itself.
         self.name = "Smith Farm"
         self.screens = []
@@ -26,20 +29,20 @@ class Level(Component):
         # Handle anything that should happen before arriving at this level is guaranteed.
         self.before_arrive()
 
-    # The level portion of the game loop.
     def loop(self):
-        if self.map is not None:
-            # If the map has a destination, go to it.
-            if self.map.loop() is False:
-                self.go(self.map.destination)
+        """Perform one iteration of the level portion of the game loop."""
+        actor = Queue.get_acting()
+        if actor and not actor.controlled and actor.before_turn():
+            actor.act()
 
-        # Don't continue looping if we have a destination.
-        if self.destination is not None:
+    def can_continue_gameplay(self):
+        """Return whether the level portion of the game loop."""
+        if not Queue.get_acting():
             return False
-
-        # Get screens from the map.
-        self.screens.extend(self.map.screens)
-        self.map.screens = []
+        # TODO: Replace with check for controlled characters
+        if not self.player.alive:
+            return False
+        return True
 
     # Go to a specific map.
     def go(self, destination):

@@ -56,17 +56,6 @@ class BaseMap(object):
         # Where we're traveling to.
         self.destination = None
 
-    # The map portion of the game loop.
-    def loop(self):
-        # Don't continue looping if we have a destination.
-        if self.destination is not None:
-            return False
-
-        actor = Queue.get_acting()
-
-        if actor and not actor.controlled and actor.before_turn():
-            actor.act()
-
     # Go to another map, or if destination is False, let the level figure it out.
     def go(self, destination):
         self.before_leave(destination)

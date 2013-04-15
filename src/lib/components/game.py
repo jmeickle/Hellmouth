@@ -12,7 +12,6 @@ from src.lib.components.views.screens.help import HelpScreen
 
 from src.lib.util.key import *
 from src.lib.util import system
-from src.lib.util.queue import Queue
 
 from src.games.husk.agents.actors.player import Player
 from src.games.husk.data import screens as screen_data
@@ -69,64 +68,41 @@ class Game(Component):
 
     def can_continue_gameplay(self):
         """Returns whether the game meets the conditions to keep playing."""
-        # TODO: Move this to the map.
-        if self.map is not None:
-            if not Queue.get_acting():
-                self.before_finish()
-                return False
-            if self.player.alive is False:
-                self.before_finish()
-                return False
+        # TODO: Fix?
+        if not self.gameplay:
+            self.before_finish()
+            return False
+        if self.level and not self.level.can_continue_gameplay():
+            self.before_finish()
+            return False
         return True
 
     def loop(self):
-        """Main game loop."""
+        """Perform one iteration of the game loop."""
 
         # Don't continue looping if the game is over.
         if self.alive is False:
             return False
 
-        # Check whether we should keep playing.
-        if self.gameplay is True:
-            self.gameplay = self.can_continue_gameplay()
+        # Check whether we should continue to play.
+        self.gameplay = self.can_continue_gameplay()
+            
+        # If we're playing and in a level, hand over control to it.
+        if self.gameplay and self.level:
+            self.level.loop()
 
-        # If we have a level, try to loop.
-        if self.gameplay is True and self.level is not None:
-            if self.level.map is not None:
-                # Pass map to our children if it has changed.
-                if self.map != self.level.map:
-                    self.map = self.level.map
-                    self.inherit()
-
-            # If the level has a destination set, go to it.
-            # (This might end the game.)
-            if self.level.loop() is False:
-                self.go(self.level.destination)
-
-            # When we're in a map, we have to play nice with keyin.
-            # HACK: This is likely to break during travel at some point.
-            acting = Queue.get_acting()
-            if not acting or not acting.controlled:
-                return True
-
-            # Get screens from the level (which may have gotten some from the map.)
-            self.screens.extend(self.level.screens)
-            self.level.screens = []
-
-        # Show any screens we picked up.
-        # The screens generated first will show up first.
-        for x in range(len(self.screens)):
-            screenname, arguments, screenclass = self.screens.pop()
-            self.screen(screenname, arguments, screenclass)
-
-        return True
+        # # Show any screens we picked up.
+        # # The screens generated first will show up first.
+        # for x in range(len(self.screens)):
+        #     screenname, arguments, screenclass = self.screens.pop()
+        #     self.screen(screenname, arguments, screenclass)
 
     """Game finish methods."""
 
     def before_finish(self):
         self.gameplay = False
         self.screen("end", {"callback" : self.finish})
-    
+
     def finish(self):
         """The game is over. Do anything required before finishing."""
         self.screen("credits", {"callback" : self.suicide})
@@ -153,6 +129,10 @@ class Game(Component):
         self.spawn(screenclass(self.window, **screendata))
 
     """Level management methods."""
+
+    def generate_level(self, level_class):
+        """Instantiate a Level from a class and return it."""
+        return level_class()
 
     # Go to a new level.
     def go(self, destination):
