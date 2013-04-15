@@ -1,3 +1,5 @@
+"""FOV methods for a hexagonal topology."""
+
 from hex import *
 
 # In this algorithm, hexagons can be referenced in two ways. The first way is

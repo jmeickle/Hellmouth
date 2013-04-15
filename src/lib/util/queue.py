@@ -1,3 +1,5 @@
+"""A simple singleton queue, based on collections.deque."""
+
 from collections import deque
 
 class Queue(object):

@@ -1,3 +1,5 @@
+"""Dice parsing, rolling, and manipulating methods."""
+
 import random
 import re
 

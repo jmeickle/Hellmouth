@@ -1,4 +1,6 @@
-"""Define Commands as an intermediary layer of abstraction, between keypresses and actions."""
+"""Commands are an abstraction layer between intent and action. They provide a
+more consistent interface to and better contextual detail about the complex
+action sequences that they trigger."""
 
 from copy import copy
 

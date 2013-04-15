@@ -1,3 +1,7 @@
+"""Game constants and decorators that should be available globally."""
+
+# TODO: Gut this file. Most of this stuff is very game specific!
+
 import functools
 
 from src.lib.util.debug import die

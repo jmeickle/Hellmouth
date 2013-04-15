@@ -1,21 +1,21 @@
-# Functions for making hexes easier to use.
+"""Distance, geometry, rotation, etc. methods for a hexagonal topology."""
+
 import random
 
 from define import *
 from dice import *
 from math import *
 
-#
-# Hexagonal coordinate system definitions.
-#
+"""Hexagonal coordinate system definitions."""
 
-# Direction constants.
-#
-#   NW    NE
-#     /  \
-# CW | CC | CE
-#     \  /
-#   SW    SE
+"""Direction constants.
+
+   NW    NE
+     /  \
+ CW | CC | CE
+     \  /
+   SW    SE
+"""
 
 # No location
 ANYWHERE = None

@@ -1,30 +1,30 @@
-# Manages in-game databases. Currently, uses SQLite 3.
+"""Singleton to manage the game's database (currently, SQLite 3)."""
 
 import sqlite3
 
-# Creates a connection when this module is first imported.
 class Database(object):
+    """Creates an in-memory database when this module is first imported."""
     connection = sqlite3.connect(':memory:')
 
-# Execute a query against the database. Only return results if committing.
 def query(q, args=()):
+    """Execute a query against the database. Only return results if committing."""
     cur = Database.connection.cursor()
     cur.execute(q, args)
     Database.connection.commit()
     return cur.fetchall()
 
-# List the tables in the database.
 def list_tables(): 
+    """List the tables in the database."""
     return [x[0] for x in query("SELECT name FROM sqlite_master WHERE type = 'table'")]
 
-# Save the entire database to a .sql dump file.
 def dump(filename):
+    """Save the entire database to a single .sql dump file."""
     with open(filename+".sql", 'w') as f:
         for line in con.iterdump():
             f.write('%s\n' % line)
 
-# Save a list of tables into .sql dump files matching a pattern.
 def dump_tables(tables, filename):
+    """Save a list of tables into prefixed .sql dump files."""
     db_tables = list_tables()
     for table in tables:
         assert table in db_tables
@@ -82,14 +82,14 @@ def _iterdump(connection, table_name):
 
     yield('COMMIT;')
 
-# Restore a .sql dump file to memory.
 def restore(filename):
+    """Restore a .sql dump file to the database."""
     with open(filename+".sql", 'r') as f:
         Database.connection.cursor().executescript(f.read())
         Database.connection.commit()
 
-# Basic database testing.
 if __name__ == '__main__':
+    """Basic database testing."""
 
     print "Creating tables."
     query("CREATE TABLE IF NOT EXISTS item (iid int, PRIMARY KEY (iid))")

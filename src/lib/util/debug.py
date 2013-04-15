@@ -1,4 +1,4 @@
-"""Debugging and system logging functions."""
+"""Debugging and system logging methods and decorators."""
 
 import functools
 import logging

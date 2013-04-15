@@ -1,3 +1,5 @@
+"""Keyboard input helper methods."""
+
 # TODO: Define a dict of keys/actions for remappable keys.
 
 import curses

@@ -1,11 +1,11 @@
-# Dynamic programming functions.
+"""Dynamic programming functions."""
 
 import inspect
 
-# Return the name of the current function.
 def me():
+    """Return the name of the current function."""
     return inspect.stack()[1][3]
 
-# Return the name of the calling function.
 def caller():
+    """Return the name of the calling function."""
     return inspect.stack()[2][3]

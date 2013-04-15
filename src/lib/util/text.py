@@ -1,3 +1,5 @@
+"""Text manipulation methods."""
+
 from src.lib.util.define import *
 
 import re

@@ -1,3 +1,5 @@
+"""A simple singleton logger, based on collections.deque."""
+
 from collections import deque
 
 class Log:
