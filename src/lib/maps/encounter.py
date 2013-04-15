@@ -10,7 +10,7 @@ from src.lib.util.text import *
 from src.lib.util.log import Log
 from src.lib.util.queue import Queue
 
-class Encounter:
+class Map(object):
     def __init__(self, level):
         # Maps don't make sense without an associated Level.
         self.level = level
@@ -171,6 +171,8 @@ class Encounter:
     def screen(self, screenname, arguments=None, screenclass=None):
         self.screens.append((screenname, arguments, screenclass))
 
+class Encounter(Map):
+    pass
     # TODO: Move to a file output util file.
     # # Print a large text version of the map.
     # def dump(self, size=100, origin=(0,0)):
