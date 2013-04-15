@@ -1,7 +1,7 @@
 from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
 
 from src.lib.generators.maps.mapgen import MapGen
-from src.lib.objects.terrain import Stairs
+from src.lib.objects.terrain import Path
 
 from src.lib.util.hex import *
 
@@ -9,7 +9,11 @@ class Cornfield(MapGen):
     def __init__(self, exits=None):
         super(Cornfield, self).__init__(exits)
         self.wall_width = 3
-        self.entry = mult(SW, self.size-self.wall_width)
+
+        self.size += 10
+        self.wall_width += 10
+
+        self.entry = mult(SW, self.size-self.wall_width-1)
 
     def attempt(self):
         hexes = area(self.center, self.size, True)
@@ -38,8 +42,6 @@ class Cornfield(MapGen):
                 row_start = add(row_start, mult(d, spacing))
 
         self.place_exits()
-        self.connect_exits()
-        self.place_levers()
         return self.cells, self.exits
 
     def place_corn(self):
@@ -58,6 +60,9 @@ class Cornfield(MapGen):
             where, pos = exit
             if not pos:
                 pos = mult(NE, self.size - self.wall_width)
-            self.cells[pos] = (None, Stairs(which, where))
+
+            for cell in area(pos):
+                self.cells[cell] = (None, None)
+            self.cells[pos] = (None, Path(which, where))
             exits.append((which, pos))
         self.exits = exits
