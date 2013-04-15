@@ -47,8 +47,8 @@ for opt, arg in options:
         # Non-recognized flags are a no-op.
         arguments["displaymode"] |= displayflags.get(opt, 0b0)
 
-# Plain curses mode.
 if arguments["displaymode"] == displayflags["curses"]:
+    """Launch the game in curses mode."""
     import curses
 
     def main(stdscr):
@@ -59,26 +59,26 @@ if arguments["displaymode"] == displayflags["curses"]:
         # Initialize colors.
         from src.lib.util.color import Color
 
-        # Initialize the root component.
+        # Initialize the root Component.
         from src.lib.components.component import RootComponent
         root = RootComponent(stdscr)
 
-        #
         if arguments.get("gamemode"):
+            # Launch using the chosen game mode.
             # TODO: Remove extraneous None
             root.launch((arguments.get("gamemode"), None))
         else:
-            # Get a list of valid game names.
+            # Get a list of valid game modes.
             choices = []
             for module_name in sorted(system.folders("src/games")):
                 module_info = __import__('src.games.%s.info' % module_name, globals(), locals(), ['name', 'version', 'description'])
                 choices.append((module_name, module_info))
 
-            # Spawn a game choice menu.
+            # Spawn a game choice menu that launches after a selection is made.
             from src.lib.components.views.screens.screen import MenuScreen
             root.spawn(MenuScreen(root.window, **{"title" : "Start Game!", "choices" : choices, "callback" : root.launch}))
 
-        # Start the application loop.
+        # Start the root Component's loop.
         while root.alive is True:
             root.loop()
 
