@@ -171,12 +171,12 @@ class RootComponent(Component):
         """Spawn the selected module's main.Game as a child Component and then
         launch it."""
         # Import the chosen game module (as src.games.__GAMEMODE__.main.py).
-        # TODO: Permit a classname other than 'Game'
+        # TODO: Permit a classname other than 'main'
         module_name, module_info = selected_module
-        gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['Game'])
+        gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['main'])
  
         # Spawn the game as a child Component, and then launch it.
-        self.game = self.spawn(gamemodule.Game())
+        self.game = self.spawn(gamemodule.main())
         self.game.launch()
 
     def loop(self):
