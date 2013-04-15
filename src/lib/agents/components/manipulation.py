@@ -219,7 +219,15 @@ class UseTerrain(Command):
     def get_actions(self, ctx):
         yield Use
 
-CMD.register(UseTerrain)
+class UseStairs(Command):
+    description = "travel to the next level"
+    defaults = ("<", ">")
+
+    @command_context
+    def get_actions(self, ctx):
+        yield Use
+
+CMD.register(UseTerrain, UseStairs)
 
 """Components."""
 
