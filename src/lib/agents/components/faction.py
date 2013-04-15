@@ -40,5 +40,5 @@ class NeutralFaction(Component):
 class EnemyFaction(NeutralFaction):
     """Enemy faction."""
     def get_target(self):
-        """default to player"""
-        return self.owner.map.player
+        """default to controller"""
+        return self.owner.map.get_controller()

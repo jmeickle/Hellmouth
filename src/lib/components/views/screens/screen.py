@@ -122,7 +122,7 @@ class DialogueScreen(Screen):
     def draw(self):
         self.border(" ")
         title = "<%s>%s</>" % (self.color(), self.title)
-        heading = "%s%s%s" % (title, " "*(self.width - len(self.title) - len(self.player.location)), self.player.location)
+        heading = "%s%s%s" % (title, " "*(self.width - len(self.title) - len(self.get_controller().location)), self.get_controller().location)
         self.cline(heading)
         self.x_acc -= 2
         self.cline("-"*(self.x))

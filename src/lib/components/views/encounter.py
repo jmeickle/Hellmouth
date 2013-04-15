@@ -68,33 +68,32 @@ class MainMap(View):
 
             elif c == ord('v'):
                 if self.cursor is None:
-                    self.cursor = self.spawn(Cursor(self.player.pos))
+                    self.cursor = self.spawn(Cursor(self.get_controller().pos))
                     self.cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
 
         """Get items."""
         if c == ord('G'):
             items = []
-            for appearance, itemlist in self.player.cell().get_items():
+            for appearance, itemlist in self.get_controller().cell().get_items():
                 items.extend(itemlist)
             if items:
                 context = self.get_context(participants=items)
                 event = chr(c)
-                return self.player.process_event(event, context)
+                self.get_controller().process_event(event, context)
 #        elif c == ord('g'):
-#            self.player.command()
+#            self.get_controller().command()
 #            return False
         elif c == ord('U'):
-            terrain = self.player.cell().get_terrain()
+            terrain = self.get_controller().cell().get_terrain()
             if terrain:
                 context = self.get_context(participants=terrain, domains=["Manipulation"])
                 event = chr(c)
-                return self.player.process_event(event, context)
+                self.get_controller().process_event(event, context)
         elif c == ord('}'):
             """Zoom."""
             self.zoom = 2
             self.inherit()
-            return False
         elif c == ord('{'):
             self.zoom = self.viewport_rank
             self.inherit()
@@ -102,26 +101,26 @@ class MainMap(View):
             """Notepad."""
             self.spawn(TextPrompt(self.screen, self.width, self.height))
         elif c == ord('7'):
-            self.map.player.do(NW)
+            self.map.get_controller().do(NW)
         elif c == ord('4'):
-            self.map.player.do(CW)
+            self.map.get_controller().do(CW)
         elif c == ord('1'):
-            self.map.player.do(SW)
+            self.map.get_controller().do(SW)
         elif c == ord('9'):
-            self.map.player.do(NE)
+            self.map.get_controller().do(NE)
         elif c == ord('6'):
-            self.map.player.do(CE)
+            self.map.get_controller().do(CE)
         elif c == ord('3'):
-            self.map.player.do(SE)
+            self.map.get_controller().do(SE)
         elif c == ord('5'):
-            self.map.player.end_turn()
+            self.map.get_controller().end_turn()
         elif c == ord('>') or c == ord('<'):
             """Stairs."""
-            terrain = self.player.cell().get_terrain()
+            terrain = self.get_controller().cell().get_terrain()
             if terrain:
                 context = self.get_context(participants=terrain, domains=["Manipulation"])
                 event = chr(c)
-                return self.player.process_event(event, context)
+                self.get_controller().process_event(event, context)
         else: return True
         return False
 
@@ -167,7 +166,7 @@ class MainMap(View):
         return self.map.cell(pos).draw(subpositions)
 
     def draw(self):
-        self.center = self.cursor.pos if self.cursor else self.player.pos
+        self.center = self.cursor.pos if self.cursor else self.get_controller().pos
 
         cells = area(self.center, self.zoom)
         for cell in cells:
@@ -194,8 +193,8 @@ class MainMap(View):
                 for glyph, col, subposition in self.get_glyph(cell, True):
                     self.hd(add(pos, subposition), glyph, col)
 
-        if len(self.player.highlights) > 0:
-            for highlight_id, highlight_obj in self.player.highlights.items():
+        if len(self.get_controller().highlights) > 0:
+            for highlight_id, highlight_obj in self.get_controller().highlights.items():
                 if dist(self.center, highlight_obj.pos) > self.viewport_rank:
                     # TODO: Don't use Bresenham here, it flickers!
                     cells = line(self.center, highlight_obj.pos, self.viewport_rank+2)
@@ -224,7 +223,7 @@ class Examine(View):
                 if actor:
                     context = self.get_context(domains=["Combat"], participants=[actor])
                     event = chr(c)
-                    return self.player.process_event(event, context)
+                    return self.get_controller().process_event(event, context)
         elif c == ord('t') or c == ord('C'):
             actors = self.map.actors(self.parent.pos)
             if actors:
@@ -232,7 +231,7 @@ class Examine(View):
                 if actor:
                     context = self.get_context(domains=["Command"], participants=[actor])
                     event = chr(c)
-                    return self.player.process_event(event, context)
+                    return self.get_controller().process_event(event, context)
         return True
 
     def draw(self):
@@ -254,16 +253,16 @@ class Stats(View):
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
-        for line in self.player.values("Body", "get_paperdoll"):
+        for line in self.get_controller().values("Body", "get_paperdoll"):
             self.cline(line)
 
         # Show the chosen weapon/attack option combination.
-        weapon, wielding_mode = self.player.call("Combat", "get_view_data").get_result()
+        weapon, wielding_mode = self.get_controller().call("Combat", "get_view_data").get_result()
         # Wielding mode, for now:
         #  0      1        2      3      4      5       6,     7
         # trait, name, damage, d.type, reach, parry, min ST, hands
         trait, attack_name, damage, damage_type, reach_def, parry, min_st, hands = wielding_mode
-        trait_level = self.player.trait(trait)
+        trait_level = self.get_controller().trait(trait)
         appearance = weapon.appearance()[:20]
         manipulator = weapon.call("Wielded", "get_manipulator").get_result()
 
@@ -279,19 +278,19 @@ class Stats(View):
             exit("reach: %s" % reach)
 
         # HACK: Should ask the item to display a shorter appearance.
-        self.cline("(/*) %s: %s" % (manipulator.appearance(), appearance))
+        self.cline("(/*) %s: %s" % (manipulator.type, appearance))
 
         color = "white-black"
-        if self.player.base_skills.get(trait) is None:
+        if self.get_controller().base_skills.get(trait) is None:
             color = "red-black"
 
         self.cline("%s, <%s>%s-%s</>" % (manipulator.appearance(), color, trait, trait_level))
 
         selector = ""
-        weapons = [w for w in self.player.values("Combat", "get_weapons")]
+        weapons = [w for w in self.get_controller().values("Combat", "get_weapons")]
         if len(weapons) > 1:
             selector = "(+-) "
-        self.cline("%5s%s %s %s %s" % (selector, attack_name, self.player.damage(damage, False), damage_type, reach))
+        self.cline("%5s%s %s %s %s" % (selector, attack_name, self.get_controller().damage(damage, False), damage_type, reach))
 
         # Col 2: Combat information
         self.x_acc += 12
@@ -315,44 +314,41 @@ class Stats(View):
         self.line("")
         self.statline("Will")
         self.statline("Perception")
-#        self.line("")
-#        self.statline("Move")
-#        self.statline("Speed")
+        self.line("")
+        self.statline("Move")
+        self.statline("Speed")
 
         # Don't delete! Probably will reuse this for a 'health' screen.
         #self.line("Wounds:")
-        #for loc in sorted(self.player.body.locs.items()):
+        #for loc in sorted(self.get_controller().body.locs.items()):
         #    self.line("%6s: %s" % (loc[0], loc[1].wounds))
-
-        #for x in range(10):
-        #    self.line("Sample combat log text, line %d" % x)
 
     # Print a line like 'Dodge: 15' using stat()
     # TODO: Print colors, *s, etc. for more info.
     def statline(self, stat):
         # Always use the shortest label here.
         label = labels.get(stat)[0]
-        value = self.player.stat(stat)
+        value = self.get_controller().stat(stat)
         if value is None:
             value = "n/a"
 
         # These particular stats actually have two stats to display.
         if stat in ["HP", "FP", "MP"]:
-            self.line("%s: %3d/%2d" % (label, value, self.player.stat("Max"+stat)))
+            self.line("%s: %3d/%2d" % (label, value, self.get_controller().stat("Max"+stat)))
         else:
             self.line("%s: %s" % (label, value))
 
     def keyin(self, c):
         if c == ord("+"):
-            weapon = self.player.call("Combat", "get_active_weapon").get_result()
+            weapon = self.get_controller().call("Combat", "get_active_weapon").get_result()
             weapon.call("Wielded", "set_wielding_mode", 1)
         elif c == ord("-"):
-            weapon = self.player.call("Combat", "get_active_weapon").get_result()
+            weapon = self.get_controller().call("Combat", "get_active_weapon").get_result()
             weapon.call("Wielded", "set_wielding_mode", -1)
         elif c == ord("*"):
-            self.player.call("Combat", "set_active_weapon", 1)
+            self.get_controller().call("Combat", "set_active_weapon", 1)
         elif c == ord("/"):
-            self.player.call("Combat", "set_active_weapon", -1)
+            self.get_controller().call("Combat", "set_active_weapon", -1)
         else:
             return True
         return False
@@ -363,7 +359,7 @@ class Status(View):
         View.__init__(self, window, x, y, start_x, start_y)
 
     def draw(self):
-        for text, color in self.player.values("Status", "get_view_data", self):
+        for text, color in self.get_controller().values("Status", "get_view_data", self):
             debug("text: %s, color: %s" % (text, color))
             self.line(text, color)
         return True
@@ -478,10 +474,10 @@ class Inventory(View):
 
     # TODO: Fire this on events that require a refresh.
     def refresh(self):
-        self.inventory = [item for item in self.player.values("Container", "get_list")]
-        self.wielded = [wielded for wielded in self.player.values("Manipulation", "get_wielded")]
-        self.equipment = [equipment for equipment in self.player.values("Equipment", "get_worn")]
-        self.ground = [ground for ground in self.map.player.cell().get_items()]
+        self.inventory = [item for item in self.get_controller().values("Container", "get_list")]
+        self.wielded = [wielded for wielded in self.get_controller().values("Manipulation", "get_wielded")]
+        self.equipment = [equipment for equipment in self.get_controller().values("Equipment", "get_worn")]
+        self.ground = [ground for ground in self.map.get_controller().cell().get_items()]
 
         self.tabs.set_choices([choice for choice in self.active_tabs()])
 
@@ -613,7 +609,7 @@ class Inventory(View):
 
     def event(self, e):
         if self.context:
-            return self.player.process_event(e, self.context)
+            return self.get_controller().process_event(e, self.context)
         return True
 
     def keyin(self, c):
@@ -622,17 +618,17 @@ class Inventory(View):
 #         # Hack.
 #         elif c == ord('d'):
 #             if self.selection.index == 0:
-#                 self.player.drop(self.selected())
+#                 self.get_controller().drop(self.selected())
 #             else:
-#                 self.player._drop(self.selected())
+#                 self.get_controller()._drop(self.selected())
 #         elif c == ord('e'):
-#             self.player.equip(self.selected())#, self.player.body.locs.get(self.player.body.primary_slot))
+#             self.get_controller().equip(self.selected())#, self.get_controller().body.locs.get(self.get_controller().body.primary_slot))
 #         elif c == ord('u'):
 #             # This is also a hack.
-#             self.player._unequip(self.selected())
+#             self.get_controller()._unequip(self.selected())
 # #        else: return True
 #         elif c == ord('G') or c == ord('g'):
-#             self.player.get_all()
+#             self.get_controller().get_all()
 #             return False
         return False
 

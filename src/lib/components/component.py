@@ -17,6 +17,10 @@ class Component(object):
         self.parent = None
         self.prompt = False
 
+    def get_controller(self):
+        if self.parent:
+            return self.parent.get_controller()
+
     def spawn(self, child):
         """Spawn a child and return it."""
         self.children.append(child)
@@ -36,8 +40,6 @@ class Component(object):
                 self.map = self.parent.map
             if hasattr(self.parent, 'zoom'):
                 self.zoom = self.parent.zoom
-            if hasattr(self.parent, 'player'):
-                self.player = self.parent.player
 
         for child in self.children:
             child.inherit()
@@ -156,7 +158,7 @@ class Component(object):
         # TODO: Rename?
         context_class = kwargs.pop("context_class", Context)
 
-        kwargs["agent"] = kwargs.get("agent", self.player)
+        kwargs["agent"] = kwargs.get("agent", self.get_controller())
         kwargs["intent"] = kwargs.get("intent", {"attempt" : True})
         kwargs["component"] = kwargs.get("component", self)
 
