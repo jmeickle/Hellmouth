@@ -1,6 +1,11 @@
+"""Initialize and label curses colorpairs."""
+
+# TODO: Break this out of util.
+
 import curses
 
 class Color:
+    """Start curses colors when this class is imported."""
     if __name__ == '__main__':
         curses.initscr()
         curses.start_color()
@@ -23,10 +28,10 @@ class Color:
     for x in [x[0] for x in curses_colors]:
         colors[x] = (x,)
 
-    # Elemental colors.
+    # Elemental ('flickery') colors.
     colors["meat"] = ('red', 'yellow')
 
-    #fg-bg colornames : curses colorpair
+    # fg-bg colornames : curses colorpair
     pairs = {}
 
     # Must be hardcoded.
