@@ -182,10 +182,10 @@ def line(pos1, pos2, max=None):
     return line
 
 
-# A generic shape. Can be anything; only requires a center.
-class Shape():
-    def __init__(center):
-        self.center = center
+# TODO: A generic shape. Can be anything; only requires a center.
+# class Shape():
+#     def __init__(center):
+#         self.center = center
 
 # A hexagon, which is the hexgrid equivalent of a square.
 #
@@ -246,3 +246,29 @@ def random_area(origin, rank, choices=1):
         cells.remove(choice)
         points.append(choice)
     return points
+
+# TODO: fix
+def rectangle_perimeter(origin, height, width, data=False):
+
+    nw_corner = add(origin, mult(NW, height/2))
+    pos = nw_corner
+
+    for w in range(width):
+        pos = add(pos, CE)
+        yield pos
+
+    for h in range(height/2 + 1):
+        pos = add(pos, SE)
+        yield pos
+        pos = add(pos, SW)
+        yield pos
+
+    for w in range(width):
+        pos = add(pos, CW)
+        yield pos
+
+    for h in range(height/2 + 1):
+        pos = add(pos, NW)
+        yield pos
+        pos = add(pos, NE)
+        yield pos
