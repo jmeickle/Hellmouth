@@ -219,15 +219,16 @@ class UseTerrain(Command):
     def get_actions(self, ctx):
         yield Use
 
-class UseStairs(Command):
-    description = "travel to the next level"
+# TODO: Move to Movement.
+class UsePassage(Command):
+    description = "travel to a different map"
     defaults = ("<", ">")
 
     @command_context
     def get_actions(self, ctx):
         yield Use
 
-CMD.register(UseTerrain, UseStairs)
+CMD.register(UseTerrain, UsePassage)
 
 """Components."""
 

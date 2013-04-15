@@ -2,7 +2,9 @@ import random
 from src.lib.util.define import *
 from src.lib.util.dice import *
 from src.lib.util.hex import *
-from src.lib.objects.terrain import *
+from src.lib.agents.terrain.machinery import Lever
+from src.lib.agents.terrain.passage import Stairs
+from src.lib.agents.terrain.terrain import CaveWall
 
 class LayoutGenerator(object):
     """Base layout generator class. If called, builds a simple hexagonal
@@ -21,6 +23,7 @@ class LayoutGenerator(object):
         self.place_passages()
 
     # Place random stairs, then set their positions in a list.
+    # TODO: Fix variable names
     def place_passages(self):
         if not self.passages:
             return False
