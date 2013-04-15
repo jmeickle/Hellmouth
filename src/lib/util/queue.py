@@ -31,5 +31,13 @@ class Queue(object):
         Queue.queue.append(agent)
 
     @staticmethod
+    def addleft(agent):
+        Queue.queue.appendleft(agent)
+
+    @staticmethod
     def remove(agent):
         Queue.queue.remove(agent)
+
+    @staticmethod
+    def clear():
+        Queue.queue = deque()
