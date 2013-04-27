@@ -2,15 +2,14 @@
 
 ## v0.3-meat (March?):
 + Game launch menu
-~ Game launch options
 - Starting equipment
 ~ Inventory rewrite
-- Improved terrain generation
+~ Improved terrain generation
 + Terrain interaction (doors, levers, etc.)
-~ Fix combat
++ Fix combat
 ~ Reenable monster AI
 - Improve cursor examination
-- Improve interlevel travel
+~ Improve interlevel travel
 
 ## v0.4-meat:
 - Improved monster target-seeking AI
@@ -31,6 +30,7 @@
 - Dialogue screens
 
 ## v0.8-meat:
+~ Game launch options
 - Save/load game
 
 ## v0.1:
