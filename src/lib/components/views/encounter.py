@@ -6,7 +6,7 @@ from random import choice
 
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
-from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt
+from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt, ListPrompt
 
 from src.lib.agents.contexts.context import Context
 from src.lib.util.command import CommandRegistry as CMD
@@ -58,7 +58,9 @@ class MainMap(View):
         self.viewport_rank = 10
         self.zoom = self.viewport_rank
 
-        self.cursor = None
+    def get_focus(self):
+        cursor = self.get_first_child(Cursor)
+        return cursor.pos if cursor else self.get_controller().pos
 
     def keyin(self, c):
         # TODO: Allow multiple open children.
@@ -68,9 +70,9 @@ class MainMap(View):
                 return False
 
             elif c == ord('v'):
-                if self.cursor is None:
-                    self.cursor = self.spawn(Cursor(self.get_controller().pos))
-                    self.cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
+                if self.has_child(Cursor) is False:
+                    cursor = self.spawn(Cursor(self.get_controller().pos))
+                    cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
 
         """Get items."""
@@ -82,9 +84,10 @@ class MainMap(View):
                 context = self.get_context(participants=items)
                 event = chr(c)
                 self.get_controller().process_event(event, context)
-#        elif c == ord('g'):
-#            self.get_controller().command()
-#            return False
+        elif c == ord('g'):
+            """Get a specific item, via a Prompt."""
+            cursor = self.get_first_child(Cursor)
+            self.add_blocking_component(ListPrompt, window=self.screen, x=self.width, y=self.height, choices=["one", "two", "three"], callback=cursor.suicide if cursor else self.suicide)
         elif c == ord('U'):
             terrain = self.get_controller().cell().get_terrain()
             if terrain:
@@ -172,7 +175,7 @@ class MainMap(View):
         return self.map.cell(pos).draw(subpositions)
 
     def draw(self):
-        self.center = self.cursor.pos if self.cursor else self.get_controller().pos
+        self.center = self.get_focus()
 
         cells = area(self.center, self.zoom)
         for cell in cells:
