@@ -11,6 +11,12 @@ import random
 
 class Component(object):
     """An interface Component taking part in UI control flow."""
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return "<" + self.__str__() + ">"
+
     def __init__(self):
         self.alive = True
         self.children = []
