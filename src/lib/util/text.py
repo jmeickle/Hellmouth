@@ -1,5 +1,6 @@
 """Text manipulation methods."""
 
+# TODO: Rewrite this heavily...
 from src.lib.util.define import *
 
 import re
@@ -44,7 +45,7 @@ def wrap_string(text, width, indent=1):
             words = re.split('(\s+)', line)
 
             for word in words:
-                if len(word) + len(string) > width: 
+                if len(word) + len(string) > width:
                     list.append(string)
                     string = " "*indent
                 if string.isspace() is True and word.isspace() is True:
@@ -70,9 +71,25 @@ def highlight(string, fg=HIGHLIGHT, bg=BACKGROUND):
     """Highlight a string."""
     return tag(string, fg+"-"+bg)
 
-def highlight_substr(string, start=0, stop=0, fg=HIGHLIGHT, bg=BACKGROUND):
-    """Convenience function for highlighting a substring."""
+def highlight_range(string, start=0, stop=0, fg=HIGHLIGHT, bg=BACKGROUND):
+    """Convenience function for highlighting a range within a string."""
     return string[0:start] + highlight(string[start:stop], fg, bg) + string[stop:len(string)]
+
+def highlight_substr(string, substr, fg=HIGHLIGHT, bg=BACKGROUND):
+    """Convenience function for highlighting a substring within a string."""
+    match = re.search(substr, string)
+    return highlight_range(string, *match.span(), fg=fg, bg=bg) if match else string
+
+# TODO: Rewrite this...
+# def highlight_substrs(string, substr, fg=HIGHLIGHT, bg=BACKGROUND, match_limit=None):
+#     """Convenience function for highlighting substrings within a string."""
+#     matches = re.finditer("substr", string)
+#     highlights = []
+#     for match in matches:
+#         if match_limit and match_limit > 0:
+#             match_limit -= 1
+#         highlights.append(match.span())
+#     return highlight_range(string, *highlights)
 
 def highlight_first(string, fg=HIGHLIGHT, bg=BACKGROUND):
     """Convenience function to highlight the first letter of a string."""
