@@ -29,6 +29,7 @@ class BaseMap(object):
 
     def __init__(self, level, map_id):
         # Maps don't make sense without an associated Level.
+        # TODO: (not actually true, what about generating a ton of levels to compare?)
         self.level = level
 
         # Use the provided map ID (~depth).
