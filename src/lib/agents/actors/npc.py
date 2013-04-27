@@ -36,7 +36,7 @@ class NPC(Actor):
     # AI actions. Currently: move in a random direction.
     def _act(self):
         if not self.turn():
-            die("%s tried to act when not the acting actor %s." % (self.__dict__, Queue.get_acting()))
+            die("%s tried to act when not the acting actor in queue %s." % (self, Queue))
         if self.controlled:
             die("Player-controlled actor %s tried to hit AI code." % self.appearance())
 
