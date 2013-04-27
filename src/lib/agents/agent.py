@@ -28,6 +28,13 @@ class Agent(object):
     def __call__(self, method):
         return getattr(self, method)()
 
+    def __str__(self):
+        return "%s@%s" % (self.appearance(), self.pos)
+
+    # TODO: Add real coloring support.
+    def appearance(self):
+        return self.name
+
     def trigger(self, *triggers):
         """Respond to triggers."""
         if "rebuild" in triggers:

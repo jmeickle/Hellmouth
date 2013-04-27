@@ -797,10 +797,6 @@ class Actor(Agent, ManipulatingAgent):
     # INFORMATION DISPLAYS:
     #
 
-    # TODO: Add real coloring support.
-    def appearance(self):
-        return self.name
-
     # Returns a list of lines to go into a character sheet.
     # TODO: Move to a View!
     def get_view_data(self, view=None):
