@@ -9,8 +9,13 @@ from src.lib.util.key import *
 
 # TODO: Rewrite Scroller and Selector in a more OO way with more flexible input options
 
+class Input(Component):
+    """Basic input Component. Does not render itself."""
+    def __init__(self):
+        super(Input, self).__init__()
+
 # Scroll up/down.
-class Scroller(Component):
+class Scroller(Input):
     def __init__(self, max=0, min=0, initial=0):
         super(Scroller, self).__init__()
         self.min = min
@@ -115,7 +120,7 @@ class SecondarySelector(Selector):
             return True
         return False
 
-class Cursor(Component):
+class Cursor(Input):
     styles = {
         "<>"  : [("<", WW), (">", EE)],
         "{}"  : [("{", WW), ("}", EE)],
