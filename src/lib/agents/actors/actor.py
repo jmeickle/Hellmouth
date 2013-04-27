@@ -180,6 +180,8 @@ class Actor(Agent, ManipulatingAgent):
 
     # STUB: Things to do before taking a turn.
     def before_turn(self):
+        # Let Components react to the start of the turn.
+        self.call([], "before_turn")
         # Do Nothing.
         if self.controlled is False and self.can_maneuver() is False:
             self.end_turn()
