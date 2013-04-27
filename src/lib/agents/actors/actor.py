@@ -469,7 +469,7 @@ class Actor(Agent, ManipulatingAgent):
     # STUB: Return body-wide damage resistance.
     def DR(self):
         return 0
-   
+
     # INJURY / HIT LOCATIONS
 
     # Calculate how many points of wounds a location has, then return
@@ -509,7 +509,7 @@ class Actor(Agent, ManipulatingAgent):
                     attack["stun"] = True
 
                 # Knockdown:
-                if self.can_be_knocked_down() is True: 
+                if self.can_be_knocked_down() is True:
                     attack["knockdown"] = True
 
                 # Disarmament:
