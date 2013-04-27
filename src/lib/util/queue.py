@@ -2,7 +2,12 @@
 
 from collections import deque
 
+class QueueMetaclass(type):
+    def __repr__(self):
+        return "\n".join(Queue.get_view_data())
+
 class Queue(object):
+    __metaclass__ = QueueMetaclass
     queue = deque()
 
     @staticmethod
@@ -41,3 +46,8 @@ class Queue(object):
     @staticmethod
     def clear():
         Queue.queue = deque()
+
+    @staticmethod
+    def get_view_data():
+        for index in range(len(Queue.queue)):
+            yield "%s: %s" % (index, Queue.queue[index])
