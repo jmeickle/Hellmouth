@@ -158,6 +158,12 @@ class BaseMap(object):
             cell.add(obj, terrain)
         return obj
 
+    def remove_actor(self, actor):
+        """Remove an Actor from this Map."""
+        actor.cell().remove(actor)
+        # TODO: more of a callback approach
+        self.level.remove_actor(actor)
+
     # Decides whether a position is a valid one.
     # TODO: Handle moving into nonexistent but cell-prototyped positions.
     def valid(self, pos):

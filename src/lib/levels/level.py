@@ -74,6 +74,14 @@ class Level(object):
         if self.map:
             self.map.depart(map_id, entrance_id, exit_id)
 
+    """Actor management methods."""
+
+    def remove_actor(self, actor):
+        """Remove an Actor from this Level."""
+        if Queue.get_acting() == actor:
+            Queue.next()
+        Queue.remove(actor)
+
     """Map management methods."""
 
     def enter_map(self, map_id, entrance_id="prev", exit_id="next"):
