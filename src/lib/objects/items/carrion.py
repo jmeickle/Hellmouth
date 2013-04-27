@@ -17,8 +17,7 @@ class Corpse(Item):
         #self.effects = None
         #self.slots = None
 
-        self.actor = copy(actor)
-        self.actor.body = copy(actor.body)
+        self.actor = actor
 
     def appearance(self):
         return self.actor.appearance() + " corpse"
