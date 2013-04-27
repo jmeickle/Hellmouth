@@ -27,6 +27,38 @@ class Component(object):
         if self.parent:
             return self.parent.get_controller()
 
+    """Child getter methods."""
+
+    def get_ancestors(self):
+        """Return a list of ancestors."""
+        ancestors = self.parent.get_ancestors() if self.parent else []
+        ancestors.append(self)
+        return ancestors
+
+    def get_descendents(self):
+        """Return a nested (object, list) representation of all descendents."""
+        descendents = [child.get_descendents() for child in self.children] if self.children else []
+        return self, descendents
+
+    def get_children(self, cls=None):
+        """Yield all children matching a provided class."""
+        for child in self.children:
+            if cls and isinstance(child, cls):
+                yield child
+
+    def get_first_child(self, cls=None):
+        """Return the first child matching a provided class."""
+        for child in self.get_children(cls):
+            return child
+
+    def has_child(self, cls=None):
+        """Return whether this Component has a child (optionally, matching a provided class)."""
+        if self.get_first_child(cls) is not None:
+            return True
+        return False
+
+    """Child setter methods."""
+
     def spawn(self, child):
         """Spawn a child and return it."""
         self.children.append(child)
