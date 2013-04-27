@@ -26,6 +26,8 @@ class Level(object):
         self.name = kwargs.pop("name", "Smith Farm")
         self.map = self.generate_map(kwargs.pop("map_id", 1))
 
+        self.queue = Queue
+
     def get_controller(self):
         """Return the Actor serving as primary controller in this Level."""
         return self.game.get_controller()
