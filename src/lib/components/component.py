@@ -25,6 +25,7 @@ class Component(object):
         self.blocking = False
 
     def get_controller(self):
+        """Return the controller of this Component."""
         if self.parent:
             return self.parent.get_controller()
 

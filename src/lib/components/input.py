@@ -177,7 +177,7 @@ class Cursor(Input):
         pos = self.pos
         cell = self.map.cell(pos)
         color = "black-black"
-        
+
         if cell is not None:
             if cell.actors:
                 actor = cell.actors[self.selector.index]

@@ -19,7 +19,6 @@ from src.lib.util.mixin import DebugMixin
 
 from src.lib.data.skills import skill_list
 
-
 class EncounterWindow(View):
     """Main tactical window class."""
     def __init__(self, window, map_obj):
@@ -74,9 +73,8 @@ class MainMap(View):
                     cursor = self.spawn(Cursor(self.get_controller().pos))
                     cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
                     return False
-
-        """Get items."""
         if c == ord('G'):
+            """Get all nearby items."""
             items = []
             for appearance, itemlist in self.get_controller().cell().get_items():
                 items.extend(itemlist)
@@ -667,6 +665,7 @@ class CharacterSheet(View):
 
     def draw(self):
         self.border("#")
+        # TODO: Cursor pos
         pos = self.cursor.pos
         actors = self.map.actors(pos)
 
