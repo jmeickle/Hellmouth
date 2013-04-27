@@ -286,7 +286,7 @@ class Agent(object):
             =   ["believe_touch", "can_touch", "do_touch",
                 "believe_get", "can_get", "do_get",
                 "believe_drop", "can_drop", "do_drop"]
-        
+
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
         debug("ACT: %s" % action.__class__.get_name())
@@ -328,7 +328,7 @@ class Agent(object):
         for argument in phase.required_arguments:
             send = ctx.get_argument(argument)
             send_as = phase.aliases.get(argument, argument)
-            arguments[send_as] = send 
+            arguments[send_as] = send
 
         is_method = getattr(ctx.agent, "is" + "_" + phase.name, None)
         if is_method:
