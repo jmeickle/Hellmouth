@@ -1,4 +1,5 @@
 from src.lib.components.game import Game
 
 class main(Game):
-    pass
+    def __str__(self):
+        return "Husk"
