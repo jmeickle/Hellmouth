@@ -11,7 +11,7 @@ from src.lib.util import key
 
 class View(Component):
     def __init__(self, window, x, y, start_x=0, start_y=0):
-        Component.__init__(self)
+        super(View, self).__init__()
         self.screen = window
         self.window = window.subwin(y, x, start_y, start_x)
         self.x = x
