@@ -8,3 +8,7 @@ This permits more convenient references between these classes.
 class Mixin(object):
     """Minimal base class for Python multiple inheritance using Mixins."""
     pass
+
+class DebugMixin(Mixin):
+    """Debug Mixin, checked against when enabling debug-only functionality."""
+    pass
