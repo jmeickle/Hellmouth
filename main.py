@@ -61,26 +61,38 @@ if arguments["displaymode"] == displayflags["curses"]:
 
         # Initialize the root Component.
         from src.lib.components.component import RootComponent
-        root = RootComponent(stdscr)
 
-        if arguments.get("gamemode"):
-            # Launch using the chosen game mode.
-            # TODO: Remove extraneous None
-            root.launch((arguments.get("gamemode"), None))
-        else:
-            # Get a list of valid game modes.
-            choices = []
-            for module_name in sorted(system.folders("src/games")):
-                module_info = __import__('src.games.%s.info' % module_name, globals(), locals(), ['name', 'version', 'description'])
-                choices.append((module_name, module_info))
+        # Define the launching process.
+        def launch(root):
+            if arguments.get("gamemode"):
+                # Launch using the chosen game mode.
+                # TODO: Remove extraneous None
+                root.launch((arguments.get("gamemode"), None))
+            else:
+                # Get a list of valid game modes.
+                choices = []
+                for module_name in sorted(system.folders("src/games")):
+                    module_info = __import__('src.games.%s.info' % module_name, globals(), locals(), ['name', 'version', 'description'])
+                    choices.append((module_name, module_info))
 
-            # Spawn a game choice menu that launches after a selection is made.
-            from src.lib.components.views.screens.screen import MenuScreen
-            root.spawn(MenuScreen(root.window, **{"title" : "Start Game!", "choices" : choices, "callback" : root.launch}))
+                # Spawn a game choice menu that launches after a selection is made.
+                from src.lib.components.views.screens.screen import MenuScreen
+                root.spawn(MenuScreen(root.window, **{"title" : "Start Game!", "choices" : choices, "callback" : root.launch}))
 
-        # Start the root Component's loop.
-        while root.alive is True:
-            root.loop()
+            # Start the root Component's loop.
+            while root.alive is True:
+                root.loop()
+
+            # Return information about desired post-loop behavior.
+            return root.after_loop()
+
+        # Create a RootComponent and then launch it. Repeat this process until
+        # a RootComponent indicates that it is time to stop.
+        while True:
+            root = RootComponent(stdscr)
+            status = launch(root)
+            if status.get("relaunch") is False:
+                break
 
     # Initialize the curses wrapper, which calls the main function after setting up curses.
     curses.wrapper(main)

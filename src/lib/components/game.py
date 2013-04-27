@@ -99,7 +99,7 @@ class Game(Component):
 
         # Check whether we should continue to play.
         self.gameplay = self.can_continue_gameplay()
-            
+
         # If we're playing and in a level, hand over control to it.
         if self.gameplay and self.level:
             self.level.loop()
@@ -172,6 +172,7 @@ class Game(Component):
             self.spawn(HelpScreen(self.window))
         # Always allow quitting.
         elif c == ctrl('q'):
+            self.parent.relaunch = False
             self.before_finish()
         return True
 

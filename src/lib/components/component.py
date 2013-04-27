@@ -169,6 +169,7 @@ class RootComponent(Component):
     def __init__(self, window):
         Component.__init__(self)
         self.window = window
+        self.relaunch = True
 
     def launch(self, selected_module):
         """Spawn the selected module's main.Game as a child Component and then
@@ -177,7 +178,7 @@ class RootComponent(Component):
         # TODO: Permit a classname other than 'main'
         module_name, module_info = selected_module
         gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['main'])
- 
+
         # Spawn the game as a child Component, and then launch it.
         self.game = self.spawn(gamemodule.main())
         self.game.launch()
@@ -187,3 +188,7 @@ class RootComponent(Component):
         super(RootComponent, self).loop()
         if self.alive:
             self.game.loop()
+
+    def after_loop(self):
+        """Return information for after the RootComponent's loop finishes."""
+        return {"relaunch" : self.relaunch}
