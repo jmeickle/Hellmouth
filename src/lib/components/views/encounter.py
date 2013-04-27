@@ -100,6 +100,9 @@ class MainMap(View):
         elif c == ord('N'):
             """Notepad."""
             self.spawn(TextPrompt(self.screen, self.width, self.height))
+        elif c == ord('D'):
+            """Debugger."""
+            self.spawn(Debugger(self.screen, self.width, self.height))
         elif c == ord('7'):
             self.map.get_controller().do(NW)
         elif c == ord('4'):
@@ -703,3 +706,31 @@ class CharacterSheet(View):
 
 # TODO: Add a health screen.
 #class Health(View):
+
+# Debugging prompt.
+class Debugger(View):
+    def __init__(self, window, x, y, start_x=0, start_y=0):
+        View.__init__(self, window, x, y/2, start_x, start_y + y/4)
+        self.choices = ["Queue", "Game"]
+
+    def ready(self):
+        self.tabber = self.spawn(Tabber(self.choices))
+
+    def draw(self):
+        self.window.clear()
+        self.border("/")
+
+        self.y_acc = -1
+        choice = self.tabber.choice()
+        choice_list = " ".join(["[%s]" % c for c in self.tabber.choices])
+        self.cline("Debug Window")
+        self.cline(text.highlight_substr(choice_list, choice))
+
+        self.cline("")
+
+        # TODO: Scrolling queue page
+        if choice == "Queue":
+            for actor in self.map.level.queue.get_view_data():
+                self.cline(actor)
+                if self.y_acc >= self.BOTTOM:
+                    break
