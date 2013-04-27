@@ -156,8 +156,9 @@ class CombatContext(object):
             if attack.get("injury") > 0:
                 attack["defender"].hurt(attack)
             # Check for dead actors.
-            if attack["defender"].check_dead():
-                attack["defender"].die()
+            # TODO: Store text generation information here.
+            if attack["defender"].is_dead():
+                attack["defender"].process_death()
 
     # TODO: Move to generator file.
     # TODO: Generate a message (using text generator)

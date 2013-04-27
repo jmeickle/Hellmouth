@@ -19,6 +19,7 @@ import src.lib.generators.points
 from src.lib.objects.items.carrion import Corpse
 
 from src.lib.util.command import CommandRegistry as CMD
+from src.lib.util.debug import *
 from src.lib.util.define import *
 from src.lib.util.dice import *
 from src.lib.util.hex import *
@@ -520,8 +521,8 @@ class Actor(Agent, ManipulatingAgent):
                     if self.can_be_knocked_out() is True:
                         attack["knockout"] = True
 
-    # Cause the effects decided in prepare_hurt().
     def hurt(self, attack):
+        """Cause the effects decided in prepare_hurt()."""
         if attack.get("knockout") is not None:
             # TODO: Improve messaging
             Log.add("%s is knocked unconscious!" % self.appearance())
@@ -544,9 +545,11 @@ class Actor(Agent, ManipulatingAgent):
             self.call("Status", "set_status", "Shock", min(4, shock + attack["shock"]))
 
         # Cause HP loss.
-        hp = self.HP()
         self.hp_spent += attack["injury"]
+        hp = self.HP() # Store HP prior to the attack
 
+        # Decide whether this blow killed you.
+        # TODO: Refactor!
         if self.HP() < -self.MaxHP():
             death_checks_made = (min(0,hp) - 1)/self.MaxHP() + 1
             death_checks = (self.HP()-1)/self.MaxHP() + 1
@@ -555,49 +558,62 @@ class Actor(Agent, ManipulatingAgent):
                 if check < TIE:
                     self.alive = False
 
-    # We just lost a limb :(
+        # TODO: Return the effects tried/succeeded, and then offload text gen.
+
     def limbloss(self, attack):
+        """Process loss of a limb."""
+        # TODO: Refactor
         limbnames = []
         descendants = attack["location"].descendants()
         for descendant in descendants:
             limbnames.append(hit_locations.get(descendant.type))
         return "Auuuuugh! Your %s has been severed!<br><br>In total, you've lost the use of your %s." % (attack["location"].appearance(), commas(limbnames, False))
 
-    # Check whether you are dead.
-    def check_dead(self):
+    def is_dead(self):
+        """Return whether this Actor is dead."""
         if self.alive is False:
             return True
-
+        # TODO: Move?
         if self.HP() <= -5*self.MaxHP():
             return True
+        return False
 
-    # Remove self from the map and the queue
-    def die(self):
-        if self.death() is True:
-            self.end_turn()
-            Queue.remove(self)
-            self.alive = False
-            self.drop_all()
-            self.cell().remove(self)
-            if self.controlled is True:
-                self.screen("meat-death")
+    def process_death(self):
+        """Process this Actor's death."""
+        # Allow the Actor to respond before its death.
+        self.react(identifier="before")
 
-    # *Mechanical* actions to perform on death. Return whether we actually died.
-    # For example, extra lives happen here - you die, but then come back.
-    def death(self):
-        # HACK: Shouldn't be a magic number
-        if dist(self.map.player.pos, self.pos) <= 10:
-            Log.add(describe("%s has been slain!" % self.name))
-        self.cell().put(self.corpse())
-        return self.check_dead()
+        # Set the Actor to dead.
+        self.alive = False
 
-    # Generate a corpse of ourselves.
-    def corpse(self):
+        # Allow the Actor to respond on its death.
+        self.react()
+
+        # Place a corpse.
+        # TODO: Make this a factory method.
+        self.cell().put(self.generate_corpse())
+
+        # Hand over cleanup to the map's level.
+        # TODO: use a method here
+        self.map.remove_actor(self)
+
+    def before_process_death(self):
+        """Allow this Actor to respond before its death."""
+        self.drop_all()
+        if self.controlled is True:
+            self.screen("meat-death")
+
+    def on_process_death(self):
+        """Allow this Actor to respond on its death."""
+        # TODO: make this based on whether we can see the dead creature
+        # TODO: no messaging here - text generation belongs elsewhere
+        Log.add(describe("%s has been slain!" % self.name))
+
+    def generate_corpse(self):
+        """Generate this Actor's Corpse."""
+        if not self.is_dead():
+            die("Tried to generate the Corpse of a living Actor.")
         return Corpse(self)
-
-    #
-    # INVENTORY:
-    #
 
     #
     # EQUIPMENT:
