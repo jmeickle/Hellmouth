@@ -61,11 +61,17 @@ class Chooser(Scroller):
     def resize(self):
         super(Chooser, self).resize(len(self.choices)-1)
 
-    def choice(self):
+    def get_choice(self):
+        """Return the currently selected choice."""
         if self.choices and self.index is not None:
             return self.choices[self.index]
 
+    def get_choices(self):
+        """Return the available choices."""
+        return self.choices
+
     def set_choices(self, choices):
+        """Set a new list of choices and resize accordingly."""
         self.choices = choices
         self.resize()
 

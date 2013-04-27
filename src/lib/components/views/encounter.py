@@ -494,22 +494,22 @@ class Inventory(View):
 
         self.tabs.set_choices([choice for choice in self.active_tabs()])
 
-        if self.tabs.choice() == "Inventory":
+        if self.tabs.get_choice() == "Inventory":
             self.selection.set_choices(self.inventory)
-        elif self.tabs.choice() == "Equipment":
+        elif self.tabs.get_choice() == "Equipment":
             self.selection.set_choices(self.wielded + self.equipment)
-        elif self.tabs.choice() == "Ground":
+        elif self.tabs.get_choice() == "Ground":
             self.selection.set_choices(self.ground)
 
         self.context = self.get_context()
 
         participant = None
 
-        if self.tabs.choice() == "Inventory" and self.inventory:
+        if self.tabs.get_choice() == "Inventory" and self.inventory:
             participant = self.inventory[self.selection.index]
-        elif self.tabs.choice() == "Equipment" and self.equipment:
+        elif self.tabs.get_choice() == "Equipment" and self.equipment:
             participant = self.equipment[self.selection.index]
-        elif self.tabs.choice() == "Ground" and self.ground:
+        elif self.tabs.get_choice() == "Ground" and self.ground:
             participant = self.ground[self.selection.index]
 
         if participant:
@@ -537,7 +537,7 @@ class Inventory(View):
                 string = agent.appearance()
 
                 # Highlight tab, if present.
-                if self.tabs.choice() == "Inventory" and self.selection.choice() == agent:
+                if self.tabs.get_choice() == "Inventory" and self.selection.get_choice() == agent:
                     string = text.highlight(string)
                 self.cline(string)
 
@@ -607,7 +607,7 @@ class Inventory(View):
         if self.commands.choices:
             self.cline("Available commands:")
             commands = []
-            chosen_class, chosen_arguments = self.commands.choice()
+            chosen_class, chosen_arguments = self.commands.get_choice()
             for command_class, command_arguments in self.commands.choices:
                 string = command_class.get_desc(short=True)
                 for event in command_class.get_events():
@@ -725,7 +725,7 @@ class Debugger(View, DebugMixin):
         self.border("/")
 
         self.y_acc = -1
-        choice = self.tabber.choice()
+        choice = self.tabber.get_choice()
         choice_list = " ".join(["[%s]" % c for c in self.tabber.choices])
         self.cline("Debug Window")
         self.cline(text.highlight_substr(choice_list, choice))
