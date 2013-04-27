@@ -95,9 +95,8 @@ class Component(object):
         """Abstract. Perform actions that the child couldn't during init."""
         return True
 
-    def suicide(self):
+    def suicide(self, *args, **kwargs):
         """Recursively kill this Component's children, and then itself."""
-
         for child in self.children:
             child.suicide()
         if self.parent is not None:
