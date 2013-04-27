@@ -6,6 +6,7 @@ from src.lib.components.views.view import View
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util.key import *
+from src.lib.util import text
 
 # TODO: Rewrite Scroller and Selector in a more OO way with more flexible input options
 
@@ -207,19 +208,46 @@ class Cursor(Input):
 
 # Generic prompt.
 class Prompt(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
+    """A Prompt is a View responsible for collecting input and sending it to a
+    callback. They are typically blocking."""
+    def __init__(self, window, x, y, start_x=0, start_y=0, **kwargs):
         View.__init__(self, window, x, y/2, start_x, start_y + y/4)
-        self.prompt = True
-
-    def ready(self):
-        self.scroller = self.spawn(Scroller())
+        self.input = None
+        self.callback = kwargs.pop("callback", self.suicide)
 
     def draw(self):
         self.window.clear()
         self.border("/")
 
-# Text entry prompt.
+    def keyin(self, c):
+        if c == curses.KEY_ENTER or c == ord("\n"):
+            self.callback(self.input)
+            self.suicide()
+        elif cmd(c, CMD_CANCEL):
+            self.suicide()
+        else: return True
+        return False
+
+class ListPrompt(Prompt):
+    """A Prompt that provides a list of options to choose from."""
+    def __init__(self, window, x, y, start_x=0, start_y=0, choices=[], initial=0, **kwargs):
+        super(ListPrompt, self).__init__(window, x, y, start_x, start_y, **kwargs)
+        self.input = self.spawn(Chooser(choices, initial))
+
+    def draw(self):
+        super(ListPrompt, self).draw()
+        for choice in self.input.get_choices():
+            if choice == self.input.get_choice():
+                self.cline(text.highlight(choice))
+            else:
+                self.cline(choice)
+        self.cline("Choices: %s" % self.input.choices)
+        self.cline("Index: %s" % self.input.index)
+        self.cline("Max: %s" % self.input.max)
+        self.cline("Min: %s" % self.input.min)
+
 class TextPrompt(Prompt):
+    """A Prompt that provides a text entry form."""
     def __init__(self, window, x, y, start_x=0, start_y=0):
         Prompt.__init__(self, window, x, y/2, start_x, start_y + y/4)
         self.input = ""
@@ -285,8 +313,3 @@ class TextPrompt(Prompt):
         self.input = left + right
 
         self.scroller.resize(len(self.input))
-
-# TODO: Prompt to choose an item from inventory.
-class ItemPrompt(Prompt):
-    def __init__(self):
-        Prompt.__init__(self)
