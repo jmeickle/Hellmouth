@@ -86,7 +86,7 @@ class CombatContext(object):
         hits = []
         while len(self.attacks) > 0:
             maneuver, attack = self.attacks.popitem()
-            
+
             # Attack roll.
             attack["attack_check"], attack["attack_margin"] = attack["attacker"].sc(attack["trait_name"])
 
@@ -105,9 +105,18 @@ class CombatContext(object):
 
         landed = []
         for maneuver, attack in hits:
+            # TODO: Make attacks and defenses into objects.
             # Example defense:
             # ('parry', <Natural object>, 15, (-1, 0))
-            attack["defense_name"], attack["defense_weapon"], attack["defense_level"], attack["retreat_position"] = attack["defender"].call("Combat", "get_defense", attack).get_result()
+
+            defense = attack["defender"].call("Combat", "get_defense", attack).get_result()
+
+            if defense is None:
+                defense = ('none', None, None, None)
+            attack["defense_name"],\
+            attack["defense_weapon"],\
+            attack["defense_level"],\
+            attack["retreat_position"] = defense
 
             # Let the defender retreat and store whether it was a success
             if attack.get("retreat_position"):
@@ -119,13 +128,16 @@ class CombatContext(object):
 
             # Check whether the defense succeeded
             # TODO: componentize...
-            attack["defense_check"], attack["defense_margin"] = sc(attack["defense_level"])
-            if attack["defense_check"] > TIE:
-                attack["outcome"] = "defended"
-                self.results[maneuver] = attack
-            else:
-                attack["outcome"] = "landed"
-                landed.append((maneuver, attack))
+            if attack["defense_name"] != 'none':
+                attack["defense_check"], attack["defense_margin"] = sc(attack["defense_level"])
+                if attack["defense_check"] > TIE:
+                    attack["outcome"] = "defended"
+                    self.results[maneuver] = attack
+                    continue
+
+            # Fallthrough: they didn't provide a defense, or didn't defend.
+            attack["outcome"] = "landed"
+            landed.append((maneuver, attack))
 
         for maneuver, attack in landed:
             # Didn't defend? Generate damage for the attacks.

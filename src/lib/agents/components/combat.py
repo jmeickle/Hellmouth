@@ -173,7 +173,8 @@ class Combat(Component):
         """Return the best defense to an attack."""
         defenses = sorted([defense for defense in self.get_defenses(attack)], key=itemgetter(2), reverse=True)
         # TODO: Apply logic here to pick best defense
-        return defenses[0]
+        if defenses:
+            return defenses[0]
 
     # TODO: Defense object
     def get_defenses(self, attack):
