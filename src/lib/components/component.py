@@ -22,7 +22,7 @@ class Component(object):
         self.alive = True
         self.children = []
         self.parent = None
-        self.prompt = False
+        self.blocking = False
 
     def get_controller(self):
         if self.parent:
@@ -67,6 +67,14 @@ class Component(object):
         child.inherit()
         child.ready()
         return child
+
+    def add_blocking_component(self, component_class, **component_arguments):
+        """Set a Component as blocking."""
+        if self.parent:
+            self.parent.add_blocking_component(component_class, **component_arguments)
+        else:
+            blocker = self.spawn(component_class(**component_arguments))
+            blocker.blocking = True
 
     def inherit(self):
         """Pass on values that need to be shared across components."""
@@ -147,7 +155,7 @@ class Component(object):
         """Recurse through children trying their keyin functions until you've
         done your own."""
         for child in reversed(self.children):
-            if child._keyin(c) is False:
+            if child._keyin(c) is False or child.blocking is True:
                 return False
         # TODO: Remove?
 #        if self.parent is not None and self.prompt is False:
