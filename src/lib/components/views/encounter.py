@@ -141,6 +141,7 @@ class MainMap(View):
         draw_x = off_y + 2*(off_x+v_x)
         draw_y = off_y + v_y
 
+        # TODO: Log this somewhere useful but don't assert on it.
         assert self.undrawable((draw_x, draw_y)) is False, "hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
         try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
         except curses.error: pass
@@ -160,6 +161,7 @@ class MainMap(View):
         draw_x = off_y + 2*(off_x+v_x) + d_x
         draw_y = off_y + v_y + d_y
 
+        # TODO: Log this somewhere useful but don't assert on it.
         assert self.undrawable((draw_x, draw_y)) is False, "offset hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
         try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
         except curses.error: pass
@@ -431,7 +433,7 @@ class LogViewer(View):
             self.y_acc = self.shrink
             # TODO: Fix this, it's buggy!
             proportion = float(self.scroller.index) / (1+self.scroller.max)
-            position = int(proportion * (self.height - self.y_acc - 1))        
+            position = int(proportion * (self.height - self.y_acc - 1))
 
             self.line("^")
             for x in range(self.height - self.y_acc - 1):
