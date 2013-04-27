@@ -15,6 +15,7 @@ from src.lib.util.debug import debug
 from src.lib.util.hex import *
 from src.lib.util import text
 from src.lib.util.log import Log
+from src.lib.util.mixin import DebugMixin
 
 from src.lib.data.skills import skill_list
 
@@ -710,10 +711,11 @@ class CharacterSheet(View):
 #class Health(View):
 
 # Debugging prompt.
-class Debugger(View):
+class Debugger(View, DebugMixin):
+    # 45, 24
     def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y/2, start_x, start_y + y/4)
-        self.choices = ["Queue", "Game"]
+        View.__init__(self, window, x, y, start_x, start_y)
+        self.choices = ["Queue", "Views"]
 
     def ready(self):
         self.tabber = self.spawn(Tabber(self.choices))
@@ -736,3 +738,25 @@ class Debugger(View):
                 self.cline(actor)
                 if self.y_acc >= self.BOTTOM:
                     break
+        elif choice == "Views":
+            root = self.get_ancestors()[0]
+            view_tree = root.get_view_data(self)
+            def print_node(node, indents, indent_size):
+                parent, children = node
+                node_text = "*%s" % parent
+                if self == parent:
+                    node_text = text.highlight(node_text)
+                self.cline("%s" % (" " * indents * indent_size) + node_text)
+
+                for child in children:
+                    print_node(child, indents+1, indent_size)
+                    if self.y_acc >= self.BOTTOM:
+                        break
+
+            print_node(view_tree, indents=0, indent_size=2)
+
+    def keyin(self, c):
+        if c == ord(' '):
+            self.suicide()
+            return False
+        return True
