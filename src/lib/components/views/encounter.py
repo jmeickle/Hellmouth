@@ -283,7 +283,8 @@ class Examine(View):
                     context = self.get_context(domains=["Command"], participants=[actor])
                     event = chr(c)
                     return self.get_controller().process_event(event, context)
-        return True
+        else: return True
+        return False
 
     def draw(self):
         pos = self.parent.pos
@@ -748,10 +749,10 @@ class CharacterSheet(View):
     def keyin(self, c):
         if c == ord(' '):
             self.suicide()
-        else:
-            return True
+        else: return True
         return False
 
+    # TODO: Fix this.
     def draw(self):
         sibling = self.get_first_parental_sibling(MainPane)
         cursor = sibling.get_first_descendent(Cursor)
