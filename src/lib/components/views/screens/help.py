@@ -1,11 +1,11 @@
-from src.lib.data import help
-from src.lib.data import screens
+from src.lib.data import help, screens
+from src.lib.components.component import override_defaults
 from src.lib.components.views.screens.screen import Screen
 
 class HelpScreen(Screen):
-    def __init__(self, window):
-        Screen.__init__(self, window)
-        self.prompt = True
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(HelpScreen, self).__init__(**kwargs)
 
     # TODO: Header drawing should be nicer.
     def draw(self):
@@ -17,9 +17,9 @@ class HelpScreen(Screen):
         self.cline(help.entry["commands"])
         self.y_acc = self.BOTTOM
         self.cline(screens.footer)#_back)
-        return False
 
     def keyin(self, c):
         if c == ord('\n'):
             self.suicide()
-        return False
+            return False
+        return True

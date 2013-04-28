@@ -4,28 +4,36 @@ import curses
 from src.lib.util.define import *
 from src.lib.util import key
 from src.lib.util.text import *
+
+from src.lib.components.component import override_defaults
 from src.lib.components.input import *
 from src.lib.components.views.view import View
 
 # Border, heading, body text.
 class Screen(View):
-    def __init__(self, window, **args):
-        View.__init__(self, window, TERM_X, TERM_Y)
+    default_arguments = {
+        "x" : TERM_X,
+        "y" : TERM_Y
+    }
 
-        self.title = args.get("title", "")       
-        self.header_left = args.get("header_left", "")
-        self.header_right = args.get("header_right", "")
-        self.body_text = args.get("body_text", "")
-        self.footer_text = args.get("footer_text", "")
-        self.callback = args.get("callback", self.suicide)
-        self.arguments = args.get("arguments", None)
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(Screen, self).__init__(**kwargs)
+
+        self.title = kwargs.get("title", "")
+        self.header_left = kwargs.get("header_left", "")
+        self.header_right = kwargs.get("header_right", "")
+        self.body_text = kwargs.get("body_text", "")
+        self.footer_text = kwargs.get("footer_text", "")
+        self.callback = kwargs.get("callback", self.suicide)
+        self.arguments = kwargs.get("arguments", None)
 
     def before_draw(self):
         self.window.clear()
 
     # Reasonable default color.
     def color(self):
-            return "white-black"
+        return "white-black"
 
     # TODO: Function to make drawing headings a bit more generalizable
     def draw(self):
@@ -33,7 +41,6 @@ class Screen(View):
         self.header()
         self.body()
         self.footer()
-        return False
 
     def header(self):
         left = len(striptags(self.header_left))
@@ -56,7 +63,8 @@ class Screen(View):
         if c == curses.KEY_ENTER or c == ord('\n'):
             self.do_callback()
             self.suicide()
-        return False # Don't permit anything but continuing.
+        else: return True
+        return False
 
     def do_callback(self):
         if self.callback is not None:
@@ -67,9 +75,9 @@ class Screen(View):
 
 # A basic menu screen. You have some options and must choose one of them.
 class MenuScreen(Screen):
-    def __init__(self, window, **args):
-        Screen.__init__(self, window, **args)
-        self.choices = args.get("choices", [])
+    def __init__(self, **kwargs):
+        super(MenuScreen, self).__init__(**kwargs)
+        self.choices = kwargs.get("choices", [])
         self.selector = Scroller(len(self.choices) - 1)
         self.spawn(self.selector)
 
@@ -92,24 +100,21 @@ class MenuScreen(Screen):
                 self.cline(module_info.name, "green-black")
             else:
                 self.cline(module_info.name)
-        return False
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
             self.suicide()
             self.callback(self.choices[self.selector.index])
-        # Don't permit anything but continuing.
+        else: return True
         return False
 
 # A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
-    def __init__(self, window, choices=None, callback=None):
-        Screen.__init__(self, window)
+    def __init__(self, **kwargs):
+        super(DialogueScreen, self).__init__(**kwargs)
         self.speaker = None
-        self.choices = choices
-        self.callback = callback
-        if self.callback is None:
-            self.callback = self.suicide
+        self.choices = kwargs.pop("choices", [])
+        self.callback = kwargs.pop("callback", self.suicide)
         self.selector = Selector(self, choices)
 
     # The color to use for the speaker.
@@ -127,10 +132,6 @@ class DialogueScreen(Screen):
         self.x_acc -= 2
         self.cline("-"*(self.x))
         self.x_acc += 2
-#        self.y_acc += 1
-#        self.rds((0, self.y_acc), "-"*(self.x), None, None, False)
-#        self.cline("-"*(self.width))
-        return False
 
     # Since this is a 'forced' dialogue screen, you must press enter.
     def keyin(self, c):
@@ -142,6 +143,6 @@ class DialogueScreen(Screen):
                 self.selector.jump(6)
             elif dir is not None:
                 self.selector.jump(rotation[dir])
-
-        return False # Don't permit anything but continuing.
-
+            else: return True
+            return False
+        return False
