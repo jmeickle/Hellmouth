@@ -53,14 +53,14 @@ class Game(Component):
         self.level = self.generate_level(Farm)
 
         # Spawn a help screen and a start screen.
-        self.screen("start", {"callback" : self.start, "footer_text": screen_data.footer})
-        self.spawn(HelpScreen(self.window))
+        self.add_screen(screen_id="start", callback=self.start, footer_text=screen_data.footer)
+        self.add_screen(HelpScreen)
 
     def start(self):
         """Turn over control to the first level."""
 
         # Spawn the main game window.
-        self.view = self.spawn(EncounterWindow(self.window, self.level.map))
+        self.view = self.spawn(EncounterWindow(self.level))
 
         # Travel to the first level.
         self.enter_level(self.level, map_id=1, entrance_id="prev", exit_id=None)
@@ -108,11 +108,11 @@ class Game(Component):
 
     def before_finish(self):
         self.gameplay = False
-        self.screen("end", {"callback" : self.finish})
+        self.add_screen(screen_id="end", callback=self.finish)
 
     def finish(self):
         """The game is over. Do anything required before finishing."""
-        self.screen("credits", {"callback" : self.suicide})
+        self.add_screen(screen_id="credits", callback=self.suicide)
 
     """Level management methods."""
 
@@ -163,19 +163,22 @@ class Game(Component):
         """Handle keyin."""
         # Always allow help.
         if c == ord('?'):
-            self.spawn(HelpScreen(self.window))
+            self.add_screen(HelpScreen)
         # Always allow quitting.
         elif c == ctrl('q'):
             self.parent.relaunch = False
             self.before_finish()
-        return True
+        else: return True
+        return False
 
-    def screen(self, screenname="blank", arguments=None, screenclass=None):
-        """Spawn a Screen based on a screen name, attributes, and class."""
-        if screenclass == None:
-            screenclass = Screen
+    def add_screen(self, screen_class=Screen, **kwargs):
+        """Spawn a Screen of the specified class, using defaults based on the
+        screen data file for any unset arguments."""
+        screen_defaults = self.get_screen_data(kwargs.get("screen_id", "blank"))
+        screen_defaults.update(kwargs)
+        self.add_blocking_component(screen_class, **screen_defaults)
 
-        screendata = screen_data.text.get(screenname, {})
-        if arguments is not None:
-            screendata.update(arguments)
-        self.spawn(screenclass(self.window, **screendata))
+    def get_screen_data(self, screen_id):
+        """Return a possibly nested dictionary of data about a Screen."""
+        # TODO: Improve how this is gathered.
+        return screen_data.text.get(screen_id, {})
