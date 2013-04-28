@@ -257,10 +257,8 @@ class Examine(View):
     }
 
     @override_defaults
-
-
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    def __init__(self, **kwargs):
+        super(Examine, self).__init__(**kwargs)
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
