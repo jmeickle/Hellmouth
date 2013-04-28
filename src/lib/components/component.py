@@ -31,22 +31,45 @@ class Component(object):
 
     """Child getter methods."""
 
+    def get_parental_siblings(self, cls):
+        if self.parent:
+            for child in self.parent.get_children(cls):
+                if child != self:
+                    yield child
+
+            for child in self.parent.get_parental_siblings(cls):
+                yield child
+
+    def get_first_parental_sibling(self, cls):
+        for sibling in self.get_parental_siblings(cls):
+            return sibling
+
     def get_ancestors(self):
         """Return a list of ancestors."""
-        ancestors = self.parent.get_ancestors() if self.parent else []
-        ancestors.append(self)
-        return ancestors
+        if self.parent:
+            yield self.parent
+            for ancestor in self.parent.get_ancestors():
+                yield ancestor
 
     def get_descendents(self):
         """Return a nested (object, list) representation of all descendents."""
         descendents = [child.get_descendents() for child in self.children] if self.children else []
         return self, descendents
 
+    def get_first_descendent(self, cls):
+        for child in self.get_children(cls):
+            return child
+        for child in self.get_children():
+            match = child.get_first_descendent(cls)
+            if match is not None:
+                return match
+
     def get_children(self, cls=None):
         """Yield all children matching a provided class."""
         for child in self.children:
-            if cls and isinstance(child, cls):
-                yield child
+            if cls and not isinstance(child, cls):
+                continue
+            yield child
 
     def get_first_child(self, cls=None):
         """Return the first child matching a provided class."""

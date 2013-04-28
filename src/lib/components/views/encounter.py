@@ -838,7 +838,7 @@ class Debugger(View, DebugMixin):
                 if self.y_acc >= self.BOTTOM:
                     break
         elif choice == "Views":
-            root = self.get_ancestors()[0]
+            root = [ancestor for ancestor in self.get_ancestors()].pop()
             view_tree = root.get_view_data(self)
             def print_node(node, indents, indent_size):
                 parent, children = node
