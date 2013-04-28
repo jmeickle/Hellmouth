@@ -21,9 +21,6 @@ class Game(Component):
     def __init__(self, **kwargs):
         super(Game, self).__init__()
 
-        # Whether to keep playing.
-        self.alive = True
-
         # Whether we're interacting with maps and levels.
         self.gameplay = False
 
