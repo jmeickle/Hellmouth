@@ -12,13 +12,13 @@ from src.lib.util import text
 
 class Input(Component):
     """Basic input Component. Does not render itself."""
-    def __init__(self):
-        super(Input, self).__init__()
+    def __init__(self, **kwargs):
+        super(Input, self).__init__(**kwargs)
 
 # Scroll up/down.
 class Scroller(Input):
-    def __init__(self, max=0, min=0, initial=0):
-        super(Scroller, self).__init__()
+    def __init__(self, max=0, min=0, initial=0, **kwargs):
+        super(Scroller, self).__init__(**kwargs)
         self.min = min
         self.max = max
         self.index = initial
@@ -55,9 +55,9 @@ class SideScroller(Scroller):
 
 # Scroller that initializes with a set of choices.
 class Chooser(Scroller):
-    def __init__(self, choices=[], initial=0):
+    def __init__(self, choices=[], initial=0, **kwargs):
         self.choices = choices
-        super(Chooser, self).__init__(max=len(self.choices)-1, min=0, initial=initial)
+        super(Chooser, self).__init__(max=len(self.choices)-1, min=0, initial=initial, **kwargs)
 
     def resize(self):
         super(Chooser, self).resize(len(self.choices)-1)
@@ -152,8 +152,8 @@ class Cursor(Input):
 #                for glyph, offset in Cursor.styles[self.style]:
 #                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
 
-    def __init__(self, pos):
-        Component.__init__(self)
+    def __init__(self, pos, **kwargs):
+        super(Cursor, self).__init__(**kwargs)
         self.pos = pos
         self.styles = ["[]", "1hex", "<>", "{}", "()"]
 
@@ -210,8 +210,10 @@ class Cursor(Input):
 class Prompt(View):
     """A Prompt is a View responsible for collecting input and sending it to a
     callback. They are typically blocking."""
-    def __init__(self, window, x, y, start_x=0, start_y=0, **kwargs):
-        View.__init__(self, window, x, y/2, start_x, start_y + y/4)
+    def __init__(self, **kwargs):
+        super(Prompt, self).__init__(**kwargs)
+        # TODO: fix prompt size.
+#        View.__init__(self, window, x, y/2, start_x, start_y + y/4)
         self.input = None
         self.callback = kwargs.pop("callback", self.suicide)
 
@@ -230,8 +232,8 @@ class Prompt(View):
 
 class ListPrompt(Prompt):
     """A Prompt that provides a list of options to choose from."""
-    def __init__(self, window, x, y, start_x=0, start_y=0, choices=[], initial=0, **kwargs):
-        super(ListPrompt, self).__init__(window, x, y, start_x, start_y, **kwargs)
+    def __init__(self, choices=[], initial=0, **kwargs):
+        super(ListPrompt, self).__init__(**kwargs)
         self.input = self.spawn(Chooser(choices, initial))
 
     def draw(self):
@@ -248,8 +250,10 @@ class ListPrompt(Prompt):
 
 class TextPrompt(Prompt):
     """A Prompt that provides a text entry form."""
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        Prompt.__init__(self, window, x, y/2, start_x, start_y + y/4)
+    def __init__(self, **kwargs):
+        super(TextPrompt, self).__init__(**kwargs)
+        # TODO: fix prompt size
+        # x, y/2, start_x, start_y + y/4
         self.input = ""
         self.max = 0
 
@@ -313,3 +317,5 @@ class TextPrompt(Prompt):
         self.input = left + right
 
         self.scroller.resize(len(self.input))
+
+# TODO: Tree navigator.
