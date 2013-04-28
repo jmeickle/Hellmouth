@@ -123,6 +123,7 @@ class Component(object):
         if self.draw() is not False:
             for child in self.children:
                 if child._draw() is False:
+                    die("Child %s consumed the draw event passed by parent %s." % (child, self))
                     return False
             return True
         else:
