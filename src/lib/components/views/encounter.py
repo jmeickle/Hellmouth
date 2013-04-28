@@ -833,7 +833,7 @@ class Debugger(View, DebugMixin):
 
         # TODO: Scrolling queue page
         if choice == "Queue":
-            for actor in self.map.level.queue.get_view_data():
+            for actor in self.parent.game.level.queue.get_view_data():
                 self.cline(actor)
                 if self.y_acc >= self.BOTTOM:
                     break
