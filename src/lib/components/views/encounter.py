@@ -262,9 +262,11 @@ class Examine(View):
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
-            if not self.children:
-                # TODO: Character sheet takes place of stats screen
-                child = self.spawn(CharacterSheet())
+            for parental_sibling in self.get_parental_siblings(SidePane):
+                if not parental_sibling.has_child(CharacterSheet):
+                    parental_sibling.spawn(CharacterSheet())
+                    return False
+                return True
         elif c == ord('a'):
             actors = self.level.get_map().actors(self.parent.pos)
             if actors:
@@ -751,17 +753,23 @@ class CharacterSheet(View):
         return False
 
     def draw(self):
+        sibling = self.get_first_parental_sibling(MainPane)
+        cursor = sibling.get_first_descendent(Cursor)
+        if not cursor:
+            self.suicide()
+            return True
+        self.window.clear()
         self.border("#")
-        # TODO: Cursor pos
-        pos = self.cursor.pos
-        actors = self.map.actors(pos)
+
+        pos = cursor.pos
+        actors = self.level.get_map().actors(pos)
 
         # Abort early if no actor.
         if not actors:
             self.cline("There's nothing interesting here.")
-            return False
+            return True
 
-        self.actor = actors[self.cursor.selector.index]
+        self.actor = actors[cursor.selector.index]
 
         if len(actors) > 1:
             scroller = "<green-black>"
@@ -791,7 +799,7 @@ class CharacterSheet(View):
             index = self.scroller.index + x + offset
             line = self.text[index]
             self.cline(line)
-        return False # Block further drawing if we drew.
+#        return False # Block further drawing if we drew.
 
 # TODO: Add a minimap.
 #class MiniMap(View):
