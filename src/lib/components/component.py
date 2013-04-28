@@ -196,10 +196,6 @@ class Component(object):
         e = key.event(c)
         self._event(e)
 
-        # Die if no children left.
-        if not self.children:
-            self.alive = False
-
     def get_context(self, **kwargs):
         """Build a Context for this Component."""
         # TODO: Rename?
@@ -233,6 +229,11 @@ class RootComponent(Component):
     def loop(self):
         """Perform a Component loop. If still alive, perform a Game loop."""
         super(RootComponent, self).loop()
+
+        # The RootComponent dies if it has no children.
+        if not self.children:
+            self.alive = False
+
         if self.alive:
             self.game.loop()
 
