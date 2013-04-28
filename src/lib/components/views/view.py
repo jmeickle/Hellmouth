@@ -22,6 +22,9 @@ class View(Component):
         # Set up drawing variables (redone each draw)
         self._reset()
 
+    def get_window(self, window):
+        return window.subwin(self.y, self.x, self.start_y, self.start_x)
+
     # Resets view-drawing-related variables. Run each draw.
     def _reset(self, margin=(0,0), border=(0,0), padding=(0,0)):
         # Box model.

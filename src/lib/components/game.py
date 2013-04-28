@@ -35,9 +35,6 @@ class Game(Component):
     def launch(self, resume=False):
         """Prepare the game for play."""
 
-        # Store the provided curses window.
-        self.window = self.parent.window # TODO: Unnecessary?
-
         # Set up the save if necessary.
         if resume is False:
             self.new_game()

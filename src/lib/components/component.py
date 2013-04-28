@@ -61,16 +61,23 @@ class Component(object):
 
     """Child setter methods."""
 
-    def spawn(self, child):
+    def spawn(self, child, index=False):
         """Spawn a child and return it."""
-        self.children.append(child)
+        # TODO: Deprecate this.
+        if index is False:
+            self.children.append(child)
+        else:
+            self.children.insert(index, child)
         child.parent = self
-        child.inherit()
         child.ready()
+        child.inherit()
         return child
 
     def add_blocking_component(self, component_class, **component_arguments):
         """Set a Component as blocking."""
+        # TODO: Probably this should only go as high as Game, and not
+        # RootComponent... it's plausible that you could have a blocking component
+        # start a game-within-a-game, which would never be accessible, currently.
         if self.parent:
             self.parent.add_blocking_component(component_class, **component_arguments)
         else:
@@ -81,11 +88,16 @@ class Component(object):
         """Pass on values that need to be shared across components."""
         # TODO: Dependency injection?
         # TODO: Remove entirely?
-        if self.parent is not None:
+
+        if self.parent:
+            if hasattr(self.parent, 'window'):
+                self.window = self.get_window(self.parent.window)
             if hasattr(self.parent, 'cursor'):
                 self.cursor = self.parent.cursor
             if hasattr(self.parent, 'map'):
                 self.map = self.parent.map
+            if hasattr(self.parent, 'level'):
+                self.level = self.parent.level
             if hasattr(self.parent, 'zoom'):
                 self.zoom = self.parent.zoom
 
@@ -206,6 +218,11 @@ class Component(object):
         kwargs["component"] = kwargs.get("component", self)
 
         return context_class(**kwargs)
+
+    def get_window(self, window):
+        """Components pass along their parent's window. Views override this
+        method and create subwindows."""
+        return window
 
 class RootComponent(Component):
     """The first component called, containing window information."""
