@@ -19,7 +19,7 @@ from src.games.husk.levels.outdoors import Farm
 
 class Game(Component):
     def __init__(self, **kwargs):
-        super(Game, self).__init__()
+        super(Game, self).__init__(**kwargs)
 
         # Whether we're interacting with maps and levels.
         self.gameplay = False
