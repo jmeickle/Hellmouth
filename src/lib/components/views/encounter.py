@@ -138,19 +138,19 @@ class MainMap(View):
             """Debugger."""
             self.add_blocking_component(Debugger, x=self.width, y=self.height)
         elif c == ord('7'):
-            self.map.get_controller().do(NW)
+            self.level.get_controller().do(NW)
         elif c == ord('4'):
-            self.map.get_controller().do(CW)
+            self.level.get_controller().do(CW)
         elif c == ord('1'):
-            self.map.get_controller().do(SW)
+            self.level.get_controller().do(SW)
         elif c == ord('9'):
-            self.map.get_controller().do(NE)
+            self.level.get_controller().do(NE)
         elif c == ord('6'):
-            self.map.get_controller().do(CE)
+            self.level.get_controller().do(CE)
         elif c == ord('3'):
-            self.map.get_controller().do(SE)
+            self.level.get_controller().do(SE)
         elif c == ord('5'):
-            self.map.get_controller().end_turn()
+            self.level.get_controller().end_turn()
         elif c == ord('>') or c == ord('<'):
             """Stairs."""
             terrain = self.get_controller().cell().get_terrain()
@@ -201,16 +201,17 @@ class MainMap(View):
         except curses.error: pass
 
     # Accepts viewport_rank offsets to figure out what part of the map is visible.
-    def get_glyph(self, pos, subpositions=False):
-        return self.map.cell(pos).draw(subpositions)
+    def get_glyph(self, map_obj, pos, subpositions=False):
+        return map_obj.cell(pos).draw(subpositions)
 
     def draw(self):
+        map_obj = self.level.get_map()
         self.center = self.get_focus()
 
         cells = area(self.center, self.zoom)
         for cell in cells:
-            if self.map.valid(cell) is not False:
-                glyph, col, subposition = self.get_glyph(cell)
+            if map_obj.valid(cell) is not False:
+                glyph, col, subposition = self.get_glyph(map_obj, cell)
             else:
                 glyph = ','
                 col = "red-black"
@@ -267,7 +268,7 @@ class Examine(View):
                 # TODO: Character sheet takes place of stats screen
                 child = self.spawn(CharacterSheet())
         elif c == ord('a'):
-            actors = self.map.actors(self.parent.pos)
+            actors = self.level.get_map().actors(self.parent.pos)
             if actors:
                 actor = actors[self.parent.selector.index]
                 if actor:
@@ -275,7 +276,7 @@ class Examine(View):
                     event = chr(c)
                     return self.get_controller().process_event(event, context)
         elif c == ord('t') or c == ord('C'):
-            actors = self.map.actors(self.parent.pos)
+            actors = self.level.get_map().actors(self.parent.pos)
             if actors:
                 actor = actors[self.parent.selector.index]
                 if actor:
@@ -286,7 +287,7 @@ class Examine(View):
 
     def draw(self):
         pos = self.parent.pos
-        cell = self.map.cell(pos)
+        cell = self.level.get_map().cell(pos)
         if not self.children:
             self.line("Space: Exit. Enter: Inspect. */: Style.")
         else:
@@ -451,9 +452,8 @@ class Place(View):
         super(Place, self).__init__(**kwargs)
 
     def draw(self):
-        self.line(self.map.level.name, "green-black")
-        if self.map.name:
-            self.line(self.map.name)
+        self.line(self.level.name, "green-black")
+        self.line(self.level.get_map().name)
 
 class LogViewer(View):
     default_arguments = {
@@ -570,7 +570,7 @@ class Inventory(View):
         self.inventory = [item for item in self.get_controller().values("Container", "get_list")]
         self.wielded = [wielded for wielded in self.get_controller().values("Manipulation", "get_wielded")]
         self.equipment = [equipment for equipment in self.get_controller().values("Equipment", "get_worn")]
-        self.ground = [ground for ground in self.map.get_controller().cell().get_items()]
+        self.ground = [ground for ground in self.level.get_controller().cell().get_items()]
 
         self.tabs.set_choices([choice for choice in self.active_tabs()])
 

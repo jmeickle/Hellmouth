@@ -175,7 +175,7 @@ class Cursor(Input):
 
     def draw(self):
         pos = self.pos
-        cell = self.map.cell(pos)
+        cell = self.level.get_map().cell(pos)
         color = "black-black"
 
         if cell is not None:
@@ -203,7 +203,7 @@ class Cursor(Input):
 
     # Resize based on features.
     def resize(self):
-        actors = self.map.actors(self.pos)
+        actors = self.level.get_map().actors(self.pos)
         self.selector.resize(len(actors)-1)
 
 # Generic prompt.

@@ -32,6 +32,10 @@ class Level(object):
         """Return the Actor serving as primary controller in this Level."""
         return self.game.get_controller()
 
+    def get_map(self):
+        """Return the primary Map for this level."""
+        return self.map
+
     """Level arrival methods."""
 
     def before_arrive(self, map_id, entrance_id, exit_id):
