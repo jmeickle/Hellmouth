@@ -262,3 +262,12 @@ class RootComponent(Component):
     def get_view_data(self, view):
         if isinstance(view, DebugMixin):
             return self.get_descendents()
+
+def override_defaults(fn):
+    """Decorator to override class defaults with provided kwargs."""
+    @functools.wraps(fn)
+    def wrapper(self, *args, **kwargs):
+        arguments = self.default_arguments.copy()
+        arguments.update(kwargs)
+        return fn(self, *args, **arguments)
+    return wrapper
