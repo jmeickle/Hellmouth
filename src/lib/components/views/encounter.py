@@ -4,6 +4,7 @@ from collections import deque
 from operator import itemgetter, attrgetter
 from random import choice
 
+from src.lib.components.component import override_defaults
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
 from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt, ListPrompt
@@ -21,41 +22,72 @@ from src.lib.data.skills import skill_list
 
 class EncounterWindow(View):
     """Main tactical window class."""
-    def __init__(self, window, map_obj):
-        self.map = map_obj
-        super(EncounterWindow, self).__init__(window, TERM_X, TERM_Y)
+    default_arguments = {
+        "x" : TERM_X,
+        "y" : TERM_Y,
+    }
+
+    @override_defaults
+    def __init__(self, level, **kwargs):
+        super(EncounterWindow, self).__init__(**kwargs)
+        self.level = level
 
     def ready(self):
-        self.spawn(SidePane(self.screen))
-        self.spawn(MainPane(self.screen))
+        self.spawn(SidePane())
+        self.spawn(MainPane())
 
-# Larger, left-hand pane
 class MainPane(View):
-    def __init__(self, window):
-        View.__init__(self, window, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y)
+    """Larger, left-hand pane."""
+    default_arguments = {
+        "x" : MAP_X,
+        "y" : MAP_Y,
+        "start_x" : MAP_START_X,
+        "start_y" : MAP_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(MainPane, self).__init__(**kwargs)
 
     def ready(self):
-        self.spawn(Status(self.screen, STATUS_X, STATUS_Y, STATUS_START_X, PANE_START_Y))
-        self.spawn(Place(self.screen, STATUS_X+2, STATUS_Y, MAP_START_X, MAP_START_Y))
-        self.spawn(MainMap(self.screen, MAP_X, MAP_Y, MAP_START_X, MAP_START_Y))
+        self.spawn(Status())
+        self.spawn(Place())
+        self.spawn(MainMap())
 
-# Smaller, right-hand pane
 class SidePane(View):
-    def __init__(self, window):
-        View.__init__(self, window, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y)
+    """Smaller, right-hand pane."""
+    default_arguments = {
+        "x" : PANE_X,
+        "y" : PANE_Y,
+        "start_x" : PANE_START_X,
+        "start_y" : PANE_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(SidePane, self).__init__(**kwargs)
 
     def ready(self):
-        self.spawn(Stats(self.screen, PANE_X, STATS_Y, PANE_START_X, PANE_START_Y))
-        self.spawn(LogViewer(self.screen, PANE_X, LOG_Y, PANE_START_X, LOG_START_Y))
+        self.spawn(Stats())
+        self.spawn(LogViewer())
 
 # TODO: Make this a subclass of a Map view, to account for tactical/strategic/etc.
 class MainMap(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
-        # -1 to account for 0,0 start
-        self.viewport_pos = (int(y/2)-1, int(y/2)-1)
-        self.viewport_rank = 10
-        self.zoom = self.viewport_rank
+    default_arguments = {
+        "x" : MAP_X,
+        "y" : MAP_Y,
+        "start_x" : MAP_START_X,
+        "start_y" : MAP_START_Y,
+        "viewport_rank" : 10,
+        "zoom" : 10
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(MainMap, self).__init__(**kwargs)
+        self.viewport_pos = (int(self.y/2)-1, int(self.y/2)-1) # -1 to account for 0,0 start
+        self.viewport_rank = kwargs["viewport_rank"]
+        self.zoom = kwargs["zoom"]
 
     def get_focus(self):
         cursor = self.get_first_child(Cursor)
@@ -65,13 +97,13 @@ class MainMap(View):
         # TODO: Allow multiple open children.
         if not self.children:
             if c == ord('I') or c == ord('i'):
-                self.spawn(Inventory(self.screen, self.width, self.height))
+                self.spawn(Inventory(x=self.width, y=self.height))
                 return False
 
             elif c == ord('v'):
                 if self.has_child(Cursor) is False:
                     cursor = self.spawn(Cursor(self.get_controller().pos))
-                    cursor.spawn(Examine(self.screen, self.width, 2, 0, self.BOTTOM-1))
+                    cursor.spawn(Examine(x=self.width, y=2, start_x=0, start_y=self.BOTTOM-1))
                     return False
         if c == ord('G'):
             """Get all nearby items."""
@@ -85,7 +117,7 @@ class MainMap(View):
         elif c == ord('g'):
             """Get a specific item, via a Prompt."""
             cursor = self.get_first_child(Cursor)
-            self.add_blocking_component(ListPrompt, window=self.screen, x=self.width, y=self.height, choices=["one", "two", "three"], callback=cursor.suicide if cursor else self.suicide)
+            self.add_blocking_component(ListPrompt, x=self.width, y=self.height, choices=["one", "two", "three"], callback=cursor.suicide if cursor else self.suicide)
         elif c == ord('U'):
             terrain = self.get_controller().cell().get_terrain()
             if terrain:
@@ -101,10 +133,10 @@ class MainMap(View):
             self.inherit()
         elif c == ord('N'):
             """Notepad."""
-            self.spawn(TextPrompt(self.screen, self.width, self.height))
+            self.spawn(TextPrompt(x=self.width, y=self.height))
         elif c == ord('D'):
             """Debugger."""
-            self.spawn(Debugger(self.screen, self.width, self.height))
+            self.add_blocking_component(Debugger, x=self.width, y=self.height)
         elif c == ord('7'):
             self.map.get_controller().do(NW)
         elif c == ord('4'):
@@ -214,6 +246,18 @@ class MainMap(View):
 # cursor is currently over.
 # TODO: Update for FOV
 class Examine(View):
+    default_arguments = {
+        "x" : MAP_X,
+        "y" : MAP_Y,
+        "start_x" : MAP_START_X,
+        "start_y" : MAP_START_Y,
+        "viewport_rank" : 10,
+        "zoom" : 10
+    }
+
+    @override_defaults
+
+
     def __init__(self, window, x, y, start_x=0, start_y=0):
         View.__init__(self, window, x, y, start_x, start_y)
 
@@ -221,8 +265,7 @@ class Examine(View):
         if c == curses.KEY_ENTER or c == ord('\n'):
             if not self.children:
                 # TODO: Character sheet takes place of stats screen
-#                child = self.spawn(CharacterSheet(self.screen, PANE_X, STATS_Y, PANE_START_X, PANE_START_Y))
-                child = self.spawn(CharacterSheet(self.screen, PANE_X, PANE_Y, PANE_START_X, PANE_START_Y))
+                child = self.spawn(CharacterSheet())
         elif c == ord('a'):
             actors = self.map.actors(self.parent.pos)
             if actors:
@@ -255,8 +298,16 @@ class Examine(View):
             self.line("Cursor: There's... nothing. Nothing at all.")
 
 class Stats(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    default_arguments = {
+        "x" : PANE_X,
+        "y" : STATS_Y,
+        "start_x" : PANE_START_X,
+        "start_y" : PANE_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(Stats, self).__init__(**kwargs)
 
     def draw(self):
         # Col 1: Skeleton/Paperdoll
@@ -367,10 +418,18 @@ class Stats(View):
             return True
         return False
 
-# TODO: Implement this
 class Status(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    """Displays status effects, like hunger or pain."""
+    default_arguments = {
+        "x" : STATUS_X,
+        "y" : STATUS_Y,
+        "start_x" : STATUS_START_X,
+        "start_y" : PANE_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        View.__init__(self, **kwargs)
 
     def draw(self):
         for text, color in self.get_controller().values("Status", "get_view_data", self):
@@ -379,8 +438,17 @@ class Status(View):
         return True
 
 class Place(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    """Displays information about the current level and map."""
+    default_arguments = {
+        "x" : STATUS_X+2,
+        "y" : STATUS_Y,
+        "start_x" : MAP_START_X,
+        "start_y" : MAP_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(Place, self).__init__(**kwargs)
 
     def draw(self):
         self.line(self.map.level.name, "green-black")
@@ -388,8 +456,16 @@ class Place(View):
             self.line(self.map.name)
 
 class LogViewer(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    default_arguments = {
+        "x" : PANE_X,
+        "y" : LOG_Y,
+        "start_x" : PANE_START_X,
+        "start_y" : LOG_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(LogViewer, self).__init__(**kwargs)
         self.autoscroll = True
         self.events = 0
         self.shrink = 0
@@ -471,8 +547,11 @@ class LogViewer(View):
                 self.shrink += 5
 
 class Inventory(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    """Displays information about held, worn, and carried items."""
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(Inventory, self).__init__(**kwargs)
 
     def ready(self):
         self.context = None
@@ -647,8 +726,18 @@ class Inventory(View):
         return False
 
 class CharacterSheet(View):
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
+    """Display information about an inspected Actor."""
+    # TODO: a general InformationSidebar class, polymorphic on what is being viewed
+    default_arguments = {
+        "x" : PANE_X,
+        "y" : PANE_Y,
+        "start_x" : PANE_START_X,
+        "start_y" : PANE_START_Y
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(CharacterSheet, self).__init__(**kwargs)
         self.actor = None
         self.text = []
 
@@ -712,12 +801,20 @@ class CharacterSheet(View):
 # TODO: Add a health screen.
 #class Health(View):
 
-# Debugging prompt.
 class Debugger(View, DebugMixin):
-    # 45, 24
-    def __init__(self, window, x, y, start_x=0, start_y=0):
-        View.__init__(self, window, x, y, start_x, start_y)
-        self.choices = ["Queue", "Views"]
+    """Displays debugging information."""
+    default_arguments = {
+        # "x" : PANE_X,
+        # "y" : PANE_Y,
+        # "start_x" : PANE_START_X,
+        # "start_y" : PANE_START_Y,
+        "choices" : ["Queue", "Views"],
+    }
+
+    @override_defaults
+    def __init__(self, **kwargs):
+        super(Debugger, self).__init__(**kwargs)
+        self.choices = kwargs["choices"]
 
     def ready(self):
         self.tabber = self.spawn(Tabber(self.choices))
