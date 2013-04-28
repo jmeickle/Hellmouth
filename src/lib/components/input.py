@@ -157,6 +157,10 @@ class Cursor(Input):
         self.pos = pos
         self.styles = ["[]", "1hex", "<>", "{}", "()"]
 
+    def ready(self):
+        self.selector = self.spawn(Selector())
+        self.secondary = self.spawn(SecondarySelector(len(self.styles)-1))
+
     def keyin(self, c):
         # TODO: Dup code.
         if cmd(c, CMD_HEX):
@@ -192,14 +196,6 @@ class Cursor(Input):
 
         for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
             self.parent.offset_hd(pos, offset, glyph, color)
-
-    def ready(self):
-        # Seems silly, but this lets the cursor be passed on automatically to
-        # children of it. (This can't be done during spawn, of course.)
-        self.cursor = self
-        self.selector = self.spawn(Selector())
-        self.secondary = self.spawn(SecondarySelector(len(self.styles)-1))
-        self.resize()
 
     # Resize based on features.
     def resize(self):

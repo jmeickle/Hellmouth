@@ -115,8 +115,6 @@ class Component(object):
         if self.parent:
             if hasattr(self.parent, 'window'):
                 self.window = self.get_window(self.parent.window)
-            if hasattr(self.parent, 'cursor'):
-                self.cursor = self.parent.cursor
             if hasattr(self.parent, 'map'):
                 self.map = self.parent.map
             if hasattr(self.parent, 'level'):
