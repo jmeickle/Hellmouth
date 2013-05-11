@@ -27,7 +27,9 @@ commands[CMD_HEX] = ("1", "3", "4", "6", "7", "9", "5")
 commands[CMD_CANCEL] = (' ',)
 
 special = {
+    " " : "Space",
     "\n" : "Enter",
+    "Ctrl+j" : "Enter",
     curses.KEY_ENTER : "Enter",
     "\t" : "Tab",
     curses.KEY_BTAB : "Shift+Tab",
@@ -45,12 +47,17 @@ special = {
 }
 
 def event(e):
+    # Normalize command characters to Ctrl+%s, then check overrides.
     if e <= 26:
-        return "Ctrl-%s" % (e + 96)
-    if e <= 256:
+        e =  "Ctrl+%s" % chr((e + 96))
+        return special.get(e, e)
+    # Normalize other ASCII to a character representation, then check overrides.
+    elif e <= 256:
         return special.get(chr(e), chr(e))
-    assert e in special, "Unrecognized key: '%s'" % curses.keyname(e)
-    return special.get(e, None)
+    # Only permit overrides for non-ASCII characters.
+    else:
+        assert e in special, "Unrecognized key: '%s'" % curses.keyname(e)
+        return special.get(e, e)
 
 # Return whether the provided keypress belongs to the provided command.
 def cmd(c, command):
