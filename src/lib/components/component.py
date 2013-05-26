@@ -18,7 +18,7 @@ class Component(object):
     def __repr__(self):
         return "<" + self.__str__() + ">"
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.alive = True
         self.children = []
         self.parent = None
