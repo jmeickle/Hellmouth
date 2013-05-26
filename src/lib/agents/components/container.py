@@ -156,7 +156,7 @@ class Container(Component):
     #     t1 = time.time()
 
     #     # Make database
-        
+
 
 
 
@@ -174,7 +174,7 @@ class Container(Component):
     #             tid = random.choice(range(5))
     #             lod = random.choice(range(3))
     #             tag_text = random.choice(tag_values[tid])
-    #             conn.execute("INSERT INTO item_tag(iid, tid, detail, tag) VALUES (?, ?, ?, ?)", (i, tid, lod, tag_text))        
+    #             conn.execute("INSERT INTO item_tag(iid, tid, detail, tag) VALUES (?, ?, ?, ?)", (i, tid, lod, tag_text))
 
     #     txt = random.choice(tag_values[random.choice(range(5))])
     #     results = conn.execute('''SELECT item.iid, item_tag.tid, item_tag.tag FROM item

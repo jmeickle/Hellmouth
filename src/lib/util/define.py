@@ -106,7 +106,7 @@ secondary_attributes = ("HP", "FP", "MP", "Will", "Perception", "Speed", "Move")
 U0 = (0, False)
 
 # TODO: Just change the internal names to be cleaner?
-hit_locations = { 
+hit_locations = {
     "Torso" : "torso",
     "Groin" : "groin",
     "Neck" : "neck",
@@ -142,7 +142,7 @@ def STUB(fn):
     return wrapper
 
 def UNIMPLEMENTED(fn):
-    """Decorator to assert on calling an unimplemented method."""    
+    """Decorator to assert on calling an unimplemented method."""
     @functools.wraps(fn)
     def wrapper(caller, *args, **kwargs):
         if isinstance(caller, type):

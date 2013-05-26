@@ -90,7 +90,7 @@ class Item(Agent):
     # Whether this particular weapon needs an emmpty 'hand' to be used. True for almost everything.
     def requires_empty_location(self):
         return False
-	
+
     # Whether the item is intended to be worn. Note that some objects,
     # like bags, might be perfectly serviceable wearables without being
     # armor or clothing.
