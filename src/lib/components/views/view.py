@@ -16,7 +16,7 @@ class View(Component):
 
     @override_defaults
     def __init__(self, x, y, start_x=0, start_y=0, **kwargs):
-        super(View, self).__init__()
+        super(View, self).__init__(**kwargs)
         self.x = x
         self.y = y
         self.start_x = start_x
