@@ -10,7 +10,7 @@ logging.basicConfig(filename='debug.log',level=logging.DEBUG, format='%(asctime)
 debug_frequency = {}
 
 # TODO: Support setting level to info/warning
-def debug(message, level=logging.DEBUG):
+def log(message, level=logging.DEBUG):
     """Send a message to the debug log."""
     msg = message.__str__()
     hits = debug_frequency.get(msg, 0) + 1
@@ -20,20 +20,20 @@ def debug(message, level=logging.DEBUG):
 def die(message, **kwargs):
     """Send a message to the debug log and then assert."""
     kwargs.setdefault("level", logging.CRITICAL)
-    debug(message, **kwargs)
-    assert False, message
+    log(message, **kwargs)
+    assert False, "\n%s" % message
 
 def DEBUG(fn):
     """Decorator to log a method call to debug."""
     @functools.wraps(fn)
     def wrapper(self, *args, **kwargs):
         level=logging.DEBUG
-        debug("method: " + fn.__name__, level)
-        debug("args: " + str(args), level)
-        debug("kwargs: " + str(kwargs), level)
+        log("method: " + fn.__name__, level)
+        log("args: " + str(args), level)
+        log("kwargs: " + str(kwargs), level)
         result = fn(self, *args, **kwargs)
-        debug(result, level)
+        log(result, level)
         return result
     return wrapper
 
-debug('Imported debug.py and initialized logging.')
+log('Imported debug.py and initialized logging.')

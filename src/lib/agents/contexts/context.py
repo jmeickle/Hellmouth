@@ -2,7 +2,7 @@
 
 import functools
 
-from src.lib.util.debug import debug, die
+from src.lib.util import debug
 from src.lib.util.result import Result
 
 class Context(object):
@@ -48,7 +48,7 @@ class Context(object):
                 if is_method:
                     is_result = is_method(**arguments)
                     outcome, cause = self.parse_result(is_result)
-                    debug("CTX(): %s (%s)" % ("is" + "_" + phase.name, outcome))
+                    debug.log("CTX(): %s (%s)" % ("is" + "_" + phase.name, outcome))
                     if not outcome:
                         return False
         return True
@@ -82,13 +82,13 @@ class Context(object):
     def set_participant(self, participant):
         """Set this Context to have a single participant."""
         if not participant:
-            die("Tried to add an invalid participant to context: %s" % self.__dict__)
+            debug.die("Tried to add an invalid participant to context: %s" % self.__dict__)
         self.participants = [participant]
 
     def add_participant(self, participant):
         """Add a participant to a Context."""
         if not participant:
-            die("Tried to add an invalid participant to context: %s" % self.__dict__)
+            debug.die("Tried to add an invalid participant to context: %s" % self.__dict__)
         self.participants.append(participant)
 
     def add_participants(self, participants):
@@ -161,7 +161,7 @@ class Context(object):
                     break
 
             if not self.arguments.get(required_argument):
-                die("Context %s didn't provide all required arguments %s." % (self.__dict__, required_arguments))
+                debug.die("Context %s didn't provide all required arguments %s." % (self.__dict__, required_arguments))
 
     """Context argument alias getter methods."""
 

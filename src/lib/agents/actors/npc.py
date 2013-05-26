@@ -6,7 +6,7 @@
 from src.lib.agents.actors.ai.astar import AStar
 from src.lib.agents.actors.actor import Actor
 
-from src.lib.util.debug import debug
+from src.lib.util import debug
 from src.lib.util.hex import *
 from src.lib.util.queue import Queue
 
@@ -28,17 +28,17 @@ class NPC(Actor):
         self.attempts = 0
 
     def act(self):
-        debug("%s started turn." % self.appearance())
+        debug.log("%s started turn." % self.appearance())
         self._act()
-        debug("%s ended turn." % self.appearance())
+        debug.log("%s ended turn." % self.appearance())
         self.end_turn()
 
     # AI actions. Currently: move in a random direction.
     def _act(self):
         if not self.turn():
-            die("%s tried to act when not the acting actor in queue %s." % (self, Queue))
+            debug.die("%s tried to act when not the acting actor in queue %s." % (self, Queue))
         if self.controlled:
-            die("Player-controlled actor %s tried to hit AI code." % self.appearance())
+            debug.die("Player-controlled actor %s tried to hit AI code." % self.appearance())
 
         # If we don't have a target, try to find a new one.
         if not self.target and not self.retarget():
@@ -62,7 +62,7 @@ class NPC(Actor):
 
         # If we've successfully pathed, follow it.
         if self.path:
-            debug("%s had a path." % self.appearance())
+            debug.log("%s had a path." % self.appearance())
             next_step = self.path.pop()
             next_dir = sub(next_step, self.pos)
             # # HACK, fixes stuff like teleporting
@@ -85,7 +85,7 @@ class NPC(Actor):
 
     # Reset A* and generate a new path.
     def repath(self):
-        debug("%s repathed." % self.appearance())
+        debug.log("%s repathed." % self.appearance())
         self.astar = AStar(self, self.map)
         self.path = self.astar.path(self.pos, self.destination)
 
@@ -94,12 +94,12 @@ class NPC(Actor):
         if target:
             self.target = target
             self.destination = self.target.pos
-            debug("%s retargeted to %s." % (self.appearance(), self.target.appearance()))
+            debug.log("%s retargeted to %s." % (self.appearance(), self.target.appearance()))
             return True
         else:
             self.destination = self.call("Faction", "get_destination").get_result()
             if self.destination:
-                debug("%s found no target but instead a destination." % self.appearance())
+                debug.log("%s found no target but instead a destination." % self.appearance())
                 return True
-            debug("%s failed to retarget." % self.appearance())
+            debug.log("%s failed to retarget." % self.appearance())
             return False

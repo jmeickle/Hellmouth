@@ -2,7 +2,7 @@
 
 from src.lib.agents.components.component import Component
 
-from src.lib.util.debug import debug, die
+from src.lib.util import debug
 from src.lib.util.result import accumulate_results, ignore_results
 
 """Components."""
@@ -37,7 +37,7 @@ class Container(Component):
         matches = self.contents.get(agent.appearance(), [])
 
         # This covers only the case of that exact item already being in container.
-        if agent in matches: die("Tried to add agent %s to container %s." % (agent, self))
+        if agent in matches: debug.die("Tried to add agent %s to container %s." % (agent, self))
 
         matches.append(agent)
         self.contents[agent.appearance()] = matches
@@ -49,7 +49,7 @@ class Container(Component):
         matches = self.contents.get(agent.appearance(), [])
 
         # This covers only the case of that exact item already being in container.
-        if agent not in matches: die("Tried to remove agent %s from container %s." % (agent, self))
+        if agent not in matches: debug.die("Tried to remove agent %s from container %s." % (agent, self))
 
         matches.remove(agent)
         if matches:

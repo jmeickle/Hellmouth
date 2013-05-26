@@ -1,8 +1,10 @@
 import sys
 import getopt
-from src.lib.util.debug import debug
+from src.lib.util import debug
 from src.lib.util.define import *
 from src.lib.util import system
+
+debug.log("Completed all imports.")
 
 # Set up a dictionary of game settings.
 arguments = {}
@@ -27,14 +29,14 @@ arguments["resume"] = False
 
 # Parse command line arguments
 try:
-    debug("Parsing command line arguments.")
+    debug.log("Parsing command line arguments.")
     options, remainder = getopt.getopt(sys.argv[1:],"a:b:")
 except getopt.GetoptError:
-    debug("Failed to parse arguments: %s." % sys.argv[1:])
+    debug.log("Failed to parse arguments: %s." % sys.argv[1:])
 
 # TODO: Handle more command line arguments.
 for opt, arg in options:
-    debug("Command line argument '%s': '%s'" % (opt, arg))
+    debug.log("Command line argument '%s': '%s'" % (opt, arg))
 
     # The game to be launched
     if opt in ('-g', '--gamemode'):

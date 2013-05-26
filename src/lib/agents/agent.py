@@ -3,7 +3,7 @@
 from src.lib.agents.contexts.context import agent_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
-from src.lib.util.debug import debug, DEBUG, die
+from src.lib.util import debug
 from src.lib.util.dynamic import caller
 from src.lib.util.result import Result, SingleResult, ActionResult
 from src.lib.util.hex import *
@@ -161,7 +161,7 @@ class Agent(object):
             domain = component_class.get_domain()
 
         if domain in self.component_registry:
-            die("Tried to register a component '%s' in the domain '%s', which already has Components %s." % (component_class.__name__, domain, [component.__class__.__name__ for component in self.get_components(domain)]))
+            debug.die("Tried to register a component '%s' in the domain '%s', which already has Components %s." % (component_class.__name__, domain, [component.__class__.__name__ for component in self.get_components(domain)]))
 
         component = component_class(self)
         self.append_component(component, domain)
@@ -196,10 +196,10 @@ class Agent(object):
         """Find the first Command matching an event, instantiate it, and process it."""
 
         if not self.turn():
-            die("Event %s by %s; should be acting: %s; queue: %s" % (event, self.appearance(), Queue.get_acting().appearance(), [a.appearance() for a in Queue.queue]))
+            debug.die("Event %s by %s; should be acting: %s; queue: %s" % (event, self.appearance(), Queue.get_acting().appearance(), [a.appearance() for a in Queue.queue]))
 
         if event not in ["Up", "Down"]:
-            debug("EVENT: %s" % event)
+            debug.log("EVENT: %s" % event)
 
         for command_class, command_arguments in context.get_commands():
             for command_event in command_class.get_events():
@@ -212,10 +212,10 @@ class Agent(object):
                 result = self.process_command(command)
                 outcome, cause = context.parse_result(result)
                 if outcome is True:
-                    debug("(+): %s" % cause)
+                    debug.log("(+): %s" % cause)
                     Log.add("(+): %s" % cause)
                 else:
-                    debug("(-): %s" % cause)
+                    debug.log("(-): %s" % cause)
                     Log.add("(-): %s" % cause)
 
                 # TODO: Something else to decide this
@@ -225,7 +225,7 @@ class Agent(object):
                 return outcome, cause
 
         if event not in ["Up", "Down"]:
-            debug("( ): %s" % event)
+            debug.log("( ): %s" % event)
             Log.add("( ): %s" % event)
         # TODO: Instead return whether the event was consumed.
         return False
@@ -239,7 +239,7 @@ class Agent(object):
         """
         ctx = command.context
         # ctx.set_active(command.__class__)
-        debug("CMD: %s." % command.__class__.get_name())
+        debug.log("CMD: %s." % command.__class__.get_name())
 
         # This is a generator, so we can check the Context object for a
         # different list of actions between go-arounds.
@@ -289,7 +289,7 @@ class Agent(object):
 
         If any function returns False, processing will stop, meaning that the
         return value has variable length."""
-        debug("ACT: %s" % action.__class__.get_name())
+        debug.log("ACT: %s" % action.__class__.get_name())
 
         ctx = action.context
         # ctx.set_active(action.__class__)
@@ -316,7 +316,7 @@ class Agent(object):
         """
         ctx = phase.context
         ctx.set_active(phase)
-        debug("PHASE: %s" % phase.name)
+        debug.log("PHASE: %s" % phase.name)
 
         # TODO: 7DRL
         ctx.require_arguments(phase.required_arguments)
@@ -335,23 +335,23 @@ class Agent(object):
             is_result = is_method(**arguments)
             outcome, cause = ctx.parse_result(is_result)
             if outcome:
-                debug("***PHASE SATISFIED***: %s (%s)" % ("is" + "_" + phase.name, outcome))
+                debug.log("***PHASE SATISFIED***: %s (%s)" % ("is" + "_" + phase.name, outcome))
                 return True, "done"
 
         # TODO: Rewrite this entire section, augh
         could_result = getattr(ctx.agent, "could" + "_" + phase.name)()
         outcome, cause = ctx.parse_result(could_result)
-        debug("METHOD: %s (%s)" % ("could" + "_" + phase.name, outcome))
+        debug.log("METHOD: %s (%s)" % ("could" + "_" + phase.name, outcome))
         if not outcome: return False, "could" + "_" + phase.name
 
         can_result = getattr(ctx.agent, "can" + "_" + phase.name)(**arguments)
         outcome, cause = ctx.parse_result(can_result)
-        debug("METHOD: %s (%s)" % ("can" + "_" + phase.name, outcome))
+        debug.log("METHOD: %s (%s)" % ("can" + "_" + phase.name, outcome))
         if not outcome: return False, "can" + "_" + phase.name
 
         result = getattr(ctx.agent, "do" + "_" + phase.name)(**arguments)
         outcome, cause = ctx.parse_result(result)
-        debug("METHOD: %s (%s)" % ("do" + "_" + phase.name, outcome))
+        debug.log("METHOD: %s (%s)" % ("do" + "_" + phase.name, outcome))
         ctx.append_result(phase.__class__, result)
         return outcome, cause
 

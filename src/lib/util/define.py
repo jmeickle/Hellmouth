@@ -4,7 +4,7 @@
 
 import functools
 
-from src.lib.util.debug import die
+from src.lib.util import debug
 
 # HACK: Define termsize rather than figuring it out.
 TERM_X = 80
@@ -158,5 +158,5 @@ def UNIMPLEMENTED(fn):
         if parts:
             string += ".\n" + "    " + "    \n".join(parts)
         string += "."
-        die(string)
+        debug.die(string)
     return wrapper

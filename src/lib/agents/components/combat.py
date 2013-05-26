@@ -9,7 +9,7 @@ from src.lib.agents.components.component import Component
 from src.lib.agents.components.phase import Phase
 
 from src.lib.util.command import Command, CommandRegistry
-from src.lib.util.debug import debug, die
+from src.lib.util import debug
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util.log import Log
@@ -118,7 +118,7 @@ class Combat(Component):
             self.update_weapons()
             weapon = self.get_active_weapon()
             if not weapon:
-                die("After update, had no active weapon from list of weapons: %s" % self.weapons)
+                debug.die("After update, had no active weapon from list of weapons: %s" % self.weapons)
         return weapon
 
     def get_weapons(self):
@@ -132,10 +132,10 @@ class Combat(Component):
         self.weapons = deque()
 
         for weapon in self.owner.values("Body", "get_natural_weapons"):
-            if not weapon: die("Component %s tried to add an invalid natural weapon: %s." % (self, weapon))
+            if not weapon: debug.die("Component %s tried to add an invalid natural weapon: %s." % (self, weapon))
             self.weapons.append(weapon)
         for weapon in self.owner.values("Manipulation", "get_wielded"):
-            if not weapon: die("Component %s tried to add an invalid equipped weapon: %s." % (self, weapon))
+            if not weapon: debug.die("Component %s tried to add an invalid equipped weapon: %s." % (self, weapon))
             self.weapons.append(weapon)
 
     def set_active_weapon(self, amount):
@@ -147,14 +147,14 @@ class Combat(Component):
     def process_attack(self, target, weapon, manipulator):
         """Process a single attack."""
         if weapon != self.get_active_weapon():
-            die("Tried to attack with inactive weapon %s" % weapon)
+            debug.die("Tried to attack with inactive weapon %s" % weapon)
         if not manipulator.is_wield(weapon):
-            die("Tried to attack with unwielded weapon %s" % weapon)
+            debug.die("Tried to attack with unwielded weapon %s" % weapon)
 
         wielding_mode = weapon.call("Wielded", "get_wielding_mode").get_result()
 
         if not wielding_mode:
-            die("Weapon %s had no wielding mode" % weapon)
+            debug.die("Weapon %s had no wielding mode" % weapon)
 
         ctx = CombatContext()
         ctx.add_attack(self.owner, target, weapon, wielding_mode)

@@ -39,7 +39,7 @@ from src.lib.agents.components.phase import Phase
 from src.lib.agents.contexts.context import action_context, command_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
-from src.lib.util.debug import debug, die
+from src.lib.util import debug
 from src.lib.util.mixin import Mixin
 
 """Actions."""
@@ -239,7 +239,7 @@ class Manipulation(Component):
 
     def can_reach(self, target, wielded=None, manipulator=None):
         """Return whether the Agent can reach when manipulating."""
-        if not wielded and not manipulator: die("Tried to check reach without providing an item or manipulator.")
+        if not wielded and not manipulator: debug.die("Tried to check reach without providing an item or manipulator.")
         if wielded and not manipulator:
             manipulator = wielded.call("Wielded", "get_manipulator").get_result()
         # die("target %s, wielded %s, manip %s" % (target, wielded, manipulator))

@@ -5,7 +5,7 @@ from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.faction import NeutralFaction
 
 from src.lib.util.command import Command, CommandRegistry as CMD
-from src.lib.util.debug import debug, die
+from src.lib.util import debug
 from src.lib.util.log import Log
 from src.lib.util.mixin import Mixin
 

@@ -18,7 +18,7 @@ from collections import deque
 from src.lib.data import screens
 from cell import BaseCell
 
-from src.lib.util.debug import debug
+from src.lib.util import debug
 from src.lib.util.text import *
 from src.lib.util.log import Log
 

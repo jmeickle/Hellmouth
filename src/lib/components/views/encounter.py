@@ -12,7 +12,7 @@ from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, Si
 from src.lib.agents.contexts.context import Context
 from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.define import *
-from src.lib.util.debug import debug
+from src.lib.util import debug
 from src.lib.util.hex import *
 from src.lib.util import text
 from src.lib.util.log import Log
@@ -435,7 +435,7 @@ class Status(View):
 
     def draw(self):
         for text, color in self.get_controller().values("Status", "get_view_data", self):
-            debug("text: %s, color: %s" % (text, color))
+            debug.log("text: %s, color: %s" % (text, color))
             self.line(text, color)
         return True
 
