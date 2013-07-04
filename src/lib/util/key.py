@@ -31,6 +31,7 @@ special = {
     "\n" : "Enter",
     "Ctrl+j" : "Enter",
     curses.KEY_ENTER : "Enter",
+    "Ctrl+i" : "Tab",
     "\t" : "Tab",
     curses.KEY_BTAB : "Shift+Tab",
     curses.KEY_BACKSPACE : "Backspace",
