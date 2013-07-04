@@ -1,8 +1,7 @@
 # Development Roadmap
 
-## v0.3-meat (March?):
+## v0.3-meat:
 + Game launch menu
-- Starting equipment
 ~ Inventory rewrite
 ~ Improved terrain generation
 + Terrain interaction (doors, levers, etc.)
@@ -16,6 +15,7 @@
 - Add a symmetric LOS algo
 
 ## v0.5-meat:
+- Starting equipment
 - Reenable skill defaults
 - Close combat
 ~ Improved tactical combat pane
