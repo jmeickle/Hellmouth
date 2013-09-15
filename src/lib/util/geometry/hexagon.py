@@ -67,29 +67,34 @@ class Hexagon(Shape):
     def __repr__(self):
         return "<%s[%s]>" % (self.__class__.__name__, self.pos)
 
-    """Hexagon definition helper methods."""
+    """Hexagon face methods."""
 
     @classmethod
-    def get_max_index(cls, rank):
-        """Return the maximum index for a rank."""
-        return rank * 6 - 1
-
-    @classmethod
-    def get_edge(cls, heading):
+    def get_face_from_heading(cls, heading):
         """Return the face associated with a heading."""
         return headings.index(heading)
 
-
+    @classmethod
+    def get_face_from_index(cls, rank, index):
+        """Return the nearest face, given a rank and an index into it."""
+        return index / rank
 
     @classmethod
-    def rotate_edge(cls, edge, rotation):
-        """Return an edge rotated from a starting edge."""
-        return (edge + rotation) % 6
+    def get_face_position_from_index(cls, rank, index):
+        """Return the position on the nearest face, given a rank and an index into it."""
+        return index % rank
 
     @classmethod
-    def get_pole(cls, origin=CC, rank=1, heading=NW):
-        """Return the position of the hex at a rank along a heading."""
-        return origin + rank * heading
+    def rotate_face(cls, face, rotation):
+        """Return a face rotated from a starting face."""
+        return (face + rotation) % 6
+
+    """Hexagon heading methods."""
+
+    @classmethod
+    def get_heading_from_face(cls, face):
+        """Return the heading associated with a face."""
+        return headings[face]
 
     # @classmethod
     # def rotate_heading(heading, rotation):
@@ -111,14 +116,30 @@ class Hexagon(Shape):
     #     """Convenience method to rotate a heading 180 degrees (3 rotations)."""
     #     return Hexagon.rotate_heading(heading, 3)
 
+    """Hexagon index methods."""
+
     @classmethod
-    def cycle(cls, origin=CC, rank=1, index=0, rotation=CW_TURN):
-        """Yield indexes and coordinates for cells around a hexagon, starting
-        from an index and continuing along a rotation.
+    def get_max_index(cls, rank):
+        """Return the maximum index for a rank."""
+        return rank * 6 - 1
+
+    """Hexagon point methods."""
+
+    @classmethod
+    def get_pole(cls, origin=CC, rank=1, heading=NW):
+        """Return the hexagon at a rank from an origin along a heading."""
+        return origin + rank * heading
+
+    """Hexagon iteration methods."""
+
+    @classmethod
+    def perimeter(cls, origin=CC, rank=1, index=0, rotation=CW_TURN):
+        """Yield indexes and points for hexagons starting at an index on a rank
+        and continuing indefinitely along a rotation.
         """
         max_index = cls.get_max_index(rank)
-        assert index <= max_index, "Index %s greater than max index %s" % (index, max_index)
-        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation type: %s" % str(rotation)
+        assert index <= max_index, "Rank %s: index %s greater than max index %s" % (rank, index, max_index)
+        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
 
         # Determine the starting edge and the position along it.
         edge = cls.get_edge_from_index(rank, index)
@@ -176,29 +197,6 @@ class Hexagon(Shape):
 
             # Yield the current index and coordinates.
             yield index, coords
-
-
-# def perimeter(origin, rank):
-#     """Yield hex positions at a rank around an origin."""
-#     if rank == 0:
-#         while True:
-#             yield origin
-#     else:
-#         pos = 
-#         for direction in cls.directions(start=cls.CE):
-#             for index in xrange(rank):
-#                 yield pos
-#                 pos = cls.add(pos, direction)
-
-    @classmethod
-    def get_edge_from_index(cls, rank, index):
-        """Return a cell's hexagon edge, given a rank and an index into it."""
-        return index / rank
-
-    @classmethod
-    def get_edge_position_from_index(cls, rank, index):
-        """Return a cell's position on its hexagon edge, given a rank and an index into it."""
-        return index % rank
 
     # def get_vertices(self):
     #     """Return the vertices of a cls."""
