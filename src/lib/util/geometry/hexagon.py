@@ -1,6 +1,6 @@
 """Define the geometry of hexagons.
 
-This module expands the terminology guides in `src.lib.util.geometry.space` 
+This module expands the terminology guides in `src.lib.util.geometry.space`
 and `src.lib.util.geometry.shape` with some definitions specific to hexagons:
 
 _heading_: One of the six cardinal hexagonal directions. These are represented
@@ -12,14 +12,13 @@ as the points at a distance of 1 from the coordinate system's origin (0, 0):
          \  /
        SW    SE
 
-
-_rank_: The 'radius' of a set of hexagons. Given a set of hexagons and an origin 
+_rank_: The 'radius' of a set of hexagons. Given a set of hexagons and an origin
 within it, the rank is the greatest distance observed.
 
-_pole_: Given an origin, rank, and heading, the hexagon that would be reached by 
+_pole_: Given an origin, rank, and heading, the hexagon that would be reached by
 traveling along a heading until reaching that rank.
 
-_index_: Given an origin, rank, heading, and rotation, an enumeration of the 
+_index_: Given an origin, rank, heading, and rotation, an enumeration of the
 order in which hexagons at that rank are visited.
 """
 
@@ -67,3 +66,179 @@ class Hexagon(Shape):
 
     def __repr__(self):
         return "<%s[%s]>" % (self.__class__.__name__, self.pos)
+
+    """Hexagon definition helper methods."""
+
+    @classmethod
+    def get_max_index(cls, rank):
+        """Return the maximum index for a rank."""
+        return rank * 6 - 1
+
+    @classmethod
+    def get_edge(cls, heading):
+        """Return the face associated with a heading."""
+        return headings.index(heading)
+
+
+
+    @classmethod
+    def rotate_edge(cls, edge, rotation):
+        """Return an edge rotated from a starting edge."""
+        return (edge + rotation) % 6
+
+    @classmethod
+    def get_pole(cls, origin=CC, rank=1, heading=NW):
+        """Return the position of the hex at a rank along a heading."""
+        return origin + rank * heading
+
+    # @classmethod
+    # def rotate_heading(heading, rotation):
+    #     """Return a heading rotated from a starting heading."""
+    #     # Can't rotate CC, ANYWHERE, etc.
+    #     if heading not in headings:
+    #         return heading
+    #     else:
+    #         edge = Hexagon.get_edge(heading)
+
+    #         Hexagon.rotate_edge(edge, rotation)
+
+    #         rotation[heading]
+
+    # end = (start+turns) % 6
+    # return dirs[end]
+
+    # def flip_heading(heading):
+    #     """Convenience method to rotate a heading 180 degrees (3 rotations)."""
+    #     return Hexagon.rotate_heading(heading, 3)
+
+    @classmethod
+    def cycle(cls, origin=CC, rank=1, index=0, rotation=CW_TURN):
+        """Yield indexes and coordinates for cells around a hexagon, starting
+        from an index and continuing along a rotation.
+        """
+        max_index = cls.get_max_index(rank)
+        assert index <= max_index, "Index %s greater than max index %s" % (index, max_index)
+        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation type: %s" % str(rotation)
+
+        # Determine the starting edge and the position along it.
+        edge = cls.get_edge_from_index(rank, index)
+        position = cls.get_edge_position_from_index(rank, index)
+
+        # Set the coordinates to the starting edge's coordinates.
+        coords = cls.get_pole(origin, rank, heading=cls.headings[edge])
+
+        # Rotate the starting edge by one turn clockwise.
+        edge = cls.rotate_edge(edge, CW_TURN)
+
+        # Update the coordinates if required by the position.
+        if position > 0:
+            # Rotate the starting edge an additional turn clockwise in order to 
+            # point towards the next position along the edge).
+            position_edge = cls.rotate_edge(edge, CW_TURN * 2)
+            position_heading = cls.headings[position_edge]
+
+            # Update the coordinates.
+            coords = cls.add(coords, cls.mult(position_heading, position))
+
+        # Flip edge direction and heading if rotating counterclockwise.
+        if rotation == CCW_TURN:
+            edge = cls.rotate_edge(edge, 4)
+            heading = cls.headings[edge]
+
+        # Yield the initial index and coordinates.
+        yield index, coords
+
+        while True:
+            # Shift index and position in the direction of rotation.
+            index += rotation
+            position += rotation
+
+            # Handle index and position rollover.
+            if position < 0:
+                edge = cls.rotate_edge(edge, rotation)
+                heading = cls.headings[edge]
+                position = rank
+                if index < 0:
+                    index = max_index
+            elif position > rank:
+                edge = cls.rotate_edge(edge, rotation)
+                heading = cls.headings[edge]              
+                position = 0
+                if index > max_index:
+                    index = 0
+            else:
+                edge = cls.rotate_edge(edge, rotation)
+                heading = cls.headings[edge]
+
+            # Add the current heading to the coordinates.
+            print "heading += %s" % cls.heading_names[heading]
+            coords += heading
+
+            # Yield the current index and coordinates.
+            yield index, coords
+
+
+# def perimeter(origin, rank):
+#     """Yield hex positions at a rank around an origin."""
+#     if rank == 0:
+#         while True:
+#             yield origin
+#     else:
+#         pos = 
+#         for direction in cls.directions(start=cls.CE):
+#             for index in xrange(rank):
+#                 yield pos
+#                 pos = cls.add(pos, direction)
+
+    @classmethod
+    def get_edge_from_index(cls, rank, index):
+        """Return a cell's hexagon edge, given a rank and an index into it."""
+        return index / rank
+
+    @classmethod
+    def get_edge_position_from_index(cls, rank, index):
+        """Return a cell's position on its hexagon edge, given a rank and an index into it."""
+        return index % rank
+
+    # def get_vertices(self):
+    #     """Return the vertices of a cls."""
+    #     for offset in vertex_positions:
+    #         yield cls.add(self.pos6, offset)
+
+class HexagonalSpace(object):
+    """A plane tessellated with hexagons."""
+    # The number of coordinates required to specify a position in this space.
+    dimension = 2
+    # Hexagons regularly tessellate a plane.
+    regular = True
+
+    def __init__(self):
+        pass
+
+class Hexagon_Test:
+    def setUp(self):
+        self.hexagon = Hexagon
+
+    def tearDown(self):
+        del self.hexagon
+
+    def cycle_test(self):
+        import itertools
+
+        def cycle_test_cases():
+            print "Origin, rank 1, index 0, clockwise"
+            test1 = list(enumerate(Hexagon.headings))
+            yield test1, Hexagon.cycle()
+
+            print "Origin, rank 1, index 0, counterclockwise"
+            test2 = [test1[-i] for i in xrange(6)]
+            yield test2, Hexagon.cycle(rotation=CCW_TURN)
+
+            # STUB: Non-origin, rank 5, index 6, clockwise
+
+            # STUB: Origin, rank 5, index 13, counterclockwise
+
+        for test in cycle_test_cases():
+            for expected, observed in itertools.izip(*test):
+                print "    ", expected, observed
+                assert expected == observed
