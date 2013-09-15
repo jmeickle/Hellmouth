@@ -121,7 +121,7 @@ class Hexagon(Shape):
     @classmethod
     def get_max_index(cls, rank):
         """Return the maximum index for a rank."""
-        return rank * 6 - 1
+        return rank * 6 - 1 if rank > 0 else 0
 
     """Hexagon point methods."""
 
