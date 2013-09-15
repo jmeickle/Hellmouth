@@ -53,7 +53,14 @@ class Hexagon(Shape):
 
     # List of headings
     headings = [NW, NE, CE, SE, SW, CW]
-    heading_names = {}
+    heading_names = {
+        NW: "Northwest",
+        NE: "Northeast",
+        CE: "East",
+        SE: "Southeast",
+        SW: "Southwest",
+        CW: "West"
+    }
 
     def __init__(self, pos):
         assert False, "Tried to instantiate an abstract Hexagon."
