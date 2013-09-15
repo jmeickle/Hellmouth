@@ -28,8 +28,8 @@ from src.lib.util.geometry.space import *
 class Hexagon(Shape):
     """Class for hexagonal shape."""
 
-    # Number of edges
-    edges = 6
+    # Number of faces
+    faces = 6
 
     # No location
     ANYWHERE = None
@@ -103,9 +103,9 @@ class Hexagon(Shape):
     #     if heading not in headings:
     #         return heading
     #     else:
-    #         edge = Hexagon.get_edge(heading)
+    #         face = Hexagon.get_face(heading)
 
-    #         Hexagon.rotate_edge(edge, rotation)
+    #         Hexagon.rotate_face(face, rotation)
 
     #         rotation[heading]
 
@@ -141,30 +141,30 @@ class Hexagon(Shape):
         assert index <= max_index, "Rank %s: index %s greater than max index %s" % (rank, index, max_index)
         assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
 
-        # Determine the starting edge and the position along it.
-        edge = cls.get_edge_from_index(rank, index)
-        position = cls.get_edge_position_from_index(rank, index)
+        # Determine the starting face and the position along it.
+        face = cls.get_face_from_index(rank, index)
+        position = cls.get_face_position_from_index(rank, index)
 
-        # Set the coordinates to the starting edge's coordinates.
-        coords = cls.get_pole(origin, rank, heading=cls.headings[edge])
+        # Set the coordinates to the starting face's coordinates.
+        coords = cls.get_pole(origin, rank, heading=cls.headings[face])
 
-        # Rotate the starting edge by one turn clockwise.
-        edge = cls.rotate_edge(edge, CW_TURN)
+        # Rotate the starting face by one turn clockwise.
+        face = cls.rotate_face(face, CW_TURN)
 
         # Update the coordinates if required by the position.
         if position > 0:
-            # Rotate the starting edge an additional turn clockwise in order to 
-            # point towards the next position along the edge).
-            position_edge = cls.rotate_edge(edge, CW_TURN * 2)
-            position_heading = cls.headings[position_edge]
+            # Rotate the starting face an additional turn clockwise in order to
+            # point towards the next position along the face).
+            position_face = cls.rotate_face(face, CW_TURN * 2)
+            position_heading = cls.headings[position_face]
 
             # Update the coordinates.
             coords = cls.add(coords, cls.mult(position_heading, position))
 
-        # Flip edge direction and heading if rotating counterclockwise.
+        # Flip face direction and heading if rotating counterclockwise.
         if rotation == CCW_TURN:
-            edge = cls.rotate_edge(edge, 4)
-            heading = cls.headings[edge]
+            face = cls.rotate_face(face, 4)
+            heading = cls.headings[face]
 
         # Yield the initial index and coordinates.
         yield index, coords
@@ -176,20 +176,20 @@ class Hexagon(Shape):
 
             # Handle index and position rollover.
             if position < 0:
-                edge = cls.rotate_edge(edge, rotation)
-                heading = cls.headings[edge]
+                face = cls.rotate_face(face, rotation)
+                heading = cls.headings[face]
                 position = rank
                 if index < 0:
                     index = max_index
             elif position > rank:
-                edge = cls.rotate_edge(edge, rotation)
-                heading = cls.headings[edge]              
+                face = cls.rotate_face(face, rotation)
+                heading = cls.headings[face]
                 position = 0
                 if index > max_index:
                     index = 0
             else:
-                edge = cls.rotate_edge(edge, rotation)
-                heading = cls.headings[edge]
+                face = cls.rotate_face(face, rotation)
+                heading = cls.headings[face]
 
             # Add the current heading to the coordinates.
             print "heading += %s" % cls.heading_names[heading]
