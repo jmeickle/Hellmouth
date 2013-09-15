@@ -44,6 +44,13 @@ class Point(numpy.ndarray):
     def __ne__(self, other):
         return not numpy.array_equal(self, other)
 
+    def __repr__(self):
+        return "<%s%s>" % (self.__class__.__name__, self.coordinates)
+
+    @property
+    def coordinates(self):
+        return tuple(self.flat)
+
     @property
     def x(self):
         """Return the first coordinate."""
