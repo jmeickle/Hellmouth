@@ -174,7 +174,6 @@ class Hexagon(Shape):
         assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
         max_index = cls.get_max_index(rank)
         assert index <= max_index, "Rank %s: index %s greater than max index %s" % (rank, index, max_index)
-        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
 
         # Determine the starting face and the position along it.
         face = cls.get_face_from_index(rank, index)
