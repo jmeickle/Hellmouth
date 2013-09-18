@@ -57,6 +57,13 @@ WW = (-1, 0)
 # List of offsets.
 offsets = [NN, EE, SS, WW]
 
+import itertools
+
+def directions(start=NW):
+    """Return an iterator over hexagonal directions, starting from a provided direction."""
+    index = dirs.index(start)
+    return itertools.cycle(dirs[index:] + dirs[:index])
+
 # Return a direction to face in after a number of turns right.
 def rot(dir, turns=1):
     if dir == CC:
