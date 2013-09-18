@@ -227,7 +227,6 @@ class Hexagon(Shape):
                 heading = cls.headings[face]
 
             # Add the current heading to the coordinates.
-            print "heading += %s" % cls.heading_names[heading]
             coords += heading
 
             # Yield the current index and coordinates.
