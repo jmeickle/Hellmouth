@@ -167,6 +167,11 @@ class Hexagon(Shape):
         """Yield indexes and points for hexagons starting at an index on a rank
         and continuing indefinitely along a rotation.
         """
+        if rank == 0:
+            yield 0, origin
+            return
+
+        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
         max_index = cls.get_max_index(rank)
         assert index <= max_index, "Rank %s: index %s greater than max index %s" % (rank, index, max_index)
         assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
