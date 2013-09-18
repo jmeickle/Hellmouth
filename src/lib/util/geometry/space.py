@@ -36,7 +36,7 @@ class Point(numpy.ndarray):
 
     def __new__(cls, *args):
         """Return a Point initialized from the sequence of provided arguments."""
-        return numpy.asarray(numpy.array(args)).view(cls)
+        return numpy.asarray(numpy.array(args)).reshape((len(args), 1)).view(cls)
 
     def __eq__(self, other):
         return numpy.array_equal(self, other)
