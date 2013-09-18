@@ -21,6 +21,36 @@ traveling along a heading until reaching that rank.
 _index_: Given an origin, rank, heading, and rotation, an enumeration of the
 order in which hexagons at that rank are visited.
 """
+#                               vertex 1
+#           /.\                  / \
+# y-axis   / . \                /   \
+#   \\    /  .  \              /     \
+#   ||   /   .   \ (3,-3)     /       \  edge 1
+#    \\ /    .    *          /         \
+#     \\     .     \        /           \
+#     ||     .      \      /             \
+#    / \\    .       \    /               \
+#   /   \\   .        \  /                 \
+#  /.   ||   .       (2,-4)                 \ vertex 2
+#  |  .  \\  .    .    ||                   |
+#  |    . \\ .  .      ||                   | 
+#  |      .||..        ||                   |  edge 2
+# ===========O========(0,3)=======O=========|==
+#  |       (0,0)       ||       (0,6)       |  x-axis
+#  |      .  .\\.      ||                   |
+#  |    .    . \\ .    ||                   |
+#  |  .      .  ||  .  ||                   |
+#  |.        .  \\    (2,2)                 |
+#  \     *   .   \\    /\                   / vertex 3
+#   \ (-2,2) .   ||   /  \                 /
+#    \       .   \\  /    \               /
+#     \      .    \\/      \             /
+#      \     .    ||        \           /
+#       \    .    \\         \         /   edge 3
+#        \   .   / \\         \       /
+#         \  .  /  ||          \     /
+#          \ . /   \\           \   /
+#           \./     \\           \ /
 
 from src.lib.util.geometry.shape import Shape
 from src.lib.util.geometry.space import *
