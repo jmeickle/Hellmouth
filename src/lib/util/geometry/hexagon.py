@@ -110,8 +110,8 @@ class Hexagon(Shape):
         return index / rank
 
     @classmethod
-    def get_face_position_from_index(cls, rank, index):
-        """Return the position on the nearest face, given a rank and an index into it."""
+    def get_position_from_index(cls, rank, index):
+        """Return the counterclockwise position along the nearest face, given a rank and an index into it."""
         return index % rank
 
     @classmethod
@@ -173,7 +173,7 @@ class Hexagon(Shape):
 
         # Determine the starting face and the position along it.
         face = cls.get_face_from_index(rank, index)
-        position = cls.get_face_position_from_index(rank, index)
+        position = cls.get_position_from_index(rank, index)
 
         # Set the coordinates to the starting face's coordinates.
         coords = cls.get_pole(origin, rank, heading=cls.headings[face])
