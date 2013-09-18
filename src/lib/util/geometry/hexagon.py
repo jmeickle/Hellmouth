@@ -194,7 +194,7 @@ class Hexagon(Shape):
             position_heading = cls.headings[position_face]
 
             # Update the coordinates.
-            coords = cls.add(coords, cls.mult(position_heading, position))
+            coords += position_heading * position
 
         # Flip face direction and heading if rotating counterclockwise.
         if rotation == CCW_TURN:
