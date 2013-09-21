@@ -39,6 +39,7 @@ class Kernel(object):
             self.services[service_name] += service
             service.kernel = self
             service.add_helpers()
+            # TODO: add asserts back in
             # assert service_name not in self.services,\
             #     "Failed to register service %s at service name %s: service %s already registered there."\
             #     % (service, service_name, self.services[service_name]))
@@ -49,6 +50,7 @@ class Kernel(object):
             self.services[service_name] -= service
             service.remove_helpers()
             del service.kernel
+            # TODO: add asserts back in
             # assert hasattr(self, service_name),\
             #     "Failed to deregister service at service name %s: no service is registered there."\
             #     % (service, service_name, getattr(self, service_name))
