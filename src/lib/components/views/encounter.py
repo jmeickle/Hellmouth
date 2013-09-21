@@ -320,11 +320,13 @@ class Stats(View):
 
         # Show the chosen weapon/attack option combination.
         weapon, wielding_mode = self.get_controller().call("Combat", "get_view_data").get_result()
+
         # Wielding mode, for now:
         #  0      1        2      3      4      5       6,     7
         # trait, name, damage, d.type, reach, parry, min ST, hands
         trait, attack_name, damage, damage_type, reach_def, parry, min_st, hands = wielding_mode
         trait_level = self.get_controller().trait(trait)
+        # HACK: Should ask the item to display a shorter appearance.
         appearance = weapon.appearance()[:20]
         manipulator = weapon.call("Wielded", "get_manipulator").get_result()
 
@@ -339,7 +341,6 @@ class Stats(View):
         except TypeError:
             exit("reach: %s" % reach)
 
-        # HACK: Should ask the item to display a shorter appearance.
         self.cline("(/*) %s" % (appearance))
 
         color = "white-black"
