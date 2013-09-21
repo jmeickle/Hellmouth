@@ -2,6 +2,7 @@
 keyin and draw loops, but do not have direct access to drawing methods."""
 
 from src.lib.agents.contexts.context import Context
+from src.lib.core.services.service import ServiceMixin
 from src.lib.util.define import *
 from src.lib.util import key
 from src.lib.util.mixin import DebugMixin
@@ -229,23 +230,25 @@ class Component(object):
         method and create subwindows."""
         return window
 
-class RootComponent(Component):
+class RootComponent(Component, ServiceMixin):
     """The first component called, containing window information."""
-    def __init__(self, window):
+    def __init__(self, kernel):
         Component.__init__(self)
-        self.window = window
+        self.game = None
+        self.kernel = kernel
         self.relaunch = True
 
-    def launch(self, selected_module):
+    def launch(self, package_choice):
         """Spawn the selected module's main.Game as a child Component and then
         launch it."""
-        # Import the chosen game module (as src.games.__GAMEMODE__.main.py).
-        # TODO: Permit a classname other than 'main'
-        module_name, module_info = selected_module
-        gamemodule = __import__('src.games.%s.main' % module_name, globals(), locals(), ['main'])
+        # TODO: Handle multiple game folders
+        # TODO: Permit class names other than 'main'
+        package_name, package_info = package_choice # e.g., hellmouth, Hellmouth, <description>, <version>
+        game_module = __import__('src.games.%s.main' % package_name, globals(), locals(), ['main'])
+        game_class = game_module.main
 
         # Spawn the game as a child Component, and then launch it.
-        self.game = self.spawn(gamemodule.main())
+        self.game = self.spawn(game_class())
         self.game.launch()
 
     def loop(self):
@@ -256,7 +259,7 @@ class RootComponent(Component):
         if not self.children:
             self.alive = False
 
-        if self.alive:
+        if self.alive and self.game:
             self.game.loop()
 
     def after_loop(self):
