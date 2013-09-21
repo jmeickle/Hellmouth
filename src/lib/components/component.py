@@ -113,12 +113,9 @@ class Component(object):
         if self.parent:
             if hasattr(self.parent, 'window'):
                 self.window = self.get_window(self.parent.window)
-            if hasattr(self.parent, 'map'):
-                self.map = self.parent.map
-            if hasattr(self.parent, 'level'):
-                self.level = self.parent.level
-            if hasattr(self.parent, 'zoom'):
-                self.zoom = self.parent.zoom
+            for attr in ('kernel', 'map', 'level', 'zoom'):
+                if hasattr(self.parent, attr):
+                    setattr(self, attr, getattr(self.parent, attr))
 
         for child in self.children:
             child.inherit()
