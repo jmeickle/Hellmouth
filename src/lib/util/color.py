@@ -5,11 +5,6 @@
 import curses
 
 class Color:
-    """Start curses colors when this class is imported."""
-    if __name__ == '__main__':
-        curses.initscr()
-        curses.start_color()
-
     # Basic color names and definitions.
     curses_colors = [
         ('black', curses.COLOR_BLACK),
@@ -49,7 +44,17 @@ class Color:
             pairs["%s-%s" % (fg[0], bg[0])] = id
             id += 1
 
-# TEST: Print colors.
-if __name__ == '__main__':
-    print Color.pairs
-    print len(Color.pairs)
+    @staticmethod
+    def attr(color=None, attr=None):
+        """Set up curses attributes on a string."""
+        # TODO: Handle anything but basic colors
+        # TODO: Replace with a curses mixin
+        if color is not None:
+            col = Color.pairs.get(color)
+            if col is None:
+                fg, bg = color.split("-")
+                fg = random.choice(Color.colors[fg])
+                bg = random.choice(Color.colors[bg])
+                col = Color.pairs.get(fg+"-"+bg)
+            return curses.color_pair(col)
+        return 0

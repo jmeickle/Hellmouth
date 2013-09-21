@@ -10,6 +10,7 @@ from src.lib.components.views.screens.screen import Screen
 from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt, ListPrompt
 
 from src.lib.agents.contexts.context import Context
+from src.lib.util.color import Color
 from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.define import *
 from src.lib.util import debug
@@ -177,7 +178,7 @@ class MainMap(View):
 
         # TODO: Log this somewhere useful but don't assert on it.
         assert self.undrawable((draw_x, draw_y)) is False, "hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
         except curses.error: pass
 
     # Draw to offset hexes, i.e., the 'blank' ones.
@@ -197,7 +198,7 @@ class MainMap(View):
 
         # TODO: Log this somewhere useful but don't assert on it.
         assert self.undrawable((draw_x, draw_y)) is False, "offset hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        try: self.window.addch(draw_y, draw_x, glyph, self.attr(col, attr))
+        try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
         except curses.error: pass
 
     # Accepts viewport_rank offsets to figure out what part of the map is visible.

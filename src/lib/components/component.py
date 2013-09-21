@@ -1,9 +1,6 @@
 """Components are the minimal base user interface class. They participate in
 keyin and draw loops, but do not have direct access to drawing methods."""
 
-import curses
-
-from src.lib.util.color import Color
 from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
 from src.lib.util import key
@@ -170,20 +167,6 @@ class Component(object):
         if x >= TERM_X or y >= TERM_Y:
             return True
         return False
-
-    def attr(self, color=None, attr=None):
-        """Set up curses attributes on a string."""
-        # TODO: Handle anything but basic colors
-        # TODO: Replace with a curses mixin
-        if color is not None:
-            col = Color.pairs.get(color)
-            if col is None:
-                fg, bg = color.split("-")
-                fg = random.choice(Color.colors[fg])
-                bg = random.choice(Color.colors[bg])
-                col = Color.pairs.get(fg+"-"+bg)
-            return curses.color_pair(col)
-        return 0
 
     def _keyin(self, c):
         """Recurse through children trying their keyin functions until you've
