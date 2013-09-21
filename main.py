@@ -66,7 +66,9 @@ loop += kernel.service("input")
 loop += kernel.service("output")
 
 # Set game mode if not provided.
-if not arguments.get("gamemode"):
+if arguments.get("gamemode"):
+    root.launch((arguments.get("gamemode"), None))
+else:
     def get_choices():
             """Yield an iterator over game choices."""
             for module_folder in arguments["module_folders"]:
@@ -87,8 +89,6 @@ if not arguments.get("gamemode"):
 
         # Spawn the game choice menu from the root component.
         root.spawn(choice_menu)
-else:
-    root.launch((arguments.get("gamemode"), None))
 
 # Start the main game loop.
 while kernel.loop():
