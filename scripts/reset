@@ -1,8 +1,8 @@
 # Delete all .pyc files
-find . -name *.pyc -delete
+find . -name '*.pyc' -delete
 
 # Delete all saves
 rm -rf saves
 
-# Delete the debug log
+# Delete all logs
 rm *.log
