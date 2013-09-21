@@ -78,6 +78,8 @@ class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
         self.choices = kwargs.get("choices", [])
+        self.choice_formatter = kwargs.get("choice_formatter", lambda choice: choice)
+
         self.selector = Scroller(len(self.choices) - 1)
         self.spawn(self.selector)
 
@@ -94,12 +96,11 @@ class MenuScreen(Screen):
         self.cline("-"*(self.x))
         self.x_acc += 2
 
-        for x in range(len(self.choices)):
-            module_name, module_info = self.choices[x]
-            if x == self.selector.index:
-                self.cline(module_info.name, "green-black")
+        for index, choice in enumerate(self.choices):
+            if index == self.selector.index:
+                self.cline(self.choice_formatter(choice), "green-black")
             else:
-                self.cline(module_info.name)
+                self.cline(self.choice_formatter(choice))
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
