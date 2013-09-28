@@ -2,7 +2,7 @@
 
 from src.lib.util.o_dict import OrderedDict
 
-class RegistryContainerMixin(object):
+class RegistryMixin(object):
     """A mixin that defines a class as a registry container."""
     container_class = None
 
@@ -18,10 +18,10 @@ class RegistryContainerMixin(object):
         self.container_class = value
 
 # TODO: RegistrySet.
-# class RegistrySet(RegistryContainerMixin, set):
+# class RegistrySet(RegistryMixin, set):
 #     pass
 
-class RegistryList(RegistryContainerMixin, list):
+class RegistryList(RegistryMixin, list):
     """A list of entries in a registry."""
     def __init__(self, *args):
         """Set this Registry's container class and then instantiate it with the remaining arguments."""
@@ -58,7 +58,7 @@ class RegistryList(RegistryContainerMixin, list):
             finally:
                 return self
 
-class RegistryDict(RegistryContainerMixin, OrderedDict):
+class RegistryDict(RegistryMixin, OrderedDict):
     """An ordered dictionary that stores values in instances of a container class."""
     def __init__(self, *args, **kwargs):
         """Set this Registry's container class and then instantiate it with the remaining arguments."""
@@ -79,5 +79,6 @@ class RegistryDict(RegistryContainerMixin, OrderedDict):
         """Return a new instance of this RegistryDict's container class when a missing key is used to index into it."""
         return self.container
 
-def RegistryContainerFactory(name, cls, **attributes):
+def RegistryFactory(name, cls, **attributes):
+    """Return a new subclass of a provided Registry class."""
     return type(name, (cls,), attributes)

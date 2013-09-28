@@ -1,14 +1,14 @@
 """The kernel for Unicursal, a Python roguelike framework."""
 
-from src.lib.util.registry import RegistryContainerFactory, RegistryDict, RegistryList
+from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
 from src.lib.core.services.loop import LoopService
 
 class Kernel(object):
     def __init__(self):
         # Define a list-like container for service registration.
-        ServiceList = RegistryContainerFactory("ServiceList", RegistryList)
+        ServiceList = RegistryFactory("ServiceList", RegistryList)
         # Define a dict-like container for service name registration.
-        ServiceNameRegistry = RegistryContainerFactory("ServiceNameRegistry", RegistryDict, container_class=ServiceList)
+        ServiceNameRegistry = RegistryFactory("ServiceNameRegistry", RegistryDict, container_class=ServiceList)
         # Populate the service name registry with a loop service.
         self.services = ServiceNameRegistry()
         self.register_services(loop=LoopService())
