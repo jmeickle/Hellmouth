@@ -2,7 +2,7 @@ from src.lib.agents.terrain.terrain import Terrain
 
 class Corn(Terrain):
     def __init__(self, terrain_type=None):
-        Terrain.__init__(self)
+        super(Corn, self).__init__()
         self.name = "row of corn"
         self.glyph = "|"
         self.color = "yellow-black"
@@ -14,7 +14,7 @@ class Corn(Terrain):
 
 class TrampledCorn(Terrain):
     def __init__(self, terrain_type=None):
-        Terrain.__init__(self)
+        super(TrampledCorn, self).__init__()
         self.name = "section of trampled corn"
         self.glyph = ","
         self.color = "yellow-black"
