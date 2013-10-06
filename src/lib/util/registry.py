@@ -6,17 +6,6 @@ class RegistryMixin(object):
     """A mixin that defines a class as a registry container."""
     container_class = None
 
-    @property
-    def container(self):
-        """Return a new instance of this registry container's container class."""
-        return self.container_class()
-
-    @container.setter
-    def container(self, value):
-        """Set this registry container's container class, if possible."""
-        assert not any(self), "Tried to change the container class of a RegistryDict with existing contents: %s" % self
-        self.container_class = value
-
 # TODO: RegistrySet.
 # class RegistrySet(RegistryMixin, set):
 #     pass
@@ -77,7 +66,8 @@ class RegistryDict(RegistryMixin, OrderedDict):
 
     def __missing__(self, key):
         """Return a new instance of this RegistryDict's container class when a missing key is used to index into it."""
-        return self.container
+        if self.container_class:
+            return self.container_class()
 
 def RegistryFactory(name, cls, **attributes):
     """Return a new subclass of a provided Registry class."""
