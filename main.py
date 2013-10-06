@@ -1,7 +1,11 @@
 from src.lib.core.kernel import Kernel
+from src.lib.core.services.loop import LoopService
+
 from src.lib.components.component import RootComponent
+
 from src.lib.util import debug
 from src.lib.util.define import *
+from src.lib.util.io.keyin import KeyinService
 from src.lib.util import system
 
 debug.log("Completed all imports.")
@@ -37,7 +41,7 @@ arguments["module_folders"] = ["src/games"]
 # Initialize the root Component.
 root = RootComponent(kernel)
 
-# Register the root Component with the kernel.
+# Register the root Component with the Kernel.
 kernel.register_services(root=root)
 
 # print "Kernel services:", kernel.services
@@ -45,29 +49,36 @@ kernel.register_services(root=root)
 # # print "retval:", kernel.service("loop").wait()
 # print "Do a kernel wait"
 # print kernel.wait(root)
-loop = kernel.service("loop")
-loop += root
 
-# Register the keyin service.
+# Initialize the loop Service, which contains only the root Component at start.
+loop = LoopService(root)
+
+# Register the loop Service with the Kernel.
+kernel.register_services(loop=loop)
+
+# Initialize the keyin Service.
+keyin = KeyinService()
+
+# Register the keyin Service with the Kernel.
 # TODO: Have the arguments and game decide this.
-from src.lib.util.io.keyin import KeyinService
-kernel.register_services(keyin=KeyinService())
-loop = kernel.service("loop")
+kernel.register_services(keyin=keyin)
 loop += kernel.service("keyin")
 
-# Register input and output services.
+# Import the relevant input and output services.
 # TODO: Have the arguments and game decide this.
 if arguments["displaymode"] == displayflags["curses"]:
-    """Launch the game in curses mode."""
+    # Launch the game in curses mode
     from src.lib.core.services.curses_io import CursesInputService as input_service, CursesOutputService as output_service
+
+# Initialize the input and output Services and register them with the Kernel.
 kernel.register_services(input=input_service(), output=output_service())
-loop = kernel.service("loop")
 loop += kernel.service("input")
 loop += kernel.service("output")
 
-# Set game mode if not provided.
+# Launch the game, if the game mode was provided.
 if arguments.get("gamemode"):
     root.launch((arguments.get("gamemode"), None))
+# Launch a menu to select the game mode.
 else:
     def get_choices():
             """Yield an iterator over game choices."""
@@ -78,6 +89,7 @@ else:
 
     # Create a game choice menu that launches after a selection is made.
     with kernel.service("output") as display:
+        # TODO: Generalize from curses.
         # Set the root Component's window to the curses display.
         root.window = display
 
