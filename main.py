@@ -68,7 +68,8 @@ loop += kernel.service("keyin")
 # TODO: Have the arguments and game decide this.
 if arguments["displaymode"] == displayflags["curses"]:
     # Launch the game in curses mode
-    from src.lib.core.services.curses_io import CursesInputService as input_service, CursesOutputService as output_service
+    from src.lib.core.services.curses.input import CursesInputService as input_service
+    from src.lib.core.services.curses.output import CursesOutputService as output_service
 
 # Initialize the input and output Services and register them with the Kernel.
 kernel.register_services(input=input_service(), output=output_service())
