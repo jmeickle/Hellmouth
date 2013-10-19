@@ -3,12 +3,16 @@
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
 from src.lib.core.services.loop import LoopService
 
+# Define a list-like container for storing registered services.
+ServiceList = RegistryFactory("ServiceList", RegistryList)
+# Define a dict-like container for service registration.
+ServiceRegistry = RegistryFactory("ServiceRegistry", RegistryDict, container_class=ServiceList)
+
 class Kernel(object):
-    def __init__(self):
-        # Define a list-like container for service registration.
-        ServiceList = RegistryFactory("ServiceList", RegistryList)
-        # Define a dict-like container for service name registration.
-        ServiceNameRegistry = RegistryFactory("ServiceNameRegistry", RegistryDict, container_class=ServiceList)
+    """The Kernel is a singleton that coordinates a Unicursal application. It is
+    responsible for service registration and orchestration.
+    """
+    def __init__(self, **services):
         # Populate the service name registry with a loop service.
         self.services = ServiceNameRegistry()
         self.register_services(loop=LoopService())
