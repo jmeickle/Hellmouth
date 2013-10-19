@@ -1,11 +1,11 @@
 from src.lib.core.kernel import Kernel
 from src.lib.core.services.loop import LoopService
+from src.lib.core.services.keyin import KeyinService
 
 from src.lib.components.component import RootComponent
 
 from src.lib.util import debug
 from src.lib.util.define import *
-from src.lib.util.io.keyin import KeyinService
 from src.lib.util import system
 
 debug.log("Completed all imports.")
