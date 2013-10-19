@@ -1,6 +1,6 @@
 """Defines registry container classes."""
 
-from src.lib.util.o_dict import OrderedDict
+from collections import OrderedDict
 
 class RegistryMixin(object):
     """A mixin that defines a class as a registry container."""
