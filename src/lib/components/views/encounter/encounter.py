@@ -17,7 +17,6 @@ from src.lib.util.define import *
 from src.lib.util import debug
 from src.lib.util.hex import *
 from src.lib.util import text
-from src.lib.util.mixin import DebugMixin
 
 from src.lib.data.skills import skill_list
 
@@ -719,7 +718,7 @@ class CharacterSheet(View):
 # TODO: Add a health screen.
 #class Health(View):
 
-class Debugger(View, DebugMixin):
+class Debugger(View):
     """Displays debugging information."""
     default_arguments = {
         # "x" : PANE_X,

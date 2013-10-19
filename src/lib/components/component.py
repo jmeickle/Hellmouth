@@ -5,7 +5,6 @@ from src.lib.agents.contexts.context import Context
 from src.lib.core.services.service import ServiceMixin
 from src.lib.util.define import *
 from src.lib.util import key
-from src.lib.util.mixin import DebugMixin
 import random
 
 class Component(object):
@@ -262,10 +261,6 @@ class RootComponent(Component, ServiceMixin):
     def after_loop(self):
         """Return information for after the RootComponent's loop finishes."""
         return {"relaunch" : self.relaunch}
-
-    def get_view_data(self, view):
-        if isinstance(view, DebugMixin):
-            return self.get_descendents()
 
 def override_defaults(fn):
     """Decorator to override class defaults with provided kwargs."""
