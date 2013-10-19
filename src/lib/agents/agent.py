@@ -9,8 +9,11 @@ from src.lib.util.result import Result, SingleResult, ActionResult
 from src.lib.util.hex import *
 from src.lib.util.log import Log
 from src.lib.util.queue import Queue
+from src.lib.util.trait import Traitable
 
 class Agent(object):
+    __metaclass__ = Traitable
+
     # TODO: What Components do all Agents have?
     components = []
 
