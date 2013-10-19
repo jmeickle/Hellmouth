@@ -40,7 +40,7 @@ from src.lib.agents.contexts.context import action_context, command_context
 
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util import debug
-from src.lib.util.mixin import Mixin
+from src.lib.util.trait import Trait
 
 """Actions."""
 
@@ -413,9 +413,9 @@ class Wielded(Component):
         elif self.wielding_mode < 0:
             self.wielding_mode = len(self.wielding_modes) - 1
 
-"""Mixins."""
+"""Traits."""
 
-class ReachMixin(Mixin):
+class Reach(Trait):
     """Provides the ability to reach a target with a manipulator."""
 
     def could_reach(self):
@@ -434,7 +434,7 @@ class ReachMixin(Mixin):
     #     """Whether the Agent is reaching a target with a manipulator."""
     #     return True
 
-class TouchMixin(Mixin):
+class Touch(Trait):
     """Provides the ability to touch a target with a manipulator."""
 
     def could_touch(self):
@@ -449,7 +449,7 @@ class TouchMixin(Mixin):
     # def is_touch(self, target, manipulator):
     #     return True
 
-class UnTouchMixin(Mixin):
+class UnTouch(Trait):
     """Provides the ability to stop touching a target with a manipulator."""
 
     def could_untouch(self):
@@ -467,11 +467,7 @@ class UnTouchMixin(Mixin):
     # def is_untouch(self, target, manipulator):
     #     return True
 
-class TouchingAgent(ReachMixin, TouchMixin, UnTouchMixin):
-    """Convenience Mixin to represent an Agent with touching capability."""
-    pass
-
-class GraspMixin(Mixin):
+class Grasp(Trait):
     """Provides the ability to hold a target with a manipulator."""
 
     def could_grasp(self):
@@ -492,7 +488,7 @@ class GraspMixin(Mixin):
             return True
         return False
 
-class UnGraspMixin(Mixin):
+class UnGrasp(Trait):
     """Provides the ability to let go of a target with a manipulator."""
 
     def could_ungrasp(self):
@@ -513,11 +509,7 @@ class UnGraspMixin(Mixin):
             return True
         return False
 
-class GraspingAgent(TouchingAgent, GraspMixin, UnGraspMixin):
-    """Convenience Mixin to represent an Agent with grasping capability."""
-    pass
-
-class WieldMixin(Mixin):
+class Wield(Trait):
     """Provides the ability to raise a target grasped with a manipulator outward
     from your body.
     """
@@ -545,7 +537,7 @@ class WieldMixin(Mixin):
             return True
         return False
 
-class UnWieldMixin(Mixin):
+class UnWield(Trait):
     """Provides the ability to lower a target grasped with a manipulator
     inward towards your body.
     """
@@ -560,7 +552,7 @@ class UnWieldMixin(Mixin):
             return True
         return False
 
-class ReadyMixin(Mixin):
+class Ready(Trait):
     """Provides the ability to hold a wielded target in a way permitting its use as a tool."""
     # STUB
     def could_ready(self):
@@ -583,7 +575,7 @@ class ReadyMixin(Mixin):
         # TODO: access via method instead
         return target.get_component("Wielded").ready
 
-class UnReadyMixin(Mixin):
+class UnReady(Trait):
     """Provides the ability to stop holding a wielding a target in a way permitting its use as a tool."""
 
     # STUB
@@ -607,7 +599,7 @@ class UnReadyMixin(Mixin):
         # TODO: fix
         return not self.is_ready(target)
 
-class ContactMixin(Mixin):
+class Contact(Trait):
     """Provides the ability to touch a target with a second target held in a
     manipulator.
     """
@@ -626,7 +618,7 @@ class ContactMixin(Mixin):
         """Touch a target with an instrument."""
         return True
 
-class UnContactMixin(Mixin):
+class UnContact(Trait):
     """Provides the ability to stop touching a target with a second target held
     in a manipulator.
     """
@@ -642,12 +634,7 @@ class UnContactMixin(Mixin):
         """Stop touching a target with an instrument."""
         return True
 
-class HoldingAgent(GraspingAgent, WieldMixin, UnWieldMixin, ReadyMixin, UnReadyMixin, ContactMixin, UnContactMixin):
-    """Convenience Mixin to represent an Agent that can manipulate held Agents
-    in a variety of ways."""
-    pass
-
-class ForceMixin(Mixin):
+class Force(Trait):
     """Provides the ability to exert force to reposition a target whose mass is controlled by you."""
 
     # STUB
@@ -669,7 +656,7 @@ class ForceMixin(Mixin):
     #     """Exert force to reposition a target whose mass is controlled by you."""
     #     return True
 
-class SlideMixin(Mixin):
+class Slide(Trait):
     """Provides the ability to exert force to drag, slide, or shove a target against a surface."""
 
     # STUB
@@ -682,7 +669,7 @@ class SlideMixin(Mixin):
         """Exert force to drag, slide, or shove a target against a surface."""
         return True
 
-class HandleMixin(Mixin):
+class Handle(Trait):
     """Provides the ability to exert force to reposition or manipulate part of a target.
 
     n.b. - You can handle some targets even if you can't Force or Slide them."""
@@ -705,7 +692,7 @@ class HandleMixin(Mixin):
     # def is_handle(self, target, manipulator):
     #     return True
 
-class GetMixin(Mixin):
+class Get(Trait):
     """Provides the ability to get a target from an environment."""
 
     # STUB
@@ -727,7 +714,7 @@ class GetMixin(Mixin):
     # def is_get(self, target, environment, manipulator):
     #     return True
 
-class PutMixin(Mixin):
+class Put(Trait):
     """Provides the ability to put a target into an environment."""
 
     def could_put(self):
@@ -744,16 +731,11 @@ class PutMixin(Mixin):
         environment._put(target)
         return True
 
-class PositioningAgent(TouchingAgent, ForceMixin, SlideMixin, HandleMixin, GetMixin, PutMixin):
-    """Convenience Mixin to represent an Agent that can use its manipulators to position other Agents."""
-    pass
-
-class UseMixin(Mixin):
+class Use(Trait):
     """Provides the ability to use a target for an intended function.
 
-    Unlike many other Mixins, there is no corresponding 'Unuse' Trait because
+    Unlike many other Traits, there is no corresponding 'Unuse' Trait because
     this is an instantaneous effect with no 'on' state."""
-    # TODO: ^ What about canceling use of an item?
 
     # STUB
     def could_use(self):
@@ -774,10 +756,10 @@ class UseMixin(Mixin):
     # def is_use(self, target, manipulator, use):
     #     return True
 
-class UseAtMixin(Mixin):
+class UseAt(Trait):
     """Provides the ability to use a target at a second target.
 
-    Unlike many other Mixins, there is no corresponding 'UnuseAt' Trait because
+    Unlike many other Traits, there is no corresponding 'UnuseAt' Trait because
     this is an instantaneous effect with no 'on' state."""
     # TODO: ^ What about canceling use of an item?
 
@@ -800,11 +782,7 @@ class UseAtMixin(Mixin):
             return True
         return False
 
-class UsingAgent(TouchingAgent, UseMixin, UseAtMixin):
-    """Convenience Mixin to represent an Agent that use its manipulators to use other Agents."""
-    pass
-
-class StoreMixin(Mixin):
+class Store(Trait):
     """Provides the ability to store targets into a Container."""
 
     def could_store(self):
@@ -827,7 +805,7 @@ class StoreMixin(Mixin):
     # def is_store(self, target, manipulator, container):
     #     return True
 
-class UnstoreMixin(Mixin):
+class Unstore(Trait):
     """Provides the ability to unstore targets from a Container."""
 
     def could_unstore(self):
@@ -847,13 +825,16 @@ class UnstoreMixin(Mixin):
     #     """Whether you can unstore an item from a Container."""
     #     return True
 
-class StoringAgent(StoreMixin, UnstoreMixin):
-    """Convenience Mixin to represent an Agent that can use its manipulators to store items in Containers."""
-    pass
+"""Sets of manipulation Traits."""
 
-class ManipulatingAgent(HoldingAgent, PositioningAgent, UsingAgent, StoringAgent, Mixin):
-    """Convenience Mixin to represent an Agent with full Manipulation capabilities."""
-    pass
+Touching = {Reach, Touch, UnTouch}
+Positioning = Touching | {Force, Slide, Handle, Get, Put}
+Grasping = Touching | {Grasp, UnGrasp}
+Holding = Grasping | {Wield, UnWield, Ready, UnReady, Contact, UnContact}
+Using = Touching | {Use, UseAt}
+Storing = {Store, Unstore}
+
+Manipulating = Touching | Positioning | Grasping | Holding | Using | Storing
 
     # # Whether you believe you can store an item in your container.
     # # @checks_item_memory

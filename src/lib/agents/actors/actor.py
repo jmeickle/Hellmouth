@@ -6,7 +6,7 @@ from src.lib.agents.components.bodies import body
 from src.lib.agents.components.combat import Combat
 from src.lib.agents.components.container import Container
 from src.lib.agents.components.equipment import Equipment
-from src.lib.agents.components.manipulation import Manipulation, ManipulatingAgent
+from src.lib.agents.components.manipulation import Manipulating, Manipulation
 from src.lib.agents.components.status import Status
 from src.lib.agents.contexts.context import Context
 # TODO: Better data importing.
@@ -27,7 +27,7 @@ from src.lib.util.key import *
 from src.lib.util.log import Log
 from src.lib.util.text import *
 
-class Actor(Agent, ManipulatingAgent):
+class Actor(Agent|Manipulating):
     """Monster-like Agents. Most typically, players and monsters."""
 
     components = [Equipment, Combat, Container, Manipulation, Status]
