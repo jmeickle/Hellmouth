@@ -2,9 +2,6 @@ import curses
 
 from src.lib.core.services.service import ServiceMixin
 
-class CursesInputService(ServiceMixin):
-    pass
-
 class CursesOutputService(ServiceMixin):
     """Service providing curses output. Used as a context manager."""
     def __init__(self):
