@@ -53,7 +53,7 @@ order in which hexagons at that rank are visited.
 #           \./     \\           \ /
 
 from src.lib.util.geometry.shape import Shape
-from src.lib.util.geometry.space import *
+from src.lib.util.geometry.space import Point, CCW_TURN, NO_TURN, CW_TURN
 
 class Hexagon(Shape):
     """Class for hexagonal shape."""
