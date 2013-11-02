@@ -26,8 +26,50 @@ _volume_: A bounded region in a space.
 
 import numpy
 
-class Point(numpy.ndarray):
-    """Points are a convenience subclass around Numpy arrays.
+class Point(tuple):
+    """A `Point` is a sequence of coordinates that supports some vector-like
+    operations that tuples do not, such as multiplication and pairwise addition.
+    """
+
+    __slots__ = []
+
+    def __new__(cls, *args):
+        """Override __new__ to permit initialization as `Point(x, y, z, ...)`."""
+        return super(Point, cls).__new__(cls, args)
+
+    def __add__(self, other):
+        """Override addition to permit pairwise addition of `Point`s."""
+        assert isinstance(other, Point), "Attempted to add a non-`Point` to a `Point`."
+        assert len(self) == len(other), "Attempted pairwise addition of `Point`s with different lengths."
+        return Point(tuple(s+o for s, o in zip(self, other)))
+
+    def __sub__(self, other):
+        """Override subtraction to permit pairwise subtraction of `Point`s."""
+        assert isinstance(other, Point), "Attempted to subtract a non-`Point` from a `Point`."
+        assert len(self) == len(other), "Attempted pairwise subtraction of `Point`s with different lengths."
+        return Point(tuple(s-o for s, o in zip(self, other)))
+
+    def __repr__(self):
+        """Display `Point`s as `<Point(x, y, z, ...)>`."""
+        return "<%s%s>" % (self.__class__.__name__, self.coordinates)
+
+    @property
+    def x(self):
+        """Return this `Point`'s first coordinate."""
+        return self[0]
+
+    @property
+    def y(self):
+        """Return this `Point`'s second coordinate."""
+        return self[1]
+
+    @property
+    def z(self):
+        """Return this `Point`'s third coordinate."""
+        return self[2]
+
+class NumpyPoint(numpy.ndarray):
+    """`NumpyPoint`s are a convenience subclass around Numpy arrays.
 
     The ndarray override code is lifted from this scipy tutorial:
 
@@ -35,7 +77,7 @@ class Point(numpy.ndarray):
     """
 
     def __new__(cls, *args):
-        """Return a Point initialized from the sequence of provided arguments."""
+        """Return a `NumpyPoint` initialized from the sequence of provided arguments."""
         return numpy.asarray(numpy.array(args)).reshape((len(args), 1)).view(cls)
 
     def __eq__(self, other):
@@ -45,25 +87,27 @@ class Point(numpy.ndarray):
         return not numpy.array_equal(self, other)
 
     def __repr__(self):
+        """Display `NumpyPoint`s as `<NumpyPoint(x, y, z, ...)>`."""
         return "<%s%s>" % (self.__class__.__name__, self.coordinates)
 
     @property
     def coordinates(self):
+        """Return all of this `NumpyPoint`'s coordinates as a tuple."""
         return tuple(self.flat)
 
     @property
     def x(self):
-        """Return the first coordinate."""
+        """Return this `NumpyPoint`'s first coordinate."""
         return self[0]
 
     @property
     def y(self):
-        """Return the second coordinate."""
+        """Return this `NumpyPoint`'s second coordinate."""
         return self[1]
 
     @property
     def z(self):
-        """Return the third coordinate."""
+        """Return this `NumpyPoint`'s third coordinate."""
         return self[2]
 
 # Constants for rotations and turns.
