@@ -29,7 +29,6 @@ from src.lib.util.text import *
 
 class Actor(Agent|Manipulating):
     """Monster-like Agents. Most typically, players and monsters."""
-
     components = [Equipment, Combat, Container, Manipulation, Status]
 
     def __init__(self, components=[]):
