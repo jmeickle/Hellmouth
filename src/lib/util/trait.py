@@ -172,7 +172,7 @@ class Traitable(ABCMeta):
         return Traitable(composed_name, (traitable,), {}, trait_attributes)
 
     @staticmethod
-    def super(trait, obj):
+    def super(trait, instance):
         """Given a `Trait` and a `Traitable` instance, return a proxy object that
         delegates method calls to the most recently inherited `Traitable` class
         that was composed using that `Trait`.
@@ -184,6 +184,6 @@ class Traitable(ABCMeta):
         # TODO: Support a given Trait showing up more than once in the MRO.
         # TODO: Support non-__init__ calls via a proxy class
         # TODO: Confirm support for multiple inheritance.
-        for c in obj.__class__.__mro__:
-            if isinstance(c, Traitable) and trait == c.__traitattributes__.get('__init__'):
-                return super(c, obj)
+        for cls in instance.__class__.__mro__:
+            if isinstance(cls, Traitable) and trait == cls.__traitattributes__.get('__init__'):
+                return super(cls, instance)
