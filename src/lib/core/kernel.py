@@ -1,5 +1,7 @@
 """The kernel for Unicursal, a Python roguelike framework."""
 
+import inspect
+
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
 from src.lib.core.services.loop import LoopService
 
@@ -42,7 +44,7 @@ class Kernel(object):
         for service_name, service in services.items():
             self.services[service_name] += service
             service.kernel = self
-            service.add_helpers()
+            self.add_helpers(service)
             # TODO: add asserts back in
             # assert service_name not in self.services,\
             #     "Failed to register service %s at service name %s: service %s already registered there."\
@@ -52,7 +54,7 @@ class Kernel(object):
         """Deregister service instances from service names."""
         for service_name, service in services.items():
             self.services[service_name] -= service
-            service.remove_helpers()
+            self.remove_helpers(service)
             del service.kernel
             # TODO: add asserts back in
             # assert hasattr(self, service_name),\
@@ -78,3 +80,21 @@ class Kernel(object):
             return services[0]
         else:
             return None
+
+    @staticmethod
+    def helper(f):
+        """Mark as a Kernel helper method."""
+        f.__helper__ = True
+        return f
+
+    def add_helpers(self, service):
+        """Add a service's helper functions to the Kernel."""
+        for name, member in inspect.getmembers(service):
+            if name[0] != "_" and getattr(member, "__helper__", False):
+                setattr(self, name, getattr(member, "im_func", member).__get__(self, Kernel))
+
+    def remove_helpers(self, service):
+        """Remove a service's helper functions from the Kernel."""
+        for name, member in inspect.getmembers(service):
+            if name[0] != "_" and getattr(member, "__helper__", False):
+                delattr(self, name)
