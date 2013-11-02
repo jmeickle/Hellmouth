@@ -1,65 +1,54 @@
 # Development Roadmap
+- Continue inventory rewrite.
+- Continue improving terrain generation.
+- Fix combat.
+- Improve cursor examination.
+- Continue improving interlevel travel.
+- Improve monster target-seeking AI.
+- Add a symmetric LOS/FOV algo.
+- Add starting equipment.
+- Fix the skill system.
+- Add close combat (cell sharing).
+- Improve the tactical combat pane.
+- Improve terrain interaction (doors, levers, etc.).
+- Dependency inject all game rule definitions.
+- Fill out lifepaths so all reachable events are meaningful.
+- Make lifepath events affect character stats.
+- Add a screen to spend discretionary character points.
+- Improve dynamic text generation (incl. translation).
+- Improve dialogue screens.
+- Add pre-launch game options.
+- Save/load games.
+- Add non-combat skills.
 
-## v0.3-meat:
-+ Game launch menu
-~ Inventory rewrite
-~ Improved terrain generation
-+ Terrain interaction (doors, levers, etc.)
-+ Fix combat
-~ Reenable monster AI
-- Improve cursor examination
-~ Improve interlevel travel
+# Longer-term wishlist
 
-## v0.4-meat:
-- Improved monster target-seeking AI
-- Add a symmetric LOS algo
-
-## v0.5-meat:
-- Starting equipment
-- Reenable skill defaults
-- Close combat
-~ Improved tactical combat pane
-
-## v0.6-meat:
-- Fill out lifepaths so all reachable events are meaningful
-- Make lifepath events affect character stats
-- Screen to spend discretionary character points
-
-## v0.7-meat:
-- Improved text generation
-- Dialogue screens
-
-## v0.8-meat:
-~ Game launch options
-- Save/load game
-
-## v0.1:
-- Non-combat skills
-
-# Wishlist:
-
-## Gameplay:
+## Gameplay
 - Item damage
+- Multi cell monsters.
 
-## Display:
+## Display
 - Support curses attributes
-- Convert colors to default to a black background (i.e., no "green-black").
+- Convert color methods to default to a black background (i.e., no "green-black").
 - Support 256 color mode.
 - Support Unicode mode.
 - Scrollbar icon = player glyph
 
-## Utility:
+## Utility
 - Make everything using dirs use dir[NW] etc. rather than importing dirs separately.
 - Remappable keys
 - Game launch arguments
 - Windows support
 
-## Structure:
-~ Remove 'import *' before it gets any worse!
+## Structure
+- Remove 'import *' before it gets any worse!
 - Split generators into classes
 - Switch to using decorators for printing functions
 
-# Known Bugs:
+## Documentation
+- Describe abstractions and how they relate to each other.
+
+# Known Bugs
 - Support numpads correctly across systems
 - Scrollbar display
 - Item duplication on dropping

@@ -1,0 +1,16 @@
+# Changelog
+
+## v0.0.3: Kernel Khaos
+- Significant architectural improvements.
+- Game launch menu.
+- Partial inventory rewrite.
+- Terrain interaction.
+- Improved terrain generation.
+- Improved combat.
+- Improved interlevel travel.
+
+## v0.0.2 (nee 0.2-meat): Slow-Cooked Development
+Significant improvements to initial 7DRL (Meat Arena).
+
+## v0.0.1 (nee 0.1-meat): Meat Arena
+Initial 7DRL (Meat Arena).
