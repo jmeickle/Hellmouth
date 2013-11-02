@@ -231,6 +231,19 @@ class Hexagon(Shape):
             # Yield the current index and coordinates.
             yield index, coords
 
+    @classmethod
+    def area(cls, origin=CC, distance=1):
+        """Yield rank, index, and coordinates for hexagons around an origin out to a distance."""
+        for rank in xrange(distance+1):
+            perimeter = cls.perimeter(origin, rank)
+            max_index = cls.get_max_index(rank)
+
+            while True:
+                index, point = perimeter.next()
+                yield rank, index, point
+                if index == max_index:
+                    break
+
     # def get_vertices(self):
     #     """Return the vertices of a cls."""
     #     for offset in vertex_positions:
