@@ -3,7 +3,6 @@
 import inspect
 
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
-from src.lib.core.services.loop import LoopService
 
 # Define a list-like container for storing registered services.
 ServiceList = RegistryFactory("ServiceList", RegistryList)
@@ -15,27 +14,10 @@ class Kernel(object):
     responsible for service registration and orchestration.
     """
     def __init__(self, **services):
-        # Populate the service name registry with a loop service.
-        self.services = ServiceNameRegistry()
-        self.register_services(loop=LoopService())
-
-    """Execution management methods."""
-
-    def loop(self):
-        """Run the main application loop."""
-        # Use the output service as a context manager.
-        with self.service("output") as display:
-            # Start the root Component's loop.
-            root = self.service("root")
-            while root.alive:
-                # Allow registered services to react to the loop.
-                for service in self.service("loop"):
-                    service.loop()
-
-            # Continue looping if necessary.
-            if root.after_loop().get("relaunch"):
-                # TODO: Reset kernel and services as needed
-                return True
+        # Initialize the service registry.
+        self.services = ServiceRegistry()
+        # Register the provided services.
+        self.register_services(**services)
 
     """Service registration methods."""
 
