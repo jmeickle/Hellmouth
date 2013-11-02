@@ -1,4 +1,4 @@
-"""Define the geometry of hexagons.
+"""Define the geometry of hexagons and hexagonal grids.
 
 This module expands the terminology guides in `src.lib.util.geometry.space`
 and `src.lib.util.geometry.shape` with some definitions specific to hexagons:
