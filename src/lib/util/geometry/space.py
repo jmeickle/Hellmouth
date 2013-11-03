@@ -41,13 +41,13 @@ class Point(tuple):
         """Override addition to permit pairwise addition of `Point`s."""
         assert isinstance(other, Point), "Attempted to add a non-`Point` {} to a `Point` {}.".format(other, self)
         assert len(self) == len(other), "Attempted pairwise addition of `Point`s with different lengths."
-        return Point(tuple(s+o for s, o in zip(self, other)))
+        return Point(*(s+o for s, o in zip(self, other)))
 
     def __sub__(self, other):
         """Override subtraction to permit pairwise subtraction of `Point`s."""
         assert isinstance(other, Point), "Attempted to subtract a non-`Point` {} from a `Point` {}.".format(other, self)
         assert len(self) == len(other), "Attempted pairwise subtraction of `Point`s with different lengths."
-        return Point(tuple(s-o for s, o in zip(self, other)))
+        return Point(*(s-o for s, o in zip(self, other)))
 
     def __repr__(self):
         """Display `Point`s as `<Point(x, y, z, ...)>`."""
