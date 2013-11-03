@@ -49,6 +49,15 @@ class Point(tuple):
         assert len(self) == len(other), "Attempted pairwise subtraction of `Point`s with different lengths."
         return Point(*(s-o for s, o in zip(self, other)))
 
+    def __mul__(self, other):
+        """Override multiplication to permit listwise multiplication of a `Point` by an integer."""
+        assert isinstance(other, int), "Attempted to multiply a a non-integer {} and a `Point` {}.".format(other, self)
+        return Point(*(coord * other for coord in self))
+
+    def __rmul__(self, other):
+        """Override reflected multiplication."""
+        return self * other
+
     def __repr__(self):
         """Display `Point`s as `<Point(x, y, z, ...)>`."""
         return "<%s%s>" % (self.__class__.__name__, tuple(self))
