@@ -3,7 +3,6 @@
 TODO: Handle conflict resolution during composition.
 """
 
-from abc import ABCMeta
 import functools
 import inspect
 import itertools
@@ -95,7 +94,7 @@ def composable(method):
     wrapper.__composable__ = True
     return wrapper
 
-class Traitable(ABCMeta):
+class Traitable(type):
     """An abstract base class that modifies the class definition process to allow
     for composition using `Traits`.
 
