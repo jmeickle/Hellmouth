@@ -1,6 +1,6 @@
 import curses
 
-from src.lib.core.services.service import ServiceMixin
+from src.lib.core.services.service import Service
 
-class CursesInputService(ServiceMixin):
+class CursesInputService(object):
     pass

@@ -1,11 +1,13 @@
 """Services registered to the kernel."""
 
-class ServiceMixin(object):
-    """Mixin for classes that are registered to the kernel as a service."""
+from src.lib.util.trait import Trait
+
+class Service(Trait):
+    """Provides methods to classes that are registered as kernel services."""
 
     def __init__(self, *args, **kwargs):
         self.kernel = None
-        super(ServiceMixin, self).__init__(*args, **kwargs)
+        Trait.super(Service, self).__init__(*args, **kwargs)
 
     def __repr__(self):
         """Display as `<ClassName>` when printed."""

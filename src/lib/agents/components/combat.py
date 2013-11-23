@@ -13,7 +13,6 @@ from src.lib.util import debug
 from src.lib.util.define import *
 from src.lib.util.hex import *
 from src.lib.util.log import Log
-from src.lib.util.mixin import Mixin
 
 """Actions."""
 

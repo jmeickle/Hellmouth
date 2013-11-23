@@ -2,7 +2,7 @@
 
 from Queue import Queue
 
-from src.lib.core.services.service import ServiceMixin
+from src.lib.core.services.service import Service
 
-class KeyinService(Queue, ServiceMixin):
+class KeyinService(Queue):
     pass

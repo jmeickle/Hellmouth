@@ -5,7 +5,6 @@ from src.lib.agents.components.component import Component, ignore_results
 from src.lib.agents.contexts.context import action_context, command_context
 from src.lib.agents.components.manipulation import Pack
 from src.lib.util.command import Command, CommandRegistry
-from src.lib.util.mixin import Mixin
 
 """Actions."""
 
@@ -106,8 +105,6 @@ class Equipment(Component):
     # def count(self):
     #     """Return the number of Agents inside this Container."""
     #     return len(self.contents)
-
-"""Mixins."""
 
 #     # Whether you believe you can retrieve an item in your inventory.
 #     @checks_item_memory

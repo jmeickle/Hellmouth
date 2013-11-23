@@ -1,10 +1,10 @@
 """A service that contacts other services during the event loop."""
 
 from src.lib.core.kernel import Kernel
-from src.lib.core.services.service import ServiceMixin
+from src.lib.core.services.service import Service
 from src.lib.util.registry import RegistryList
 
-class LoopService(RegistryList, ServiceMixin):
+class LoopService(RegistryList):
     @Kernel.helper
     def loop(self):
         """Run the main application loop."""

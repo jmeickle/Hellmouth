@@ -7,7 +7,7 @@ from src.lib.agents.components.faction import NeutralFaction
 from src.lib.util.command import Command, CommandRegistry as CMD
 from src.lib.util import debug
 from src.lib.util.log import Log
-from src.lib.util.mixin import Mixin
+from src.lib.util.trait import Trait
 
 """Actions."""
 
@@ -140,10 +140,9 @@ class CommandedFaction(NeutralFaction):
         """default to player"""
         return self.get_faction()
 
-"""Mixins."""
-
-class TakeCommandMixin(Mixin):
-    """Provides the ability to take command."""
+"""Traits."""
+class Leading(Trait):
+    """Provides methods to lead followers."""
 
     def could_take_command(self):
         """Whether the Agent could take command of an unspecified target."""
@@ -160,8 +159,8 @@ class TakeCommandMixin(Mixin):
             return True
         return False
 
-class IssueCommandMixin(Mixin):
-    """Provides the ability to issue commands."""
+class Ordering(Trait):
+    """Provides methods to order followers."""
 
     def could_issue_command(self):
         """Whether the Agent could issue a command to an unspecified target."""
@@ -175,5 +174,4 @@ class IssueCommandMixin(Mixin):
         """Issue a command to a target."""
         return True
 
-class CommandingAgent(TakeCommandMixin, IssueCommandMixin):
-    pass
+CommandingTraits = {Leading, Ordering}
