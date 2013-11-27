@@ -827,14 +827,14 @@ class Unstore(Trait):
 
 """Sets of manipulation Traits."""
 
-Touching = {Reach, Touch, UnTouch}
-Positioning = Touching | {Force, Slide, Handle, Get, Put}
-Grasping = Touching | {Grasp, UnGrasp}
-Holding = Grasping | {Wield, UnWield, Ready, UnReady, Contact, UnContact}
-Using = Touching | {Use, UseAt}
-Storing = {Store, Unstore}
+TouchingTraits = {Reach, Touch, UnTouch}
+PositioningTraits = TouchingTraits | {Force, Slide, Handle, Get, Put}
+GraspingTraits = TouchingTraits | {Grasp, UnGrasp}
+HoldingTraits = GraspingTraits | {Wield, UnWield, Ready, UnReady, Contact, UnContact}
+UsingTraits = TouchingTraits | {Use, UseAt}
+StoringTraits = {Store, Unstore}
 
-Manipulating = Touching | Positioning | Grasping | Holding | Using | Storing
+ManipulatingTraits = TouchingTraits | PositioningTraits | GraspingTraits | HoldingTraits | UsingTraits | StoringTraits
 
     # # Whether you believe you can store an item in your container.
     # # @checks_item_memory
