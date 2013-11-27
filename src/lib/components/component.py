@@ -2,7 +2,6 @@
 keyin and draw loops, but do not have direct access to drawing methods."""
 
 from src.lib.agents.contexts.context import Context
-from src.lib.core.services.service import ServiceMixin
 from src.lib.util.define import *
 from src.lib.util import key
 import random
@@ -226,7 +225,7 @@ class Component(object):
         method and create subwindows."""
         return window
 
-class RootComponent(Component, ServiceMixin):
+class RootComponent(Component):
     """The first component called, containing window information."""
     def __init__(self, kernel):
         Component.__init__(self)
