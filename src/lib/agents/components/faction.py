@@ -4,8 +4,6 @@ import random
 
 from src.lib.agents.components.component import Component
 
-from src.lib.util import hex
-
 class NeutralFaction(Component):
     """Component that handles an Agent's faction."""
 
@@ -35,7 +33,7 @@ class NeutralFaction(Component):
 
     def get_destination(self):
         """no target"""
-        return random.choice(hex.area(self.owner.pos, 10))
+        return False
 
 class EnemyFaction(NeutralFaction):
     """Enemy faction."""
