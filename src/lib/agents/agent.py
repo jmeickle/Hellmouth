@@ -14,6 +14,7 @@ from src.lib.util.trait import Traitable
 class Agent(object):
     __metaclass__ = Traitable
 
+    name = 'Anonymous'
     # TODO: What Components do all Agents have?
     components = []
 
