@@ -1,12 +1,19 @@
 """Immobile (usually!) Agents with a wide variety of roles."""
 
 from src.lib.agents.agent import Agent
-from src.lib.util.log import Log
+from src.lib.agents.components.location import Locatable
+from src.lib.agents.components.positioning import CellPositionable
 
+from src.lib.util.log import Log
+from src.lib.util.trait import Trait
+
+@Trait.use(Locatable, CellPositionable)
 class Terrain(Agent):
     def __init__(self, terrain_type=None):
+        Locatable.super(Agent, self).__init__()
+        CellPositionable.super(Agent, self).__init__()
         super(Terrain, self).__init__()
-        self.cell = None
+
         self.name = None
         self.color = None
         self.glyph = None

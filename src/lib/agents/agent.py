@@ -24,16 +24,9 @@ class Agent(object):
         for component in Agent.components + components:
             self.register_component(component)
 
-        # Positioning information
-        self.map = None
-        self.pos = None
-        self.subposition = CC
 
     def __call__(self, method):
         return getattr(self, method)()
-
-    def __str__(self):
-        return "%s@%s" % (self.appearance(), self.pos)
 
     # TODO: Add real coloring support.
     def appearance(self):
@@ -401,18 +394,6 @@ class Agent(object):
         within a Context.
         """
         pass
-
-    # Return your own cell.
-    # TODO: Multi-cell creatures.
-    # TODO: Move to body.
-    def cell(self):
-        return self.map.cell(self.pos)
-
-    # Calculate the distance between an actor and a target.
-    # TODO: Multi-cell creatures.
-    # TODO: Move to Body.
-    def dist(self, target):
-        return dist(self.pos, target.pos)
 
     def react(self, *args, **kwargs):
         """Try to call a reaction method based on the calling method's name
