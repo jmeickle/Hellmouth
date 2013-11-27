@@ -7,7 +7,7 @@ from src.lib.util.result import accumulate_results, ignore_results
 
 """Components."""
 
-class Container(Component):
+class Containing(Component):
     """Allows an Agent to contain other Agents inside of itself."""
     commands = []
 

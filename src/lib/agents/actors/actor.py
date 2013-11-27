@@ -4,7 +4,7 @@ from src.lib.agents.agent import Agent
 from src.lib.agents.components.action import Action
 from src.lib.agents.components.bodies import body
 from src.lib.agents.components.combat import Combat
-from src.lib.agents.components.container import Container
+from src.lib.agents.components.container import Containing
 from src.lib.agents.components.equipment import Equipment
 from src.lib.agents.components.manipulation import ManipulatingTraits, Manipulation
 from src.lib.agents.components.status import Status
@@ -31,7 +31,7 @@ from src.lib.util.trait import Trait
 @Trait.use(*ManipulatingTraits)
 class Actor(Agent):
     """Monster-like Agents. Most typically, players and monsters."""
-    components = [Equipment, Combat, Container, Manipulation, Status]
+    components = [Equipment, Combat, Containing, Manipulation, Status]
 
     def __init__(self, components=[]):
         super(Actor, self).__init__(components + self.__class__.components)
