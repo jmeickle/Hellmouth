@@ -14,15 +14,18 @@ class Agent(object):
     __metaclass__ = Traitable
 
     name = 'Anonymous'
-    # TODO: What Components do all Agents have?
+
+    # TODO: What Components, if any, do all Agents have?
     components = []
 
+    # TODO: Make this a proper registry using src.lib.util.registry
     def __init__(self, components=[]):
+        """Register the provided components."""
         self.component_registry = {}
 
+        # TODO: Initialize registry with these arguments.
         for component in Agent.components + components:
             self.register_component(component)
-
 
     def __call__(self, method):
         return getattr(self, method)()
