@@ -54,6 +54,17 @@ class View(Component):
         self.x_acc = 0
         self.y_acc = 0
 
+    def undrawable(self, screen_coords):
+        """Returns whether the given screen coordinates are undrawable."""
+        x, y = screen_coords
+        # Negative screen coordinates.
+        if x < 0 or y < 0:
+            return True
+        # Screen coordinates larger than the number of rows or columns.
+        if x >= TERM_X or y >= TERM_Y:
+            return True
+        return False
+
     # Rectangular character function.
     def rd(self, pos, glyph, col=None, attr=None, box=True):
         x, y = pos

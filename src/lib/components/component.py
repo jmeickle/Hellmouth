@@ -155,15 +155,6 @@ class Component(object):
         """Abstract. Draw self."""
         pass
 
-    def undrawable(self, pos):
-        """Returns true if a screen coordinate cannot be drawn to."""
-        x, y = pos
-        if x < 0 or y < 0:
-            return True
-        if x >= TERM_X or y >= TERM_Y:
-            return True
-        return False
-
     def _keyin(self, c):
         """Recurse through children trying their keyin functions until you've
         done your own."""
