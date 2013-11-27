@@ -6,20 +6,15 @@
 #     http://www.amagam.com/hexpath/
 
 from src.lib.util.define import *
-from src.lib.util.hex import *
-
-def heuristic(pos1, pos2):
-    """Simple heuristic: hexagonal distance."""
-    return dist(pos1, pos2)
 
 class AStar(object):
-
-    def __init__(self, agent, map, heuristic=heuristic):
+    def __init__(self, agent, map, metric=None, heuristic=None):
         self.open_list = {}
         self.closed_list = {}
         self.agent = agent
         self.map = map
-        self.heuristic = heuristic
+        self.metric = self.map.level.metric if not metric else metric
+        self.heuristic = self.metric.distance if not heuristic else heuristic
 
     def add_open(self, pos, parent=None, first_node=False):
         cell = self.map.cell(pos)
@@ -74,8 +69,8 @@ class AStar(object):
     def path(self, pos, dest):
         """Request a path from a position to a destination."""
         curr = self.add_open(pos, None, True)
-        for dir in dirs:
-            pos = self.add_open(add(curr.pos, dir), curr)
+        for heading in self.metric.headings:
+            pos = self.add_open(curr.pos + heading, curr)
             if pos is not False:
                 pos.set_cost(curr.pos, dest)
 
@@ -98,8 +93,8 @@ class AStar(object):
         if curr.pos == dest:
             return curr
 
-        for dir in dirs:
-            pos = add(curr.pos, dir)
+        for heading in self.metric.headings:
+            pos = curr.pos + heading
             if self.closed_list.get(pos) is None:
                 existing = self.open_list.get(pos)
                 if existing is None:

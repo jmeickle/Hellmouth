@@ -7,7 +7,7 @@ from src.lib.agents.actors.ai.astar import AStar
 from src.lib.agents.actors.actor import Actor
 
 from src.lib.util import debug
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.util.queue import Queue
 
 class NPC(Actor):
