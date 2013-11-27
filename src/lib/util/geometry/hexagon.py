@@ -97,6 +97,15 @@ class Hexagon(Shape):
     def __repr__(self):
         return "<%s[%s]>" % (self.__class__.__name__, self.pos)
 
+    """Hexagon coordinate methods."""
+
+    @classmethod
+    def distance(cls, coords_1, coords_2):
+        """Return the distance between two hexagonal coordinates."""
+        dx = coords_1.x - coords_2.x
+        dy = coords_1.y - coords_2.y
+        return max(abs(dx), abs(dy)) if signum(dx) != signum(dy) else abs(dx) + abs(dy)
+
     """Hexagon face methods."""
 
     @classmethod
