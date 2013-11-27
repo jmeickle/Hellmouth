@@ -1,8 +1,13 @@
-# The player character(s).
-from src.lib.agents.actors.actor import Actor
-from src.lib.agents.components.commander import Commander, CommandingAgent
+"""The player character."""
 
-class Player(Actor, CommandingAgent):
+from src.lib.agents.actors.actor import Actor
+from src.lib.agents.components.commander import Commander, CommandingTraits
+
+from src.lib.util import debug
+from src.lib.util.trait import Trait
+
+@Trait.use(*CommandingTraits)
+class Player(Actor):
     """Default player."""
     def __init__(self, components=[Commander]):
         super(Player, self).__init__(components)
