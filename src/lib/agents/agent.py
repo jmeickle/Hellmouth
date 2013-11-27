@@ -21,6 +21,7 @@ class Agent(object):
     # TODO: Make this a proper registry using src.lib.util.registry
     def __init__(self, components=[]):
         """Register the provided components."""
+        super(Agent, self).__init__()
         self.component_registry = {}
 
         # TODO: Initialize registry with these arguments.
