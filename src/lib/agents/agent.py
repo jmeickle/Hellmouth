@@ -357,15 +357,12 @@ class Agent(object):
 
     """Context utility methods."""
 
-    @UNIMPLEMENTED
     def get_context(self, members=[], source=None):
+        """Abstract. Return a Context object containing information about the Agent's immediate surroundings."""
         pass
-        # """Return a Context object containing information about the Agent's immediate surroundings."""
-        # return Context(self, members, source)
 
-    @UNIMPLEMENTED
     def update_context_variables(self, **kwargs):
-        """Update the variables available within a context."""
+        """Abstract. Update the variables available within a context."""
         pass
 
     """Miscellaneous methods."""
@@ -391,9 +388,8 @@ class Agent(object):
             provided_argument = self.provide_argument(self, context, required_argument)
             if provided_argument: yield provided_argument
 
-    @UNIMPLEMENTED
     def provide_commands(self, context):
-        """Yield the interaction commands an Agent provides to another Agent
+        """Abstract. Yield the interaction commands an Agent provides to another Agent
         within a Context.
         """
         pass
