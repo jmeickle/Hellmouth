@@ -262,13 +262,13 @@ class Combat(Component):
         retreat_distance = 1
 
         # Must retreat to 1 further away than the attack came from
-        cells = perimeter(attack["attacker"].pos, self.owner.dist(attack["attacker"]) + retreat_distance)
+        cells = perimeter(attack["attacker"].coords, self.owner.dist(attack["attacker"]) + retreat_distance)
 
         # TODO: Allow retreats > 1
         options = []
         for cell in cells:
             # TODO: Check whether we can move properly here
-            if dist(self.owner.pos, cell) == 1 and self.owner.valid_move(cell):
+            if dist(self.owner.coords, cell) == 1 and self.owner.valid_move(cell):
                 options.append(cell)
         if options:
             return True, options

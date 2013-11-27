@@ -6,7 +6,9 @@ from src.lib.agents.components.bodies import body
 from src.lib.agents.components.combat import Combat
 from src.lib.agents.components.container import Containing
 from src.lib.agents.components.equipment import Equipment
+from src.lib.agents.components.location import Locatable
 from src.lib.agents.components.manipulation import ManipulatingTraits, Manipulation
+from src.lib.agents.components.positioning import CellPositionable
 from src.lib.agents.components.status import Status
 from src.lib.agents.contexts.context import Context
 # TODO: Better data importing.
@@ -22,18 +24,20 @@ from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.debug import *
 from src.lib.util.define import *
 from src.lib.util.dice import *
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.util.key import *
 from src.lib.util.log import Log
 from src.lib.util.text import *
 from src.lib.util.trait import Trait
 
-@Trait.use(*ManipulatingTraits)
+@Trait.use(Locatable, CellPositionable, *ManipulatingTraits)
 class Actor(Agent):
     """Monster-like Agents. Most typically, players and monsters."""
     components = [Equipment, Combat, Containing, Manipulation, Status]
 
     def __init__(self, components=[]):
+        Locatable.super(Actor, self).__init__()
+        CellPositionable.super(Actor, self).__init__()
         super(Actor, self).__init__(components + self.__class__.components)
 
         # Text information (cosmetic)
@@ -113,23 +117,23 @@ class Actor(Agent):
     #
 
     # Change actor coords directly and update the relevant cells.
-    def go(self, pos, dir=CC):
-        if self.map.cell(pos).occupied() is True:
-            actors = self.map.cell(pos).actors
-            self.subposition = flip(dir)
+    def go(self, coords, heading=Hexagon.CC):
+        if self.location.cell(coords).occupied() is True:
+            actors = self.location.cell(coords).actors
+            self.subposition = flip(heading)
             for actor in actors:
-                actor.subposition = dir
+                actor.subposition = heading
         else:
-            self.subposition = CC
-        self.cell().remove(self)
-        self.pos = pos
-        self.cell().add(self)
+            self.subposition = Hexagon.CC
+        self.cell.remove_contents(self)
+        self.coords = coords
+        self.cell.add_contents(self)
 
     # Try to move based on an input direction. Return whether it worked.
     # TODO: Action chain
-    def move(self, pos, dir=CC):
-        if self.can_move(pos, dir):
-            self.go(pos, dir)
+    def move(self, coords, heading=Hexagon.CC):
+        if self.can_move(coords, heading):
+            self.go(coords, heading)
             return True
         else:
             return False
@@ -140,21 +144,21 @@ class Actor(Agent):
 
     # Whether we can actually move to a pos.
     # TODO: Action chain
-    def can_move(self, pos, dir=CC):
+    def can_move(self, coords, heading=Hexagon.CC):
         if self.can_walk() is False:
             return False
-        if self.valid_move(pos, dir) is False:
+        if self.valid_move(coords, heading) is False:
             return False
         return True
 
     # Check move validity.
-    def valid_move(self, pos, direction=CC):
+    def valid_move(self, coords, heading=Hexagon.CC):
         # Map border checking:
-        if self.map.valid(pos) is False:
+        if self.location.valid(coords) is False:
             return False
 
         # Cell content checking:
-        if self.map.cell(pos).can_block(self, direction):
+        if self.location.cell(coords).can_block(self, heading):
             return False
         return True
 
@@ -262,15 +266,15 @@ class Actor(Agent):
 
         # OK, nobody in the way. We're doing something in another hex.
         # Which one?
-        pos = add(self.pos, direction)
+        pos = self.coords + direction
 
         # Check for invalid hexes.
-        if not self.map.valid(pos):
+        if not self.location.valid(pos):
             if self.controlled:
                 Log.add("It would be a long, long way down into that yawning abyss.")
             return False
 
-        cell = self.map.cell(pos)
+        cell = self.location.cell(pos)
 
         # TODO: Make bump attacks cleaner
         if cell and cell.occupied() and self.has_domain("Combat"):
@@ -592,11 +596,11 @@ class Actor(Agent):
 
         # Place a corpse.
         # TODO: Make this a factory method.
-        self.cell().put(self.generate_corpse())
+        self.cell.put(self.generate_corpse())
 
         # Hand over cleanup to the map's level.
         # TODO: use a method here
-        self.map.remove_actor(self)
+        self.location.remove_actor(self)
 
     def before_process_death(self):
         """Allow this Actor to respond before its death."""
@@ -848,7 +852,7 @@ class Actor(Agent):
     # Show a screen.
     # TODO: Refactor this so it isn't touching map?
     def screen(self, screenname, arguments=None, screenclass=None):
-        self.map.screen(screenname, arguments, screenclass)
+        self.location.screen(screenname, arguments, screenclass)
 
     # STUB:
     def cursor_color(self):
