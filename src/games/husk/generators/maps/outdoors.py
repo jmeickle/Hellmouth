@@ -3,7 +3,7 @@ from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
 from src.lib.agents.terrain.passage import Path
 from src.lib.generators.maps.layout import LayoutGenerator
 
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon
 
 class Cornfield(LayoutGenerator):
     def __init__(self, map_obj):

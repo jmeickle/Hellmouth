@@ -1,5 +1,4 @@
 from src.lib.generators.maps.mapgen import MapGen
-from src.lib.util.hex import *
 from src.lib.objects.terrain import *
 
 class MeatArena(MapGen):

@@ -11,7 +11,6 @@ from src.lib.agents.components.phase import Phase
 from src.lib.util.command import Command, CommandRegistry
 from src.lib.util import debug
 from src.lib.util.define import *
-from src.lib.util.hex import *
 from src.lib.util.log import Log
 
 """Actions."""

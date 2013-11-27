@@ -4,7 +4,7 @@ from src.lib.components.component import Component
 from src.lib.components.views.view import View
 
 from src.lib.util.define import *
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon as H
 from src.lib.util.key import *
 from src.lib.util import text
 
@@ -129,19 +129,19 @@ class SecondarySelector(Selector):
 
 class Cursor(Input):
     styles = {
-        "<>"  : [("<", WW), (">", EE)],
-        "{}"  : [("{", WW), ("}", EE)],
-        "[]"  : [("[", WW), ("]", EE)],
-        "()"  : [("(", WW), (")", EE)],
+        "<>"  : [("<", H.WW), (">", H.EE)],
+        "{}"  : [("{", H.WW), ("}", H.EE)],
+        "[]"  : [("[", H.WW), ("]", H.EE)],
+        "()"  : [("(", H.WW), (")", H.EE)],
         # TODO: Make 1hex prettier using unicode.
-        "1hex" : [("^", NN), ("v", SS), ("|", EE), ("|", WW)],
+        "1hex" : [("^", H.NN), ("v", H.SS), ("|", H.EE), ("|", H.WW)],
         "2hex" : [
-            ("/", add(WW,add(NW,WW))),#add(NW, add(NW, NW))),
-            ("\\", add(NE, EE)),
-            ("|", add(EE,add(EE, EE))),
-            ("|", add(WW, add(WW, WW))),
-            ("\\", add(SW, WW)),
-            ("/", add(EE,add(EE, SE)))
+            ("/", H.NW + 2*H.WW),#add(H.NW, add(H.NW, H.NW))),
+            ("\\", H.NE + H.EE),
+            ("|", H.EE + 2*H.EE),
+            ("|", 3*H.WW),
+            ("\\", H.SW + H.WW),
+            ("/", H.SE + 2*H.EE)
         ],
     }
 

@@ -6,7 +6,6 @@ from src.games.husk.generators.maps.outdoors import Cornfield
 
 from src.lib.util.debug import *
 from src.lib.util.dice import *
-from src.lib.util.hex import *
 
 class Farmhouse(Cornfield):
     def __init__(self, exits=None):

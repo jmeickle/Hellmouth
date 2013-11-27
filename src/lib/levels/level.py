@@ -9,7 +9,7 @@ from src.lib.generators.items import ItemGenerator, generate_item
 from src.lib.maps.encounter.map import EncounterMap
 
 from src.lib.util.dice import *
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.util.queue import Queue
 
 from src.games.husk.generators.maps import outdoors, indoors
@@ -22,6 +22,7 @@ class Level(object):
     def __init__(self, game, **kwargs):
         self.game = game
         self.map_class = kwargs.pop("map_class", EncounterMap)
+        self.metric = Hexagon
 
         self.name = kwargs.pop("name", "Smith Farm")
         self.map = self.generate_map(kwargs.pop("map_id", 1))
@@ -137,19 +138,19 @@ class Level(object):
         """Configure a Map's setings based on provided travel information."""
 
         # Map properties that are the same for all map_ids.
-        map_obj.center = (0,0)
+        map_obj.center = Hexagon.CC
         map_obj.size = 30
 
         if map_obj.map_id == 1:
             map_obj.name = "cornfield"
             map_obj.floor = (".", "yellow-black")
             map_obj.layout_generator = outdoors.Cornfield
-            map_obj.passages = { "prev" : (map_obj.map_id-1, ANYWHERE), "next" : (map_obj.map_id+1, ANYWHERE) }
+            map_obj.passages = { "prev" : (map_obj.map_id-1, Hexagon.ANYWHERE), "next" : (map_obj.map_id+1, Hexagon.ANYWHERE) }
         elif map_obj.map_id == 2:
             map_obj.name = "farmhouse"
             map_obj.floor = (".", "green-black")
             map_obj.layout_generator = indoors.Farmhouse
-            map_obj.passages = { "prev" : (map_obj.map_id-1, ANYWHERE), "next" : (map_obj.map_id+1, ANYWHERE) }
+            map_obj.passages = { "prev" : (map_obj.map_id-1, Hexagon.ANYWHERE), "next" : (map_obj.map_id+1, Hexagon.ANYWHERE) }
 
     def generate_map_layout(self, map_obj):
         """Generate a layout according to the Map configuration."""

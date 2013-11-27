@@ -14,8 +14,9 @@ from src.lib.agents.contexts.context import Context
 from src.lib.util.color import Color
 from src.lib.util.command import CommandRegistry as CMD
 from src.lib.util.define import *
+from src.lib.util.geometry.hexagon import Hexagon
+from src.lib.util.geometry.space import Point
 from src.lib.util import debug
-from src.lib.util.hex import *
 from src.lib.util import text
 
 from src.lib.data.skills import skill_list
@@ -138,17 +139,17 @@ class MainMap(View):
             """Debugger."""
             self.add_blocking_component(Debugger, x=self.width, y=self.height)
         elif c == ord('7'):
-            self.level.get_controller().do(NW)
+            self.level.get_controller().do(Hexagon.NW)
         elif c == ord('4'):
-            self.level.get_controller().do(CW)
+            self.level.get_controller().do(Hexagon.CW)
         elif c == ord('1'):
-            self.level.get_controller().do(SW)
+            self.level.get_controller().do(Hexagon.SW)
         elif c == ord('9'):
-            self.level.get_controller().do(NE)
+            self.level.get_controller().do(Hexagon.NE)
         elif c == ord('6'):
-            self.level.get_controller().do(CE)
+            self.level.get_controller().do(Hexagon.CE)
         elif c == ord('3'):
-            self.level.get_controller().do(SE)
+            self.level.get_controller().do(Hexagon.SE)
         elif c == ord('5'):
             self.level.get_controller().end_turn()
         elif c == ord('>') or c == ord('<'):

@@ -1,7 +1,6 @@
 # TODO: Make the keys more consistent.
 from src.lib.util.define import *
 from src.lib.util.dice import *
-from src.lib.util.hex import *
 from src.lib.generators.text.combat import combat
 
 # KEY DEFINITIONS:

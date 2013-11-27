@@ -1,7 +1,7 @@
 import random
 from src.lib.util.define import *
 from src.lib.util.dice import *
-from src.lib.util.hex import *
+from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.agents.terrain.machinery import Lever
 from src.lib.agents.terrain.passage import Stairs
 from src.lib.agents.terrain.terrain import CaveWall

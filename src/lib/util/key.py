@@ -5,7 +5,6 @@
 import curses
 
 from define import *
-from hex import *
 
 # Game process commands
 CMD_SAVE = "save the game"
