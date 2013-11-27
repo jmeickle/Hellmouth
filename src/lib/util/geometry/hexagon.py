@@ -91,6 +91,20 @@ class Hexagon(Shape):
         CW: "West"
     }
 
+    # Offset directions, for rendering.
+
+    # North
+    NN = Point(0, -1)
+    # "Half" east
+    EE = Point(1, 0)
+    # South
+    SS = Point(0, 1)
+    # "Half" west
+    WW = Point(-1, 0)
+
+    # List of offsets
+    offsets = [NN, EE, SS, WW]
+
     def __init__(self, pos):
         assert False, "Tried to instantiate an abstract Hexagon."
 

@@ -17,46 +17,6 @@ from math import *
    SW    SE
 """
 
-# No location
-ANYWHERE = None
-
-# Center
-CC = (0,0)
-
-# Northwest
-NW = (0, -1)
-# Northeast
-NE = (1, -1)
-# East
-CE = (1, 0)
-# Southeast
-SE = (0, 1)
-# Southwest
-SW = (-1, 1)
-# West
-CW = (-1, 0)
-
-# List of directions
-dirs = [NW, NE, CE, SE, SW, CW]
-# Rotation helper dict
-rotation = {NW: 0, NE: 1, CE: 2, SE: 3, SW: 4, CW: 5}
-
-#
-# Offset directions for rendering.
-#
-
-# North
-NN = (0, -1)
-# "Half" east
-EE = (1, 0)
-# South
-SS = (0, 1)
-#"Half" west
-WW = (-1, 0)
-
-# List of offsets.
-offsets = [NN, EE, SS, WW]
-
 import itertools
 
 def directions(start=NW):
