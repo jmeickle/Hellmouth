@@ -86,13 +86,13 @@ class MainMap(View):
     @override_defaults
     def __init__(self, **kwargs):
         super(MainMap, self).__init__(**kwargs)
-        self.viewport_pos = (int(self.y/2)-1, int(self.y/2)-1) # -1 to account for 0,0 start
+        self.viewport_pos = Point(int(self.y/2)-1, int(self.y/2)-1) # -1 to account for 0,0 start
         self.viewport_rank = kwargs["viewport_rank"]
         self.zoom = kwargs["zoom"]
 
     def get_focus(self):
         cursor = self.get_first_child(Cursor)
-        return cursor.pos if cursor else self.get_controller().pos
+        return cursor.pos if cursor else self.get_controller().coords
 
     def keyin(self, c):
         # TODO: Allow multiple open children.
@@ -103,13 +103,13 @@ class MainMap(View):
 
             elif c == ord('v'):
                 if self.has_child(Cursor) is False:
-                    cursor = self.spawn(Cursor(self.get_controller().pos))
+                    cursor = self.spawn(Cursor(self.get_controller().coords))
                     cursor.spawn(Examine(x=self.width, y=2, start_x=0, start_y=self.BOTTOM-1))
                     return False
         if c == ord('G'):
             """Get all nearby items."""
             items = []
-            for appearance, itemlist in self.get_controller().cell().get_items():
+            for appearance, itemlist in self.get_controller().cell.get_items():
                 items.extend(itemlist)
             if items:
                 context = self.get_context(participants=items)
@@ -120,7 +120,7 @@ class MainMap(View):
             cursor = self.get_first_child(Cursor)
             self.add_blocking_component(ListPrompt, x=self.width, y=self.height, choices=["one", "two", "three"], callback=cursor.suicide if cursor else self.suicide)
         elif c == ord('U'):
-            terrain = self.get_controller().cell().get_terrain()
+            terrain = self.get_controller().cell.get_terrain()
             if terrain:
                 context = self.get_context(participants=terrain, domains=["Manipulation"])
                 event = chr(c)
@@ -154,7 +154,7 @@ class MainMap(View):
             self.level.get_controller().end_turn()
         elif c == ord('>') or c == ord('<'):
             """Stairs."""
-            terrain = self.get_controller().cell().get_terrain()
+            terrain = self.get_controller().cell.get_terrain()
             if terrain:
                 context = self.get_context(participants=terrain, domains=["Manipulation"])
                 event = chr(c)
@@ -163,9 +163,9 @@ class MainMap(View):
         return False
 
     # Hex character function, for maps only.
-    def hd(self, pos, glyph, col=None, attr=None):
+    def hd(self, coords, glyph, col=None, attr=None):
         # Three sets of coords are involved:
-        x, y = pos
+        x, y = coords
         c_x, c_y = self.center
         v_x, v_y = self.viewport_pos
 
@@ -209,36 +209,37 @@ class MainMap(View):
         map_obj = self.level.get_map()
         self.center = self.get_focus()
 
-        cells = area(self.center, self.zoom)
-        for cell in cells:
-            if map_obj.valid(cell) is not False:
-                glyph, col, subposition = self.get_glyph(map_obj, cell)
+        for rank, index, coords in Hexagon.area(self.center, self.zoom):
+            if map_obj.valid(coords) is not False:
+                glyph, col = self.get_glyph(map_obj, coords)
             else:
                 glyph = ','
                 col = "red-black"
             # HACK: Multiple-zoom-level system.
             if self.zoom == self.viewport_rank:
-                self.hd(cell, glyph, col)
+                self.hd(coords, glyph, col)
             else:
-                diff = sub(cell, self.center)
-                pos = add(self.center, mult(diff, 4))
+                diff = coords - self.center
+                pos = self.center + 4*diff
                 # HACK: Move this into some generalized hex border function.
-                faces = {NW: ("/", WW), NE : ("\\", EE), CE : ("|", EE), SE : ("/", EE), SW: ("\\",  WW), CW: ("|", WW)}
-                for dir in dirs:
-                    point = add(pos, dir)
+                faces = {Hexagon.NW: ("/", Hexagon.WW), Hexagon.NE : ("\\", Hexagon.EE), Hexagon.CE : ("|", Hexagon.EE), Hexagon.SE : ("/", Hexagon.EE), Hexagon.SW: ("\\",  Hexagon.WW), Hexagon.CW: ("|", Hexagon.WW)}
+                for heading in Hexagon.headings:
+                    point = pos + heading
                     self.hd(point, ".", "white-black")
-                    face, offset = faces[dir]
+                    face, offset = faces[heading]
                     self.offset_hd(point, offset, face, "white-black")
                     # NOTE: Interesting effect!
                     #self.hd(add(pos, mult(dir, 2)), faces[dir], "white-black")
-                for glyph, col, subposition in self.get_glyph(cell, True):
-                    self.hd(add(pos, subposition), glyph, col)
+                for glyph, col in self.get_glyph(coords, True):
+                    # TODO: Subposition again
+                    self.hd(pos, glyph, col)
 
         if len(self.get_controller().highlights) > 0:
             for highlight_id, highlight_obj in self.get_controller().highlights.items():
-                if dist(self.center, highlight_obj.pos) > self.viewport_rank:
+                if Hexagon.distance(self.center, highlight_obj.coords) > self.viewport_rank:
                     # TODO: Don't use Bresenham here, it flickers!
-                    cells = line(self.center, highlight_obj.pos, self.viewport_rank+2)
+                    continue
+                    cells = line(self.center, highlight_obj.coords, self.viewport_rank+2)
                     cell = cells.pop()
                     # TODO: Highlight color
                     glyph, col = "*", "green-black"
@@ -269,7 +270,7 @@ class Examine(View):
                     return False
                 return True
         elif c == ord('a'):
-            actors = self.level.get_map().actors(self.parent.pos)
+            actors = self.level.get_map().actors(self.parent.coords)
             if actors:
                 actor = actors[self.parent.selector.index]
                 if actor:
@@ -277,7 +278,7 @@ class Examine(View):
                     event = chr(c)
                     return self.get_controller().process_event(event, context)
         elif c == ord('t') or c == ord('C'):
-            actors = self.level.get_map().actors(self.parent.pos)
+            actors = self.level.get_map().actors(self.parent.coords)
             if actors:
                 actor = actors[self.parent.selector.index]
                 if actor:
@@ -288,7 +289,7 @@ class Examine(View):
         return False
 
     def draw(self):
-        pos = self.parent.pos
+        pos = self.parent.coords
         cell = self.level.get_map().cell(pos)
         if not self.children:
             self.line("Space: Exit. Enter: Inspect. */: Style.")
@@ -482,7 +483,7 @@ class Inventory(View):
         self.inventory = [item for item in self.get_controller().values("Container", "get_list")]
         self.wielded = [wielded for wielded in self.get_controller().values("Manipulation", "get_wielded")]
         self.equipment = [equipment for equipment in self.get_controller().values("Equipment", "get_worn")]
-        self.ground = [ground for ground in self.level.get_controller().cell().get_items()]
+        self.ground = [ground for ground in self.level.get_controller().cell.get_items()]
 
         self.tabs.set_choices([choice for choice in self.active_tabs()])
 
