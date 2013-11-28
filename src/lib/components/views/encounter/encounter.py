@@ -177,9 +177,9 @@ class MainMap(View):
         draw_y = off_y + v_y
 
         # TODO: Log this somewhere useful but don't assert on it.
-        assert self.undrawable((draw_x, draw_y)) is False, "hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
-        except curses.error: pass
+        if not self.undrawable((draw_x, draw_y)):
+            try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
+            except curses.error: pass
 
     # Draw to offset hexes, i.e., the 'blank' ones.
     def offset_hd(self, pos, dir, glyph, col=None, attr=None):
