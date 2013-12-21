@@ -92,7 +92,7 @@ class MainMap(View):
 
     def get_focus(self):
         cursor = self.get_first_child(Cursor)
-        return cursor.pos if cursor else self.get_controller().coords
+        return cursor.coords if cursor else self.get_controller().coords
 
     def keyin(self, c):
         # TODO: Allow multiple open children.
@@ -289,8 +289,8 @@ class Examine(View):
         return False
 
     def draw(self):
-        pos = self.parent.coords
-        cell = self.level.get_map().cell(pos)
+        coords = self.parent.coords
+        cell = self.level.get_map().cell(coords)
         if not self.children:
             self.line("Space: Exit. Enter: Inspect. */: Style.")
         else:
@@ -674,8 +674,7 @@ class CharacterSheet(View):
         self.window.clear()
         self.border("#")
 
-        pos = cursor.pos
-        actors = self.level.get_map().actors(pos)
+        actors = self.level.get_map().actors(cursor.coords)
 
         # Abort early if no actor.
         if not actors:

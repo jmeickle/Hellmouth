@@ -152,9 +152,9 @@ class Cursor(Input):
 #                for glyph, offset in Cursor.styles[self.style]:
 #                    self.parent.offset_hd(add(self.pos, dir), offset, glyph, color)
 
-    def __init__(self, pos, **kwargs):
+    def __init__(self, coords, **kwargs):
         super(Cursor, self).__init__(**kwargs)
-        self.pos = pos
+        self.coords = coords
         self.styles = ["[]", "1hex", "<>", "{}", "()"]
 
     def ready(self):
@@ -173,13 +173,13 @@ class Cursor(Input):
         return True
 
     # Move the cursor (hexagonally).
-    def scroll(self, dir):
-        self.pos = add(self.pos, dir)
+    def scroll(self, heading):
+        self.coords += heading
         self.resize()
 
     def draw(self):
-        pos = self.pos
-        cell = self.level.get_map().cell(pos)
+        coords = self.coords
+        cell = self.level.get_map().cell(coords)
         color = "black-black"
 
         if cell is not None:
@@ -188,18 +188,18 @@ class Cursor(Input):
                 color = actor.cursor_color()
                 # HACK: Magic number
                 if self.zoom == 2:
-                    pos = add(pos, actor.subposition)
+                    coords += actor.subposition
             elif cell.terrain or cell.items:
                 color = "yellow-black"
             else:
                 color = "magenta-black"
 
         for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
-            self.parent.offset_hd(pos, offset, glyph, color)
+            self.parent.offset_hd(coords, offset, glyph, color)
 
     # Resize based on features.
     def resize(self):
-        actors = self.level.get_map().actors(self.pos)
+        actors = self.level.get_map().actors(self.coords)
         self.selector.resize(len(actors)-1)
 
 # Generic prompt.
