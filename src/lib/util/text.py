@@ -25,7 +25,7 @@ def indent(fn):
             try:
                 result = kwargs["indenter"].get_indent() + result
             except AttributeError:
-                exit(kwargs)
+                exit("indent failed: {}".format(kwargs))
         else:
             result = [kwargs["indenter"].get_indent() + line for line in result]
         if kwargs["indenter"].wrap_depth > 0:
@@ -67,7 +67,10 @@ def commas(list, capitalize=False):
             str += spacer + "and"
         if x > 0:
             str += spacer
-        str += list[x]
+        try:
+            str += list[x]
+        except TypeError:
+            exit([str, list, x])
 
     if capitalize is True:
         str = str.capitalize()
