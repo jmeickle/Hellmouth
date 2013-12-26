@@ -55,11 +55,6 @@ class Item(Agent):
         if not self.has_domain("Wielded") and ctx.agent("could_wield"): # TODO: ick
             yield CMD("WieldWeapon", target=self)
 
-    # STUB: Figure out appearance here, based on provided precision options, statuses, etc.
-    def appearance(self):
-        return self.name
-#        return "%s %s" % (self.material.appearance, self.name)
-
     # STUB: Preferred slot for this kind of item.
     def preferred_slot(self):
         return 'RHand'
