@@ -1,4 +1,5 @@
 from src.lib.core.kernel import Kernel
+from src.lib.core.services.command import CommandService
 from src.lib.core.services.loop import LoopService
 from src.lib.core.services.keyin import KeyinService
 
@@ -75,6 +76,10 @@ if arguments["displaymode"] == displayflags["curses"]:
 kernel.register_services(input=input_service(), output=output_service())
 loop += kernel.service("input")
 loop += kernel.service("output")
+
+# Initialize the command Service and register it with the Kernel.
+kernel.register_services(command=CommandService())
+loop += kernel.service("command")
 
 # Launch the game, if the game mode was provided.
 if arguments.get("gamemode"):

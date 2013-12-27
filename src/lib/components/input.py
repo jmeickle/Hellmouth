@@ -5,7 +5,6 @@ from src.lib.components.views.view import View
 
 from src.lib.util.define import *
 from src.lib.util.geometry.hexagon import Hexagon as H
-from src.lib.util.key import *
 from src.lib.util import text
 
 # TODO: Rewrite Scroller and Selector in a more OO way with more flexible input options
@@ -163,17 +162,18 @@ class Cursor(Input):
 
     def keyin(self, c):
         # TODO: Dup code.
-        if cmd(c, CMD_HEX):
-            self.scroll(hexkeys(c))
+        key = self.kernel.key(c)
+        if key in self.kernel.keymap("Move"):
+            self.move(H.heading_keys[key])
             return False
-        elif cmd(c, CMD_CANCEL):
+        elif key in self.kernel.keymap("Cancel"):
             self.parent.cursor = None
             self.suicide()
             return False
         return True
 
     # Move the cursor (hexagonally).
-    def scroll(self, heading):
+    def move(self, heading):
         self.coords += heading
         self.resize()
 
