@@ -186,86 +186,30 @@ class Hexagon(Shape):
     """Hexagon iteration methods."""
 
     @classmethod
-    def perimeter(cls, origin=CC, rank=1, index=0, rotation=CW_TURN):
-        """Yield indexes and points for hexagons starting at an index on a rank
-        and continuing indefinitely along a rotation.
-        """
+    def perimeter(cls, origin=CC, rank=1):
         if rank == 0:
             yield 0, origin
             return
 
-        assert rotation in (CW_TURN, CCW_TURN), "Invalid rotation value: %s" % str(rotation)
-        max_index = cls.get_max_index(rank)
-        assert index <= max_index, "Rank %s: index %s greater than max index %s" % (rank, index, max_index)
+        index = 0
+        coords = cls.get_pole(origin, rank)
+        heading = cls.CE
 
-        # Determine the starting face and the position along it.
-        face = cls.get_face_from_index(rank, index)
-        position = cls.get_position_from_index(rank, index)
-
-        # Set the coordinates to the starting face's coordinates.
-        coords = cls.get_pole(origin, rank, heading=cls.headings[face])
-
-        # Rotate the starting face by one turn clockwise.
-        face = cls.rotate_face(face, CW_TURN)
-
-        # Update the coordinates if required by the position.
-        if position > 0:
-            # Rotate the starting face an additional turn clockwise in order to
-            # point towards the next position along the face).
-            position_face = cls.rotate_face(face, CW_TURN * 2)
-            position_heading = cls.headings[position_face]
-
-            # Update the coordinates.
-            coords += position_heading * position
-
-        # Flip face direction and heading if rotating counterclockwise.
-        if rotation == CCW_TURN:
-            face = cls.rotate_face(face, 4)
-            heading = cls.headings[face]
-
-        # Yield the initial index and coordinates.
-        yield index, coords
-
-        while True:
-            # Shift index and position in the direction of rotation.
-            index += rotation
-            position += rotation
-
-            # Handle index and position rollover.
-            if position < 0:
-                face = cls.rotate_face(face, rotation)
-                heading = cls.headings[face]
-                position = rank
-                if index < 0:
-                    index = max_index
-            elif position > rank:
-                face = cls.rotate_face(face, rotation)
-                heading = cls.headings[face]
-                position = 0
-                if index > max_index:
-                    index = 0
-            else:
-                face = cls.rotate_face(face, rotation)
-                heading = cls.headings[face]
-
-            # Add the current heading to the coordinates.
-            coords += heading
-
-            # Yield the current index and coordinates.
-            yield index, coords
+        for heading in cls.headings[2:] + cls.headings[:2]:
+            for i in range(rank):
+                yield index, coords
+                index += 1
+                coords += heading
 
     @classmethod
-    def area(cls, origin=CC, distance=1):
-        """Yield rank, index, and coordinates for hexagons around an origin out to a distance."""
-        for rank in xrange(distance+1):
-            perimeter = cls.perimeter(origin, rank)
-            max_index = cls.get_max_index(rank)
-
-            while True:
-                index, point = perimeter.next()
-                yield rank, index, point
-                if index == max_index:
-                    break
+    def area(cls, origin=CC, max_rank=1):
+        """Yield rank, index, and coordinates for hexagons out to a maximum rank
+        around an origin.
+        """
+        assert isinstance(origin, Point), "Tried to start an area from a non-Point: {}".format(origin)
+        for rank in xrange(max_rank+1):
+            for index, coords in cls.perimeter(origin=origin, rank=rank):
+                yield rank, index, coords
 
     # def get_vertices(self):
     #     """Return the vertices of a cls."""
