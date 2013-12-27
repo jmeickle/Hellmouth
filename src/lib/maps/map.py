@@ -125,52 +125,54 @@ class BaseMap(object):
     def cell(self, pos):
         return self.cells.get(pos)
 
-    # Return a list of actors at a pos tuple.
-    def actors(self, pos):
-        cell = self.cell(pos)
-        if cell is None:
-            return []
-        else:
-            return cell.actors
+    def can_locate(self, agent):
+        """Return whether this map is a valid location for an `Agent`."""
+        return True
 
-    # Return terrain at a pos tuple.
-    def terrain(self, pos):
-        cell = self.cell(pos)
-        if cell is None:
-            return None
-        else:
-            return cell.terrain
+    def relocate(self, agent):
+        """Attempt to relocate an `Agent` to this map."""
+        if not self.can_locate(agent):
+            raise Exception
 
-    # TODO: FIGURE OUT THIS SECTION, WHAT THE FUCK
-    # TODO: It's still awful. I'm scared to touch it because so much relies on it.
-    # Place an object (either agent or terrain) on the map.
-    def put(self, obj, pos, terrain=False):
+        # Set the Agent's location.
+        agent.location = self
 
-        cell = self.cells.get(pos)
+    def reposition(self, agent, coords):
+        """Attempt to reposition an `Agent` to a set of coordinates on this map."""
+        # TODO: Change to raise exceptions for various types of placement failures.
+        assert hasattr(agent, "coords"), "Tried to reposition a non-positionable Agent {}.".format(agent)
+        assert isinstance(coords, Point), "Tried to reposition an Agent {} into a non-Point position {}.".format(agent, coords)
+        cell = self.cells.get(coords)
 
         if not cell:
+            raise InvalidCellException, "Tried to reposition an Agent {} into an invalid cell at coordinates {}.".format(agent, coords)
+
+        if not cell.can_position(agent):
+            raise MapException
+
+        # Store the Agent in the cell and set its position.
+        agent.cell = cell
+        return True
+
+    def place_actor(self, actor, coords):
+        """Place an `Actor` on this `Map`."""
+        try:
+            if not self.cell(coords).can_contain(actor):
+                return False
+        except AttributeError as e:
+            debug.die((e, dir(self.cell(coords))))
+
+        self.relocate(actor)
+        self.reposition(actor, coords)
+
+        Queue.add(actor)
+
+    def place_terrain(self, terrain, coords):
+        if self.cell(coords).get_terrain():
             return False
 
-        if terrain is False:
-            if cell.occupied():
-                return False
-            # Update the map
-            cell.add(obj, terrain)
-
-            # Update the actor
-            obj.coords = coords
-            obj.map = self
-            obj.ready()
-
-        else:
-            if cell.get_terrain():
-                return False
-            # Update the map
-            obj.cell = cell
-            obj.coords = coords
-            obj.map = self
-            cell.add(obj, terrain)
-        return obj
+        self.relocate(terrain)
+        self.reposition(terrain, coords)
 
     def remove_actor(self, actor):
         """Remove an Actor from this Map."""
