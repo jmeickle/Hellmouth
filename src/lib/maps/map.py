@@ -25,6 +25,12 @@ from src.lib.util.text import *
 
 from src.lib.data import screens
 
+class MapException(Exception):
+    pass
+
+class InvalidCellException(MapException):
+    pass
+
 class BaseMap(object):
     """An area of game space partitioned into Cells."""
 
@@ -76,7 +82,14 @@ class BaseMap(object):
 
     def arriving_actor(self, actor, entrance_id, exit_id):
         passage = self.get_passage(entrance_id)
-        assert self.put(actor, passage.pos) is not False
+
+        try:
+            self.relocate(actor)
+        except Exception, e:
+            raise MapException("Couldn't relocate:" + "\n".join([str(_) for _ in (self, actor, entrance_id, exit_id, passage.coords)]))
+
+        if not self.reposition(actor, passage.coords):
+            raise MapException("Couldn't place:\n" + "\n".join([str(_) for _ in (self, actor, entrance_id, exit_id, passage.coords)]))
 
     """Map departure methods."""
 
