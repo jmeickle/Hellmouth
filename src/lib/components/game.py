@@ -10,7 +10,6 @@ from src.lib.components.views.screens.screen import Screen, MenuScreen
 from src.lib.components.views.encounter.encounter import EncounterWindow
 from src.lib.components.views.screens.help import HelpScreen
 
-from src.lib.util.key import *
 from src.lib.util import system
 
 from src.games.husk.agents.actors.player import Player
@@ -161,11 +160,13 @@ class Game(Component):
 
     def keyin(self, c):
         """Handle keyin."""
+        # TODO: Hardcoded.
         # Always allow help.
         if c == ord('?'):
             self.add_screen(HelpScreen)
+        # TODO: Hardcoded.
         # Always allow quitting.
-        elif c == ctrl('q'):
+        elif c == ord('q') - 96:
             self.parent.relaunch = False
             self.before_finish()
         else: return True

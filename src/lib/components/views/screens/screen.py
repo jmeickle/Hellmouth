@@ -2,7 +2,6 @@
 import curses
 
 from src.lib.util.define import *
-from src.lib.util import key
 from src.lib.util.text import *
 
 from src.lib.components.component import override_defaults
@@ -138,12 +137,4 @@ class DialogueScreen(Screen):
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
             self.selector.choose()
-        else:
-            dir = key.hexkeys(c)
-            if dir == CC:
-                self.selector.jump(6)
-            elif dir is not None:
-                self.selector.jump(rotation[dir])
-            else: return True
-            return False
         return False

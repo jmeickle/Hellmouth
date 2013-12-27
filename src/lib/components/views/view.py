@@ -6,7 +6,6 @@ from random import choice
 from src.lib.components.component import Component, override_defaults
 from src.lib.util.color import Color
 from src.lib.util.define import *
-from src.lib.util import key
 
 class View(Component):
     default_arguments = {

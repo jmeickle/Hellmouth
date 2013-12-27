@@ -3,7 +3,6 @@ keyin and draw loops, but do not have direct access to drawing methods."""
 
 from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
-from src.lib.util import key
 import random
 
 class Component(object):
@@ -197,8 +196,8 @@ class Component(object):
         self._keyin(c)
 
         # Event processing tree.
-        e = key.event(c)
-        self._event(e)
+        key_name = self.kernel.key(c)
+        self._event(key_name)
 
     def get_context(self, **kwargs):
         """Build a Context for this Component."""
