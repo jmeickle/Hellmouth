@@ -17,19 +17,16 @@ class Cornfield(LayoutGenerator):
         self.size += 10
         self.wall_width += 10
 
-        self.entry = mult(SW, self.size-self.wall_width-1)
+        self.entry = Hexagon.SW * (self.size-self.wall_width-1)
 
     def attempt(self):
-        hexes = area(self.center, self.size, True)
-
         # Cornfield edge.
-        for pos, dist in hexes:
-            if dist >= self.size - self.wall_width:
-                self.cells[pos] = (dist, self.place_corn())
+        for rank, index, coords in Hexagon.area(self.center, self.size):
+            if rank >= self.size - self.wall_width:
+                self.cells[coords] = (rank, self.place_corn())
             else:
-                self.cells[pos] = (dist, None)
+                self.cells[coords] = (rank, None)
 
-        hexes = [pos for pos, dist in hexes]
 
         # Corn rows.
         spacing = 2 # Every other row
@@ -59,14 +56,15 @@ class Cornfield(LayoutGenerator):
         if not self.passages:
             return False
         passages = {}
-        perimeter = random_perimeter(self.center, self.size - self.wall_width, len(self.passages))
+        perimeter = random.sample([h for h in Hexagon.perimeter(self.center, self.size - self.wall_width)], len(self.passages))
+
         for which, passage in self.passages.items():
             where, pos = passage
             if not pos:
-                pos = perimeter.pop()
-            # Block off the immediate surroundings (rank=1)
-            for cell in area(pos):
-                self.cells[cell] = (None, None)
+                index, coords = perimeter.pop()
+            # Block off the immediate surroundings.
+            for rank, index, coords in Hexagon.area(coords):
+                self.cells[coords] = (None, None)
             passages[which] = Path(which, where)
-            self.cells[pos] = (None, passages[which])
+            self.cells[coords] = (None, passages[which])
         self.passages = passages
