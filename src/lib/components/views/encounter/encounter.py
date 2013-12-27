@@ -234,31 +234,16 @@ class MainMap(View):
         map_obj = self.level.get_map()
         self.center = self.get_focus()
 
+        # Draw the encounter map.
         for rank, index, coords in Hexagon.area(self.center, self.zoom):
             if map_obj.valid(coords) is not False:
                 glyph, col = self.get_glyph(map_obj, coords)
             else:
                 glyph = ','
                 col = "red-black"
-            # HACK: Multiple-zoom-level system.
-            if self.zoom == self.viewport_rank:
-                self.hd(coords, glyph, col)
-            else:
-                diff = coords - self.center
-                pos = self.center + 4*diff
-                # HACK: Move this into some generalized hex border function.
-                faces = {Hexagon.NW: ("/", Hexagon.WW), Hexagon.NE : ("\\", Hexagon.EE), Hexagon.CE : ("|", Hexagon.EE), Hexagon.SE : ("/", Hexagon.EE), Hexagon.SW: ("\\",  Hexagon.WW), Hexagon.CW: ("|", Hexagon.WW)}
-                for heading in Hexagon.headings:
-                    point = pos + heading
-                    self.hd(point, ".", "white-black")
-                    face, offset = faces[heading]
-                    self.offset_hd(point, offset, face, "white-black")
-                    # NOTE: Interesting effect!
-                    #self.hd(add(pos, mult(dir, 2)), faces[dir], "white-black")
-                for glyph, col in self.get_glyph(coords, True):
-                    # TODO: Subposition again
-                    self.hd(pos, glyph, col)
+            self.hd(coords, glyph, col)
 
+        # Draw highlights around the encounter map border.
         if len(self.get_controller().highlights) > 0:
             for highlight_id, highlight_obj in self.get_controller().highlights.items():
                 if Hexagon.distance(self.center, highlight_obj.coords) > self.viewport_rank:
