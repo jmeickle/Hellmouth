@@ -199,8 +199,8 @@ class Cursor(Input):
 
     # Resize based on features.
     def resize(self):
-        actors = self.level.get_map().actors(self.coords)
-        self.selector.resize(len(actors)-1)
+        cell = self.map.cell(self.coords)
+        self.selector.resize(len(cell.actors)-1) if cell else self.selector.resize(0)
 
 # Generic prompt.
 class Prompt(View):

@@ -117,16 +117,9 @@ class Actor(Agent):
 
     # Change actor coords directly and update the relevant cells.
     def go(self, coords, heading=Hexagon.CC):
-        if self.location.cell(coords).occupied() is True:
-            actors = self.location.cell(coords).actors
-            self.subposition = flip(heading)
-            for actor in actors:
-                actor.subposition = heading
-        else:
-            self.subposition = Hexagon.CC
-        self.cell.remove_contents(self)
+        self.cell.actors -= self
         self.coords = coords
-        self.cell.add_contents(self)
+        self.cell.actors += self
 
     # Try to move based on an input direction. Return whether it worked.
     # TODO: Action chain
@@ -141,23 +134,36 @@ class Actor(Agent):
     def get_movement_modes(self):
         yield "walk"
 
-    # Whether we can actually move to a pos.
-    # TODO: Action chain
-    def can_move(self, coords, heading=Hexagon.CC):
-        if self.can_walk() is False:
-            return False
-        if self.valid_move(coords, heading) is False:
+    # Can I enter this type of terrain?
+    def can_traverse_terrain(self, cell, heading):
+        pass
+
+    # Can I fit into a cell with its other contents?
+    def can_traverse(self, cell, heading):
+        if self.can_traverse_terrain(cell, heading) is False:
             return False
         return True
 
-    # Check move validity.
-    def valid_move(self, coords, heading=Hexagon.CC):
+    def can_move(self, coords, heading=Hexagon.CC):
+        """Return whether an actor can move to coordinates."""
+        if self.can_walk() is False:
+            return False
+        if self.valid_move(coords) is False:
+            return False
+
+        cell = self.location.cell(coords)
+        if self.can_traverse(cell, heading) is False:
+            return False
+        return True
+
+    def valid_move(self, coords):
+        """Return whether a move is valid for anyone."""
         # Map border checking:
         if self.location.valid(coords) is False:
             return False
 
-        # Cell content checking:
-        if self.location.cell(coords).can_block(self, heading):
+        # Cell existence checking:
+        if not self.location.cell(coords):
             return False
         return True
 
@@ -236,6 +242,11 @@ class Actor(Agent):
         # TODO: Improve messaging
         Log.add("%s falls over!" % self.appearance())
 
+    def could_bump(self, cell):
+        """Placeholder for improved targeting/combat."""
+        if cell.actors:
+            return True
+
     # Do something in a direction - this could be an attack or a move.
     def do(self, direction):
         if self.controlled is True and self.can_maneuver() is False:
@@ -276,8 +287,9 @@ class Actor(Agent):
         cell = self.location.cell(pos)
 
         # TODO: Make bump attacks cleaner
-        if cell and cell.occupied() and self.has_domain("Combat"):
-            context = Context(agent=self, domains=["Combat"], intent={"attempt" : True}, participants=self.map.actors(pos))
+        if cell and self.has_domain("Combat") and self.could_bump(cell):
+            context = Context(agent=self, domains=["Combat"], intent={"attempt" : True},
+                                participants=cell.contents)
             for command_class, command_arguments in context.get_commands():
                 command = command_class(context)
                 context.update_arguments(**command_arguments)

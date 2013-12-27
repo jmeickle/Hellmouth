@@ -671,7 +671,8 @@ class CharacterSheet(View):
         self.window.clear()
         self.border("#")
 
-        actors = self.level.get_map().actors(cursor.coords)
+        cell = self.map.cell(cursor.coords)
+        actors = cell.actors if cell else None
 
         # Abort early if no actor.
         if not actors:
