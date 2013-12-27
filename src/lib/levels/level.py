@@ -164,24 +164,25 @@ class Level(object):
     def generate_map_terrain(self, map_obj):
         """Generate terrain according to the Map layout."""
         # TODO: Method to parse layout generator return values
-        for pos, contents in map_obj.layout.cells.items():
+        for coords, contents in map_obj.layout.cells.items():
             distance, terrain = contents # HACK: This won't always be a tuple like this.
-            map_obj.add_cell(pos)
+            map_obj.add_cell(coords)
 
             if terrain:
-                assert map_obj.put(terrain, pos, True) is not False
+                assert map_obj.place_terrain(terrain, coords) is not False
 
     def generate_map_monsters(self, map_obj):
         num_mons = 3
-        loops = 1000
+        loops = 100
         while num_mons > 0 and loops > 0:
             loops -= 1
-            cell = random.choice([cell for cell in map_obj.cells])
             monster_class = random.choice([humans.Human, crows.Crow])
             monster = monster_class()
+            # TODO: Reimplement.
             # monster.generate_equipment()
-            if map_obj.put(monster, cell):
-                Queue.add(monster)
+            if monster:
+                cell = random.choice(map_obj.cells.values())
+                cell.actors += monster
                 num_mons -= 1
 
     def generate_map_items(self, map_obj):
@@ -192,5 +193,6 @@ class Level(object):
             loops -= 1
             item = generator.random_item("implements")
             if item:
-                random.choice(map_obj.cells.values()).put(item)
+                cell = random.choice(map_obj.cells.values())
+                cell.items += item
                 item_count -= 1

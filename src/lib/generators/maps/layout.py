@@ -17,9 +17,8 @@ class LayoutGenerator(object):
         self.cells = {}
 
     def attempt(self):
-        hexes = area(self.center, self.size, True)
-        for pos, dist in hexes:
-            self.cells[pos] = (dist, None)
+        for rank, index, coords in Hexagon.area(self.center, self.size):
+            self.cells[coords] = (rank, None)
         self.place_passages()
 
     # Place random stairs, then set their positions in a list.
@@ -32,22 +31,25 @@ class LayoutGenerator(object):
             where, pos = passage
             if not pos:
                 dist = r1d(self.size/2) + self.size/2 - 4
-                pos = random_perimeter(self.center, dist).pop()
-                self.cells[pos] = (dist, Stairs(which, where))
+                pos = Hexagon.perimeter(self.center, dist, random.choice(0, Hexagon.get_max_index(dist))).next()
+                assert False, "Pos: %s" % str(pos)
+                coords = Point(pos)
+                self.cells[coords] = (dist, Stairs(which, where))
             else:
-                self.cells[pos] = (None, Stairs(which, where))
-            passages[which] = self.cells[pos][1] # The terrain above
+                coords = Point(pos)
+                self.cells[coords] = (None, Stairs(which, where))
+            passages[which] = self.cells[coords][1] # The terrain above
         self.passages = passages
 
     def connect_passages(self):
         if self.passages is None:
             return False
         # HACK: Dig line from exit to center.
-        for which, pos in self.passages:
-            cells = line(self.center, pos)
+        for which, coords in self.passages:
+            cells = line(self.center, coords)
             cells.pop()
-            for cell in cells:
-                self.cells[cell] = (None, None)
+            for coords in cells:
+                self.cells[coords] = (None, None)
 
     def place_levers(self):
         dist = 4
