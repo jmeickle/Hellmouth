@@ -292,11 +292,26 @@ class Examine(View):
             self.line("Space: Exit. Enter: Inspect. */: Style.")
         else:
             self.line("Space: Stop Inspecting. /*: Style.")
+
         if cell is not None:
-            string = cell.contents()
-            self.line("Cursor: %s." % string)
+            self.line("Cursor: %s." % self.describe_contents(cell))
         else:
             self.line("Cursor: There's... nothing. Nothing at all.")
+
+    # TODO: Options for what to list.
+    def describe_contents(self, cell):
+        contents = []
+        if cell.actors:
+            for actor in cell.actors:
+                contents.append("a %s" % actor.appearance())
+        if cell.terrain:
+            contents.append("a %s" % cell.terrain.name)
+        if cell.items:
+            for item in cell.items:
+                contents.append(item.appearance())
+        if not contents:
+            contents.append("nothing of interest")
+        return text.commas(contents)
 
 class Stats(View):
     default_arguments = {
