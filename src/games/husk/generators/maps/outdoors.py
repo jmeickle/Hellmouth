@@ -27,21 +27,7 @@ class Cornfield(LayoutGenerator):
             else:
                 self.cells[coords] = (rank, None)
 
-
-        # Corn rows.
-        spacing = 2 # Every other row
-        pos = self.center
-        for d in [NE, SW]:
-            row_start = add(self.center, d)
-            while row_start in hexes:
-                self.cells[row_start] = (dist, self.place_corn())
-                for row in [NW, SE]:
-                    row_pos = row_start
-                    while row_pos in hexes:
-                        row_pos = add(row, row_pos)
-                        self.cells[row_pos] = (dist, self.place_corn())
-                row_start = add(row_start, mult(d, spacing))
-
+        # TODO: Return corn rows.
         self.place_passages()
         return self.cells, self.passages
 
