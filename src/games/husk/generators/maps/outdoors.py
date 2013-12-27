@@ -1,9 +1,12 @@
-from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
+import random
 
 from src.lib.agents.terrain.passage import Path
 from src.lib.generators.maps.layout import LayoutGenerator
 
+from src.lib.util import debug
 from src.lib.util.geometry.hexagon import Hexagon
+
+from src.games.husk.agents.terrain.outdoors import Corn, TrampledCorn
 
 class Cornfield(LayoutGenerator):
     def __init__(self, map_obj):
@@ -46,7 +49,6 @@ class Cornfield(LayoutGenerator):
         return self.cells, self.passages
 
     def place_corn(self):
-        import random
         if random.choice(range(50)) > 40:
             return TrampledCorn()
         else:

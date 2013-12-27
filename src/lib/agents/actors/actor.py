@@ -11,6 +11,7 @@ from src.lib.agents.components.manipulation import ManipulatingTraits, Manipulat
 from src.lib.agents.components.positioning import CellPositionable
 from src.lib.agents.components.status import Status
 from src.lib.agents.contexts.context import Context
+
 # TODO: Better data importing.
 import src.lib.data
 from src.lib.data import skills

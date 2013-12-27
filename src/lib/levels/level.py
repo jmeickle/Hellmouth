@@ -8,6 +8,7 @@ from src.lib.data.generators.items import generators
 from src.lib.generators.items import ItemGenerator, generate_item
 from src.lib.maps.encounter.map import EncounterMap
 
+from src.lib.util import debug
 from src.lib.util.dice import *
 from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.util.queue import Queue
