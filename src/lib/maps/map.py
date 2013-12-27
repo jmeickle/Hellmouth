@@ -114,10 +114,11 @@ class BaseMap(object):
         """Return an iterator over all passages."""
         return self.layout.passages.items()
 
-    def add_cell(self, pos):
+    def add_cell(self, coords):
         """Create a Cell, store it within this map, and return it."""
-        cell = self.cell_class(pos, self)
-        self.cells[pos] = cell
+        assert isinstance(coords, Point), "Tried to non-Point here"
+        cell = self.cell_class(coords, self)
+        self.cells[coords] = cell
         return cell
 
     # Return a cell at a pos tuple.
@@ -157,7 +158,7 @@ class BaseMap(object):
             cell.add(obj, terrain)
 
             # Update the actor
-            obj.pos = pos
+            obj.coords = coords
             obj.map = self
             obj.ready()
 
@@ -166,7 +167,7 @@ class BaseMap(object):
                 return False
             # Update the map
             obj.cell = cell
-            obj.pos = pos
+            obj.coords = coords
             obj.map = self
             cell.add(obj, terrain)
         return obj
