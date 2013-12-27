@@ -15,12 +15,15 @@ Maps can be of different scales. The most typical scales are:
 """
 from collections import deque
 
-from src.lib.data import screens
-from cell import BaseCell
+from src.lib.maps.cell import BaseCell
 
 from src.lib.util import debug
-from src.lib.util.text import *
+from src.lib.util.geometry.space import Point
 from src.lib.util.log import Log
+from src.lib.util.queue import Queue
+from src.lib.util.text import *
+
+from src.lib.data import screens
 
 class BaseMap(object):
     """An area of game space partitioned into Cells."""
