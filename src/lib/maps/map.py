@@ -69,9 +69,6 @@ class BaseMap(object):
         if self.name is not None:
             entryscreen  += ", " + self.name # HACK: Later it should choose different dict for different levels.
         Log.add("You enter %s's %s." % (self.level.name, self.name))
-        # if screens.text.get(striptags(entryscreen)) is not None:
-        #     arguments = {"header_right" : entryscreen, "footer_text" : screens.footer, "callback" : self.arrive}
-        #     self.screen(striptags(entryscreen), arguments)
 
     def arrive(self, entrance_id, exit_id):
         for passage_id, passage_obj in self.get_passages():
