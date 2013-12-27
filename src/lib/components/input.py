@@ -195,7 +195,7 @@ class Cursor(Input):
                 color = "magenta-black"
 
         for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
-            self.parent.offset_hd(coords, offset, glyph, color)
+            self.parent.hd(coords, glyph, color, offset=offset)
 
     # Resize based on features.
     def resize(self):

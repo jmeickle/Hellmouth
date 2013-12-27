@@ -162,44 +162,31 @@ class MainMap(View):
         else: return True
         return False
 
-    # Hex character function, for maps only.
-    def hd(self, coords, glyph, col=None, attr=None):
-        # Three sets of coords are involved:
-        x, y = coords
+    def hd(self, coords, glyph, col=None, attr=None, offset=None):
+        """Draw a glyph/color/attribute at hexagonal coordinates projected on a
+        rectangular space (with an optional rectangular offset)."""
+        # The map coordinates of a target:
+        t_x, t_y = coords
+        # The map coordinates of the viewport's center:
         c_x, c_y = self.center
+        # The window coordinates of the viewport's center:
         v_x, v_y = self.viewport_pos
+        # The heading (in window coordinates) of the target's viewport offset:
+        h_x, h_y = offset if offset else (0, 0)
 
-        # Offsets from the viewport center
-        off_x = x - c_x
-        off_y = y - c_y
+        # Calculate distance from the viewport center:
+        d_x = t_x - c_x
+        d_y = t_y - c_y
 
-        draw_x = off_y + 2*(off_x+v_x)
-        draw_y = off_y + v_y
+        # Calculate window coordinates:
+        draw_x = d_y + 2*(d_x+v_x) + h_x
+        draw_y = d_y + v_y + h_y
 
-        # TODO: Log this somewhere useful but don't assert on it.
         if not self.undrawable((draw_x, draw_y)):
-            try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
-            except curses.error: pass
-
-    # Draw to offset hexes, i.e., the 'blank' ones.
-    def offset_hd(self, pos, dir, glyph, col=None, attr=None):
-        # Four sets of coords are involved:
-        x, y = pos
-        c_x, c_y = self.center
-        v_x, v_y = self.viewport_pos
-        d_x, d_y = dir
-
-        # Offsets from the viewport center
-        off_x = x - c_x
-        off_y = y - c_y
-
-        draw_x = off_y + 2*(off_x+v_x) + d_x
-        draw_y = off_y + v_y + d_y
-
-        # TODO: Log this somewhere useful but don't assert on it.
-        assert self.undrawable((draw_x, draw_y)) is False, "offset hd function tried to draw out of bounds: %s at %s." % (self.__dict__, (draw_x, draw_y))
-        try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
-        except curses.error: pass
+            try:
+                self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
+            except curses.error:
+                pass
 
     def get_glyph(self, map_obj, coords):
         """Return a glyph and color to display for a position."""
