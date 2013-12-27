@@ -6,3 +6,6 @@ rm -rf saves
 
 # Delete all logs
 rm *.log
+
+# Create a blank debug log file
+touch debug.log
