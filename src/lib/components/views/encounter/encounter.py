@@ -201,9 +201,34 @@ class MainMap(View):
         try: self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
         except curses.error: pass
 
-    # Accepts viewport_rank offsets to figure out what part of the map is visible.
-    def get_glyph(self, map_obj, pos, subpositions=False):
-        return map_obj.cell(pos).draw(subpositions)
+    def get_glyph(self, map_obj, coords):
+        """Return a glyph and color to display for a position."""
+        cell = map_obj.cell(coords)
+
+        # Prioritize displaying actors.
+        if cell.actors:
+            actor = cell.actors[0]
+            glyph = actor.glyph
+            color = actor.color
+            # TODO: HACK
+            if actor.get("Status", "Unconscious"):
+                color += "-white"
+            elif len(cell.actors) > 1:
+                color += "-magenta"
+            else:
+                color += "-black"
+            return glyph, color
+
+        # Display items otherwise.
+        if len(cell.items) == 1:
+            return cell.items[0].glyph, cell.items[0].color
+        elif len(cell.items) > 1:
+            return '+', 'red-black'
+        # Otherwise, display terrain if possible.
+        elif cell.terrain is not None:
+            return cell.terrain.glyph, cell.terrain.color
+        else:
+            return cell.map.floor
 
     def draw(self):
         map_obj = self.level.get_map()
