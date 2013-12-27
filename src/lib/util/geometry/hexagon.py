@@ -60,14 +60,19 @@ from src.lib.util.math import signum
 class Hexagon(Shape):
     """Class for hexagonal shape."""
 
-    # Number of faces
+    # Basic definitions
     faces = 6
+    vertices = 6
+
+    # Hexagonal grid points
 
     # No location
     ANYWHERE = None
 
     # Center
     CC = Point(0, 0)
+
+    # Hexagonal grid headings
 
     # Northwest
     NW = Point(0, -1)
@@ -91,6 +96,17 @@ class Hexagon(Shape):
         SE: "Southeast",
         SW: "Southwest",
         CW: "West"
+    }
+
+    # TODO: The right place for this is probably a HexKeyboardLayout class or something.
+    heading_keys = {
+        "7": NW,
+        "4": CW,
+        "1": SW,
+        "9": NE,
+        "6": CE,
+        "3": SE,
+        "5": CC
     }
 
     # Offset directions, for rendering.
