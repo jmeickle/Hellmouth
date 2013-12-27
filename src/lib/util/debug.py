@@ -10,9 +10,15 @@ logging.basicConfig(filename='debug.log',level=logging.DEBUG, format='%(asctime)
 debug_frequency = {}
 
 # TODO: Support setting level to info/warning
-def log(message, level=logging.DEBUG):
+def log(message, **kwargs):
     """Send a message to the debug log."""
+    level = kwargs.pop("level", logging.DEBUG)
     msg = message.__str__()
+    if kwargs.pop("line", False):
+        import inspect
+        last_call = inspect.stack()[1]
+        _, module, line, method, _, _ = last_call
+        msg = "{}({}) in {}: {}".format(module.partition("src")[2], line, method, msg)
     hits = debug_frequency.get(msg, 0) + 1
     debug_frequency[msg] = hits
     logging.log(level, "%s:%s" % (hits, msg))
@@ -21,7 +27,11 @@ def die(message, **kwargs):
     """Send a message to the debug log and then assert."""
     kwargs.setdefault("level", logging.CRITICAL)
     log(message, **kwargs)
-    assert False, "\n%s" % message
+    assert False, "\n{}".format(message)
+
+def lineno():
+    """Returns the current line number."""
+    return inspect.currentframe().f_back.f_lineno
 
 def DEBUG(fn):
     """Decorator to log a method call to debug."""
