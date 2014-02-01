@@ -6,15 +6,15 @@ from src.lib.util.registry import RegistryList
 
 class LoopService(RegistryList):
     @Kernel.helper
-    def loop(self):
+    def loop(kernel):
         """Run the main application loop."""
         # Use the output service as a context manager.
-        with self.service("output") as display:
+        with kernel.service("output") as display:
             # Start the root Component's loop.
-            root = self.service("root")
+            root = kernel.service("root")
             while root.alive:
                 # Allow registered services to react to the loop.
-                for service in self.service("loop"):
+                for service in kernel.service("loop"):
                     if hasattr(service, "loop"):
                         service.loop()
 
