@@ -10,8 +10,8 @@ from src.lib.util import debug
 from src.lib.util.decorator import classproperty
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
 
-class TraitException(Exception):
-    """An exception in using `Trait`s."""
+class TraitError(Exception):
+    """An error related to `Trait`s."""
     pass
 
 # A registry for the Trait-composed attributes in a Traitable class.
@@ -176,7 +176,7 @@ class Traitable(type):
                         yield conflict, ", ".join([t.__name__ for t, a in trait_attributes[conflict]])
 
                 conflict_sources = "\n".join(["{}: {}".format(conflict, t) for conflict, t in print_conflicts(conflicts)])
-                raise TraitException("Conflicts occurred during Traitable composition:\nClass: {}\nTraits: {}\nConflicts:\n{}".format(name, ", ".join(trait.__name__ for trait in traits), conflict_sources))
+                raise TraitError("Conflicts occurred during Traitable composition:\nClass: {}\nTraits: {}\nConflicts:\n{}".format(name, ", ".join(trait.__name__ for trait in traits), conflict_sources))
 
             # Update attributes.
             for attr_name, attr_traits in trait_attributes.items():
@@ -188,19 +188,18 @@ class Traitable(type):
         # Create a new Traitable class.
         try:
             cls = type.__new__(meta, name, bases, attributes)
-        except TypeError:
-            def metas(classes):
-                return ["{}: {}".format(cls, cls.__metaclass__ if hasattr(cls, "__metaclass__") else "n/a") for cls in classes]
+        except TypeError as e:
+            def metaclasses(classes):
+                return ["{}: {}".format(cls, cls.__metaclass__ if hasattr(cls, "__metaclass__") else "(no metaclass)") for cls in classes]
 
-            exit("Failed to __new__:\n" + "\n".join([str(_) for _ in (
-                meta,
-                "Metaclass MRO: {}".format(meta.__mro__),
-                "\n  ".join([""]+metas(meta.__mro__)),
-                # name,
-                bases,
-                "\n  ".join([""]+metas(bases)),
-                # attributes,
-            )]))
+            message =  "\n".join([str(_) for _ in (
+                "Metaclass: {}".format(meta),
+                "Metaclass MRO:" + "\n  ".join([""] + metaclasses(meta.__mro__)),
+                "Bases:" + "\n  ".join([""] + metaclasses(bases)),
+                "Error message:\n  {}".format(e)
+            )])
+
+            raise TraitError("Failed to create a Traitable class ({}):\n".format(name) + message)
 
         # TODO: Reimplement TraitRegistry and TraitAttributeRegistry.
         # # The new class keeps a record of which traits it was composed with.
