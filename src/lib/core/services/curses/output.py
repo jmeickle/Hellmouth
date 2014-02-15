@@ -2,7 +2,7 @@ import curses
 
 from src.lib.core.services.service import Service
 
-class CursesOutputService(object):
+class CursesOutputService(Service):
     """Service providing curses output. Used as a context manager."""
     def __init__(self):
         self.color = True

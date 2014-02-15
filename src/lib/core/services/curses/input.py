@@ -3,7 +3,8 @@ import curses
 from src.lib.core.kernel import Kernel
 from src.lib.core.services.service import Service
 
-class CursesInputService(object):
+class CursesInputService(Service):
+    # TODO: Move into YAML?
     key_names = {
         " " : "Space",
         "\n" : "Enter",
