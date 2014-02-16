@@ -4,7 +4,9 @@ import inspect
 
 from src.lib.core.services.service import Service
 
+from src.lib.util.pattern import Singleton
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
+from src.lib.util.trait import Traitable, Trait
 
 # Define a list-like container for storing registered services.
 ServiceList = RegistryFactory("ServiceList", RegistryList)
@@ -14,10 +16,13 @@ ServiceRegistry = RegistryFactory("ServiceRegistry", RegistryDict, container_cla
 class KernelError(Exception):
     pass
 
+@Trait.use(Singleton)
 class Kernel(object):
     """The Kernel is a singleton that coordinates a Unicursal application. It is
     responsible for service registration and orchestration.
     """
+    __metaclass__ = Traitable
+
     def __setattr__(self, name, value):
         if not isinstance(value, Service):
             raise KernelError("Attempted to set a non-service ({}) as an attribute ({}) on the kernel.".format(value, name))
