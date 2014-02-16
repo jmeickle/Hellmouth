@@ -56,7 +56,7 @@ class Trait(object):
             def holiness(self):
                 return "Unholy"
 
-            # Static methods are never composed:
+            # Static methods are too:
             @staticmethod
             def get_weaknesses():
                 return ["holy water", "crosses", "chainsaws"]
@@ -101,9 +101,6 @@ class Trait(object):
     def __attributes__(cls):
         """Yield the composable attributes of a `Trait`."""
         for name, attribute in inspect.getmembers(cls):
-            # Static methods are never composable:
-            if isinstance(attribute, types.FunctionType):
-                continue
             # Methods are composable unless they've been decorated with @Trait.exclude
             # or are magic methods not decorated with @Trait.include.
             if getattr(attribute, '__composable__', not name.startswith("__")):
