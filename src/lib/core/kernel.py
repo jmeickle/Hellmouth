@@ -2,6 +2,8 @@
 
 import inspect
 
+from src.lib.core.services.service import Service
+
 from src.lib.util.registry import RegistryFactory, RegistryDict, RegistryList
 
 # Define a list-like container for storing registered services.
@@ -16,55 +18,14 @@ class Kernel(object):
     """The Kernel is a singleton that coordinates a Unicursal application. It is
     responsible for service registration and orchestration.
     """
-    def __init__(self, **services):
-        # Initialize the service registry.
-        self.services = ServiceRegistry()
-        # Register the provided services.
-        self.register_services(**services)
-
-    """Service registration methods."""
-
-    def register_services(self, **services):
-        """Register service instances to service names."""
-        for service_name, service in services.items():
-            self.services[service_name] += service
-            service.kernel = self
-            self.add_helpers(service)
-            # TODO: add asserts back in
-            # assert service_name not in self.services,\
-            #     "Failed to register service %s at service name %s: service %s already registered there."\
-            #     % (service, service_name, self.services[service_name]))
-
-    def deregister_services(self, **services):
-        """Deregister service instances from service names."""
-        for service_name, service in services.items():
-            self.services[service_name] -= service
-            self.remove_helpers(service)
-            del service.kernel
-            # TODO: add asserts back in
-            # assert hasattr(self, service_name),\
-            #     "Failed to deregister service at service name %s: no service is registered there."\
-            #     % (service, service_name, getattr(self, service_name))
-
-            # registered = getattr(self, service_name)
-
-            # if service:
-            #     assert service == registered,\
-            #         "Failed to deregister service %s at service name %s: a different service, %s, is registered there."\
-            #         % (service, service_name, getattr(self, service_name))         
-
-            # delattr(self, service_name)
-            # service.remove_helpers(self)
+    def __setattr__(self, name, value):
+        if not isinstance(value, Service):
+            raise KernelError("Attempted to set a non-service ({}) as an attribute ({}) on the kernel.".format(value, name))
+        else:
+            self.add_helpers(value)
+            super(Kernel, self).__setattr__(name, value)
 
     """Service helper methods."""
-
-    def service(self, service_name):
-        """Return the first service registered with a service name."""
-        services = self.services[service_name]
-        if services:
-            return services[0]
-        else:
-            return None
 
     @staticmethod
     def helper(f):
