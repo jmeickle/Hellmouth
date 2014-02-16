@@ -66,11 +66,11 @@ if arguments.get("gamemode"):
 # Launch a menu to select the game mode.
 else:
     def get_choices():
-            """Yield an iterator over game choices."""
-            for module_folder in arguments["module_folders"]:
-                for module_package in sorted(system.folders(module_folder)):
-                    # TODO: Convert module folder into package name via sys directory separator.
-                    yield module_package, __import__('src.games.%s.info' % module_package, globals(), locals(), ['name', 'version', 'description'])
+        """Yield game choices."""
+        for module_folder in arguments["module_folders"]:
+            for module_package in sorted(system.folders(module_folder)):
+                # TODO: Convert module folder into package name via sys directory separator.
+                yield module_package, __import__('src.games.%s.info' % module_package, globals(), locals(), ['name', 'version', 'description'])
 
     # Create a game choice menu that launches after a selection is made.
     with kernel.service("output") as display:
