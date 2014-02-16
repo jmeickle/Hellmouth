@@ -73,6 +73,16 @@ class Trait(object):
             return Traitable(name, bases, attributes, traits)
         return wrapper
 
+    def exclude(method):
+        """Method decorator to indicate that a `Trait` method is non-composable.
+        This is typically only used for complex base class definitions or debugging.
+        """
+        method.__composable__ = False
+        return method
+
+    # We have to exclude this method too, of course!
+    exclude = staticmethod(exclude(exclude))
+
     @staticmethod
     def include(method):
         """Method decorator to indicate that a `Trait` method is composable. This
@@ -82,12 +92,6 @@ class Trait(object):
         return method
 
     @staticmethod
-    def exclude(method):
-        """Method decorator to indicate that a `Trait` method is non-composable.
-        This is typically only used for complex base class definitions or debugging.
-        """
-        method.__composable__ = False
-        return method
 
     @classproperty
     @classmethod
