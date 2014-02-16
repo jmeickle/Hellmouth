@@ -72,20 +72,14 @@ else:
                 # TODO: Convert module folder into package name via sys directory separator.
                 yield module_package, __import__('src.games.%s.info' % module_package, globals(), locals(), ['name', 'version', 'description'])
 
-    # Create a game choice menu that launches after a selection is made.
-    with kernel.service("output") as display:
-        # TODO: Generalize from curses.
-        # Set the root Component's window to the curses display.
-        root.window = display
+    # Create a game choice menu.
+    from src.lib.components.views.screens.screen import MenuScreen
+    choice_menu = MenuScreen(title="Start Game!", choices=list(get_choices()),
+                            choice_formatter=lambda choice: choice[1].name,
+                            callback=kernel.component.launch)
 
-        # Create a game choice menu.
-        from src.lib.components.views.screens.screen import MenuScreen
-        choice_menu = MenuScreen(title="Start Game!", choices=list(get_choices()),
-                                choice_formatter=lambda choice: choice[1].name,
-                                callback=root.launch)
-
-        # Spawn the game choice menu from the root component.
-        root.spawn(choice_menu)
+    # Spawn the game choice menu from the root component.
+    kernel.component.spawn(choice_menu)
 
 # Start the kernel's loop service.
 while kernel.loop.run():
