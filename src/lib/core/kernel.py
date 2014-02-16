@@ -9,6 +9,9 @@ ServiceList = RegistryFactory("ServiceList", RegistryList)
 # Define a dict-like container for service registration.
 ServiceRegistry = RegistryFactory("ServiceRegistry", RegistryDict, container_class=ServiceList)
 
+class KernelError(Exception):
+    pass
+
 class Kernel(object):
     """The Kernel is a singleton that coordinates a Unicursal application. It is
     responsible for service registration and orchestration.
