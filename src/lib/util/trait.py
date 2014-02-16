@@ -63,16 +63,6 @@ class Trait(object):
     ```
     """
 
-    @staticmethod
-    def use(*traits):
-        """Class decorator to indicate which traits a class should be composed with."""
-        def wrapper(traitable):
-            name = traitable.__name__
-            bases = traitable.__bases__
-            attributes = dict(traitable.__dict__) # __dict__ is normally a proxy.
-            return Traitable(name, bases, attributes, traits)
-        return wrapper
-
     def exclude(method):
         """Method decorator to indicate that a `Trait` method is non-composable.
         This is typically only used for complex base class definitions or debugging.
@@ -84,6 +74,7 @@ class Trait(object):
     exclude = staticmethod(exclude(exclude))
 
     @staticmethod
+    @exclude.__func__
     def include(method):
         """Method decorator to indicate that a `Trait` method is composable. This
         is typically only required for magic methods.
@@ -92,6 +83,18 @@ class Trait(object):
         return method
 
     @staticmethod
+    @exclude.__func__
+    def use(*traits):
+        """Class decorator to indicate which traits a class should be composed with."""
+        def wrapper(traitable):
+            if type(traitable) is not Traitable:
+                raise TraitError("Tried to compose `Trait`(s) ({}) onto a non-`Traitable` class ({}).".format(traits, traitable))
+
+            name = traitable.__name__
+            bases = traitable.__bases__
+            attributes = dict(traitable.__dict__) # __dict__ is normally a proxy.
+            return Traitable(name, bases, attributes, traits)
+        return wrapper
 
     @classproperty
     @classmethod
