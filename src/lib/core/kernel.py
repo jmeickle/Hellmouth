@@ -49,3 +49,6 @@ class Kernel(object):
         for name, member in inspect.getmembers(service):
             if name[0] != "_" and getattr(member, "__helper__", False):
                 delattr(self, name)
+
+# Instantiate the kernel.
+kernel = Kernel()
