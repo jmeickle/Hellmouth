@@ -87,6 +87,6 @@ else:
         # Spawn the game choice menu from the root component.
         root.spawn(choice_menu)
 
-# Start the main game loop.
-while kernel.loop():
+# Start the kernel's loop service.
+while kernel.loop.run():
     pass
