@@ -1,4 +1,3 @@
-from src.lib.core.kernel import Kernel
 from src.lib.core.services.command import CommandService
 from src.lib.core.services.loop import LoopService
 from src.lib.core.services.keyin import KeyinService
@@ -11,8 +10,10 @@ from src.lib.util import system
 
 debug.log("Completed all imports.")
 
-# Initialize the Unicursal kernel.
-kernel = Kernel()
+# Import and initialize the Unicursal kernel.
+from src.lib.core.kernel import kernel
+
+debug.log("Kernel initialization complete.")
 
 # Set a bitmask for game-wide display modes.
 displayflags = {
