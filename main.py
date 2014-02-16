@@ -1,9 +1,3 @@
-from src.lib.core.services.command import CommandService
-from src.lib.core.services.loop import LoopService
-from src.lib.core.services.keyin import KeyinService
-
-from src.lib.components.component import RootComponent
-
 from src.lib.util import debug
 from src.lib.util.define import *
 from src.lib.util import system
@@ -40,51 +34,35 @@ arguments["resume"] = False
 # Provide a list of module folders
 arguments["module_folders"] = ["src/games"]
 
-# Initialize the root Component.
-root = RootComponent(kernel)
-
-# Register the root Component with the Kernel.
-kernel.register_services(root=root)
-
-# print "Kernel services:", kernel.services
-# print "Do a loop wait"
-# # print "retval:", kernel.service("loop").wait()
-# print "Do a kernel wait"
-# print kernel.wait(root)
-
-# Initialize the loop Service, which contains only the root Component at start.
-loop = LoopService(root)
-
-# Register the loop Service with the Kernel.
-kernel.register_services(loop=loop)
-
-# Initialize the keyin Service.
-keyin = KeyinService()
-
-# Register the keyin Service with the Kernel.
-# TODO: Have the arguments and game decide this.
-kernel.register_services(keyin=keyin)
-loop += kernel.service("keyin")
+# Import basic kernel services.
+from src.lib.core.services.command import CommandService
+from src.lib.core.services.component import ComponentService
+from src.lib.core.services.loop import LoopService
 
 # Import the relevant input and output services.
 # TODO: Have the arguments and game decide this.
 if arguments["displaymode"] == displayflags["curses"]:
     # Launch the game in curses mode
-    from src.lib.core.services.curses.input import CursesInputService as input_service
-    from src.lib.core.services.curses.output import CursesOutputService as output_service
+    from src.lib.core.output.curses.display import CursesDisplay as Display
+    from src.lib.core.services.curses.input import CursesInputService as InputService
+    from src.lib.core.services.curses.output import CursesOutputService as OutputService
 
-# Initialize the input and output Services and register them with the Kernel.
-kernel.register_services(input=input_service(), output=output_service())
-loop += kernel.service("input")
-loop += kernel.service("output")
+# Initialize the display.
+display = Display()
 
-# Initialize the command Service and register it with the Kernel.
-kernel.register_services(command=CommandService())
-loop += kernel.service("command")
+# Initialize kernel services.
+kernel.loop = LoopService()
+kernel.input = InputService(display=display)
+kernel.command = CommandService()
+kernel.output = OutputService(display=display)
+kernel.component = ComponentService()
+
+# Assign kernel services to the kernel loop.
+kernel.loop[:] = [kernel.input, kernel.command, kernel.output, kernel.component]
 
 # Launch the game, if the game mode was provided.
 if arguments.get("gamemode"):
-    root.launch((arguments.get("gamemode"), None))
+    kernel.component.launch((arguments.get("gamemode"), None))
 # Launch a menu to select the game mode.
 else:
     def get_choices():
