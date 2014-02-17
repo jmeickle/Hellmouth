@@ -81,6 +81,8 @@ else:
     # Spawn the game choice menu from the root component.
     kernel.component.spawn(choice_menu)
 
-# Start the kernel's loop service.
-while kernel.loop.run():
-    pass
+# Use the output service as a context manager.
+with kernel.output:
+    # Start the kernel's loop service.
+    while kernel.loop.run():
+        pass
