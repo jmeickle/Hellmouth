@@ -226,11 +226,3 @@ class RootComponent(Component):
         """Return information for after the RootComponent's loop finishes."""
         return {"relaunch" : self.relaunch}
 
-def override_defaults(fn):
-    """Decorator to override class defaults with provided kwargs."""
-    @functools.wraps(fn)
-    def wrapper(self, *args, **kwargs):
-        arguments = self.default_arguments.copy()
-        arguments.update(kwargs)
-        return fn(self, *args, **arguments)
-    return wrapper

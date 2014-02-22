@@ -1,9 +1,7 @@
 from src.lib.data import help, screens
-from src.lib.components.component import override_defaults
 from src.lib.components.views.screens.screen import Screen
 
 class HelpScreen(Screen):
-    @override_defaults
     def __init__(self, **kwargs):
         super(HelpScreen, self).__init__(**kwargs)
 

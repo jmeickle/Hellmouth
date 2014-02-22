@@ -4,7 +4,6 @@ from collections import deque
 from operator import itemgetter, attrgetter
 from random import choice
 
-from src.lib.components.component import override_defaults
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
 from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt, ListPrompt
@@ -28,7 +27,6 @@ class EncounterWindow(View):
         "y" : TERM_Y,
     }
 
-    @override_defaults
     def __init__(self, level, **kwargs):
         super(EncounterWindow, self).__init__(**kwargs)
         self.level = level
@@ -46,7 +44,6 @@ class MainPane(View):
         "start_y" : MAP_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(MainPane, self).__init__(**kwargs)
 
@@ -64,7 +61,6 @@ class SidePane(View):
         "start_y" : PANE_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(SidePane, self).__init__(**kwargs)
 
@@ -83,7 +79,6 @@ class MainMap(View):
         "zoom" : 10
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(MainMap, self).__init__(**kwargs)
         self.viewport_pos = Point(int(self.y/2)-1, int(self.y/2)-1) # -1 to account for 0,0 start
@@ -255,7 +250,6 @@ class Examine(View):
         "zoom" : 10
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(Examine, self).__init__(**kwargs)
 
@@ -321,7 +315,6 @@ class Stats(View):
         "start_y" : PANE_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(Stats, self).__init__(**kwargs)
 
@@ -444,7 +437,6 @@ class Status(View):
         "start_y" : PANE_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         View.__init__(self, **kwargs)
 
@@ -463,7 +455,6 @@ class Place(View):
         "start_y" : MAP_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(Place, self).__init__(**kwargs)
 
@@ -474,7 +465,6 @@ class Place(View):
 class Inventory(View):
     """Displays information about held, worn, and carried items."""
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(Inventory, self).__init__(**kwargs)
 
@@ -660,7 +650,6 @@ class CharacterSheet(View):
         "start_y" : PANE_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(CharacterSheet, self).__init__(**kwargs)
         self.actor = None
@@ -742,7 +731,6 @@ class Debugger(View):
         "choices" : ["Queue", "Views"],
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(Debugger, self).__init__(**kwargs)
         self.choices = kwargs["choices"]

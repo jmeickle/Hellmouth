@@ -4,7 +4,6 @@ import curses
 from src.lib.util.define import *
 from src.lib.util.text import *
 
-from src.lib.components.component import override_defaults
 from src.lib.components.input import *
 from src.lib.components.views.view import View
 

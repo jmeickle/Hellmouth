@@ -1,4 +1,3 @@
-from src.lib.components.component import override_defaults
 from src.lib.components.input import Scroller
 from src.lib.components.views.view import View
 
@@ -15,7 +14,6 @@ class LogPane(View):
         "start_y" : LOG_START_Y
     }
 
-    @override_defaults
     def __init__(self, **kwargs):
         super(LogPane, self).__init__(**kwargs)
         self.autoscroll = True
