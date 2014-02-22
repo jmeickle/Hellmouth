@@ -129,31 +129,6 @@ class Component(object):
             self.parent.children.remove(self)
         self.alive = False
 
-    def _draw(self):
-        """Draw yourself, then recurse through your children to draw them."""
-        self._reset()
-        self.before_draw()
-        if self.draw() is not False:
-            for child in self.children:
-                if child._draw() is False:
-                    die("Child %s consumed the draw event passed by parent %s." % (child, self))
-                    return False
-            return True
-        else:
-            return False
-
-    def _reset(self):
-        """Abstract. Reset yourself to prepare for drawing."""
-        pass
-
-    def before_draw(self):
-        """Abstract. Do something before drawing yourself."""
-        pass
-
-    def draw(self):
-        """Abstract. Draw self."""
-        pass
-
     def _keyin(self, c):
         """Recurse through children trying their keyin functions until you've
         done your own."""
