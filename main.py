@@ -21,6 +21,9 @@ displayflags = {
 # TODO: Have the kernel parse this.
 arguments = {}
 
+# Add a folder with default configurations.
+arguments["configuration"] = 'src/lib/data/configuration'
+
 # Default to displaying with curses
 arguments["displaymode"] = displayflags["curses"]
 
@@ -37,6 +40,7 @@ arguments["module_folders"] = ["src/games"]
 # Import basic kernel services.
 from src.lib.core.services.command import CommandService
 from src.lib.core.services.component import ComponentService
+from src.lib.core.services.config import ConfigService
 from src.lib.core.services.loop import LoopService
 
 # Import the relevant input and output services.
@@ -52,6 +56,7 @@ display = Display()
 
 # Initialize kernel services.
 kernel.loop = LoopService()
+kernel.config = ConfigService(directory=arguments["configuration"])
 kernel.input = InputService(display=display)
 kernel.command = CommandService()
 kernel.output = OutputService(display=display)
