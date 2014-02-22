@@ -1,39 +1,48 @@
-"""A queue of commands."""
+"""A service to manage a queue of commands."""
 
-from Queue import Queue
-
-from src.lib.core.kernel import Kernel
+from src.lib.core.kernel import kernel
 from src.lib.core.services.service import Service
 
-class CommandService(Queue):
-    command_names = {
-        # Game process commands
-        "Save" : "save the game",
-        "Load" : "load the game",
-        "Quit" : "quit the game",
+from src.lib.util import debug
 
-        # Prompt commands
-        "Confirm" : "confirm or submit",
-        "Cancel" : "cancel or go back",
+class Command(object):
+    def __init__(self, key, name):
+        self.active = True
+        self.key = key
+        self.name = name
 
-        # CMD_HEX = "hex direction"
-        # CMD_RECT = "rectangular direction"
+    def __call__(self, *commands):
+        return self.name in commands
 
-        # Player character commands
-        "Attack" : "attack",
-        "Talk" : "talk",
-        "Move" : "move"
-    }
+    def __repr__(self):
+        return "<'{}' command>".format(self.name)
 
-    key_mappings = {
-        "Attack" : ("a",),
-        "Talk" : ("t",),
-        "Move" : ("1", "3", "4", "6", "7", "9"),
-        "Wait" : ("5",),
-        "Cancel" : ("Space",),
-    }
+    def done(self):
+        self.active = False
 
-    @Kernel.helper
-    def keymap(self, command):
-        """Return the keys mapped to a command."""
-        return CommandService.key_mappings.get(command, None)
+class CommandService(Service):
+    def __init__(self, commands={}):
+        self.commands = commands
+        self.keybindings = {v.get("key"): k for k, v in self.commands.items()}
+
+        self.queue = []
+
+    def pop(self):
+        if self.queue:
+            command = self.queue.pop()
+            debug.log("{} popped: {}".format(self, command))
+            return command
+
+    def push(self, value):
+        debug.log("{} pushed: {}".format(self, value))
+        self.queue.append(value)
+
+    # TODO: Refactor
+    def react(self):
+        key = kernel.input.pop()
+        if key:
+            command = Command(key, self.keybindings.get(key, False))
+            if command:
+                debug.log("{} received command: {}".format(self, command))
+                self.push(command)
+                return command

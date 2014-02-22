@@ -1,0 +1,108 @@
+# Game control commands
+help:
+    name: Help
+    key: "?"
+save:
+    name: Save
+    description: save the game
+load:
+    name: Load
+    description: load the game
+quit:
+    name: Quit
+    description: quit the game
+    key: Ctrl+q
+
+# UI interaction commands
+confirm:
+    name: Confirm
+    description: confirm or submit
+    key: Enter
+cancel:
+    name: Cancel
+    description: cancel or go back
+    key: Space
+next tab:
+    name: Next tab
+    key: Tab
+previous tab:
+    name: Previous tab
+    key: Shift+Tab
+next choice:
+    name: Next choice
+    key: '+'
+previous choice:
+    name: Previous choice
+    key: '-'
+next mode:
+    name: Next mode
+    key: '*'
+previous mode:
+    name: Previous mode
+    key: '/'
+
+# Hexagonal movement commands
+move northeast:
+    name: Move (northeast)
+    key: '9'
+move east:
+    name: Move (east)
+    key: '6'
+move southeast:
+    name: Move (southeast)
+    key: '3'
+move southwest:
+    name: Move (southwest)
+    key: '1'
+move west:
+    name: Move (west)
+    key: '4'
+move northwest:
+    name: Move (northwest)
+    key: '7'
+
+# Rectangular movement commands
+up:
+    key: Up
+down:
+    key: Down
+left:
+    key: Left
+right:
+    key: Right
+
+# Other movement commands
+travel up:
+    key: '<'
+travel down:
+    key: '>'
+wait:
+    name: Wait
+    key: '5'
+
+# Game action commands
+attack:
+    name: Attack
+    key: a
+talk:
+    name: Talk
+    key: t
+use:
+    name: Use
+    key: u
+
+# Unused keys
+# backspace:
+#     key: Backspace
+# delete:
+#     key: "Delete"
+# end:
+#     key: End
+# home:
+#     key: Home
+# page up:
+#     key: PgUp
+# page down:
+#     key: PgDown
+# insert:
+#     key: Insert

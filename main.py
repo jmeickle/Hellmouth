@@ -58,7 +58,7 @@ display = Display()
 kernel.loop = LoopService()
 kernel.config = ConfigService(directory=arguments["configuration"])
 kernel.input = InputService(display=display)
-kernel.command = CommandService()
+kernel.command = CommandService(commands=kernel.config.load('commands.yaml'))
 kernel.output = OutputService(display=display)
 kernel.component = ComponentService()
 
