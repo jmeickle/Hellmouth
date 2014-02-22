@@ -7,17 +7,17 @@ import random
 
 class Component(object):
     """An interface Component taking part in UI control flow."""
-    def __str__(self):
-        return self.__class__.__name__
-
-    def __repr__(self):
-        return "<" + self.__str__() + ">"
-
     def __init__(self, **kwargs):
         self.alive = True
         self.children = []
         self.parent = None
         self.blocking = False
+
+    def __str__(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        return "<" + self.__str__() + ">"
 
     def get_controller(self):
         """Return the controller of this Component."""
