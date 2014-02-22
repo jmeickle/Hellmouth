@@ -11,10 +11,8 @@ class LoopError(Exception):
 
 class LoopService(RegistryList, Service):
     def run(self):
-        """Run the main application loop."""
-        # Loop while the ComponentService is alive.
-        while kernel.component.alive:
-            # Allow services to react to the loop.
-            for service in kernel.loop:
-                debug.log("Acting service: {}".format(service))
-                service.react()
+        """Run an instance of the main application loop."""
+        # Allow services to react to the loop.
+        for service in kernel.loop:
+            debug.log("Acting service: {}".format(service))
+            service.react()

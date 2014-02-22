@@ -84,5 +84,5 @@ else:
 # Use the output service as a context manager.
 with kernel.output:
     # Start the kernel's loop service.
-    while kernel.loop.run():
-        pass
+    while kernel.component.alive:
+        kernel.loop.run()
