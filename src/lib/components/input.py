@@ -183,7 +183,7 @@ class Cursor(Input):
         self.coords += heading
         self.resize()
 
-    def draw(self):
+    def draw(self, display):
         coords = self.coords
         cell = self.level.get_map().cell(coords)
         color = "black-black"
@@ -201,7 +201,7 @@ class Cursor(Input):
                 color = "magenta-black"
 
         for glyph, offset in Cursor.styles[self.styles[self.secondary.index]]:
-            self.parent.hd(coords, glyph, color, offset=offset)
+            display.hd(view, coords, glyph, color, offset=offset)
 
     # Resize based on features.
     def resize(self):
@@ -219,7 +219,7 @@ class Prompt(View):
         self.input = None
         self.callback = kwargs.pop("callback", self.suicide)
 
-    def draw(self):
+    def draw(self, display):
         self.window.clear()
         self.border("/")
 
@@ -238,17 +238,17 @@ class ListPrompt(Prompt):
         super(ListPrompt, self).__init__(**kwargs)
         self.input = self.spawn(Chooser(choices, initial))
 
-    def draw(self):
-        super(ListPrompt, self).draw()
+    def draw(self, display):
+        super(ListPrompt, self).draw(display)
         for choice in self.input.get_choices():
             if choice == self.input.get_choice():
-                self.cline(text.highlight(choice))
+                display.cline(self, text.highlight(choice))
             else:
-                self.cline(choice)
-        self.cline("Choices: %s" % self.input.choices)
-        self.cline("Index: %s" % self.input.index)
-        self.cline("Max: %s" % self.input.max)
-        self.cline("Min: %s" % self.input.min)
+                display.cline(self, choice)
+        display.cline(self, "Choices: %s" % self.input.choices)
+        display.cline(self, "Index: %s" % self.input.index)
+        display.cline(self, "Max: %s" % self.input.max)
+        display.cline(self, "Min: %s" % self.input.min)
 
 class TextPrompt(Prompt):
     """A Prompt that provides a text entry form."""
@@ -262,8 +262,8 @@ class TextPrompt(Prompt):
     def ready(self):
         self.scroller = self.spawn(SideScroller())
 
-    def draw(self):
-        Prompt.draw(self)
+    def draw(self, display):
+        Prompt.draw(self, display)
         # HACK: This is a guesstimate until I make the text functions more consistent.
         self.max = self.width * (self.height - 1)
 
@@ -274,7 +274,7 @@ class TextPrompt(Prompt):
             text += self.input[self.scroller.index+1:]
         if self.scroller.index == self.scroller.max:
             text += "<black-white>_</>"
-        self.cline(text)
+        display.cline(self, text)
 
     # TODO: Split this into a 'handle text entry' Trait
     def process(self, command):
