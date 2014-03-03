@@ -157,32 +157,6 @@ class MainMap(View):
         else: return True
         return False
 
-    def hd(self, coords, glyph, col=None, attr=None, offset=None):
-        """Draw a glyph/color/attribute at hexagonal coordinates projected on a
-        rectangular space (with an optional rectangular offset)."""
-        # The map coordinates of a target:
-        t_x, t_y = coords
-        # The map coordinates of the viewport's center:
-        c_x, c_y = self.center
-        # The window coordinates of the viewport's center:
-        v_x, v_y = self.viewport_pos
-        # The heading (in window coordinates) of the target's viewport offset:
-        h_x, h_y = offset if offset else (0, 0)
-
-        # Calculate distance from the viewport center:
-        d_x = t_x - c_x
-        d_y = t_y - c_y
-
-        # Calculate window coordinates:
-        draw_x = d_y + 2*(d_x+v_x) + h_x
-        draw_y = d_y + v_y + h_y
-
-        if not self.undrawable((draw_x, draw_y)):
-            try:
-                self.window.addch(draw_y, draw_x, glyph, Color.attr(col, attr))
-            except curses.error:
-                pass
-
     def get_glyph(self, map_obj, coords):
         """Return a glyph and color to display for a position."""
         cell = map_obj.cell(coords)
@@ -212,7 +186,7 @@ class MainMap(View):
         else:
             return cell.map.floor
 
-    def draw(self):
+    def draw(self, display):
         map_obj = self.level.get_map()
         self.center = self.get_focus()
 
@@ -223,7 +197,7 @@ class MainMap(View):
             else:
                 glyph = ','
                 col = "red-black"
-            self.hd(coords, glyph, col)
+            display.hd(self, coords, glyph, col)
 
         # Draw highlights around the encounter map border.
         if len(self.get_controller().highlights) > 0:
@@ -235,7 +209,7 @@ class MainMap(View):
                     cell = cells.pop()
                     # TODO: Highlight color
                     glyph, col = "*", "green-black"
-                    self.hd(cell, glyph, col)
+                    display.hd(self, cell, glyph, col)
 
 # A single line of text at the bottom of the screen describing what your
 # cursor is currently over.
@@ -279,18 +253,18 @@ class Examine(View):
         else: return True
         return False
 
-    def draw(self):
+    def draw(self, display):
         coords = self.parent.coords
         cell = self.level.get_map().cell(coords)
         if not self.children:
-            self.line("Space: Exit. Enter: Inspect. */: Style.")
+            display.line(self, "Space: Exit. Enter: Inspect. */: Style.")
         else:
-            self.line("Space: Stop Inspecting. /*: Style.")
+            display.line(self, "Space: Stop Inspecting. /*: Style.")
 
         if cell is not None:
-            self.line("Cursor: %s." % self.describe_contents(cell))
+            display.line(self, "Cursor: %s." % self.describe_contents(cell))
         else:
-            self.line("Cursor: There's... nothing. Nothing at all.")
+            display.line(self, "Cursor: There's... nothing. Nothing at all.")
 
     # TODO: Options for what to list.
     def describe_contents(self, cell):
@@ -318,11 +292,11 @@ class Stats(View):
     def __init__(self, **kwargs):
         super(Stats, self).__init__(**kwargs)
 
-    def draw(self):
+    def draw(self, display):
         # Col 1: Skeleton/Paperdoll
         self.y_acc = 1
         for line in self.get_controller().values("Body", "get_paperdoll"):
-            self.cline(line)
+            display.cline(self, line)
 
         # Show the chosen weapon/attack option combination.
         weapon, wielding_mode = self.get_controller().call("Combat", "get_view_data").get_result()
@@ -347,60 +321,60 @@ class Stats(View):
         except TypeError:
             exit("reach: %s" % reach)
 
-        self.cline("(/*) %s" % (appearance))
+        display.cline(self, "(/*) %s" % (appearance))
 
         color = "white-black"
         if self.get_controller().base_skills.get(trait) is None:
             color = "red-black"
 
-        self.cline("     %s, <%s>%s-%s</>" % (manipulator.type, color, trait, trait_level))
+        display.cline(self, "     %s, <%s>%s-%s</>" % (manipulator.type, color, trait, trait_level))
 
         selector = ""
         weapons = [w for w in self.get_controller().values("Combat", "get_weapons")]
         if len(weapons) > 1:
             selector = "(+-) "
-        self.cline("%5s%s %s %s %s" % (selector, attack_name, self.get_controller().damage(damage, False), damage_type, reach))
+        display.cline(self, "%5s%s %s %s %s" % (selector, attack_name, self.get_controller().damage(damage, False), damage_type, reach))
 
         # Col 2: Combat information
         self.x_acc += 12
         self.y_acc = 0
 
         # Place header
-        self.line("%s" % (self.get_controller().appearance()))
-        self.line("%s" % "-"*20)
+        display.line(self, "%s" % (self.get_controller().appearance()))
+        display.line(self, "%s" % "-"*20)
 #        self.y_acc += 1
 
-        self.statline('HP')
-        self.statline('MP')
-        self.statline('FP')
-        self.line("")
-        self.statline('Block')
-        self.statline('Dodge')
-        self.statline('Parry')
+        self.statline(display, 'HP')
+        self.statline(display, 'MP')
+        self.statline(display, 'FP')
+        display.line(self, "")
+        self.statline(display, 'Block')
+        self.statline(display, 'Dodge')
+        self.statline(display, 'Parry')
 
         # Col 3: Stats
         self.x_acc += 14
         self.y_acc = 2
 
-        self.statline("ST")
-        self.statline("DX")
-        self.statline("IQ")
-        self.statline("HT")
-        self.line("")
-        self.statline("Will")
-        self.statline("Perception")
-        self.line("")
-        self.statline("Move")
-        self.statline("Speed")
+        self.statline(display, "ST")
+        self.statline(display, "DX")
+        self.statline(display, "IQ")
+        self.statline(display, "HT")
+        display.line(self, "")
+        self.statline(display, "Will")
+        self.statline(display, "Perception")
+        display.line(self, "")
+        self.statline(display, "Move")
+        self.statline(display, "Speed")
 
         # Don't delete! Probably will reuse this for a 'health' screen.
-        #self.line("Wounds:")
+        #display.line(self, "Wounds:")
         #for loc in sorted(self.get_controller().body.locs.items()):
-        #    self.line("%6s: %s" % (loc[0], loc[1].wounds))
+        #    display.line(self, "%6s: %s" % (loc[0], loc[1].wounds))
 
     # Print a line like 'Dodge: 15' using stat()
     # TODO: Print colors, *s, etc. for more info.
-    def statline(self, stat):
+    def statline(self, display, stat):
         # Always use the shortest label here.
         label = labels.get(stat)[0]
         value = self.get_controller().stat(stat)
@@ -409,9 +383,9 @@ class Stats(View):
 
         # These particular stats actually have two stats to display.
         if stat in ["HP", "FP", "MP"]:
-            self.line("%s: %3d/%2d" % (label, value, self.get_controller().stat("Max"+stat)))
+            display.line(self, "%s: %3d/%2d" % (label, value, self.get_controller().stat("Max"+stat)))
         else:
-            self.line("%s: %s" % (label, value))
+            display.line(self, "%s: %s" % (label, value))
 
     def keyin(self, c):
         if c == ord("+"):
@@ -440,10 +414,10 @@ class Status(View):
     def __init__(self, **kwargs):
         View.__init__(self, **kwargs)
 
-    def draw(self):
+    def draw(self, display):
         for text, color in self.get_controller().values("Status", "get_view_data", self):
             debug.log("text: %s, color: %s" % (text, color))
-            self.line(text, color)
+            display.line(self, text, color)
         return True
 
 class Place(View):
@@ -458,9 +432,9 @@ class Place(View):
     def __init__(self, **kwargs):
         super(Place, self).__init__(**kwargs)
 
-    def draw(self):
-        self.line(self.level.name, "green-black")
-        self.line(self.level.get_map().name)
+    def draw(self, display):
+        display.line(self, self.level.name, "green-black")
+        display.line(self, self.level.get_map().name)
 
 class Inventory(View):
     """Displays information about held, worn, and carried items."""
@@ -513,19 +487,19 @@ class Inventory(View):
         self.commands.set_choices([command for command in self.context.get_commands()])
 
     # Stored here for convenience.
-    def before_draw(self):
+    def before_draw(self, display):
         self.refresh()
 
-    def draw(self):
+    def draw(self, display):
         self.window.clear()
         self.border("#")
         self.render()
 
     def render(self):
-        self.cline("Inventory")
+        display.cline(self, "Inventory")
         self.y_acc += 1
         if not self.inventory:
-            self.cline("No items")
+            display.cline(self, "No items")
         else:
             for x in range(len(self.inventory)):
                 agent = self.inventory[x]
@@ -534,14 +508,14 @@ class Inventory(View):
                 # Highlight tab, if present.
                 if self.tabs.get_choice() == "Inventory" and self.selection.get_choice() == agent:
                     string = text.highlight(string)
-                self.cline(string)
+                display.cline(self, string)
 
         self.y_acc += 1
 
         # Print what's on the ground, too.
 
         # if len(self.ground) > 0:
-        #     self.cline("Ground:")
+        #     display.cline(self, "Ground:")
         #     self.y_acc += 1
         #     for x in range(len(self.ground)):
         #         appearance, items = self.ground[x]
@@ -553,19 +527,19 @@ class Inventory(View):
         #         if self.tabs.choice() == "Ground" and x == self.selection.index:
         #             string = text.highlight(string)
 
-        #         self.cline(string)
+        #         display.cline(self, string)
 
         self.y_acc = 0
         self.x_acc += 20
 
-        self.cline("Equipped")
+        display.cline(self, "Equipped")
         self.y_acc += 1
 
         for agent in self.wielded:
-            self.cline(agent.appearance())
+            display.cline(self, agent.appearance())
 
         for agent in self.equipment:
-            self.cline(agent.appearance())
+            display.cline(self, agent.appearance())
 
         # for x in range(len(self.parts)):
         #     part = self.parts[x]
@@ -592,15 +566,15 @@ class Inventory(View):
 
         #     # Highlights.
         #     if self.tabs.index == 1 and x == self.selection.index:
-        #         self.cline("%-11s <green-black>%s</a>" % (colon, equipped))
+        #         display.cline(self, "%-11s <green-black>%s</a>" % (colon, equipped))
         #     else:
-        #         self.cline("%-11s %s" % (colon, equipped))
+        #         display.cline(self, "%-11s %s" % (colon, equipped))
 
         self.x_acc = 0
         self.y_acc = self.BOTTOM - 2
 
         if self.commands.choices:
-            self.cline("Available commands:")
+            display.cline(self, "Available commands:")
             commands = []
             chosen_class, chosen_arguments = self.commands.get_choice()
             for command_class, command_arguments in self.commands.choices:
@@ -613,7 +587,7 @@ class Inventory(View):
                             replacement = text.highlight(replacement)
                         string = string[:pos] + replacement + string[pos+1:]
                 commands.append(string)
-            self.cline("  %s." % text.commas(commands))
+            display.cline(self, "  %s." % text.commas(commands))
 
     def event(self, e):
         if self.context:
@@ -666,7 +640,7 @@ class CharacterSheet(View):
         return False
 
     # TODO: Fix this.
-    def draw(self):
+    def draw(self, display):
         sibling = self.get_first_parental_sibling(MainPane)
         cursor = sibling.get_first_descendent(Cursor)
         if not cursor:
@@ -680,7 +654,7 @@ class CharacterSheet(View):
 
         # Abort early if no actor.
         if not actors:
-            self.cline("There's nothing interesting here.")
+            display.cline(self, "There's nothing interesting here.")
             return True
 
         self.actor = actors[cursor.selector.index]
@@ -690,8 +664,8 @@ class CharacterSheet(View):
         else:
             scroller = "<red-black>"
 
-        self.cline('%s(+-)</> %s' % (scroller, self.actor.appearance()))
-        self.cline("-"*self.width)
+        display.cline(self, '%s(+-)</> %s' % (scroller, self.actor.appearance()))
+        display.cline(self, "-"*self.width)
 
         self.text = text.wrap_string(self.actor.get_view_data(self), self.width)
         self.scroller.resize(len(self.text)-self.height + 2) # To account for the possibility of hidden lines
@@ -699,7 +673,7 @@ class CharacterSheet(View):
         offset = 0
 
         if self.scroller.index > 0:
-            self.cline('[...]')
+            display.cline(self, '[...]')
             offset += 1
 
         maxlines = self.height - self.y_acc
@@ -707,12 +681,12 @@ class CharacterSheet(View):
         # TODO: Generalize this.
         for x in range(maxlines):
             if self.y_acc+1 == self.height and self.scroller.index < self.scroller.max:
-                self.cline('[...]')
+                display.cline(self, '[...]')
                 break;
 
             index = self.scroller.index + x + offset
             line = self.text[index]
-            self.cline(line)
+            display.cline(self, line)
 #        return False # Block further drawing if we drew.
 
 # TODO: Add a minimap.
@@ -738,22 +712,22 @@ class Debugger(View):
     def ready(self):
         self.tabber = self.spawn(Tabber(self.choices))
 
-    def draw(self):
+    def draw(self, display):
         self.window.clear()
         self.border("/")
 
         self.y_acc = -1
         choice = self.tabber.get_choice()
         choice_list = " ".join(["[%s]" % c for c in self.tabber.choices])
-        self.cline("Debug Window")
-        self.cline(text.highlight_substr(choice_list, choice))
+        display.cline(self, "Debug Window")
+        display.cline(self, text.highlight_substr(choice_list, choice))
 
-        self.cline("")
+        display.cline(self, "")
 
         # TODO: Scrolling queue page
         if choice == "Queue":
             for actor in self.parent.game.level.queue.get_view_data():
-                self.cline(actor)
+                display.cline(self, actor)
                 if self.y_acc >= self.BOTTOM:
                     break
         elif choice == "Views":
@@ -764,7 +738,7 @@ class Debugger(View):
                 node_text = "*%s" % parent
                 if self == parent:
                     node_text = text.highlight(node_text)
-                self.cline("%s" % (" " * indents * indent_size) + node_text)
+                display.cline(self, "%s" % (" " * indents * indent_size) + node_text)
 
                 for child in children:
                     print_node(child, indents+1, indent_size)

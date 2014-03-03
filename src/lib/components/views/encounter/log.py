@@ -24,7 +24,7 @@ class LogPane(View):
     def ready(self):
         self.scroller = self.spawn(Scroller(Log.length() - self.height))
 
-    def before_draw(self):
+    def before_draw(self, display):
         if Log.length() > self.events:
             max_scroll = max(0, Log.length() - self.height)
             self.scroller.resize(max_scroll)
@@ -32,7 +32,7 @@ class LogPane(View):
                 self.scroller.scroll(Log.length() - self.events)
             self.events = Log.length()
 
-    def draw(self):
+    def draw(self, display):
         # Start from the bottom:
         self.x_acc = 2
         self.y_acc = self.height
@@ -40,7 +40,7 @@ class LogPane(View):
 
         if self.scroller.index != self.scroller.max:
             self.y_acc -=1
-            self.line("[...]")
+            display.line(self, "[...]")
             self.y_acc -=1
             index += 1
 
@@ -50,9 +50,9 @@ class LogPane(View):
             index -= 1
             if index >= self.scroller.index:
                 continue
-            if self.logline(event) is False:
+            if self.logline(display, event) is False:
                 self.y_acc = self.shrink
-                self.line("[...]")
+                display.line(self, "[...]")
                 everything = False
                 break;
 
@@ -63,15 +63,15 @@ class LogPane(View):
             proportion = float(self.scroller.index) / (1+self.scroller.max)
             position = int(proportion * (self.height - self.y_acc - 1))
 
-            self.line("^")
+            display.line(self, "^")
             for x in range(self.height - self.y_acc - 1):
                 if x+1 == position:
-                    self.cline("<green-black>@</>")
+                    display.cline(self, "<green-black>@</>")
                 else:
-                    self.line("|")
-            self.line("v")
+                    display.line(self, "|")
+            display.line(self, "v")
 
-    def logline(self, event):
+    def logline(self, display, event):
         lines = text.wrap_string([event], self.width - self.x_acc)
 
         # Move up by that much to offset what the line function would do.
@@ -83,7 +83,7 @@ class LogPane(View):
 
         # Otherwise, display the line(s):
         for line in lines:
-            self.cline(line[0].capitalize() + line[1:])
+            display.cline(self, line[0].capitalize() + line[1:])
 
         # Since we're moving in reverse.
         self.y_acc -= len(lines)
