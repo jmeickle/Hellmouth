@@ -4,9 +4,12 @@ keyin and draw loops, but do not have direct access to drawing methods."""
 from src.lib.agents.contexts.context import Context
 from src.lib.util.define import *
 import random
+from src.lib.util.trait import Traitable
 
 class Component(object):
     """An interface Component taking part in UI control flow."""
+    __metaclass__ = Traitable
+
     def __init__(self, **kwargs):
         self.alive = True
         self.children = []
