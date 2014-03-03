@@ -24,7 +24,6 @@ class View(Component):
     x_acc = 0
     y_acc = 0
 
-    def __init__(self, layer="default"):
+    def __init__(self, layer="default", **kwargs):
         super(View, self).__init__()
-        self._dimensions = Point(0, 0)
         self.layer = layer
