@@ -161,22 +161,6 @@ class Component(object):
         """Abstract. Handle keyin."""
         return True
 
-    def loop(self):
-        """Loop drawing, keyin, and event processing through this Component and
-        into its children."""
-        # Draw tree.
-        self.window.erase()
-        self._draw()
-        self.window.refresh()
-
-        # Keyin tree.
-        c = self.window.getch()
-        self._keyin(c)
-
-        # Event processing tree.
-        key_name = self.kernel.key(c)
-        self._event(key_name)
-
     def get_context(self, **kwargs):
         """Build a Context for this Component."""
         # TODO: Rename?
@@ -192,40 +176,3 @@ class Component(object):
         """Components pass along their parent's window. Views override this
         method and create subwindows."""
         return window
-
-class RootComponent(Component):
-    """The first component called, containing window information."""
-    def __init__(self, kernel):
-        Component.__init__(self)
-        self.game = None
-        self.kernel = kernel
-        self.relaunch = True
-
-    def launch(self, package_choice):
-        """Spawn the selected module's main.Game as a child Component and then
-        launch it."""
-        # TODO: Handle multiple game folders
-        # TODO: Permit class names other than 'main'
-        package_name, package_info = package_choice # e.g., hellmouth, Hellmouth, <description>, <version>
-        game_module = __import__('src.games.%s.main' % package_name, globals(), locals(), ['main'])
-        game_class = game_module.main
-
-        # Spawn the game as a child Component, and then launch it.
-        self.game = self.spawn(game_class())
-        self.game.launch()
-
-    def loop(self):
-        """Perform a Component loop. If still alive, perform a Game loop."""
-        super(RootComponent, self).loop()
-
-        # The RootComponent dies if it has no children.
-        if not self.children:
-            self.alive = False
-
-        if self.alive and self.game:
-            self.game.loop()
-
-    def after_loop(self):
-        """Return information for after the RootComponent's loop finishes."""
-        return {"relaunch" : self.relaunch}
-
