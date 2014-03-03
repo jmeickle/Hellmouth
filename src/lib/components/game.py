@@ -158,19 +158,19 @@ class Game(Component):
 
     """UI methods."""
 
-    def keyin(self, c):
+    def process(self, command):
         """Handle keyin."""
         # TODO: Hardcoded.
         # Always allow help.
-        if c == ord('?'):
+        if command("help"):
             self.add_screen(HelpScreen)
+            command.done()
         # TODO: Hardcoded.
         # Always allow quitting.
-        elif c == ord('q') - 96:
+        elif command("quit"):
             self.parent.relaunch = False
             self.before_finish()
-        else: return True
-        return False
+            command.done()
 
     def add_screen(self, screen_class=Screen, **kwargs):
         """Spawn a Screen of the specified class, using defaults based on the

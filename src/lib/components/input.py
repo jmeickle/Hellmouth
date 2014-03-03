@@ -36,21 +36,25 @@ class Scroller(Input):
             if self.index > self.max:
                 self.index = self.max
 
-    def keyin(self, c):
-        if c == curses.KEY_UP: self.scroll(-1)
-        elif c == curses.KEY_DOWN: self.scroll(1)
-        else:
-            return True
-        return False
+    # TODO: Convert into an input Trait.
+    def process(self, command):
+        if command("up"):
+            self.scroll(-1)
+            command.done()
+        elif command("down"):
+            self.scroll(1)
+            command.done()
 
 # Same as a scroller, but only left/right.
 class SideScroller(Scroller):
-    def keyin(self, c):
-        if c == curses.KEY_LEFT: self.scroll(-1)
-        elif c == curses.KEY_RIGHT: self.scroll(1)
-        else:
-            return True
-        return False
+    # TODO: Convert into an input Trait.
+    def process(self, command):
+        if command("left"):
+            self.scroll(-1)
+            command.done()
+        elif command("right"):
+            self.scroll(1)
+            command.done()
 
 # Scroller that initializes with a set of choices.
 class Chooser(Scroller):
@@ -77,30 +81,34 @@ class Chooser(Scroller):
 
 # Same as a Chooser, but only left/right.
 class SideChooser(Chooser):
-    def keyin(self, c):
-        if c == curses.KEY_LEFT: self.scroll(-1)
-        elif c == curses.KEY_RIGHT: self.scroll(1)
-        else:
-            return True
-        return False
+    # TODO: Convert into an input Trait.
+    def process(self, command):
+        if command("left"):
+            self.scroll(-1)
+            command.done()
+        elif command("right"):
+            self.scroll(1)
+            command.done()
 
 # Chooser that tabs back and forth.
 class Tabber(Chooser):
-    def keyin(self, c):
-        if c == curses.KEY_BTAB: self.scroll(-1)
-        elif c == ord("\t"): self.scroll(1)
-        else:
-            return True
-        return False
+    def process(self, command):
+        if command("previous tab"):
+            self.scroll(-1)
+            command.done()
+        elif command("next tab"):
+            self.scroll(1)
+            command.done()
 
 # Primary cycling selector, controlled with + and -.
 class Selector(Scroller):
-    def keyin(self, c):
-        if c == ord('+'): self.scroll(1)
-        elif c == ord('-'): self.scroll(-1)
-        else:
-            return True
-        return False
+    def process(self, command):
+        if command("previous choice"):
+            self.scroll(-1)
+            command.done()
+        elif command("next choice"):
+            self.scroll(1)
+            command.done()
 
     # Jump to a specific value, if it's valid.
     def scroll_to(self, choice):
@@ -117,14 +125,15 @@ class Selector(Scroller):
             if self.index > self.max:
                 self.index = self.min
 
-# Primary cycling selector, controlled with / and *.
+# Secondary cycling selector, controlled with / and *.
 class SecondarySelector(Selector):
-    def keyin(self, c):
-        if c == ord('/'): self.scroll(1)
-        elif c == ord('*'): self.scroll(-1)
-        else:
-            return True
-        return False
+    def process(self, command):
+        if command("previous mode"):
+            self.scroll(-1)
+            command.done()
+        elif command("next mode"):
+            self.scroll(1)
+            command.done()
 
 class Cursor(Input):
     styles = {
@@ -160,17 +169,14 @@ class Cursor(Input):
         self.selector = self.spawn(Selector())
         self.secondary = self.spawn(SecondarySelector(len(self.styles)-1))
 
-    def keyin(self, c):
-        # TODO: Dup code.
-        key = self.kernel.key(c)
-        if key in self.kernel.keymap("Move"):
-            self.move(H.heading_keys[key])
-            return False
-        elif key in self.kernel.keymap("Cancel"):
+    def process(self, command):
+        if command("cancel"):
             self.parent.cursor = None
             self.suicide()
-            return False
-        return True
+            command.done()
+        elif command.name.startswith("move"):
+            self.move(H.command_headings[command.name])
+            command.done()
 
     # Move the cursor (hexagonally).
     def move(self, heading):
@@ -217,14 +223,14 @@ class Prompt(View):
         self.window.clear()
         self.border("/")
 
-    def keyin(self, c):
-        if c == curses.KEY_ENTER or c == ord("\n"):
+    def process(self, command):
+        if command("confirm"):
             self.callback(self.input)
             self.suicide()
-        elif cmd(c, CMD_CANCEL):
+            command.done()
+        elif command("cancel"):
             self.suicide()
-        else: return True
-        return False
+            command.done()
 
 class ListPrompt(Prompt):
     """A Prompt that provides a list of options to choose from."""
@@ -270,19 +276,15 @@ class TextPrompt(Prompt):
             text += "<black-white>_</>"
         self.cline(text)
 
-    # TODO: Handle tabs, ESC, etc.
-    # TODO: Split this into a 'handle text entry' mixin
-    def keyin(self, c):
-        if c == curses.KEY_ENTER or c == ord("\n"):
-            self.suicide()
-        elif c == curses.KEY_BACKSPACE:
-            self.backspace()
-        elif c == curses.KEY_DC:
-            self.delete()
-        elif c < 256:
-            self.write(c)
-
-        return False
+    # TODO: Split this into a 'handle text entry' Trait
+    def process(self, command):
+        if command("confirm"): self.suicide()
+        elif command("backspace"): self.backspace()
+        elif command("delete"): self.delete()
+        # TODO: Clumsy...
+        elif command.key < 256: self.write(command.key)
+        # Never let the command fall through, even if it didn't do anything.
+        command.done()
 
     def write(self, c):
         if len(self.input) == self.max:
