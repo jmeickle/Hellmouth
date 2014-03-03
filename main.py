@@ -63,7 +63,7 @@ kernel.output = OutputService(display=display)
 kernel.component = ComponentService()
 
 # Assign kernel services to the kernel loop.
-kernel.loop[:] = [kernel.input, kernel.command, kernel.output, kernel.component]
+kernel.loop[:] = [kernel.input, kernel.command, kernel.component, kernel.output]
 
 # Launch the game, if the game mode was provided.
 if arguments.get("gamemode"):
