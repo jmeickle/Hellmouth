@@ -99,14 +99,14 @@ class Hexagon(Shape):
     }
 
     # TODO: The right place for this is probably a HexKeyboardLayout class or something.
-    heading_keys = {
-        "7": NW,
-        "4": CW,
-        "1": SW,
-        "9": NE,
-        "6": CE,
-        "3": SE,
-        "5": CC
+    command_headings = {
+        "move northwest": NW,
+        "move west": CW,
+        "move southwest": SW,
+        "move northeast": NE,
+        "move east": CE,
+        "move southeast": SE,
+        "wait": CC
     }
 
     # Offset directions, for rendering.
