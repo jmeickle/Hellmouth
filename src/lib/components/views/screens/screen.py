@@ -56,12 +56,10 @@ class Screen(View):
         display.cline(self, self.footer_text)
         self.y_acc = y_acc
 
-    def keyin(self, c):
-        if c == curses.KEY_ENTER or c == ord('\n'):
-            self.do_callback()
-            self.suicide()
-        else: return True
-        return False
+    def process(self, command):
+        if command("cancel", "confirm"):
+            self.callback()
+            command.done()
 
     def do_callback(self):
         if self.callback is not None:
@@ -102,12 +100,11 @@ class MenuScreen(Screen):
             else:
                 layer.cline(self, self.choice_formatter(choice))
 
-    def keyin(self, c):
-        if c == curses.KEY_ENTER or c == ord('\n'):
-            self.suicide()
+    def process(self, command):
+        if command("confirm", "cancel"):
             self.callback(self.choices[self.selector.index])
-        else: return True
-        return False
+            self.suicide()
+            command.done()
 
 # A basic 'forced' dialogue screen. You may get some options, but must continue forward.
 class DialogueScreen(Screen):
@@ -134,8 +131,9 @@ class DialogueScreen(Screen):
         display.cline(self, "-"*(self.x))
         self.x_acc += 2
 
-    # Since this is a 'forced' dialogue screen, you must press enter.
-    def keyin(self, c):
-        if c == curses.KEY_ENTER or c == ord('\n'):
+    def process(self, command):
+        # Since this is a 'forced' dialogue screen, you must press enter.
+        if command("confirm"):
             self.selector.choose()
-        return False
+            self.suicide()
+            command.done()
