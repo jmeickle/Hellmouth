@@ -27,8 +27,12 @@ class EncounterWindow(View):
         self.level = level
 
     def ready(self):
-        self.spawn(SidePane())
-        self.spawn(MainPane())
+        # TODO: Ick.
+        kernel.output.display.layer("map", dimensions=(kernel.output.display.x, kernel.output.display.y), position=(0,0))
+        kernel.output.display.layer("sidebar", dimensions=(kernel.output.display.x, kernel.output.display.y), position=(0,0))
+
+        self.spawn(SidePane(layer="sidebar"))
+        self.spawn(MainPane(layer="map"))
 
 class MainPane(View):
     """Larger, left-hand pane."""
