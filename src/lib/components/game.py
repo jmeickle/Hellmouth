@@ -10,6 +10,7 @@ from src.lib.components.views.screens.screen import Screen, MenuScreen
 from src.lib.components.views.encounter.encounter import EncounterWindow
 from src.lib.components.views.screens.help import HelpScreen
 
+from src.lib.util import debug
 from src.lib.util import system
 
 from src.games.husk.agents.actors.player import Player
