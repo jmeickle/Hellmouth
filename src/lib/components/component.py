@@ -112,7 +112,7 @@ class Component(object):
         if self.parent:
             if hasattr(self.parent, 'window'):
                 self.window = self.get_window(self.parent.window)
-            for attr in ('kernel', 'map', 'level', 'zoom'):
+            for attr in ('kernel', 'map', 'level', 'zoom', 'layer'):
                 if hasattr(self.parent, attr):
                     setattr(self, attr, getattr(self.parent, attr))
 
