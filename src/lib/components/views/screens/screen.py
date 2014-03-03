@@ -1,5 +1,4 @@
 # Basic full-screen classes and their methods.
-import curses
 
 from src.lib.util.define import *
 from src.lib.util.text import *
@@ -34,27 +33,27 @@ class Screen(View):
         return "white-black"
 
     # TODO: Function to make drawing headings a bit more generalizable
-    def draw(self):
-        self.border(" ")
-        self.header()
-        self.body()
-        self.footer()
+    def draw(self, display):
+        display.border(self, " ")
+        self.header(display)
+        self.body(display)
+        self.footer(display)
 
-    def header(self):
+    def header(self, display):
         left = len(striptags(self.header_left))
         right = len(striptags(self.header_right))
         spacing = " " * (self.width - left - right)
         header_text = "%s%s%s" % (self.header_left, spacing, self.header_right)
-        self.cline(header_text)
-        self.cline("-"*self.width)
+        display.cline(self, header_text)
+        display.cline(self, "-"*self.width)
 
-    def body(self):
-        self.cline(self.body_text)
+    def body(self, display):
+        display.cline(self, self.body_text)
 
-    def footer(self):
+    def footer(self, display):
         y_acc = self.y_acc
-        self.y_acc = self.BOTTOM
-        self.cline(self.footer_text)
+        self.y_acc = self.bottom
+        display.cline(self, self.footer_text)
         self.y_acc = y_acc
 
     def keyin(self, c):
@@ -84,21 +83,24 @@ class MenuScreen(Screen):
     def color(self):
         return "green-black"
 
-    def draw(self):
-        self.border(" ")
+    def draw(self, layer):
+        layer.border(self, "!")
         title = "<%s>%s</>" % (self.color(), self.title)
         padding = (self.width - len(self.title))/2
         heading = "%s%s%s" % (" "*padding, title, " "*padding)
-        self.cline(heading)
+        layer.cline(self, heading)
         self.x_acc -= 2
-        self.cline("-"*(self.x))
+        layer.cline(self, "-"*(self.x))
         self.x_acc += 2
+
+        self.y_acc = 5
+        self.x_acc = 5
 
         for index, choice in enumerate(self.choices):
             if index == self.selector.index:
-                self.cline(self.choice_formatter(choice), "green-black")
+                layer.cline(self, self.choice_formatter(choice), "green-black")
             else:
-                self.cline(self.choice_formatter(choice))
+                layer.cline(self, self.choice_formatter(choice))
 
     def keyin(self, c):
         if c == curses.KEY_ENTER or c == ord('\n'):
@@ -123,13 +125,13 @@ class DialogueScreen(Screen):
         else:
             return "white-black"
 
-    def draw(self):
-        self.border(" ")
+    def draw(self, display):
+        display.border(self, " ")
         title = "<%s>%s</>" % (self.color(), self.title)
         heading = "%s%s%s" % (title, " "*(self.width - len(self.title) - len(self.get_controller().location)), self.get_controller().location)
-        self.cline(heading)
+        display.cline(self, heading)
         self.x_acc -= 2
-        self.cline("-"*(self.x))
+        display.cline(self, "-"*(self.x))
         self.x_acc += 2
 
     # Since this is a 'forced' dialogue screen, you must press enter.
