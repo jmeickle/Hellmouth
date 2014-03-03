@@ -3,6 +3,7 @@ keyin and draw loops, but do not have direct access to drawing methods."""
 
 from src.lib.agents.contexts.context import Context
 
+from src.lib.util import debug
 from src.lib.util.trait import Traitable
 
 class Component(object):
