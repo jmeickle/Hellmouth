@@ -88,6 +88,10 @@ else:
 
 # Use the output service as a context manager.
 with kernel.output:
+    loops = 0
     # Start the kernel's loop service.
     while kernel.component.alive:
+        loops += 1
+        msg = "Loop: {}".format(loops)
+        debug.log("\n{:=^80}".format(msg))
         kernel.loop.run()
