@@ -6,30 +6,6 @@ import functools
 
 from src.lib.util import debug
 
-# HACK: Define termsize rather than figuring it out.
-TERM_X = 80
-TERM_Y = 24
-
-# Define some screen region X and Ys.
-MAP_START_X = 0
-MAP_START_Y = 0
-MAP_X = 45
-MAP_Y = TERM_Y
-
-PANE_START_X = MAP_X
-PANE_START_Y = 0
-PANE_X = TERM_X - MAP_X
-PANE_Y = TERM_Y
-
-STATS_Y = 12
-
-LOG_START_Y = PANE_START_Y + STATS_Y
-LOG_Y = PANE_Y - STATS_Y
-
-STATUS_X = 8
-STATUS_Y = 3
-STATUS_START_X = PANE_START_X - STATUS_X
-
 # Location statuses
 UNHURT = 0
 SCRATCHED = 1
