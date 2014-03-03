@@ -132,33 +132,17 @@ class Component(object):
             self.parent.children.remove(self)
         self.alive = False
 
-    def _keyin(self, c):
+    def input(self, command):
         """Recurse through children trying their keyin functions until you've
         done your own."""
+        debug.log("{} received command: {}.".format(self, command))
         for child in reversed(self.children):
-            if child._keyin(c) is False or child.blocking is True:
+            if child.input(command) is False or child.blocking is True:
                 return False
-        # TODO: Remove?
-#        if self.parent is not None and self.prompt is False:
-#            if c < 256:
-#                if key.globals.get(c) is True:
-#                    return None
-        return self.keyin(c)
+        return self.process(command)
 
-    def keyin(self, c):
-        """Abstract. Handle keyin."""
-        return True
-
-    def _event(self, e):
-        """Recurse through children trying their keyin functions until you've
-        done your own."""
-        for child in reversed(self.children):
-            if child._event(e) is False:
-                return False
-        return self.event(e)
-
-    def event(self, e):
-        """Abstract. Handle keyin."""
+    def process(self, command):
+        """Abstract. Handle commands."""
         return True
 
     def get_context(self, **kwargs):
