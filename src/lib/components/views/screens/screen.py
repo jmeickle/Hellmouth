@@ -1,22 +1,13 @@
 # Basic full-screen classes and their methods.
 
-from src.lib.util.define import *
-from src.lib.util.text import *
-
-from src.lib.components.input import *
+from src.lib.components.input import Scroller, Selector
 from src.lib.components.views.view import View
 
-# Border, heading, body text.
+from src.lib.util.geometry.space import Point
+from src.lib.util import text
+
 class Screen(View):
-    default_arguments = {
-        "x" : TERM_X,
-        "y" : TERM_Y
-    }
-
-    @override_defaults
     def __init__(self, **kwargs):
-        super(Screen, self).__init__(**kwargs)
-
         self.title = kwargs.get("title", "")
         self.header_left = kwargs.get("header_left", "")
         self.header_right = kwargs.get("header_right", "")
@@ -25,8 +16,7 @@ class Screen(View):
         self.callback = kwargs.get("callback", self.suicide)
         self.arguments = kwargs.get("arguments", None)
 
-    def before_draw(self):
-        self.window.clear()
+        super(Screen, self).__init__(**kwargs)
 
     # Reasonable default color.
     def color(self):
@@ -68,12 +58,21 @@ class Screen(View):
             else:
                 self.callback()
 
-# A basic menu screen. You have some options and must choose one of them.
 class MenuScreen(Screen):
+    """A basic menu screen. You have some options and must choose one of them."""
+    # TODO: Allow for auto as a width.
+    height = 18
+    width = 74
+
+    margin = Point(1, 1, 1, 1)
+    border = Point(1, 1, 1, 1)
+    padding = Point(1, 1, 1, 1)
+
     def __init__(self, **kwargs):
-        super(MenuScreen, self).__init__(**kwargs)
         self.choices = kwargs.get("choices", [])
         self.choice_formatter = kwargs.get("choice_formatter", lambda choice: choice)
+
+        super(MenuScreen, self).__init__(**kwargs)
 
         self.selector = Scroller(len(self.choices) - 1)
         self.spawn(self.selector)
@@ -111,8 +110,8 @@ class DialogueScreen(Screen):
     def __init__(self, **kwargs):
         super(DialogueScreen, self).__init__(**kwargs)
         self.speaker = None
-        self.choices = kwargs.pop("choices", [])
-        self.callback = kwargs.pop("callback", self.suicide)
+        self.choices = kwargs.get("choices", [])
+        self.callback = kwargs.get("callback", self.suicide)
         self.selector = Selector(self, choices)
 
     # The color to use for the speaker.
