@@ -1,18 +1,14 @@
 from src.lib.components.input import Scroller
 from src.lib.components.views.view import View
 
-from src.lib.util.define import *
 # TODO: Use kernel service.
 from src.lib.util.log import Log
 from src.lib.util import text
 
 class LogPane(View):
-    default_arguments = {
-        "x" : PANE_X,
-        "y" : LOG_Y,
-        "start_x" : PANE_START_X,
-        "start_y" : LOG_START_Y
-    }
+    height = 12
+    width = 35
+    position = (45, 12)
 
     def __init__(self, **kwargs):
         super(LogPane, self).__init__(**kwargs)

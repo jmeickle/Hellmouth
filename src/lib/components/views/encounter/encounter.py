@@ -4,15 +4,14 @@ from collections import deque
 from operator import itemgetter, attrgetter
 from random import choice
 
+from src.lib.core.kernel import kernel
+from src.lib.agents.contexts.context import Context
 from src.lib.components.views.view import View
 from src.lib.components.views.screens.screen import Screen
 from src.lib.components.input import Cursor, Scroller, SideScroller, Chooser, SideChooser, Tabber, TextPrompt, ListPrompt
 from src.lib.components.views.encounter.log import LogPane
 
-from src.lib.agents.contexts.context import Context
-from src.lib.util.color import Color
 from src.lib.util.command import CommandRegistry as CMD
-from src.lib.util.define import *
 from src.lib.util.geometry.hexagon import Hexagon
 from src.lib.util.geometry.space import Point
 from src.lib.util import debug
@@ -22,10 +21,6 @@ from src.lib.data.skills import skill_list
 
 class EncounterWindow(View):
     """Main tactical window class."""
-    default_arguments = {
-        "x" : TERM_X,
-        "y" : TERM_Y,
-    }
 
     def __init__(self, level, **kwargs):
         super(EncounterWindow, self).__init__(**kwargs)
@@ -37,12 +32,6 @@ class EncounterWindow(View):
 
 class MainPane(View):
     """Larger, left-hand pane."""
-    default_arguments = {
-        "x" : MAP_X,
-        "y" : MAP_Y,
-        "start_x" : MAP_START_X,
-        "start_y" : MAP_START_Y
-    }
 
     def __init__(self, **kwargs):
         super(MainPane, self).__init__(**kwargs)
@@ -54,12 +43,6 @@ class MainPane(View):
 
 class SidePane(View):
     """Smaller, right-hand pane."""
-    default_arguments = {
-        "x" : PANE_X,
-        "y" : PANE_Y,
-        "start_x" : PANE_START_X,
-        "start_y" : PANE_START_Y
-    }
 
     def __init__(self, **kwargs):
         super(SidePane, self).__init__(**kwargs)
@@ -70,20 +53,15 @@ class SidePane(View):
 
 # TODO: Make this a subclass of a Map view, to account for tactical/strategic/etc.
 class MainMap(View):
-    default_arguments = {
-        "x" : MAP_X,
-        "y" : MAP_Y,
-        "start_x" : MAP_START_X,
-        "start_y" : MAP_START_Y,
-        "viewport_rank" : 10,
-        "zoom" : 10
-    }
-
+    height = 24
+    width = 45
+    position = (0,0)
+    
     def __init__(self, **kwargs):
         super(MainMap, self).__init__(**kwargs)
         self.viewport_pos = Point(int(self.y/2)-1, int(self.y/2)-1) # -1 to account for 0,0 start
-        self.viewport_rank = kwargs["viewport_rank"]
-        self.zoom = kwargs["zoom"]
+        self.viewport_rank = kwargs.get("viewport_rank", 10)
+        self.zoom = kwargs.get("zoom", 10)
 
     def get_focus(self):
         cursor = self.get_first_child(Cursor)
@@ -215,15 +193,6 @@ class MainMap(View):
 # cursor is currently over.
 # TODO: Update for FOV
 class Examine(View):
-    default_arguments = {
-        "x" : MAP_X,
-        "y" : MAP_Y,
-        "start_x" : MAP_START_X,
-        "start_y" : MAP_START_Y,
-        "viewport_rank" : 10,
-        "zoom" : 10
-    }
-
     def __init__(self, **kwargs):
         super(Examine, self).__init__(**kwargs)
 
@@ -282,12 +251,9 @@ class Examine(View):
         return text.commas(contents)
 
 class Stats(View):
-    default_arguments = {
-        "x" : PANE_X,
-        "y" : STATS_Y,
-        "start_x" : PANE_START_X,
-        "start_y" : PANE_START_Y
-    }
+    height = 24
+    width = 35
+    position = (45, 0)
 
     def __init__(self, **kwargs):
         super(Stats, self).__init__(**kwargs)
@@ -404,12 +370,6 @@ class Stats(View):
 
 class Status(View):
     """Displays status effects, like hunger or pain."""
-    default_arguments = {
-        "x" : STATUS_X,
-        "y" : STATUS_Y,
-        "start_x" : STATUS_START_X,
-        "start_y" : PANE_START_Y
-    }
 
     def __init__(self, **kwargs):
         View.__init__(self, **kwargs)
@@ -422,12 +382,6 @@ class Status(View):
 
 class Place(View):
     """Displays information about the current level and map."""
-    default_arguments = {
-        "x" : STATUS_X+2,
-        "y" : STATUS_Y,
-        "start_x" : MAP_START_X,
-        "start_y" : MAP_START_Y
-    }
 
     def __init__(self, **kwargs):
         super(Place, self).__init__(**kwargs)
@@ -617,12 +571,6 @@ class Inventory(View):
 class CharacterSheet(View):
     """Display information about an inspected Actor."""
     # TODO: a general InformationSidebar class, polymorphic on what is being viewed
-    default_arguments = {
-        "x" : PANE_X,
-        "y" : PANE_Y,
-        "start_x" : PANE_START_X,
-        "start_y" : PANE_START_Y
-    }
 
     def __init__(self, **kwargs):
         super(CharacterSheet, self).__init__(**kwargs)
@@ -697,13 +645,6 @@ class CharacterSheet(View):
 
 class Debugger(View):
     """Displays debugging information."""
-    default_arguments = {
-        # "x" : PANE_X,
-        # "y" : PANE_Y,
-        # "start_x" : PANE_START_X,
-        # "start_y" : PANE_START_Y,
-        "choices" : ["Queue", "Views"],
-    }
 
     def __init__(self, **kwargs):
         super(Debugger, self).__init__(**kwargs)
